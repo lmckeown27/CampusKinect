@@ -35,7 +35,12 @@ router.post('/register', [
     }
     return true;
   }),
-  ...Object.values(commonValidations.user),
+  body('password').isLength({ min: 8, max: 128 }).withMessage('Password must be between 8 and 128 characters'),
+  body('firstName').isLength({ min: 1, max: 100 }).isAlpha().withMessage('First name must be 1-100 letters'),
+  body('lastName').isLength({ min: 1, max: 100 }).isAlpha().withMessage('Last name must be 1-100 letters'),
+  body('year').optional().isInt({ min: 1, max: 10 }).withMessage('Year must be 1-10'),
+  body('major').optional().isLength({ max: 200 }).withMessage('Major cannot exceed 200 characters'),
+  body('hometown').optional().isLength({ max: 200 }).withMessage('Hometown cannot exceed 200 characters'),
   validate
 ], async (req, res) => {
   try {

@@ -19,7 +19,7 @@ const seedDatabase = async () => {
       await query(`
         INSERT INTO clusters (name, region) 
         VALUES ($1, $2) 
-        ON CONFLICT (name) DO NOTHING
+        ON CONFLICT DO NOTHING
       `, [cluster.name, cluster.region]);
     }
 
@@ -136,7 +136,7 @@ const seedDatabase = async () => {
       await query(`
         INSERT INTO universities (name, domain, city, state, country, latitude, longitude, cluster_id) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-        ON CONFLICT (domain) DO NOTHING
+        ON CONFLICT DO NOTHING
       `, [uni.name, uni.domain, uni.city, uni.state, uni.country, uni.latitude, uni.longitude, clusterId]);
     }
 
@@ -196,7 +196,7 @@ const seedDatabase = async () => {
       await query(`
         INSERT INTO tags (name, category) 
         VALUES ($1, $2) 
-        ON CONFLICT (name) DO NOTHING
+        ON CONFLICT DO NOTHING
       `, [tag.name, tag.category]);
     }
 
@@ -213,7 +213,7 @@ const seedDatabase = async () => {
       await query(`
         INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id, is_verified, is_active)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        ON CONFLICT (email) DO NOTHING
+        ON CONFLICT DO NOTHING
       `, [
         'testuser',
         'test@harvard.edu',

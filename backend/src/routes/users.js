@@ -1,5 +1,5 @@
 const express = require('express');
-const { body } = require('express-validator');
+const { body, query: queryValidator } = require('express-validator');
 const { query } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
@@ -314,7 +314,8 @@ router.get('/:id', [
 // @desc    Get posts by user ID
 // @access  Public
 router.get('/:id/posts', [
-  ...Object.values(paginationValidation),
+  queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   body('id').isInt().withMessage('User ID must be an integer'),
   validate
 ], async (req, res) => {
