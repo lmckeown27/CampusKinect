@@ -21,6 +21,7 @@ const messageRoutes = require('./routes/messages');
 const searchRoutes = require('./routes/search');
 const uploadRoutes = require('./routes/upload');
 const { UNIVERSITY_CONFIG } = require('./config/university');
+const { initializeCronJobs } = require('./services/cronService');
 
 const app = express();
 const server = createServer(app);
@@ -58,6 +59,9 @@ io.on('connection', (socket) => {
 initDatabase();
 connectRedis();
 
+// Initialize cron jobs for recurring posts
+initializeCronJobs();
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
@@ -88,6 +92,30 @@ app.get('/health', (req, res) => {
     environment: process.env.NODE_ENV
   });
 });
+
+// Manual trigger for recurring post processing (development only)
+if (process.env.NODE_ENV === 'development') {
+  app.post('/trigger-recurring-posts', async (req, res) => {
+    try {
+      const { triggerRecurringPostProcessing } = require('./services/cronService');
+      const result = await triggerRecurringPostProcessing();
+      
+      res.json({
+        success: true,
+        message: 'Recurring post processing triggered manually',
+        data: result
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: {
+          message: 'Failed to trigger recurring post processing',
+          details: error.message
+        }
+      });
+    }
+  });
+}
 
 // API Routes
 app.use(`/api/${process.env.API_VERSION || 'v1'}/auth`, authRoutes);
