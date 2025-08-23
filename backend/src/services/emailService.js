@@ -1,22 +1,45 @@
+// Email Service for CampusConnect
+// This service sends emails FROM the app TO users with .edu email addresses
+// The Gmail SMTP account is the app's service account, not individual user accounts
+
 const nodemailer = require('nodemailer');
 
-// Create transporter
+// Create email transporter based on environment configuration
 const createTransporter = () => {
-  return nodemailer.createTransporter({
+  // For Gmail, we need a service account with App Password
+  if (process.env.SMTP_HOST === 'smtp.gmail.com') {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // TLS
+      auth: { 
+        user: process.env.SMTP_USER, 
+        pass: process.env.SMTP_PASS 
+      },
+      tls: { rejectUnauthorized: false }
+    });
+  }
+  
+  // Generic SMTP configuration for other providers
+  return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     secure: process.env.SMTP_PORT === '465', // true for 465, false for other ports
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
+      pass: process.env.SMTP_PASS
+    }
   });
 };
 
 // Send verification email
 const sendVerificationEmail = async (email, firstName, token) => {
   try {
+    console.log('📧 Attempting to send verification email to:', email);
+    
     const transporter = createTransporter();
+    console.log('✅ Email transporter created successfully');
     
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
     
@@ -96,11 +119,17 @@ const sendVerificationEmail = async (email, firstName, token) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Verification email sent:', info.messageId);
+    console.log('✅ Verification email sent successfully!');
+    console.log('📧 Message ID:', info.messageId);
+    console.log('📧 To:', email);
     return true;
 
   } catch (error) {
-    console.error('❌ Failed to send verification email:', error);
+    console.error('❌ Failed to send verification email:');
+    console.error('📧 Email:', email);
+    console.error('📧 Error:', error.message);
+    if (error.code) console.error('📧 Error Code:', error.code);
+    if (error.response) console.error('📧 SMTP Response:', error.response);
     return false;
   }
 };
@@ -272,6 +301,87 @@ const sendNotificationEmail = async (email, firstName, subject, message, actionU
   }
 };
 
+// Send verification code email (code-based verification)
+const sendVerificationCode = async (email, firstName, code) => {
+  try {
+    const transporter = createTransporter();
+    
+    const mailOptions = {
+      from: `"CampusConnect" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: 'Verify your CampusConnect account',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">CampusConnect</h1>
+            <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Account Verification</p>
+          </div>
+          
+          <div style="padding: 30px; background: #f8f9fa; border-radius: 0 0 10px 10px;">
+            <h2 style="color: #333; margin-bottom: 20px;">Hi ${firstName}!</h2>
+            
+            <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">
+              Welcome to CampusConnect! To complete your registration, please enter the verification code below in the app.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px dashed #667eea;">
+              <h3 style="color: #667eea; margin: 0 0 10px 0; font-size: 24px;">Your Verification Code</h3>
+              <div style="font-size: 36px; font-weight: bold; color: #333; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+                ${code}
+              </div>
+              <p style="color: #888; margin: 10px 0 0 0; font-size: 14px;">
+                This code expires in 10 minutes
+              </p>
+            </div>
+            
+            <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">
+              <strong>How to verify:</strong>
+            </p>
+            <ol style="color: #555; line-height: 1.6; margin-bottom: 25px; padding-left: 20px;">
+              <li>Open the CampusConnect app</li>
+              <li>Go to the verification screen</li>
+              <li>Enter the code above</li>
+              <li>Tap "Verify Account"</li>
+            </ol>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <p style="color: #888; font-size: 12px; text-align: center; margin: 0;">
+              If you didn't create a CampusConnect account, please ignore this email.
+            </p>
+          </div>
+        </div>
+      `,
+      text: `
+        CampusConnect - Account Verification
+        
+        Hi ${firstName},
+        
+        Welcome to CampusConnect! To complete your registration, please enter the verification code below in the app.
+        
+        Your Verification Code: ${code}
+        (This code expires in 10 minutes)
+        
+        How to verify:
+        1. Open the CampusConnect app
+        2. Go to the verification screen  
+        3. Enter the code above
+        4. Tap "Verify Account"
+        
+        If you didn't create a CampusConnect account, please ignore this email.
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Verification code email sent:', info.messageId);
+    return true;
+
+  } catch (error) {
+    console.error('❌ Failed to send verification code email:', error);
+    return false;
+  }
+};
+
 // Test email service
 const testEmailService = async () => {
   try {
@@ -286,8 +396,10 @@ const testEmailService = async () => {
 };
 
 module.exports = {
+  createTransporter,
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendNotificationEmail,
+  sendVerificationCode,
   testEmailService
 }; 

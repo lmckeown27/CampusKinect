@@ -1,0 +1,267 @@
+2025-08-22 19:39:43 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:43 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:43 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:43 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:43 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:43 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:43 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:43 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:43 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:43 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:43 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:43 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:43 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:43 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:43 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:43 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:43 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:43 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:43 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:43 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:43 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:43 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:44 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:44 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:44 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:44 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:44 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:44 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:44 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:44 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:44 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:44 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:44 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:44 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:44 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:44 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:44 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:44 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:44 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:44 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:44 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:44 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:44 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:44 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:44 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:44 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:44 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:44 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:44 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:44 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:44 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:44 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:44 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:44 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:44 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:45 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:45 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:45 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:45 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:45 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:45 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:45 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:45 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:45 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:45 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:45 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:45 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:45 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:45 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:45 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:45 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:45 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:45 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:45 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:45 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:45 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:45 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:45 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:45 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:45 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:45 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:45 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:45 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:45 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:45 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:45 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:45 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:45 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:46 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:46 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:46 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:46 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:46 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:46 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:46 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:46 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:46 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:46 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:46 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:46 -07:00: Error: You are trying to attach socket.io to an express request handler function. Please pass a http.Server instance.
+2025-08-22 19:39:46 -07:00:     at Server.attach (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:213:19)
+2025-08-22 19:39:46 -07:00:     at new Server (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/socket.io/dist/index.js:119:18)
+2025-08-22 19:39:46 -07:00:     at Object.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:26:12)
+2025-08-22 19:39:46 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:46 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:39:46 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-22 19:39:46 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-22 19:39:46 -07:00:     at Object.<anonymous> (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+2025-08-22 19:39:46 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-22 19:39:46 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-22 19:42:57 -07:00: ❌ Error: {
+2025-08-22 19:42:57 -07:00:   message: 'Route not found - /api/v1/users?page=1&limit=5',
+2025-08-22 19:42:57 -07:00:   stack: 'Error: Route not found - /api/v1/users?page=1&limit=5\n' +
+2025-08-22 19:42:57 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-22 19:42:57 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-22 19:42:57 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-22 19:42:57 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-22 19:42:57 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-22 19:42:57 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-22 19:42:57 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:646:15\n' +
+2025-08-22 19:42:57 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:265:14)\n' +
+2025-08-22 19:42:57 -07:00:     '    at Function.handle (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:175:3)\n' +
+2025-08-22 19:42:57 -07:00:     '    at router (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:47:12)',
+2025-08-22 19:42:57 -07:00:   url: '/api/v1/users?page=1&limit=5',
+2025-08-22 19:42:57 -07:00:   method: 'GET',
+2025-08-22 19:42:57 -07:00:   ip: '::1',
+2025-08-22 19:42:57 -07:00:   userAgent: 'curl/8.7.1',
+2025-08-22 19:42:57 -07:00:   timestamp: '2025-08-23T02:42:57.483Z'
+2025-08-22 19:42:57 -07:00: }
+2025-08-22 19:43:14 -07:00: ❌ Error: {
+2025-08-22 19:43:14 -07:00:   message: 'Route not found - /api/v1/search?q=test&page=1&limit=5',
+2025-08-22 19:43:14 -07:00:   stack: 'Error: Route not found - /api/v1/search?q=test&page=1&limit=5\n' +
+2025-08-22 19:43:14 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-22 19:43:14 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-22 19:43:14 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-22 19:43:14 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-22 19:43:14 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-22 19:43:14 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-22 19:43:14 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:646:15\n' +
+2025-08-22 19:43:14 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:265:14)\n' +
+2025-08-22 19:43:14 -07:00:     '    at Function.handle (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:175:3)\n' +
+2025-08-22 19:43:14 -07:00:     '    at router (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:47:12)',
+2025-08-22 19:43:14 -07:00:   url: '/api/v1/search?q=test&page=1&limit=5',
+2025-08-22 19:43:14 -07:00:   method: 'GET',
+2025-08-22 19:43:14 -07:00:   ip: '::1',
+2025-08-22 19:43:14 -07:00:   userAgent: 'curl/8.7.1',
+2025-08-22 19:43:14 -07:00:   timestamp: '2025-08-23T02:43:14.864Z'
+2025-08-22 19:43:14 -07:00: }
+2025-08-22 19:44:05 -07:00: ❌ Error: {
+2025-08-22 19:44:05 -07:00:   message: 'Route not found - /api/v1/messages?page=1&limit=5',
+2025-08-22 19:44:05 -07:00:   stack: 'Error: Route not found - /api/v1/messages?page=1&limit=5\n' +
+2025-08-22 19:44:05 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-22 19:44:05 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-22 19:44:05 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-22 19:44:05 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-22 19:44:05 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-22 19:44:05 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-22 19:44:05 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:646:15\n' +
+2025-08-22 19:44:05 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:265:14)\n' +
+2025-08-22 19:44:05 -07:00:     '    at Function.handle (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:175:3)\n' +
+2025-08-22 19:44:05 -07:00:     '    at router (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:47:12)',
+2025-08-22 19:44:05 -07:00:   url: '/api/v1/messages?page=1&limit=5',
+2025-08-22 19:44:05 -07:00:   method: 'GET',
+2025-08-22 19:44:05 -07:00:   ip: '::1',
+2025-08-22 19:44:05 -07:00:   userAgent: 'curl/8.7.1',
+2025-08-22 19:44:05 -07:00:   timestamp: '2025-08-23T02:44:05.782Z'
+2025-08-22 19:44:05 -07:00: }
+2025-08-22 19:44:33 -07:00: ❌ Error: {
+2025-08-22 19:44:33 -07:00:   message: 'Route not found - /api/v1/upload',
+2025-08-22 19:44:33 -07:00:   stack: 'Error: Route not found - /api/v1/upload\n' +
+2025-08-22 19:44:33 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-22 19:44:33 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-22 19:44:33 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-22 19:44:33 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-22 19:44:33 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-22 19:44:33 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-22 19:44:33 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:646:15\n' +
+2025-08-22 19:44:33 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:265:14)\n' +
+2025-08-22 19:44:33 -07:00:     '    at Function.handle (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:175:3)\n' +
+2025-08-22 19:44:33 -07:00:     '    at router (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:47:12)',
+2025-08-22 19:44:33 -07:00:   url: '/api/v1/upload',
+2025-08-22 19:44:33 -07:00:   method: 'GET',
+2025-08-22 19:44:33 -07:00:   ip: '::1',
+2025-08-22 19:44:33 -07:00:   userAgent: 'curl/8.7.1',
+2025-08-22 19:44:33 -07:00:   timestamp: '2025-08-23T02:44:33.354Z'
+2025-08-22 19:44:33 -07:00: }
+2025-08-22 19:45:41 -07:00: Create post error: TypeError: Cannot read properties of undefined (reading 'connect')
+2025-08-22 19:45:41 -07:00:     at /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:349:39
+2025-08-22 19:45:41 -07:00:     at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)
+2025-08-22 19:45:41 -07:00:     at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/route.js:149:13)
+2025-08-22 19:45:41 -07:00:     at validate (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/validation.js:23:3)
+2025-08-22 19:45:41 -07:00:     at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)
+2025-08-22 19:45:41 -07:00:     at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/route.js:149:13)
+2025-08-22 19:45:41 -07:00:     at middleware (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express-validator/lib/middlewares/check.js:16:13)
+2025-08-22 19:45:41 -07:00:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-22 20:21:50 -07:00: ❌ Failed to send verification code email: Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+2025-08-22 20:21:50 -07:00: 535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2466877a084sm10028165ad.20 - gsmtp
+2025-08-22 20:21:50 -07:00:     at SMTPConnection._formatError (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:809:19)
+2025-08-22 20:21:50 -07:00:     at SMTPConnection._actionAUTHComplete (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:1588:34)
+2025-08-22 20:21:50 -07:00:     at SMTPConnection.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:556:26)
+2025-08-22 20:21:50 -07:00:     at SMTPConnection._processResponse (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:993:20)
+2025-08-22 20:21:50 -07:00:     at SMTPConnection._onData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:774:14)
+2025-08-22 20:21:50 -07:00:     at SMTPConnection._onSocketData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
+2025-08-22 20:21:50 -07:00:     at TLSSocket.emit (node:events:518:28)
+2025-08-22 20:21:50 -07:00:     at addChunk (node:internal/streams/readable:561:12)
+2025-08-22 20:21:50 -07:00:     at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+2025-08-22 20:21:50 -07:00:     at Readable.push (node:internal/streams/readable:392:5) {
+2025-08-22 20:21:50 -07:00:   code: 'EAUTH',
+2025-08-22 20:21:50 -07:00:   response: '535-5.7.8 Username and Password not accepted. For more information, go to\n' +
+2025-08-22 20:21:50 -07:00:     '535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2466877a084sm10028165ad.20 - gsmtp',
+2025-08-22 20:21:50 -07:00:   responseCode: 535,
+2025-08-22 20:21:50 -07:00:   command: 'AUTH PLAIN'
+2025-08-22 20:21:50 -07:00: }
+2025-08-22 20:24:42 -07:00: ❌ Failed to send verification code email: Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+2025-08-22 20:24:42 -07:00: 535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-3254aa72b49sm1177094a91.30 - gsmtp
+2025-08-22 20:24:42 -07:00:     at SMTPConnection._formatError (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:809:19)
+2025-08-22 20:24:42 -07:00:     at SMTPConnection._actionAUTHComplete (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:1588:34)
+2025-08-22 20:24:42 -07:00:     at SMTPConnection.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:556:26)
+2025-08-22 20:24:42 -07:00:     at SMTPConnection._processResponse (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:993:20)
+2025-08-22 20:24:42 -07:00:     at SMTPConnection._onData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:774:14)
+2025-08-22 20:24:42 -07:00:     at SMTPConnection._onSocketData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
+2025-08-22 20:24:42 -07:00:     at TLSSocket.emit (node:events:518:28)
+2025-08-22 20:24:42 -07:00:     at addChunk (node:internal/streams/readable:561:12)
+2025-08-22 20:24:42 -07:00:     at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+2025-08-22 20:24:42 -07:00:     at Readable.push (node:internal/streams/readable:392:5) {
+2025-08-22 20:24:42 -07:00:   code: 'EAUTH',
+2025-08-22 20:24:42 -07:00:   response: '535-5.7.8 Username and Password not accepted. For more information, go to\n' +
+2025-08-22 20:24:42 -07:00:     '535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-3254aa72b49sm1177094a91.30 - gsmtp',
+2025-08-22 20:24:42 -07:00:   responseCode: 535,
+2025-08-22 20:24:42 -07:00:   command: 'AUTH PLAIN'
+2025-08-22 20:24:42 -07:00: }
+2025-08-22 20:25:57 -07:00: ❌ Failed to send verification code email: Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+2025-08-22 20:25:57 -07:00: 535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2466889a088sm9828945ad.134 - gsmtp
+2025-08-22 20:25:57 -07:00:     at SMTPConnection._formatError (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:809:19)
+2025-08-22 20:25:57 -07:00:     at SMTPConnection._actionAUTHComplete (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:1588:34)
+2025-08-22 20:25:57 -07:00:     at SMTPConnection.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:556:26)
+2025-08-22 20:25:57 -07:00:     at SMTPConnection._processResponse (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:993:20)
+2025-08-22 20:25:57 -07:00:     at SMTPConnection._onData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:774:14)
+2025-08-22 20:25:57 -07:00:     at SMTPConnection._onSocketData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
+2025-08-22 20:25:57 -07:00:     at TLSSocket.emit (node:events:518:28)
+2025-08-22 20:25:57 -07:00:     at addChunk (node:internal/streams/readable:561:12)
+2025-08-22 20:25:57 -07:00:     at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+2025-08-22 20:25:57 -07:00:     at Readable.push (node:internal/streams/readable:392:5) {
+2025-08-22 20:25:57 -07:00:   code: 'EAUTH',
+2025-08-22 20:25:57 -07:00:   response: '535-5.7.8 Username and Password not accepted. For more information, go to\n' +
+2025-08-22 20:25:57 -07:00:     '535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2466889a088sm9828945ad.134 - gsmtp',
+2025-08-22 20:25:57 -07:00:   responseCode: 535,
+2025-08-22 20:25:57 -07:00:   command: 'AUTH PLAIN'
+2025-08-22 20:25:57 -07:00: }
+2025-08-22 20:30:39 -07:00: ❌ Failed to send verification code email: Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+2025-08-22 20:30:39 -07:00: 535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-7703f876a63sm1337607b3a.0 - gsmtp
+2025-08-22 20:30:39 -07:00:     at SMTPConnection._formatError (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:809:19)
+2025-08-22 20:30:39 -07:00:     at SMTPConnection._actionAUTHComplete (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:1588:34)
+2025-08-22 20:30:39 -07:00:     at SMTPConnection.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:556:26)
+2025-08-22 20:30:39 -07:00:     at SMTPConnection._processResponse (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:993:20)
+2025-08-22 20:30:39 -07:00:     at SMTPConnection._onData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:774:14)
+2025-08-22 20:30:39 -07:00:     at SMTPConnection._onSocketData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
+2025-08-22 20:30:39 -07:00:     at TLSSocket.emit (node:events:518:28)
+2025-08-22 20:30:39 -07:00:     at addChunk (node:internal/streams/readable:561:12)
+2025-08-22 20:30:39 -07:00:     at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+2025-08-22 20:30:39 -07:00:     at Readable.push (node:internal/streams/readable:392:5) {
+2025-08-22 20:30:39 -07:00:   code: 'EAUTH',
+2025-08-22 20:30:39 -07:00:   response: '535-5.7.8 Username and Password not accepted. For more information, go to\n' +
+2025-08-22 20:30:39 -07:00:     '535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-7703f876a63sm1337607b3a.0 - gsmtp',
+2025-08-22 20:30:39 -07:00:   responseCode: 535,
+2025-08-22 20:30:39 -07:00:   command: 'AUTH PLAIN'
+2025-08-22 20:30:39 -07:00: }

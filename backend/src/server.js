@@ -8,8 +8,8 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config();
 
-const connectDB = require('./config/database');
-const connectRedis = require('./config/redis');
+const { initDatabase } = require('./config/database');
+const { connectRedis } = require('./config/redis');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/notFound');
 
@@ -20,6 +20,7 @@ const postRoutes = require('./routes/posts');
 const messageRoutes = require('./routes/messages');
 const searchRoutes = require('./routes/search');
 const uploadRoutes = require('./routes/upload');
+const { UNIVERSITY_CONFIG } = require('./config/university');
 
 const app = express();
 const server = createServer(app);
@@ -32,8 +33,29 @@ const io = new Server(server, {
   }
 });
 
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+  
+  // Join user to their university room
+  socket.on('join-university', (universityId) => {
+    socket.join(`university-${universityId}`);
+    console.log(`User joined university room: ${universityId}`);
+  });
+  
+  // Join user to their personal room for direct messages
+  socket.on('join-personal', (userId) => {
+    socket.join(`user-${userId}`);
+    console.log(`User joined personal room: ${userId}`);
+  });
+  
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
 // Connect to databases
-connectDB();
+initDatabase();
 connectRedis();
 
 // Rate limiting
@@ -75,27 +97,6 @@ app.use(`/api/${process.env.API_VERSION || 'v1'}/messages`, messageRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/search`, searchRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/upload`, uploadRoutes);
 
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-  
-  // Join user to their university room
-  socket.on('join-university', (universityId) => {
-    socket.join(`university-${universityId}`);
-    console.log(`User joined university room: ${universityId}`);
-  });
-  
-  // Join user to their personal room for direct messages
-  socket.on('join-personal', (userId) => {
-    socket.join(`user-${userId}`);
-    console.log(`User joined personal room: ${userId}`);
-  });
-  
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
-
 // Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
@@ -103,20 +104,79 @@ app.use(errorHandler);
 // Make io available to routes
 app.set('io', io);
 
+// Start server with PM2 compatibility
 const PORT = process.env.PORT || 3000;
-
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📱 Environment: ${process.env.NODE_ENV}`);
+  console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API Version: ${process.env.API_VERSION || 'v1'}`);
+  console.log(`🏛️ Currently restricted to: ${UNIVERSITY_CONFIG.displayName}`);
+  console.log(`🔧 Multi-university architecture ready for future expansion`);
+  
+  // Signal PM2 that the app is ready
+  if (process.send) {
+    process.send('ready');
+  }
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('Process terminated');
-  });
+// Handle port conflicts gracefully
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use!`);
+    console.error('💡 This usually means another instance is running.');
+    console.error('💡 Use: pm2 list (to see running processes)');
+    console.error('💡 Use: pm2 stop campusconnect (to stop the app)');
+    console.error('💡 Use: pm2 delete campusconnect (to remove the app)');
+    process.exit(1);
+  } else {
+    console.error('❌ Server error:', error);
+    process.exit(1);
+  }
 });
+
+// Graceful shutdown for PM2
+process.on('SIGINT', () => {
+  console.log('🛑 Received SIGINT, shutting down gracefully...');
+  gracefulShutdown();
+});
+
+process.on('SIGTERM', () => {
+  console.log('🛑 Received SIGTERM, shutting down gracefully...');
+  gracefulShutdown();
+});
+
+// Graceful shutdown function
+function gracefulShutdown() {
+  console.log('🔄 Closing HTTP server...');
+  server.close(() => {
+    console.log('✅ HTTP server closed');
+    
+    // Close database connections
+    console.log('🔄 Closing database connections...');
+    pool.end().then(() => {
+      console.log('✅ Database connections closed');
+      
+      // Close Redis connections
+      console.log('🔄 Closing Redis connections...');
+      redis.quit().then(() => {
+        console.log('✅ Redis connections closed');
+        console.log('✅ Graceful shutdown complete');
+        process.exit(0);
+      }).catch((error) => {
+        console.error('❌ Error closing Redis:', error);
+        process.exit(1);
+      });
+    }).catch((error) => {
+      console.error('❌ Error closing database:', error);
+      process.exit(1);
+    });
+  });
+  
+  // Force exit after timeout
+  setTimeout(() => {
+    console.error('❌ Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000); // 10 second timeout
+}
 
 module.exports = { app, server, io }; 

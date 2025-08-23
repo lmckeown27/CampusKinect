@@ -1,10 +1,11 @@
 const express = require('express');
 const { body, query } = require('express-validator');
-const { query: dbQuery } = require('../config/database');
+const { query: dbQuery, pool } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
-const { validate, commonValidations, paginationValidation } = require('../middleware/validation');
+const { validate, commonValidations } = require('../middleware/validation');
 const { auth, checkOwnership, requireVerification } = require('../middleware/auth');
 const { uploadImage } = require('../services/imageService');
+const { UNIVERSITY_CONFIG } = require('../config/university');
 
 const router = express.Router();
 
@@ -12,7 +13,8 @@ const router = express.Router();
 // @desc    Get posts with filtering, sorting, and pagination
 // @access  Public (with optional auth for personalized results)
 router.get('/', [
-  ...Object.values(paginationValidation),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   query('universityId').optional().isInt().withMessage('University ID must be an integer'),
   query('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Invalid post type'),
   query('tags').optional().isArray().withMessage('Tags must be an array'),
@@ -38,7 +40,21 @@ router.get('/', [
     // Build base query
     let baseQuery = `
       SELECT 
-        p.*,
+        p.id,
+        p.user_id,
+        p.university_id,
+        p.title,
+        p.description,
+        p.post_type,
+        p.duration_type,
+        p.expires_at,
+        p.event_start,
+        p.event_end,
+        p.is_fulfilled,
+        p.is_active,
+        p.view_count,
+        p.created_at,
+        p.updated_at,
         u.username,
         u.first_name,
         u.last_name,
@@ -61,26 +77,10 @@ router.get('/', [
     const queryParams = [];
     let paramCount = 0;
 
-    // Add university filter
-    if (universityId) {
-      paramCount++;
-      baseQuery += ` AND p.university_id = $${paramCount}`;
-      queryParams.push(universityId);
-    } else if (user && !expandCluster) {
-      // Default to user's university if not expanding cluster
-      paramCount++;
-      baseQuery += ` AND p.university_id = $${paramCount}`;
-      queryParams.push(user.university_id);
-    } else if (user && expandCluster) {
-      // Include posts from universities in the same cluster
-      paramCount++;
-      baseQuery += ` AND (p.university_id = $${paramCount} OR p.university_id IN (
-        SELECT u2.id FROM universities u2 
-        JOIN universities u1 ON u1.cluster_id = u2.cluster_id 
-        WHERE u1.id = $${paramCount}
-      ))`;
-      queryParams.push(user.university_id);
-    }
+    // For now, filter to Cal Poly SLO only (multi-university ready)
+    paramCount++;
+    baseQuery += ` AND p.university_id = $${paramCount}`;
+    queryParams.push(UNIVERSITY_CONFIG.primaryUniversityId);
 
     // Add post type filter
     if (postType && postType !== 'all') {
@@ -100,7 +100,10 @@ router.get('/', [
       queryParams.push(tags);
     }
 
-    // Add sorting
+    // Add GROUP BY first
+    baseQuery += ` GROUP BY p.id, p.user_id, p.university_id, p.title, p.description, p.post_type, p.duration_type, p.expires_at, p.event_start, p.event_end, p.is_fulfilled, p.is_active, p.view_count, p.created_at, p.updated_at, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture, un.name, un.city, un.state`;
+
+    // Add sorting after GROUP BY
     switch (sortBy) {
       case 'expiring':
         baseQuery += ` ORDER BY p.expires_at ASC NULLS LAST, p.created_at DESC`;
@@ -115,40 +118,21 @@ router.get('/', [
     }
 
     // Add pagination
-    baseQuery += ` GROUP BY p.id, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture, un.name, un.city, un.state`;
     baseQuery += ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
     queryParams.push(limit, offset);
 
     // Execute query
     const result = await dbQuery(baseQuery, queryParams);
 
-    // Get total count for pagination
+    // Get total count for pagination (Cal Poly SLO only for now)
     let countQuery = `
       SELECT COUNT(DISTINCT p.id) as total
       FROM posts p
-      WHERE p.is_active = true
+      WHERE p.is_active = true AND p.university_id = $1
     `;
     
-    const countParams = [];
-    paramCount = 0;
-
-    if (universityId) {
-      paramCount++;
-      countQuery += ` AND p.university_id = $${paramCount}`;
-      countParams.push(universityId);
-    } else if (user && !expandCluster) {
-      paramCount++;
-      countQuery += ` AND p.university_id = $${paramCount}`;
-      countParams.push(user.university_id);
-    } else if (user && expandCluster) {
-      paramCount++;
-      countQuery += ` AND (p.university_id = $${paramCount} OR p.university_id IN (
-        SELECT u2.id FROM universities u2 
-        JOIN universities u1 ON u1.cluster_id = u2.cluster_id 
-        WHERE u1.id = $${paramCount}
-      ))`;
-      countParams.push(user.university_id);
-    }
+    const countParams = [UNIVERSITY_CONFIG.primaryUniversityId];
+    paramCount = 1;
 
     if (postType && postType !== 'all') {
       paramCount++;
@@ -336,7 +320,14 @@ router.get('/:id', [
 router.post('/', [
   auth,
   requireVerification,
-  ...Object.values(commonValidations.post),
+  body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
+  body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
+  body('postType').isIn(['offer', 'request', 'event']).withMessage('Post type must be offer, request, or event'),
+  body('durationType').isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
+  body('expiresAt').optional().isISO8601().withMessage('Expiration date must be a valid ISO 8601 date'),
+  body('eventStart').optional().isISO8601().withMessage('Event start date must be a valid ISO 8601 date'),
+  body('eventEnd').optional().isISO8601().withMessage('Event end date must be a valid ISO 8601 date'),
+  body('tags').optional().isArray({ min: 1, max: 10 }).withMessage('Tags must be an array with 1 to 10 items'),
   validate
 ], async (req, res) => {
   try {
@@ -352,10 +343,10 @@ router.post('/', [
     } = req.body;
 
     const userId = req.user.id;
-    const universityId = req.user.university_id;
+    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
 
     // Start transaction
-    const client = await dbQuery.pool.connect();
+    const client = await pool.connect();
     
     try {
       await client.query('BEGIN');
@@ -485,7 +476,14 @@ router.put('/:id', [
   auth,
   requireVerification,
   checkOwnership('post'),
-  ...Object.values(commonValidations.post),
+  body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
+  body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
+  body('postType').isIn(['offer', 'request', 'event']).withMessage('Post type must be offer, request, or event'),
+  body('durationType').isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
+  body('expiresAt').optional().isISO8601().withMessage('Expiration date must be a valid ISO 8601 date'),
+  body('eventStart').optional().isISO8601().withMessage('Event start date must be a valid ISO 8601 date'),
+  body('eventEnd').optional().isISO8601().withMessage('Event end date must be a valid ISO 8601 date'),
+  body('tags').optional().isArray({ min: 1, max: 10 }).withMessage('Tags must be an array with 1 to 10 items'),
   validate
 ], async (req, res) => {
   try {
@@ -502,7 +500,7 @@ router.put('/:id', [
     } = req.body;
 
     // Start transaction
-    const client = await dbQuery.pool.connect();
+    const client = await pool.connect();
     
     try {
       await client.query('BEGIN');

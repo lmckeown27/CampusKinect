@@ -1,5 +1,5 @@
 const express = require('express');
-const { body, query: queryValidator } = require('express-validator');
+const { body, query: queryValidator, param } = require('express-validator');
 const { query } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
@@ -217,7 +217,7 @@ router.put('/profile', [
 // @desc    Get public user profile by ID
 // @access  Public
 router.get('/:id', [
-  body('id').isInt().withMessage('User ID must be an integer'),
+  param('id').isInt().withMessage('User ID must be an integer'),
   validate
 ], async (req, res) => {
   try {

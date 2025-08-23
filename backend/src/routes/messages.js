@@ -13,7 +13,8 @@ const router = express.Router();
 router.get('/conversations', [
   auth,
   requireVerification,
-  ...Object.values(commonValidations.paginationValidation),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   validate
 ], async (req, res) => {
   try {
@@ -133,7 +134,8 @@ router.get('/conversations/:id', [
   auth,
   requireVerification,
   query('id').isInt().withMessage('Conversation ID must be an integer'),
-  ...Object.values(commonValidations.paginationValidation),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   validate
 ], async (req, res) => {
   try {

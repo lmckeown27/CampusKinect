@@ -44,8 +44,8 @@ const commonValidations = {
         errorMessage: 'Please provide a valid email address'
       },
       matches: {
-        options: /\.edu$/,
-        errorMessage: 'Email must be a valid .edu address'
+        options: /@calpoly\.edu$/,
+        errorMessage: 'Email must be a valid Cal Poly SLO address (@calpoly.edu)'
       }
     },
     password: {

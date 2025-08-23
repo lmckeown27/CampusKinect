@@ -1,0 +1,108 @@
+2025-08-22 19:41:48 -07:00: 🚀 Server running on port 3000
+2025-08-22 19:41:48 -07:00: 📱 Environment: development
+2025-08-22 19:41:48 -07:00: 🔗 API Version: v1
+2025-08-22 19:41:48 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 19:41:48 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 19:41:48 -07:00: ✅ Connected to Redis
+2025-08-22 19:41:48 -07:00: ✅ Redis client ready
+2025-08-22 19:41:48 -07:00: ✅ Redis connection test successful
+2025-08-22 19:41:49 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 19:41:49 -07:00: ✅ Database tables created successfully
+2025-08-22 19:41:52 -07:00: ::1 - - [23/Aug/2025:02:41:52 +0000] "GET /health HTTP/1.1" 200 82 "-" "curl/8.7.1"
+2025-08-22 19:41:56 -07:00: ::1 - - [23/Aug/2025:02:41:56 +0000] "GET /api/v1/posts?page=1&limit=5 HTTP/1.1" 200 661 "-" "curl/8.7.1"
+2025-08-22 19:42:57 -07:00: ❌ 404 Not Found: GET /api/v1/users?page=1&limit=5 from ::1
+2025-08-22 19:42:57 -07:00: ::1 - - [23/Aug/2025:02:42:57 +0000] "GET /api/v1/users?page=1&limit=5 HTTP/1.1" 404 1424 "-" "curl/8.7.1"
+2025-08-22 19:43:10 -07:00: ::1 - - [23/Aug/2025:02:43:10 +0000] "GET /api/v1/users/profile HTTP/1.1" 401 73 "-" "curl/8.7.1"
+2025-08-22 19:43:14 -07:00: ❌ 404 Not Found: GET /api/v1/search?q=test&page=1&limit=5 from ::1
+2025-08-22 19:43:14 -07:00: ::1 - - [23/Aug/2025:02:43:14 +0000] "GET /api/v1/search?q=test&page=1&limit=5 HTTP/1.1" 404 1448 "-" "curl/8.7.1"
+2025-08-22 19:43:49 -07:00: 🚀 Server running on port 3000
+2025-08-22 19:43:49 -07:00: 📱 Environment: development
+2025-08-22 19:43:49 -07:00: 🔗 API Version: v1
+2025-08-22 19:43:49 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 19:43:49 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 19:43:49 -07:00: ✅ Connected to Redis
+2025-08-22 19:43:49 -07:00: ✅ Redis client ready
+2025-08-22 19:43:49 -07:00: ✅ Redis connection test successful
+2025-08-22 19:43:49 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 19:43:49 -07:00: ✅ Database tables created successfully
+2025-08-22 19:43:55 -07:00: ::1 - - [23/Aug/2025:02:43:55 +0000] "GET /api/v1/search/posts?query=test&page=1&limit=5 HTTP/1.1" 200 758 "-" "curl/8.7.1"
+2025-08-22 19:44:05 -07:00: ❌ 404 Not Found: GET /api/v1/messages?page=1&limit=5 from ::1
+2025-08-22 19:44:05 -07:00: ::1 - - [23/Aug/2025:02:44:05 +0000] "GET /api/v1/messages?page=1&limit=5 HTTP/1.1" 404 1433 "-" "curl/8.7.1"
+2025-08-22 19:44:14 -07:00: ::1 - - [23/Aug/2025:02:44:14 +0000] "GET /api/v1/messages/conversations?page=1&limit=5 HTTP/1.1" 401 73 "-" "curl/8.7.1"
+2025-08-22 19:44:33 -07:00: ❌ 404 Not Found: GET /api/v1/upload from ::1
+2025-08-22 19:44:33 -07:00: ::1 - - [23/Aug/2025:02:44:33 +0000] "GET /api/v1/upload HTTP/1.1" 404 1382 "-" "curl/8.7.1"
+2025-08-22 19:44:42 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 19:44:42 -07:00: ::1 - - [23/Aug/2025:02:44:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 401 59 "-" "curl/8.7.1"
+2025-08-22 19:44:56 -07:00: ::1 - - [23/Aug/2025:02:44:56 +0000] "POST /api/v1/auth/login HTTP/1.1" 401 59 "-" "curl/8.7.1"
+2025-08-22 19:45:12 -07:00: 🔧 Development mode: Auto-verifying email for testing
+2025-08-22 19:45:12 -07:00: ::1 - - [23/Aug/2025:02:45:12 +0000] "POST /api/v1/auth/register HTTP/1.1" 201 771 "-" "curl/8.7.1"
+2025-08-22 19:45:18 -07:00: ::1 - - [23/Aug/2025:02:45:18 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 825 "-" "curl/8.7.1"
+2025-08-22 19:45:27 -07:00: ::1 - - [23/Aug/2025:02:45:27 +0000] "GET /api/v1/users/profile HTTP/1.1" 200 551 "-" "curl/8.7.1"
+2025-08-22 19:45:34 -07:00: ::1 - - [23/Aug/2025:02:45:34 +0000] "GET /api/v1/messages/conversations?page=1&limit=5 HTTP/1.1" 200 98 "-" "curl/8.7.1"
+2025-08-22 19:45:41 -07:00: ::1 - - [23/Aug/2025:02:45:41 +0000] "POST /api/v1/posts HTTP/1.1" 500 80 "-" "curl/8.7.1"
+2025-08-22 19:49:05 -07:00: 🚀 Server running on port 3000
+2025-08-22 19:49:05 -07:00: 📱 Environment: development
+2025-08-22 19:49:05 -07:00: 🔗 API Version: v1
+2025-08-22 19:49:05 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 19:49:05 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 19:49:05 -07:00: ✅ Connected to Redis
+2025-08-22 19:49:05 -07:00: ✅ Redis client ready
+2025-08-22 19:49:05 -07:00: ✅ Redis connection test successful
+2025-08-22 19:49:05 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 19:49:05 -07:00: ✅ Database tables created successfully
+2025-08-22 19:49:12 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 19:49:12 -07:00: ::1 - - [23/Aug/2025:02:49:12 +0000] "POST /api/v1/posts HTTP/1.1" 201 597 "-" "curl/8.7.1"
+2025-08-22 19:49:20 -07:00: ::1 - - [23/Aug/2025:02:49:20 +0000] "GET /api/v1/posts?page=1&limit=5 HTTP/1.1" 200 1243 "-" "curl/8.7.1"
+2025-08-22 19:49:25 -07:00: ::1 - - [23/Aug/2025:02:49:25 +0000] "GET /api/v1/search/posts?query=API&page=1&limit=5 HTTP/1.1" 200 1362 "-" "curl/8.7.1"
+2025-08-22 20:21:40 -07:00: 🚀 Server running on port 3000
+2025-08-22 20:21:40 -07:00: 📱 Environment: development
+2025-08-22 20:21:40 -07:00: 🔗 API Version: v1
+2025-08-22 20:21:40 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 20:21:40 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 20:21:40 -07:00: ✅ Connected to Redis
+2025-08-22 20:21:40 -07:00: ✅ Redis client ready
+2025-08-22 20:21:40 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 20:21:40 -07:00: ✅ Redis connection test successful
+2025-08-22 20:21:40 -07:00: ✅ Database tables created successfully
+2025-08-22 20:21:50 -07:00: ::1 - - [23/Aug/2025:03:21:50 +0000] "POST /api/v1/auth/register HTTP/1.1" 201 764 "-" "curl/8.7.1"
+2025-08-22 20:22:08 -07:00: ::1 - - [23/Aug/2025:03:22:08 +0000] "POST /api/v1/auth/verify-code HTTP/1.1" 200 145 "-" "curl/8.7.1"
+2025-08-22 20:22:22 -07:00: ::1 - - [23/Aug/2025:03:22:22 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 817 "-" "curl/8.7.1"
+2025-08-22 20:24:41 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 20:24:42 -07:00: ::1 - - [23/Aug/2025:03:24:42 +0000] "POST /api/v1/auth/register HTTP/1.1" 201 762 "-" "curl/8.7.1"
+2025-08-22 20:25:35 -07:00: 🚀 Server running on port 3000
+2025-08-22 20:25:35 -07:00: 📱 Environment: development
+2025-08-22 20:25:35 -07:00: 🔗 API Version: v1
+2025-08-22 20:25:35 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 20:25:35 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 20:25:35 -07:00: ✅ Connected to Redis
+2025-08-22 20:25:35 -07:00: ✅ Redis client ready
+2025-08-22 20:25:35 -07:00: ✅ Redis connection test successful
+2025-08-22 20:25:35 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 20:25:35 -07:00: ✅ Database tables created successfully
+2025-08-22 20:25:42 -07:00: ::1 - - [23/Aug/2025:03:25:42 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 183 "-" "curl/8.7.1"
+2025-08-22 20:25:49 -07:00: ::1 - - [23/Aug/2025:03:25:49 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 183 "-" "curl/8.7.1"
+2025-08-22 20:25:57 -07:00: ::1 - - [23/Aug/2025:03:25:57 +0000] "POST /api/v1/auth/register HTTP/1.1" 201 770 "-" "curl/8.7.1"
+2025-08-22 20:26:01 -07:00: ::1 - - [23/Aug/2025:03:26:01 +0000] "POST /api/v1/auth/login HTTP/1.1" 400 183 "-" "curl/8.7.1"
+2025-08-22 20:26:06 -07:00: ::1 - - [23/Aug/2025:03:26:06 +0000] "POST /api/v1/auth/resend-code HTTP/1.1" 400 183 "-" "curl/8.7.1"
+2025-08-22 20:30:18 -07:00: 🚀 Server running on port 3000
+2025-08-22 20:30:18 -07:00: 📱 Environment: development
+2025-08-22 20:30:18 -07:00: 🔗 API Version: v1
+2025-08-22 20:30:18 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 20:30:18 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 20:30:18 -07:00: ✅ Connected to Redis
+2025-08-22 20:30:18 -07:00: ✅ Redis client ready
+2025-08-22 20:30:18 -07:00: ✅ Redis connection test successful
+2025-08-22 20:30:18 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 20:30:18 -07:00: ✅ Database tables created successfully
+2025-08-22 20:30:22 -07:00: ::1 - - [23/Aug/2025:03:30:22 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 161 "-" "curl/8.7.1"
+2025-08-22 20:30:27 -07:00: ::1 - - [23/Aug/2025:03:30:27 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 382 "-" "curl/8.7.1"
+2025-08-22 20:30:34 -07:00: ::1 - - [23/Aug/2025:03:30:34 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 382 "-" "curl/8.7.1"
+2025-08-22 20:30:39 -07:00: ::1 - - [23/Aug/2025:03:30:39 +0000] "POST /api/v1/auth/register HTTP/1.1" 201 770 "-" "curl/8.7.1"
+2025-08-22 20:30:43 -07:00: ::1 - - [23/Aug/2025:03:30:43 +0000] "POST /api/v1/auth/login HTTP/1.1" 400 161 "-" "curl/8.7.1"
+2025-08-22 20:30:47 -07:00: ::1 - - [23/Aug/2025:03:30:47 +0000] "POST /api/v1/auth/login HTTP/1.1" 400 382 "-" "curl/8.7.1"
+2025-08-22 20:34:11 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 20:34:11 -07:00: ::1 - - [23/Aug/2025:03:34:11 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 377 "-" "curl/8.7.1"
+2025-08-22 20:34:17 -07:00: ::1 - - [23/Aug/2025:03:34:17 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 381 "-" "curl/8.7.1"
+2025-08-22 20:34:22 -07:00: ::1 - - [23/Aug/2025:03:34:22 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 378 "-" "curl/8.7.1"
+2025-08-22 20:34:27 -07:00: ::1 - - [23/Aug/2025:03:34:27 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 377 "-" "curl/8.7.1"
+2025-08-22 20:34:32 -07:00: ::1 - - [23/Aug/2025:03:34:32 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 377 "-" "curl/8.7.1"

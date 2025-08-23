@@ -3,10 +3,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body } = require('express-validator');
 const { query } = require('../config/database');
-const { redisSet, generateCacheKey, CACHE_TTL } = require('../config/redis');
+const { redisSet, generateCacheKey, CACHE_TTL, redisDel } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
 const { auth } = require('../middleware/auth');
-const { sendVerificationEmail } = require('../services/emailService');
+const { sendVerificationCode } = require('../services/emailService');
+const { UNIVERSITY_CONFIG } = require('../config/university');
 
 const router = express.Router();
 
@@ -21,20 +22,28 @@ router.post('/register', [
     }
     return true;
   }),
-  body('email').custom(async (value) => {
-    const result = await query('SELECT id FROM users WHERE email = $1', [value]);
-    if (result.rows.length > 0) {
-      throw new Error('Email already registered');
-    }
-    return true;
-  }),
-  body('universityId').custom(async (value) => {
-    const result = await query('SELECT id FROM universities WHERE id = $1', [value]);
-    if (result.rows.length === 0) {
-      throw new Error('Invalid university ID');
-    }
-    return true;
-  }),
+  body('email')
+    .isEmail().withMessage('Please provide a valid email address')
+    .custom(async (value) => {
+      // Check if it's a .edu email
+      if (!value.endsWith('.edu')) {
+        throw new Error('Email must be a valid .edu address');
+      }
+      
+      // Check if it's Cal Poly SLO (must be exactly @calpoly.edu)
+      if (!/^[^@]+@calpoly\.edu$/.test(value)) {
+        throw new Error('Thank you for your interest in CampusConnect! We\'re currently working out all the bugs with Cal Poly SLO first before expanding to other universities. Please check back later or contact us if you\'d like to be notified when we expand to your university.');
+      }
+      
+      // Check if email is already registered
+      const result = await query('SELECT id FROM users WHERE email = $1', [value]);
+      if (result.rows.length > 0) {
+        throw new Error('Email already registered');
+      }
+      
+      return true;
+    }),
+
   body('password').isLength({ min: 8, max: 128 }).withMessage('Password must be between 8 and 128 characters'),
   body('firstName').isLength({ min: 1, max: 100 }).isAlpha().withMessage('First name must be 1-100 letters'),
   body('lastName').isLength({ min: 1, max: 100 }).isAlpha().withMessage('Last name must be 1-100 letters'),
@@ -52,20 +61,19 @@ router.post('/register', [
       lastName,
       year,
       major,
-      hometown,
-      universityId
+      hometown
     } = req.body;
 
     // Hash password
     const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS) || 12);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Create user
+    // Create user (automatically assigned to Cal Poly SLO for now)
     const result = await query(`
       INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, created_at
-    `, [username, email, passwordHash, firstName, lastName, year, major, hometown, universityId]);
+    `, [username, email, passwordHash, firstName, lastName, year, major, hometown, UNIVERSITY_CONFIG.primaryUniversityId]);
 
     const user = result.rows[0];
 
@@ -76,8 +84,24 @@ router.post('/register', [
       { expiresIn: '24h' }
     );
 
-    // Send verification email
-    await sendVerificationEmail(user.email, user.first_name, verificationToken);
+    // Send verification email (or auto-verify in development)
+    if (process.env.NODE_ENV === 'development' && process.env.AUTO_VERIFY_EMAILS === 'true') {
+      console.log('🔧 Development mode: Auto-verifying email for testing');
+      // Auto-verify the user in development
+      await query('UPDATE users SET is_verified = true WHERE id = $1', [user.id]);
+      user.is_verified = true;
+    } else {
+      // Generate 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      
+      // Store verification code in database
+      await query('UPDATE users SET verification_code = $1, verification_code_expires = $2 WHERE id = $3', 
+        [verificationCode, expiresAt, user.id]);
+      
+      // Send verification code email
+      await sendVerificationCode(user.email, user.first_name, verificationCode);
+    }
 
     // Generate access token
     const accessToken = jwt.sign(
@@ -145,7 +169,21 @@ router.post('/register', [
 // @desc    Authenticate user & get token
 // @access  Public
 router.post('/login', [
-  body('email').isEmail().withMessage('Please provide a valid email address'),
+  body('email')
+    .isEmail().withMessage('Please provide a valid email address')
+    .custom((value) => {
+      // Check if it's a .edu email
+      if (!value.endsWith('.edu')) {
+        throw new Error('Email must be a valid .edu address');
+      }
+      
+      // Check if it's Cal Poly SLO
+      if (!value.endsWith('@calpoly.edu')) {
+        throw new Error('Thank you for your interest in CampusConnect! We\'re currently working out all the bugs with Cal Poly SLO first before expanding to other universities. Please check back later or contact us if you\'d like to be notified when we expand to your university.');
+      }
+      
+      return true;
+    }),
   body('password').notEmpty().withMessage('Password is required'),
   validate
 ], async (req, res) => {
@@ -178,6 +216,17 @@ router.post('/login', [
         success: false,
         error: {
           message: 'Invalid credentials'
+        }
+      });
+    }
+
+    // Check if email is verified
+    if (!user.is_verified) {
+      return res.status(401).json({
+        success: false,
+        error: {
+          message: 'Please verify your email address before logging in. Check your email for a verification code.',
+          code: 'EMAIL_NOT_VERIFIED'
         }
       });
     }
@@ -467,7 +516,7 @@ router.post('/resend-verification', [
     );
 
     // Send verification email
-    await sendVerificationEmail(email, user.first_name, verificationToken);
+    await sendVerificationCode(email, user.first_name, verificationToken);
 
     res.json({
       success: true,
@@ -480,6 +529,206 @@ router.post('/resend-verification', [
       success: false,
       error: {
         message: 'Failed to resend verification email. Please try again.'
+      }
+    });
+  }
+});
+
+// @route   POST /api/v1/auth/verify-code
+// @desc    Verify user account with verification code
+// @access  Public
+router.post('/verify-code', [
+  body('email')
+    .isEmail().withMessage('Please provide a valid email address')
+    .custom((value) => {
+      // Check if it's a .edu email
+      if (!value.endsWith('.edu')) {
+        throw new Error('Email must be a valid .edu address');
+      }
+      
+      // Check if it's Cal Poly SLO
+      if (!value.endsWith('@calpoly.edu')) {
+        throw new Error('Thank you for your interest in CampusConnect! We\'re currently working out all the bugs with Cal Poly SLO first before expanding to other universities. Please check back later or contact us if you\'d like to be notified when we expand to your university.');
+      }
+      
+      return true;
+    }),
+  body('code').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),
+  validate
+], async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    // Find user with this email and verification code
+    const result = await query(`
+      SELECT id, verification_code, verification_code_expires, is_verified
+      FROM users 
+      WHERE email = $1 AND is_active = true
+    `, [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'User not found'
+        }
+      });
+    }
+
+    const user = result.rows[0];
+
+    // Check if already verified
+    if (user.is_verified) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Account is already verified'
+        }
+      });
+    }
+
+    // Check if verification code exists
+    if (!user.verification_code) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'No verification code found. Please request a new one.'
+        }
+      });
+    }
+
+    // Check if verification code matches
+    if (user.verification_code !== code) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Invalid verification code'
+        }
+      });
+    }
+
+    // Check if verification code has expired
+    if (new Date() > new Date(user.verification_code_expires)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Verification code has expired. Please request a new one.'
+        }
+      });
+    }
+
+    // Verify the user account
+    await query(`
+      UPDATE users 
+      SET is_verified = true, 
+          verification_code = NULL, 
+          verification_code_expires = NULL,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+    `, [user.id]);
+
+    // Clear any cached user data
+    const cacheKey = generateCacheKey('user', user.id);
+    await redisDel(cacheKey);
+
+    res.json({
+      success: true,
+      message: 'Account verified successfully! You can now log in.',
+      data: {
+        userId: user.id,
+        email: email,
+        isVerified: true
+      }
+    });
+
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Verification failed. Please try again.'
+      }
+    });
+  }
+});
+
+// @route   POST /api/v1/auth/resend-code
+// @desc    Resend verification code
+// @access  Public
+router.post('/resend-code', [
+  body('email')
+    .isEmail().withMessage('Please provide a valid email address')
+    .custom((value) => {
+      // Check if it's a .edu email
+      if (!value.endsWith('.edu')) {
+        throw new Error('Email must be a valid .edu address');
+      }
+      
+      // Check if it's Cal Poly SLO
+      if (!value.endsWith('@calpoly.edu')) {
+        throw new Error('Thank you for your interest in CampusConnect! We\'re currently working out all the bugs with Cal Poly SLO first before expanding to other universities. Please check back later or contact us if you\'d like to be notified when we expand to your university.');
+      }
+      
+      return true;
+    }),
+  validate
+], async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find user with this email
+    const result = await query(`
+      SELECT id, first_name, is_verified
+      FROM users 
+      WHERE email = $1 AND is_active = true
+    `, [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'User not found'
+        }
+      });
+    }
+
+    const user = result.rows[0];
+
+    // Check if already verified
+    if (user.is_verified) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Account is already verified'
+        }
+      });
+    }
+
+    // Generate new 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    
+    // Store new verification code in database
+    await query('UPDATE users SET verification_code = $1, verification_code_expires = $2 WHERE id = $3', 
+      [verificationCode, expiresAt, user.id]);
+    
+    // Send new verification code email
+    await sendVerificationCode(user.email, user.first_name, verificationCode);
+
+    res.json({
+      success: true,
+      message: 'New verification code sent successfully. Please check your email.',
+      data: {
+        email: email
+      }
+    });
+
+  } catch (error) {
+    console.error('Resend code error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to resend verification code. Please try again.'
       }
     });
   }

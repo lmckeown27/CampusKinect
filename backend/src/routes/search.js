@@ -4,6 +4,7 @@ const { query: dbQuery } = require('../config/database');
 const { redisGet, redisSet, generateCacheKey, CACHE_TTL } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
 const { optionalAuth } = require('../middleware/auth');
+const { UNIVERSITY_CONFIG } = require('../config/university');
 
 const router = express.Router();
 
@@ -11,8 +12,13 @@ const router = express.Router();
 // @desc    Search posts with advanced filtering
 // @access  Public (with optional auth for personalized results)
 router.get('/posts', [
-  ...Object.values(commonValidations.search),
-  ...Object.values(commonValidations.paginationValidation),
+  query('query').isLength({ min: 1, max: 200 }).withMessage('Search query must be between 1 and 200 characters'),
+  query('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Post type filter must be offer, request, event, or all'),
+  query('tags').optional().isArray({ max: 10 }).withMessage('Tags filter cannot exceed 10 items'),
+  query('sortBy').optional().isIn(['recent', 'expiring', 'recurring']).withMessage('Sort must be recent, expiring, or recurring'),
+  query('expandCluster').optional().isBoolean().withMessage('Expand cluster must be a boolean value'),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   validate
 ], async (req, res) => {
   try {
@@ -71,20 +77,10 @@ router.get('/posts', [
     const queryParams = [searchQuery];
     let paramCount = 1;
 
-    // Add university filter
-    if (user && !expandCluster) {
-      paramCount++;
-      baseQuery += ` AND p.university_id = $${paramCount}`;
-      queryParams.push(user.university_id);
-    } else if (user && expandCluster) {
-      paramCount++;
-      baseQuery += ` AND (p.university_id = $${paramCount} OR p.university_id IN (
-        SELECT u2.id FROM universities u2 
-        JOIN universities u1 ON u1.cluster_id = u2.cluster_id 
-        WHERE u1.id = $${paramCount}
-      ))`;
-      queryParams.push(user.university_id);
-    }
+    // For now, filter to Cal Poly SLO only (multi-university ready)
+    paramCount++;
+    baseQuery += ` AND p.university_id = $${paramCount}`;
+    queryParams.push(UNIVERSITY_CONFIG.primaryUniversityId);
 
     // Add post type filter
     if (postType && postType !== 'all') {
@@ -272,7 +268,8 @@ router.get('/posts', [
 // @access  Public
 router.get('/users', [
   query('query').isLength({ min: 1, max: 200 }).withMessage('Search query must be 1-200 characters'),
-  ...Object.values(commonValidations.paginationValidation),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   validate
 ], async (req, res) => {
   try {
