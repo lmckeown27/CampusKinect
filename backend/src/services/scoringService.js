@@ -5,34 +5,34 @@ const { query } = require('../config/database');
  * Calculates base scores, time urgency bonuses, and final scores for posts
  */
 
-// Base score constants
+// Base score constants - all posts start equal
 const BASE_SCORES = {
-  ONE_TIME: 10.0,        // One-time posts get moderate base score (urgency but limited range)
-  EVENT: 7.0,            // Event posts get moderate base score (time-sensitive)
-  RECURRING: 5.0         // Recurring posts get lowest base score (no urgency, wide range)
+  ONE_TIME: 5.0,         // All posts start with same base score
+  EVENT: 5.0,            // All posts start with same base score
+  RECURRING: 5.0         // All posts start with same base score
 };
 
-// Time urgency bonus multipliers
+// Time urgency bonus multipliers (no longer used - focus on engagement)
 const TIME_URGENCY_MULTIPLIERS = {
-  EXPIRES_SOON: 1.5,     // Posts expiring within 24 hours
-  EXPIRES_TODAY: 2.0,    // Posts expiring today
-  EXPIRES_WEEK: 1.3,     // Posts expiring within a week
-  NO_EXPIRATION: 0.8     // Posts with no expiration (recurring)
+  EXPIRES_SOON: 0,        // No time bonuses
+  EXPIRES_TODAY: 0,       // No time bonuses
+  EXPIRES_WEEK: 0,        // No time bonuses
+  NO_EXPIRATION: 0        // No time bonuses
 };
 
-// Score range constants for each post type
+// Score range constants - all posts have same range
 const SCORE_RANGES = {
   ONE_TIME: {
-    MIN: 8.0,    // Low engagement can bring down to 8
-    MAX: 12.0    // High engagement can bring up to 12
+    MIN: 0.0,    // Can go down to 0 with no engagement
+    MAX: 20.0    // Can go up to 20 with high engagement
   },
   EVENT: {
-    MIN: 2.0,    // Low engagement can bring down to 2
-    MAX: 13.0    // High engagement can bring up to 13
+    MIN: 0.0,    // Can go down to 0 with no engagement
+    MAX: 20.0    // Can go up to 20 with high engagement
   },
   RECURRING: {
-    MIN: 0.0,    // Low engagement can bring down to 0
-    MAX: 15.0    // High engagement can bring up to 15
+    MIN: 0.0,    // Can go down to 0 with no engagement
+    MAX: 20.0    // Can go up to 20 with high engagement
   }
 };
 
@@ -48,77 +48,16 @@ const ENGAGEMENT_DECAY = {
  * Calculate base score for a new post
  */
 const calculateBaseScore = (postData) => {
-  let baseScore = 0;
-
-  // Duration type base score
-  switch (postData.durationType) {
-    case 'one-time':
-      baseScore = BASE_SCORES.ONE_TIME;
-      break;
-    case 'event':
-      baseScore = BASE_SCORES.EVENT;
-      break;
-    case 'recurring':
-      baseScore = BASE_SCORES.RECURRING;
-      break;
-    default:
-      baseScore = BASE_SCORES.ONE_TIME;
-  }
-
-  // Post type bonus (offers and requests are more valuable than general posts)
-  if (postData.postType === 'offer' || postData.postType === 'request') {
-    baseScore += 5.0;
-  }
-
-  // Tag bonus (posts with relevant tags get slight boost)
-  if (postData.tags && postData.tags.length > 0) {
-    baseScore += Math.min(postData.tags.length * 0.5, 3.0);
-  }
-
-  return Math.round(baseScore * 100) / 100; // Round to 2 decimal places
+  // All posts start with the same base score - no arbitrary bonuses
+  return BASE_SCORES.ONE_TIME; // 5.0 for all post types
 };
 
 /**
  * Calculate time urgency bonus
  */
 const calculateTimeUrgencyBonus = (postData) => {
-  let urgencyBonus = 0;
-  const now = new Date();
-
-  if (postData.expiresAt) {
-    const expiresAt = new Date(postData.expiresAt);
-    const timeUntilExpiry = expiresAt - now;
-    const hoursUntilExpiry = timeUntilExpiry / (1000 * 60 * 60);
-
-    if (hoursUntilExpiry <= 0) {
-      // Already expired
-      urgencyBonus = 0;
-    } else if (hoursUntilExpiry <= 24) {
-      // Expires within 24 hours
-      urgencyBonus = BASE_SCORES.ONE_TIME * TIME_URGENCY_MULTIPLIERS.EXPIRES_SOON;
-    } else if (hoursUntilExpiry <= 168) { // 7 days
-      // Expires within a week
-      urgencyBonus = BASE_SCORES.ONE_TIME * TIME_URGENCY_MULTIPLIERS.EXPIRES_WEEK;
-    }
-  } else if (postData.eventStart && postData.eventEnd) {
-    // Event posts get urgency based on how soon they start
-    const eventStart = new Date(postData.eventStart);
-    const timeUntilEvent = eventStart - now;
-    const daysUntilEvent = timeUntilEvent / (1000 * 60 * 60 * 24);
-
-    if (daysUntilEvent <= 1) {
-      // Event is today or tomorrow
-      urgencyBonus = BASE_SCORES.EVENT * TIME_URGENCY_MULTIPLIERS.EXPIRES_TODAY;
-    } else if (daysUntilEvent <= 7) {
-      // Event is within a week
-      urgencyBonus = BASE_SCORES.EVENT * TIME_URGENCY_MULTIPLIERS.EXPIRES_WEEK;
-    }
-  } else if (postData.durationType === 'recurring') {
-    // Recurring posts get no urgency bonus (they're always available)
-    urgencyBonus = 0;
-  }
-
-  return Math.round(urgencyBonus * 100) / 100;
+  // No time urgency bonuses - focus purely on engagement
+  return 0;
 };
 
 /**
@@ -139,11 +78,10 @@ const calculateEngagementImpact = (currentScore, engagementScore, daysSinceCreat
 };
 
 /**
- * Calculate final score for a post with type-specific range limits
+ * Calculate final score for a post - purely based on engagement
  */
 const calculateFinalScore = (postData) => {
   const baseScore = postData.base_score || calculateBaseScore(postData);
-  const timeUrgencyBonus = postData.time_urgency_bonus || calculateTimeUrgencyBonus(postData);
   
   // Calculate days since creation for engagement impact
   const createdAt = new Date(postData.created_at);
@@ -157,15 +95,11 @@ const calculateFinalScore = (postData) => {
     daysSinceCreation
   );
 
-  // Final score calculation
-  let finalScore = baseScore + timeUrgencyBonus + engagementImpact;
+  // Final score calculation - base + engagement only
+  let finalScore = baseScore + engagementImpact;
 
-  // Apply type-specific range limits
-  const postType = postData.duration_type || 'one-time';
-  const ranges = SCORE_RANGES[postType.toUpperCase()] || SCORE_RANGES.ONE_TIME;
-  
-  // Clamp score within the allowed range for this post type
-  finalScore = Math.max(ranges.MIN, Math.min(ranges.MAX, finalScore));
+  // Apply universal range limits (0-20 for all post types)
+  finalScore = Math.max(0, Math.min(20, finalScore));
 
   return Math.round(finalScore * 100) / 100;
 };

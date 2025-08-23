@@ -16,10 +16,10 @@ const INTERACTION_TYPES = {
 
 // Weight multipliers for different interactions
 const INTERACTION_WEIGHTS = {
-  [INTERACTION_TYPES.MESSAGE]: 3.0,    // Messages are most valuable (direct interest)
-  [INTERACTION_TYPES.BOOKMARK]: 2.5,   // Bookmarks show strong interest
-  [INTERACTION_TYPES.REPOST]: 2.0,     // Reposts show community value
-  [INTERACTION_TYPES.SHARE]: 1.5       // Shares show basic interest
+  [INTERACTION_TYPES.MESSAGE]: 4.0,    // Messages get the most points (direct interest)
+  [INTERACTION_TYPES.REPOST]: 3.0,     // Reposts get second most points (community value)
+  [INTERACTION_TYPES.SHARE]: 2.0,      // Shares get third most points (basic interest)
+  [INTERACTION_TYPES.BOOKMARK]: 1.0    // Bookmarks get least points (personal interest)
 };
 
 /**

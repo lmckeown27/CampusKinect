@@ -265,3 +265,125 @@
 2025-08-22 20:30:39 -07:00:   responseCode: 535,
 2025-08-22 20:30:39 -07:00:   command: 'AUTH PLAIN'
 2025-08-22 20:30:39 -07:00: }
+2025-08-22 21:17:28 -07:00: ❌ Failed to send verification code email: Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+2025-08-22 21:17:28 -07:00: 535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-3254ae8ae9csm1118474a91.11 - gsmtp
+2025-08-22 21:17:28 -07:00:     at SMTPConnection._formatError (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:809:19)
+2025-08-22 21:17:28 -07:00:     at SMTPConnection._actionAUTHComplete (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:1588:34)
+2025-08-22 21:17:28 -07:00:     at SMTPConnection.<anonymous> (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:556:26)
+2025-08-22 21:17:28 -07:00:     at SMTPConnection._processResponse (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:993:20)
+2025-08-22 21:17:28 -07:00:     at SMTPConnection._onData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:774:14)
+2025-08-22 21:17:28 -07:00:     at SMTPConnection._onSocketData (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
+2025-08-22 21:17:28 -07:00:     at TLSSocket.emit (node:events:518:28)
+2025-08-22 21:17:28 -07:00:     at addChunk (node:internal/streams/readable:561:12)
+2025-08-22 21:17:28 -07:00:     at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+2025-08-22 21:17:28 -07:00:     at Readable.push (node:internal/streams/readable:392:5) {
+2025-08-22 21:17:28 -07:00:   code: 'EAUTH',
+2025-08-22 21:17:28 -07:00:   response: '535-5.7.8 Username and Password not accepted. For more information, go to\n' +
+2025-08-22 21:17:28 -07:00:     '535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-3254ae8ae9csm1118474a91.11 - gsmtp',
+2025-08-22 21:17:28 -07:00:   responseCode: 535,
+2025-08-22 21:17:28 -07:00:   command: 'AUTH PLAIN'
+2025-08-22 21:17:28 -07:00: }
+2025-08-22 21:17:57 -07:00: Error getting posts to repost: error: column p.start_date does not exist
+2025-08-22 21:17:57 -07:00:     at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/pg-pool/index.js:45:11
+2025-08-22 21:17:57 -07:00:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-22 21:17:57 -07:00:     at async getPostsToRepost (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/recurringPostService.js:45:20)
+2025-08-22 21:17:57 -07:00:     at async processRecurringPosts (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/recurringPostService.js:126:27)
+2025-08-22 21:17:57 -07:00:     at async triggerRecurringPostProcessing (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/cronService.js:74:20)
+2025-08-22 21:17:57 -07:00:     at async /Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:101:22 {
+2025-08-22 21:17:57 -07:00:   length: 111,
+2025-08-22 21:17:57 -07:00:   severity: 'ERROR',
+2025-08-22 21:17:57 -07:00:   code: '42703',
+2025-08-22 21:17:57 -07:00:   detail: undefined,
+2025-08-22 21:17:57 -07:00:   hint: undefined,
+2025-08-22 21:17:57 -07:00:   position: '143',
+2025-08-22 21:17:57 -07:00:   internalPosition: undefined,
+2025-08-22 21:17:57 -07:00:   internalQuery: undefined,
+2025-08-22 21:17:57 -07:00:   where: undefined,
+2025-08-22 21:17:57 -07:00:   schema: undefined,
+2025-08-22 21:17:57 -07:00:   table: undefined,
+2025-08-22 21:17:57 -07:00:   column: undefined,
+2025-08-22 21:17:57 -07:00:   dataType: undefined,
+2025-08-22 21:17:57 -07:00:   constraint: undefined,
+2025-08-22 21:17:57 -07:00:   file: 'parse_relation.c',
+2025-08-22 21:17:57 -07:00:   line: '3657',
+2025-08-22 21:17:57 -07:00:   routine: 'errorMissingColumn'
+2025-08-22 21:17:57 -07:00: }
+2025-08-22 21:17:57 -07:00: ❌ Error processing recurring posts: error: column p.start_date does not exist
+2025-08-22 21:17:57 -07:00:     at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/pg-pool/index.js:45:11
+2025-08-22 21:17:57 -07:00:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-22 21:17:57 -07:00:     at async getPostsToRepost (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/recurringPostService.js:45:20)
+2025-08-22 21:17:57 -07:00:     at async processRecurringPosts (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/recurringPostService.js:126:27)
+2025-08-22 21:17:57 -07:00:     at async triggerRecurringPostProcessing (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/cronService.js:74:20)
+2025-08-22 21:17:57 -07:00:     at async /Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:101:22 {
+2025-08-22 21:17:57 -07:00:   length: 111,
+2025-08-22 21:17:57 -07:00:   severity: 'ERROR',
+2025-08-22 21:17:57 -07:00:   code: '42703',
+2025-08-22 21:17:57 -07:00:   detail: undefined,
+2025-08-22 21:17:57 -07:00:   hint: undefined,
+2025-08-22 21:17:57 -07:00:   position: '143',
+2025-08-22 21:17:57 -07:00:   internalPosition: undefined,
+2025-08-22 21:17:57 -07:00:   internalQuery: undefined,
+2025-08-22 21:17:57 -07:00:   where: undefined,
+2025-08-22 21:17:57 -07:00:   schema: undefined,
+2025-08-22 21:17:57 -07:00:   table: undefined,
+2025-08-22 21:17:57 -07:00:   column: undefined,
+2025-08-22 21:17:57 -07:00:   dataType: undefined,
+2025-08-22 21:17:57 -07:00:   constraint: undefined,
+2025-08-22 21:17:57 -07:00:   file: 'parse_relation.c',
+2025-08-22 21:17:57 -07:00:   line: '3657',
+2025-08-22 21:17:57 -07:00:   routine: 'errorMissingColumn'
+2025-08-22 21:17:57 -07:00: }
+2025-08-22 21:17:57 -07:00: ❌ Manual processing failed: error: column p.start_date does not exist
+2025-08-22 21:17:57 -07:00:     at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/pg-pool/index.js:45:11
+2025-08-22 21:17:57 -07:00:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-22 21:17:57 -07:00:     at async getPostsToRepost (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/recurringPostService.js:45:20)
+2025-08-22 21:17:57 -07:00:     at async processRecurringPosts (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/recurringPostService.js:126:27)
+2025-08-22 21:17:57 -07:00:     at async triggerRecurringPostProcessing (/Users/liammckeown/Desktop/CampusConnect/backend/src/services/cronService.js:74:20)
+2025-08-22 21:17:57 -07:00:     at async /Users/liammckeown/Desktop/CampusConnect/backend/src/server.js:101:22 {
+2025-08-22 21:17:57 -07:00:   length: 111,
+2025-08-22 21:17:57 -07:00:   severity: 'ERROR',
+2025-08-22 21:17:57 -07:00:   code: '42703',
+2025-08-22 21:17:57 -07:00:   detail: undefined,
+2025-08-22 21:17:57 -07:00:   hint: undefined,
+2025-08-22 21:17:57 -07:00:   position: '143',
+2025-08-22 21:17:57 -07:00:   internalPosition: undefined,
+2025-08-22 21:17:57 -07:00:   internalQuery: undefined,
+2025-08-22 21:17:57 -07:00:   where: undefined,
+2025-08-22 21:17:57 -07:00:   schema: undefined,
+2025-08-22 21:17:57 -07:00:   table: undefined,
+2025-08-22 21:17:57 -07:00:   column: undefined,
+2025-08-22 21:17:57 -07:00:   dataType: undefined,
+2025-08-22 21:17:57 -07:00:   constraint: undefined,
+2025-08-22 21:17:57 -07:00:   file: 'parse_relation.c',
+2025-08-22 21:17:57 -07:00:   line: '3657',
+2025-08-22 21:17:57 -07:00:   routine: 'errorMissingColumn'
+2025-08-22 21:17:57 -07:00: }
+2025-08-22 23:12:53 -07:00: [2025-08-23T06:12:53.206Z] [PID: 52131] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Fri Aug 22 2025 23:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 00:01:04 -07:00: ❌ Error: {
+2025-08-23 00:01:04 -07:00:   message: 'Route not found - /api/v1/posts/trigger-recurring-posts',
+2025-08-23 00:01:04 -07:00:   stack: 'Error: Route not found - /api/v1/posts/trigger-recurring-posts\n' +
+2025-08-23 00:01:04 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-23 00:01:04 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-23 00:01:04 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-23 00:01:04 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-23 00:01:04 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-23 00:01:04 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-23 00:01:04 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:646:15\n' +
+2025-08-23 00:01:04 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:265:14)\n' +
+2025-08-23 00:01:04 -07:00:     '    at Function.handle (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:175:3)\n' +
+2025-08-23 00:01:04 -07:00:     '    at router (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:47:12)',
+2025-08-23 00:01:04 -07:00:   url: '/api/v1/posts/trigger-recurring-posts',
+2025-08-23 00:01:04 -07:00:   method: 'POST',
+2025-08-23 00:01:04 -07:00:   ip: '::1',
+2025-08-23 00:01:04 -07:00:   userAgent: 'curl/8.7.1',
+2025-08-23 00:01:04 -07:00:   timestamp: '2025-08-23T07:01:04.252Z'
+2025-08-23 00:01:04 -07:00: }
+2025-08-23 02:04:58 -07:00: [2025-08-23T09:04:58.258Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 02:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 03:07:14 -07:00: [2025-08-23T10:07:14.270Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 03:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 04:13:19 -07:00: [2025-08-23T11:13:19.886Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 04:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 05:08:46 -07:00: [2025-08-23T12:08:46.280Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 05:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 06:11:54 -07:00: [2025-08-23T13:11:54.149Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 06:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 07:03:55 -07:00: [2025-08-23T14:03:55.849Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 07:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 08:09:05 -07:00: [2025-08-23T15:09:05.809Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 08:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 09:06:42 -07:00: [2025-08-23T16:06:42.925Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 09:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-23 10:05:56 -07:00: [2025-08-23T17:05:56.877Z] [PID: 56226] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sat Aug 23 2025 10:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.

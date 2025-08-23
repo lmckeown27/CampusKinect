@@ -106,3 +106,279 @@
 2025-08-22 20:34:22 -07:00: ::1 - - [23/Aug/2025:03:34:22 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 378 "-" "curl/8.7.1"
 2025-08-22 20:34:27 -07:00: ::1 - - [23/Aug/2025:03:34:27 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 377 "-" "curl/8.7.1"
 2025-08-22 20:34:32 -07:00: ::1 - - [23/Aug/2025:03:34:32 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 377 "-" "curl/8.7.1"
+2025-08-22 21:17:01 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-22 21:17:01 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-22 21:17:01 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-22 21:17:01 -07:00: ✅ Hourly processing scheduled for development
+2025-08-22 21:17:01 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-22 21:17:01 -07:00: 🚀 Server running on port 3000
+2025-08-22 21:17:01 -07:00: 📱 Environment: development
+2025-08-22 21:17:01 -07:00: 🔗 API Version: v1
+2025-08-22 21:17:01 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 21:17:01 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 21:17:01 -07:00: ✅ Connected to Redis
+2025-08-22 21:17:01 -07:00: ✅ Redis client ready
+2025-08-22 21:17:01 -07:00: ✅ Redis connection test successful
+2025-08-22 21:17:01 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 21:17:01 -07:00: ✅ Database tables created successfully
+2025-08-22 21:17:06 -07:00: ::1 - - [23/Aug/2025:04:17:06 +0000] "POST /api/v1/auth/login HTTP/1.1" 401 161 "-" "curl/8.7.1"
+2025-08-22 21:17:09 -07:00: ::1 - - [23/Aug/2025:04:17:09 +0000] "POST /api/v1/auth/login HTTP/1.1" 401 161 "-" "curl/8.7.1"
+2025-08-22 21:17:22 -07:00: ::1 - - [23/Aug/2025:04:17:22 +0000] "POST /api/v1/auth/verify-code HTTP/1.1" 400 96 "-" "curl/8.7.1"
+2025-08-22 21:17:28 -07:00: ::1 - - [23/Aug/2025:04:17:28 +0000] "POST /api/v1/auth/resend-code HTTP/1.1" 200 132 "-" "curl/8.7.1"
+2025-08-22 21:17:36 -07:00: ::1 - - [23/Aug/2025:04:17:36 +0000] "POST /api/v1/auth/verify-code HTTP/1.1" 200 147 "-" "curl/8.7.1"
+2025-08-22 21:17:42 -07:00: ::1 - - [23/Aug/2025:04:17:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 823 "-" "curl/8.7.1"
+2025-08-22 21:17:47 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 21:17:47 -07:00: ::1 - - [23/Aug/2025:04:17:47 +0000] "POST /api/v1/posts HTTP/1.1" 201 679 "-" "curl/8.7.1"
+2025-08-22 21:17:57 -07:00: 🔧 Manually triggering recurring post processing...
+2025-08-22 21:17:57 -07:00: 🔄 Processing recurring posts...
+2025-08-22 21:17:57 -07:00: ::1 - - [23/Aug/2025:04:17:57 +0000] "POST /trigger-recurring-posts HTTP/1.1" 500 130 "-" "curl/8.7.1"
+2025-08-22 21:18:45 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-22 21:18:45 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-22 21:18:45 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-22 21:18:45 -07:00: ✅ Hourly processing scheduled for development
+2025-08-22 21:18:45 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-22 21:18:45 -07:00: 🚀 Server running on port 3000
+2025-08-22 21:18:45 -07:00: 📱 Environment: development
+2025-08-22 21:18:45 -07:00: 🔗 API Version: v1
+2025-08-22 21:18:45 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 21:18:45 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 21:18:45 -07:00: ✅ Connected to Redis
+2025-08-22 21:18:45 -07:00: ✅ Redis client ready
+2025-08-22 21:18:45 -07:00: ✅ Redis connection test successful
+2025-08-22 21:18:45 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 21:18:45 -07:00: ✅ Database tables created successfully
+2025-08-22 21:18:49 -07:00: 🔧 Manually triggering recurring post processing...
+2025-08-22 21:18:49 -07:00: 🔄 Processing recurring posts...
+2025-08-22 21:18:49 -07:00: 📝 Found 1 recurring posts to repost
+2025-08-22 21:18:49 -07:00: ✅ Reposted recurring post ID 3 -> New post ID 4
+2025-08-22 21:18:49 -07:00: ✅ Successfully reposted 1/1 recurring posts
+2025-08-22 21:18:49 -07:00: ✅ Manual processing completed: 1/1 posts reposted
+2025-08-22 21:18:49 -07:00: ::1 - - [23/Aug/2025:04:18:49 +0000] "POST /trigger-recurring-posts HTTP/1.1" 200 121 "-" "curl/8.7.1"
+2025-08-22 21:19:01 -07:00: ::1 - - [23/Aug/2025:04:19:01 +0000] "GET /api/v1/posts/3/repost-history HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-22 21:19:25 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-22 21:19:25 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-22 21:19:25 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-22 21:19:25 -07:00: ✅ Hourly processing scheduled for development
+2025-08-22 21:19:25 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-22 21:19:25 -07:00: 🚀 Server running on port 3000
+2025-08-22 21:19:25 -07:00: 📱 Environment: development
+2025-08-22 21:19:25 -07:00: 🔗 API Version: v1
+2025-08-22 21:19:25 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 21:19:25 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 21:19:25 -07:00: ✅ Connected to Redis
+2025-08-22 21:19:25 -07:00: ✅ Redis client ready
+2025-08-22 21:19:25 -07:00: ✅ Redis connection test successful
+2025-08-22 21:19:25 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 21:19:25 -07:00: ✅ Database tables created successfully
+2025-08-22 21:19:30 -07:00: ::1 - - [23/Aug/2025:04:19:30 +0000] "GET /api/v1/posts/3/repost-history HTTP/1.1" 200 243 "-" "curl/8.7.1"
+2025-08-22 21:37:39 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-22 21:37:39 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-22 21:37:39 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-22 21:37:39 -07:00: ✅ Hourly processing scheduled for development
+2025-08-22 21:37:39 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-22 21:37:39 -07:00: 🚀 Server running on port 3000
+2025-08-22 21:37:39 -07:00: 📱 Environment: development
+2025-08-22 21:37:39 -07:00: 🔗 API Version: v1
+2025-08-22 21:37:39 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 21:37:39 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 21:37:39 -07:00: ✅ Connected to Redis
+2025-08-22 21:37:39 -07:00: ✅ Redis client ready
+2025-08-22 21:37:39 -07:00: ✅ Redis connection test successful
+2025-08-22 21:37:39 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 21:37:39 -07:00: ✅ Database tables created successfully
+2025-08-22 21:37:55 -07:00: ::1 - - [23/Aug/2025:04:37:55 +0000] "GET /api/v1/posts/organized HTTP/1.1" 200 2884 "-" "curl/8.7.1"
+2025-08-22 21:38:01 -07:00: ::1 - - [23/Aug/2025:04:38:01 +0000] "GET /api/v1/posts?sortBy=organized&limit=5 HTTP/1.1" 200 2815 "-" "curl/8.7.1"
+2025-08-22 21:38:08 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 21:38:08 -07:00: ::1 - - [23/Aug/2025:04:38:08 +0000] "POST /api/v1/posts HTTP/1.1" 201 667 "-" "curl/8.7.1"
+2025-08-22 21:38:15 -07:00: ::1 - - [23/Aug/2025:04:38:15 +0000] "POST /api/v1/posts HTTP/1.1" 201 714 "-" "curl/8.7.1"
+2025-08-22 21:38:20 -07:00: ::1 - - [23/Aug/2025:04:38:20 +0000] "GET /api/v1/posts/organized?limit=10 HTTP/1.1" 200 4368 "-" "curl/8.7.1"
+2025-08-22 23:49:21 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-22 23:49:21 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-22 23:49:21 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-22 23:49:21 -07:00: ✅ Hourly processing scheduled for development
+2025-08-22 23:49:21 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-22 23:49:21 -07:00: 🚀 Server running on port 3000
+2025-08-22 23:49:21 -07:00: 📱 Environment: development
+2025-08-22 23:49:21 -07:00: 🔗 API Version: v1
+2025-08-22 23:49:21 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-22 23:49:21 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-22 23:49:21 -07:00: ✅ Connected to Redis
+2025-08-22 23:49:21 -07:00: ✅ Redis client ready
+2025-08-22 23:49:21 -07:00: ✅ Redis connection test successful
+2025-08-22 23:49:21 -07:00: ✅ Connected to PostgreSQL database
+2025-08-22 23:49:21 -07:00: ✅ Database tables created successfully
+2025-08-22 23:49:29 -07:00: ::1 - - [23/Aug/2025:06:49:29 +0000] "GET /api/v1/posts/organized?limit=10 HTTP/1.1" 200 4944 "-" "curl/8.7.1"
+2025-08-22 23:49:40 -07:00: ✅ Updated engagement for post 5: score 2.50
+2025-08-22 23:49:40 -07:00: ✅ Recorded bookmark interaction for post 5 by user 10
+2025-08-22 23:49:40 -07:00: ::1 - - [23/Aug/2025:06:49:40 +0000] "POST /api/v1/posts/5/interact HTTP/1.1" 200 122 "-" "curl/8.7.1"
+2025-08-22 23:49:51 -07:00: ✅ Updated engagement for post 5: score 4.00
+2025-08-22 23:49:51 -07:00: ✅ Recorded share interaction for post 5 by user 10
+2025-08-22 23:49:51 -07:00: ::1 - - [23/Aug/2025:06:49:51 +0000] "POST /api/v1/posts/5/interact HTTP/1.1" 200 116 "-" "curl/8.7.1"
+2025-08-22 23:50:01 -07:00: ✅ Updated engagement for post 5: score 7.00
+2025-08-22 23:50:01 -07:00: ✅ Recorded message interaction for post 5 by user 10
+2025-08-22 23:50:01 -07:00: ::1 - - [23/Aug/2025:06:50:01 +0000] "POST /api/v1/posts/5/interact HTTP/1.1" 200 120 "-" "curl/8.7.1"
+2025-08-22 23:50:07 -07:00: ::1 - - [23/Aug/2025:06:50:07 +0000] "GET /api/v1/posts/5/engagement HTTP/1.1" 200 143 "-" "curl/8.7.1"
+2025-08-22 23:50:17 -07:00: ::1 - - [23/Aug/2025:06:50:17 +0000] "GET /api/v1/posts/organized?limit=10 HTTP/1.1" 200 4944 "-" "curl/8.7.1"
+2025-08-23 00:00:00 -07:00: 🕐 Hourly recurring post processing (development mode)...
+2025-08-23 00:00:00 -07:00: 🔄 Processing recurring posts...
+2025-08-23 00:00:00 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:00:00 -07:00: 📝 Found 2 recurring posts to repost
+2025-08-23 00:00:00 -07:00: ✅ Reposted recurring post ID 4 -> New post ID 7
+2025-08-23 00:00:00 -07:00: ✅ Reposted recurring post ID 3 -> New post ID 8
+2025-08-23 00:00:00 -07:00: ✅ Successfully reposted 2/2 recurring posts
+2025-08-23 00:00:00 -07:00: ✅ Hourly processing completed: 2/2 posts reposted
+2025-08-23 00:00:34 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 00:00:34 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 00:00:34 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 00:00:34 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 00:00:34 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 00:00:34 -07:00: 🚀 Server running on port 3000
+2025-08-23 00:00:34 -07:00: 📱 Environment: development
+2025-08-23 00:00:34 -07:00: 🔗 API Version: v1
+2025-08-23 00:00:34 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 00:00:34 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 00:00:34 -07:00: ✅ Connected to Redis
+2025-08-23 00:00:34 -07:00: ✅ Redis client ready
+2025-08-23 00:00:34 -07:00: ✅ Redis connection test successful
+2025-08-23 00:00:34 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:00:34 -07:00: ✅ Database tables created successfully
+2025-08-23 00:00:41 -07:00: ::1 - - [23/Aug/2025:07:00:41 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:00:48 -07:00: ::1 - - [23/Aug/2025:07:00:48 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:01:04 -07:00: ❌ 404 Not Found: POST /api/v1/posts/trigger-recurring-posts from ::1
+2025-08-23 00:01:04 -07:00: ::1 - - [23/Aug/2025:07:01:04 +0000] "POST /api/v1/posts/trigger-recurring-posts HTTP/1.1" 404 1452 "-" "curl/8.7.1"
+2025-08-23 00:01:59 -07:00: ::1 - - [23/Aug/2025:07:01:59 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:02:08 -07:00: ::1 - - [23/Aug/2025:07:02:08 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:02:23 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 00:02:23 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 00:02:23 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 00:02:23 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 00:02:23 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 00:02:23 -07:00: 🚀 Server running on port 3000
+2025-08-23 00:02:23 -07:00: 📱 Environment: development
+2025-08-23 00:02:23 -07:00: 🔗 API Version: v1
+2025-08-23 00:02:23 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 00:02:23 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 00:02:23 -07:00: ✅ Connected to Redis
+2025-08-23 00:02:23 -07:00: ✅ Redis client ready
+2025-08-23 00:02:23 -07:00: ✅ Redis connection test successful
+2025-08-23 00:02:23 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:02:23 -07:00: ✅ Database tables created successfully
+2025-08-23 00:02:30 -07:00: ::1 - - [23/Aug/2025:07:02:30 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:02:35 -07:00: ::1 - - [23/Aug/2025:07:02:35 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:03:02 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 00:03:02 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 00:03:02 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 00:03:02 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 00:03:02 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 00:03:02 -07:00: 🚀 Server running on port 3000
+2025-08-23 00:03:02 -07:00: 📱 Environment: development
+2025-08-23 00:03:02 -07:00: 🔗 API Version: v1
+2025-08-23 00:03:02 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 00:03:02 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 00:03:02 -07:00: ✅ Connected to Redis
+2025-08-23 00:03:02 -07:00: ✅ Redis client ready
+2025-08-23 00:03:02 -07:00: ✅ Redis connection test successful
+2025-08-23 00:03:02 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:03:02 -07:00: ✅ Database tables created successfully
+2025-08-23 00:03:11 -07:00: ::1 - - [23/Aug/2025:07:03:11 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:03:16 -07:00: ::1 - - [23/Aug/2025:07:03:16 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:04:10 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 00:04:10 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 00:04:10 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 00:04:10 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 00:04:10 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 00:04:10 -07:00: 🚀 Server running on port 3000
+2025-08-23 00:04:10 -07:00: 📱 Environment: development
+2025-08-23 00:04:10 -07:00: 🔗 API Version: v1
+2025-08-23 00:04:10 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 00:04:10 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 00:04:10 -07:00: ✅ Connected to Redis
+2025-08-23 00:04:10 -07:00: ✅ Redis client ready
+2025-08-23 00:04:10 -07:00: ✅ Redis connection test successful
+2025-08-23 00:04:10 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:04:10 -07:00: ✅ Database tables created successfully
+2025-08-23 00:04:18 -07:00: ::1 - - [23/Aug/2025:07:04:18 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:04:26 -07:00: ::1 - - [23/Aug/2025:07:04:26 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 123 "-" "curl/8.7.1"
+2025-08-23 00:04:49 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 00:04:49 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 00:04:49 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 00:04:49 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 00:04:49 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 00:04:49 -07:00: 🚀 Server running on port 3000
+2025-08-23 00:04:49 -07:00: 📱 Environment: development
+2025-08-23 00:04:49 -07:00: 🔗 API Version: v1
+2025-08-23 00:04:49 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 00:04:49 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 00:04:49 -07:00: ✅ Connected to Redis
+2025-08-23 00:04:49 -07:00: ✅ Redis client ready
+2025-08-23 00:04:49 -07:00: ✅ Redis connection test successful
+2025-08-23 00:04:49 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:04:49 -07:00: ✅ Database tables created successfully
+2025-08-23 00:04:57 -07:00: ::1 - - [23/Aug/2025:07:04:57 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 144 "-" "curl/8.7.1"
+2025-08-23 00:05:09 -07:00: ::1 - - [23/Aug/2025:07:05:09 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 400 144 "-" "curl/8.7.1"
+2025-08-23 00:06:46 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 00:06:46 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 00:06:46 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 00:06:46 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 00:06:46 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 00:06:46 -07:00: 🚀 Server running on port 3000
+2025-08-23 00:06:46 -07:00: 📱 Environment: development
+2025-08-23 00:06:46 -07:00: 🔗 API Version: v1
+2025-08-23 00:06:46 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 00:06:46 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 00:06:46 -07:00: ✅ Connected to Redis
+2025-08-23 00:06:46 -07:00: ✅ Redis client ready
+2025-08-23 00:06:46 -07:00: ✅ Redis connection test successful
+2025-08-23 00:06:46 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:06:46 -07:00: ✅ Database tables created successfully
+2025-08-23 00:06:52 -07:00: ::1 - - [23/Aug/2025:07:06:52 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 200 4628 "-" "curl/8.7.1"
+2025-08-23 00:14:08 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 00:14:08 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 00:14:08 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 00:14:08 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 00:14:08 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 00:14:08 -07:00: 🚀 Server running on port 3000
+2025-08-23 00:14:08 -07:00: 📱 Environment: development
+2025-08-23 00:14:08 -07:00: 🔗 API Version: v1
+2025-08-23 00:14:08 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 00:14:08 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 00:14:08 -07:00: ✅ Connected to Redis
+2025-08-23 00:14:08 -07:00: ✅ Redis client ready
+2025-08-23 00:14:08 -07:00: ✅ Redis connection test successful
+2025-08-23 00:14:08 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 00:14:08 -07:00: ✅ Database tables created successfully
+2025-08-23 00:14:14 -07:00: ::1 - - [23/Aug/2025:07:14:14 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 200 4627 "-" "curl/8.7.1"
+2025-08-23 00:14:43 -07:00: ::1 - - [23/Aug/2025:07:14:43 +0000] "GET /api/v1/posts/smart-feed?limit=8 HTTP/1.1" 200 7108 "-" "curl/8.7.1"
+2025-08-23 10:26:27 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 10:26:27 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 10:26:27 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 10:26:27 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 10:26:27 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 10:26:27 -07:00: 🚀 Server running on port 3000
+2025-08-23 10:26:27 -07:00: 📱 Environment: development
+2025-08-23 10:26:27 -07:00: 🔗 API Version: v1
+2025-08-23 10:26:27 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 10:26:27 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 10:26:27 -07:00: ✅ Connected to Redis
+2025-08-23 10:26:27 -07:00: ✅ Redis client ready
+2025-08-23 10:26:27 -07:00: ✅ Redis connection test successful
+2025-08-23 10:26:27 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 10:26:27 -07:00: ✅ Database tables created successfully
+2025-08-23 10:26:35 -07:00: ::1 - - [23/Aug/2025:17:26:35 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 200 4619 "-" "curl/8.7.1"
+2025-08-23 10:28:36 -07:00: ⏰ Scheduling recurring post processing for 6:00 AM daily...
+2025-08-23 10:28:36 -07:00: ✅ Recurring post processing scheduled successfully
+2025-08-23 10:28:36 -07:00: 🧪 Development mode: Scheduling hourly recurring post processing...
+2025-08-23 10:28:36 -07:00: ✅ Hourly processing scheduled for development
+2025-08-23 10:28:36 -07:00: 🎯 All cron jobs initialized successfully
+2025-08-23 10:28:36 -07:00: 🚀 Server running on port 3000
+2025-08-23 10:28:36 -07:00: 📱 Environment: development
+2025-08-23 10:28:36 -07:00: 🔗 API Version: v1
+2025-08-23 10:28:36 -07:00: 🏛️ Currently restricted to: California Polytechnic State University, San Luis Obispo
+2025-08-23 10:28:36 -07:00: 🔧 Multi-university architecture ready for future expansion
+2025-08-23 10:28:36 -07:00: ✅ Connected to Redis
+2025-08-23 10:28:36 -07:00: ✅ Redis client ready
+2025-08-23 10:28:36 -07:00: ✅ Redis connection test successful
+2025-08-23 10:28:36 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 10:28:36 -07:00: ✅ Database tables created successfully
+2025-08-23 10:30:09 -07:00: ✅ Connected to PostgreSQL database
+2025-08-23 10:30:09 -07:00: ::1 - - [23/Aug/2025:17:30:09 +0000] "GET /api/v1/posts/smart-feed?limit=5 HTTP/1.1" 200 4611 "-" "curl/8.7.1"
