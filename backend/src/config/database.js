@@ -90,6 +90,17 @@ const createTables = async () => {
       );
     `);
 
+    // Post universities junction table for multi-university posts
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS post_universities (
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        university_id INTEGER REFERENCES universities(id) ON DELETE CASCADE,
+        is_primary BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (post_id, university_id)
+      );
+    `);
+
     // Tags table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS tags (
@@ -156,6 +167,20 @@ const createTables = async () => {
       );
     `);
 
+    // Add scoring system fields
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS base_score DECIMAL(10, 2) DEFAULT 50.00;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS time_urgency_bonus DECIMAL(10, 2) DEFAULT 0.00;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS final_score DECIMAL(10, 2) DEFAULT 50.00;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS target_scope VARCHAR(20) DEFAULT 'single' CHECK (target_scope IN ('single', 'multi'));
+    `);
+
     // Create indexes for better performance
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_posts_university_id ON posts(university_id);
@@ -163,10 +188,13 @@ const createTables = async () => {
       CREATE INDEX IF NOT EXISTS idx_posts_post_type ON posts(post_type);
       CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
       CREATE INDEX IF NOT EXISTS idx_posts_expires_at ON posts(expires_at);
+      CREATE INDEX IF NOT EXISTS idx_posts_target_scope ON posts(target_scope);
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
       CREATE INDEX IF NOT EXISTS idx_users_university_id ON users(university_id);
       CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id);
       CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
+      CREATE INDEX IF NOT EXISTS idx_post_universities_post_id ON post_universities(post_id);
+      CREATE INDEX IF NOT EXISTS idx_post_universities_university_id ON post_universities(university_id);
     `);
 
     console.log('✅ Database tables created successfully');

@@ -6,96 +6,116 @@ const { updatePostScores } = require('./scoringService');
  * Manages post interactions and calculates engagement scores
  */
 
-// Interaction types
-const INTERACTION_TYPES = {
-  MESSAGE: 'message',
-  SHARE: 'share',
-  BOOKMARK: 'bookmark',
-  REPOST: 'repost'
+// Interaction types and their weights
+const INTERACTION_TYPES = { 
+  MESSAGE: 'message', 
+  SHARE: 'share', 
+  BOOKMARK: 'bookmark', 
+  REPOST: 'repost' 
 };
 
-// Weight multipliers for different interactions
 const INTERACTION_WEIGHTS = {
-  [INTERACTION_TYPES.MESSAGE]: 4.0,    // Messages get the most points (direct interest)
-  [INTERACTION_TYPES.REPOST]: 3.0,     // Reposts get second most points (community value)
-  [INTERACTION_TYPES.SHARE]: 2.0,      // Shares get third most points (basic interest)
-  [INTERACTION_TYPES.BOOKMARK]: 1.0    // Bookmarks get least points (personal interest)
+  [INTERACTION_TYPES.MESSAGE]: 4.0,    // Messages get the most points
+  [INTERACTION_TYPES.REPOST]: 3.0,     // Reposts get second most points
+  [INTERACTION_TYPES.SHARE]: 2.0,      // Shares get third most points
+  [INTERACTION_TYPES.BOOKMARK]: 1.0    // Bookmarks get least points
 };
 
 /**
  * Record a user interaction with a post
+ * Updates engagement counts and triggers score recalculation
  */
 const recordInteraction = async (postId, userId, interactionType) => {
   try {
     // Check if interaction already exists
-    const existing = await query(`
+    const existingInteraction = await query(`
       SELECT id FROM post_interactions 
       WHERE post_id = $1 AND user_id = $2 AND interaction_type = $3
     `, [postId, userId, interactionType]);
 
-    if (existing.rows.length > 0) {
-      // Interaction already exists, don't duplicate
-      return { success: false, message: 'Interaction already recorded' };
+    if (existingInteraction.rows.length > 0) {
+      throw new Error('Interaction already exists');
     }
 
-    // Record new interaction
+    // Record the interaction
     await query(`
-      INSERT INTO post_interactions (post_id, user_id, interaction_type)
-      VALUES ($1, $2, $3)
+      INSERT INTO post_interactions (post_id, user_id, interaction_type, created_at)
+      VALUES ($1, $2, $3, NOW())
     `, [postId, userId, interactionType]);
 
-    // Update post counts and recalculate engagement score
+    // Update post engagement counts
     await updatePostEngagement(postId);
     
-    // Update post scores (base, urgency, final)
+    // Recalculate post scores and feed positioning
     await updatePostScores(postId);
 
     console.log(`✅ Recorded ${interactionType} interaction for post ${postId} by user ${userId}`);
-    return { success: true, message: 'Interaction recorded successfully' };
+    
+    return {
+      success: true,
+      interactionType,
+      postId,
+      userId,
+      message: `${interactionType} interaction recorded successfully`
+    };
 
   } catch (error) {
-    console.error('Error recording interaction:', error);
+    console.error(`❌ Failed to record ${interactionType} interaction:`, error);
     throw error;
   }
 };
 
 /**
  * Remove a user interaction with a post
+ * Updates engagement counts and triggers score recalculation
  */
 const removeInteraction = async (postId, userId, interactionType) => {
   try {
-    // Remove interaction
-    const result = await query(`
+    // Check if interaction exists
+    const existingInteraction = await query(`
+      SELECT id FROM post_interactions 
+      WHERE post_id = $1 AND user_id = $2 AND interaction_type = $3
+    `, [postId, userId, interactionType]);
+
+    if (existingInteraction.rows.length === 0) {
+      throw new Error('Interaction does not exist');
+    }
+
+    // Remove the interaction
+    await query(`
       DELETE FROM post_interactions 
       WHERE post_id = $1 AND user_id = $2 AND interaction_type = $3
     `, [postId, userId, interactionType]);
 
-    if (result.rowCount > 0) {
-      // Update post counts and recalculate engagement score
-      await updatePostEngagement(postId);
-      
-      // Update post scores (base, urgency, final)
-      await updatePostScores(postId);
-      
-      console.log(`✅ Removed ${interactionType} interaction for post ${postId} by user ${userId}`);
-      return { success: true, message: 'Interaction removed successfully' };
-    }
+    // Update post engagement counts
+    await updatePostEngagement(postId);
+    
+    // Recalculate post scores and feed positioning
+    await updatePostScores(postId);
 
-    return { success: false, message: 'Interaction not found' };
+    console.log(`✅ Removed ${interactionType} interaction for post ${postId} by user ${userId}`);
+    
+    return {
+      success: true,
+      interactionType,
+      postId,
+      userId,
+      message: `${interactionType} interaction removed successfully`
+    };
 
   } catch (error) {
-    console.error('Error removing interaction:', error);
+    console.error(`❌ Failed to remove ${interactionType} interaction:`, error);
     throw error;
   }
 };
 
 /**
- * Update post engagement counts and score
+ * Update engagement counts for a post based on current interactions
  */
 const updatePostEngagement = async (postId) => {
   try {
     // Get current interaction counts
-    const counts = await query(`
+    const result = await query(`
       SELECT 
         interaction_type,
         COUNT(*) as count
@@ -105,25 +125,38 @@ const updatePostEngagement = async (postId) => {
     `, [postId]);
 
     // Initialize counts
-    const interactionCounts = {
-      message: 0,
-      share: 0,
-      bookmark: 0,
-      repost: 0
-    };
+    let messageCount = 0;
+    let shareCount = 0;
+    let bookmarkCount = 0;
+    let repostCount = 0;
 
-    // Populate counts from query results
-    counts.rows.forEach(row => {
-      interactionCounts[row.interaction_type] = parseInt(row.count);
+    // Calculate counts from results
+    result.rows.forEach(row => {
+      switch (row.interaction_type) {
+        case 'message':
+          messageCount = parseInt(row.count);
+          break;
+        case 'share':
+          shareCount = parseInt(row.count);
+          break;
+        case 'bookmark':
+          bookmarkCount = parseInt(row.count);
+          break;
+        case 'repost':
+          repostCount = parseInt(row.count);
+          break;
+      }
     });
 
-    // Calculate weighted engagement score
-    let engagementScore = 0;
-    Object.keys(interactionCounts).forEach(type => {
-      engagementScore += interactionCounts[type] * INTERACTION_WEIGHTS[type];
-    });
+    // Calculate engagement score
+    const engagementScore = (
+      messageCount * INTERACTION_WEIGHTS[INTERACTION_TYPES.MESSAGE] +
+      repostCount * INTERACTION_WEIGHTS[INTERACTION_TYPES.REPOST] +
+      shareCount * INTERACTION_WEIGHTS[INTERACTION_TYPES.SHARE] +
+      bookmarkCount * INTERACTION_WEIGHTS[INTERACTION_TYPES.BOOKMARK]
+    );
 
-    // Update post with new counts and score
+    // Update post with new engagement data
     await query(`
       UPDATE posts 
       SET 
@@ -132,68 +165,134 @@ const updatePostEngagement = async (postId) => {
         bookmark_count = $3,
         repost_count = $4,
         engagement_score = $5,
-        updated_at = CURRENT_TIMESTAMP
+        updated_at = NOW()
       WHERE id = $6
-    `, [
-      interactionCounts.message,
-      interactionCounts.share,
-      interactionCounts.bookmark,
-      interactionCounts.repost,
-      engagementScore,
-      postId
-    ]);
+    `, [messageCount, shareCount, bookmarkCount, repostCount, engagementScore, postId]);
 
-    console.log(`✅ Updated engagement for post ${postId}: score ${engagementScore.toFixed(2)}`);
+    console.log(`✅ Updated engagement for post ${postId}: messages=${messageCount}, shares=${shareCount}, bookmarks=${bookmarkCount}, reposts=${repostCount}, score=${engagementScore}`);
+
+    return {
+      messageCount,
+      shareCount,
+      bookmarkCount,
+      repostCount,
+      engagementScore
+    };
 
   } catch (error) {
-    console.error('Error updating post engagement:', error);
+    console.error('❌ Failed to update post engagement:', error);
     throw error;
   }
 };
 
 /**
- * Get engagement statistics for a post
+ * Get engagement statistics for a specific post
  */
 const getPostEngagement = async (postId) => {
   try {
     const result = await query(`
       SELECT 
-        message_count,
-        share_count,
-        bookmark_count,
-        repost_count,
-        engagement_score
-      FROM posts 
-      WHERE id = $1
+        p.message_count,
+        p.share_count,
+        p.bookmark_count,
+        p.repost_count,
+        p.engagement_score,
+        p.final_score,
+        COUNT(pi.id) as total_interactions
+      FROM posts p
+      LEFT JOIN post_interactions pi ON p.id = pi.post_id
+      WHERE p.id = $1
+      GROUP BY p.id, p.message_count, p.share_count, p.bookmark_count, p.repost_count, p.engagement_score, p.final_score
     `, [postId]);
 
     if (result.rows.length === 0) {
       throw new Error('Post not found');
     }
 
-    return result.rows[0];
+    const post = result.rows[0];
+    
+    return {
+      postId,
+      engagement: {
+        messageCount: post.message_count || 0,
+        shareCount: post.share_count || 0,
+        bookmarkCount: post.bookmark_count || 0,
+        repostCount: post.repost_count || 0,
+        engagementScore: parseFloat(post.engagement_score || 0).toFixed(2),
+        totalInteractions: parseInt(post.total_interactions || 0)
+      },
+      scoring: {
+        finalScore: parseFloat(post.final_score || 0).toFixed(2)
+      }
+    };
 
   } catch (error) {
-    console.error('Error getting post engagement:', error);
+    console.error('❌ Failed to get post engagement:', error);
     throw error;
   }
 };
 
 /**
- * Get user interactions with a post
+ * Get all interactions for a specific user on a specific post
  */
 const getUserInteractions = async (postId, userId) => {
   try {
     const result = await query(`
-      SELECT interaction_type
+      SELECT interaction_type, created_at
       FROM post_interactions 
       WHERE post_id = $1 AND user_id = $2
+      ORDER BY created_at DESC
     `, [postId, userId]);
 
-    return result.rows.map(row => row.interaction_type);
+    return result.rows.map(row => ({
+      type: row.interaction_type,
+      createdAt: row.created_at
+    }));
 
   } catch (error) {
-    console.error('Error getting user interactions:', error);
+    console.error('❌ Failed to get user interactions:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get engagement analytics for dashboard
+ */
+const getEngagementAnalytics = async () => {
+  try {
+    const result = await query(`
+      SELECT 
+        COUNT(*) as total_posts,
+        AVG(engagement_score) as avg_engagement,
+        SUM(message_count) as total_messages,
+        SUM(share_count) as total_shares,
+        SUM(bookmark_count) as total_bookmarks,
+        SUM(repost_count) as total_reposts,
+        COUNT(CASE WHEN engagement_score >= 10 THEN 1 END) as high_engagement_posts,
+        COUNT(CASE WHEN engagement_score <= 2 THEN 1 END) as low_engagement_posts
+      FROM posts
+      WHERE university_id = 1
+    `);
+
+    const stats = result.rows[0];
+    
+    return {
+      totalPosts: parseInt(stats.total_posts || 0),
+      averageEngagement: parseFloat(stats.avg_engagement || 0).toFixed(2),
+      totalInteractions: {
+        messages: parseInt(stats.total_messages || 0),
+        shares: parseInt(stats.total_shares || 0),
+        bookmarks: parseInt(stats.total_bookmarks || 0),
+        reposts: parseInt(stats.total_reposts || 0)
+      },
+      engagementDistribution: {
+        high: parseInt(stats.high_engagement_posts || 0),
+        low: parseInt(stats.low_engagement_posts || 0)
+      }
+    };
+
+  } catch (error) {
+    console.error('❌ Failed to get engagement analytics:', error);
     throw error;
   }
 };
@@ -275,6 +374,7 @@ module.exports = {
   updatePostEngagement,
   getPostEngagement,
   getUserInteractions,
+  getEngagementAnalytics,
   calculateEngagementPriority,
   getEngagementOrganizedPosts
 }; 
