@@ -20,6 +20,7 @@ const postRoutes = require('./routes/posts');
 const messageRoutes = require('./routes/messages');
 const searchRoutes = require('./routes/search');
 const uploadRoutes = require('./routes/upload');
+const reviewRoutes = require('./routes/reviews');
 const { UNIVERSITY_CONFIG } = require('./config/university');
 const { initializeCronJobs } = require('./services/cronService');
 
@@ -117,13 +118,14 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// API Routes
+// API routes
 app.use(`/api/${process.env.API_VERSION || 'v1'}/auth`, authRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/users`, userRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/posts`, postRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/messages`, messageRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/search`, searchRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/upload`, uploadRoutes);
+app.use(`/api/${process.env.API_VERSION || 'v1'}/reviews`, reviewRoutes);
 
 // Error handling middleware
 app.use(notFound);

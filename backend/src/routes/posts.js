@@ -61,6 +61,9 @@ router.get('/organized', [
         p.view_count,
         p.created_at,
         p.updated_at,
+        p.review_count,
+        p.average_rating,
+        p.review_score_bonus,
         u.username,
         u.first_name,
         u.last_name,
@@ -170,6 +173,11 @@ router.get('/organized', [
         baseScore: post.base_score || 0,
         timeUrgencyBonus: post.time_urgency_bonus || 0,
         finalScore: post.final_score || 0
+      },
+      reviews: {
+        count: post.review_count || 0,
+        averageRating: parseFloat(post.average_rating) || 0,
+        scoreBonus: post.review_score_bonus || 0
       },
       expiresAt: post.expires_at,
       eventStart: post.event_start,

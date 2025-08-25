@@ -416,7 +416,18 @@ const calculateFinalScore = async (postData) => {
   const zeroInteractionDecay = await calculateZeroInteractionDecay(postData);
   const newPostBoost = calculateNewPostBoost(postData);
 
+  // Include review score bonus for recurring posts
+  const reviewScoreBonus = postData.review_score_bonus || 0;
+  const isRecurring = postData.duration_type === 'recurring';
+  
   let finalScore = baseScore + engagementImpact.weightedImpact - zeroInteractionDecay.decayPenalty;
+
+  // Add review bonus for recurring posts (up to 5 additional points)
+  if (isRecurring && reviewScoreBonus > 0) {
+    const maxReviewBonus = 5.0; // Cap review bonus at 5 points
+    const cappedReviewBonus = Math.min(reviewScoreBonus, maxReviewBonus);
+    finalScore += cappedReviewBonus;
+  }
 
   if (newPostBoost.hasBoost) {
     finalScore = newPostBoost.boostScore;
@@ -429,7 +440,8 @@ const calculateFinalScore = async (postData) => {
     finalScore: Math.round(finalScore * 100) / 100,
     engagementImpact,
     zeroInteractionDecay,
-    newPostBoost
+    newPostBoost,
+    reviewScoreBonus: isRecurring ? Math.min(reviewScoreBonus, 5.0) : 0
   };
 };
 

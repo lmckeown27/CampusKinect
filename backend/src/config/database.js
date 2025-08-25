@@ -167,6 +167,35 @@ const createTables = async () => {
       );
     `);
 
+    // Reviews table for recurring posts
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS reviews (
+        id SERIAL PRIMARY KEY,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        reviewer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        title VARCHAR(200),
+        content TEXT NOT NULL,
+        is_verified_customer BOOLEAN DEFAULT FALSE,
+        is_anonymous BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(post_id, reviewer_id)
+      );
+    `);
+
+    // Review responses table for post owners to respond to reviews
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS review_responses (
+        id SERIAL PRIMARY KEY,
+        review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
+        responder_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     // Add scoring system fields
     await pool.query(`
       ALTER TABLE posts ADD COLUMN IF NOT EXISTS base_score DECIMAL(10, 2) DEFAULT 50.00;
@@ -179,6 +208,17 @@ const createTables = async () => {
     `);
     await pool.query(`
       ALTER TABLE posts ADD COLUMN IF NOT EXISTS target_scope VARCHAR(20) DEFAULT 'single' CHECK (target_scope IN ('single', 'multi'));
+    `);
+
+    // Add review system fields to posts
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS review_count INTEGER DEFAULT 0;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS average_rating DECIMAL(3, 2) DEFAULT 0.00;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS review_score_bonus DECIMAL(10, 2) DEFAULT 0.00;
     `);
 
     // Create indexes for better performance
@@ -195,6 +235,12 @@ const createTables = async () => {
       CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
       CREATE INDEX IF NOT EXISTS idx_post_universities_post_id ON post_universities(post_id);
       CREATE INDEX IF NOT EXISTS idx_post_universities_university_id ON post_universities(university_id);
+      CREATE INDEX IF NOT EXISTS idx_reviews_post_id ON reviews(post_id);
+      CREATE INDEX IF NOT EXISTS idx_reviews_reviewer_id ON reviews(reviewer_id);
+      CREATE INDEX IF NOT EXISTS idx_reviews_rating ON reviews(rating);
+      CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON reviews(created_at);
+      CREATE INDEX IF NOT EXISTS idx_review_responses_review_id ON review_responses(review_id);
+      CREATE INDEX IF NOT EXISTS idx_review_responses_responder_id ON review_responses(responder_id);
     `);
 
     console.log('✅ Database tables created successfully');
