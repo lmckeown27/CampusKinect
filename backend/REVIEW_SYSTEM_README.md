@@ -20,11 +20,14 @@ The Review System is a comprehensive feature designed specifically for recurring
 - **Verified Customer Status**: Post owners can mark reviews as verified
 - **Conversation History**: System checks if reviewer had prior interaction
 - **Anti-Abuse**: Prevents self-reviews and duplicate reviews
+- **Deletion Tracking**: Post owners must provide reasons when deleting reviews
+- **Accountability System**: Transparent tracking of all deleted reviews
 
 ### 💬 **Two-Way Communication**
 - **Review Responses**: Post owners can respond to reviews
 - **Professional Engagement**: Builds trust through active communication
 - **Conflict Resolution**: Provides platform for addressing concerns
+- **Deletion Transparency**: Users can see why reviews were deleted
 
 ## Database Schema
 
@@ -57,6 +60,26 @@ CREATE TABLE review_responses (
 );
 ```
 
+### Deleted Reviews Table
+```sql
+CREATE TABLE deleted_reviews (
+  id SERIAL PRIMARY KEY,
+  original_review_id INTEGER, -- Keep reference to original review ID
+  post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+  reviewer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  rating INTEGER NOT NULL,
+  title VARCHAR(200),
+  content TEXT NOT NULL,
+  is_verified_customer BOOLEAN DEFAULT FALSE,
+  is_anonymous BOOLEAN DEFAULT FALSE,
+  deleted_by INTEGER REFERENCES users(id) ON DELETE SET NULL, -- Post owner who deleted it
+  deletion_reason TEXT NOT NULL, -- Required reason for deletion
+  deletion_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  original_created_at TIMESTAMP, -- When the review was originally created
+  original_updated_at TIMESTAMP -- When the review was last updated
+);
+```
+
 ### Enhanced Posts Table
 ```sql
 -- Review-related fields added to posts table
@@ -64,6 +87,26 @@ ALTER TABLE posts ADD COLUMN review_count INTEGER DEFAULT 0;
 ALTER TABLE posts ADD COLUMN average_rating DECIMAL(3, 2) DEFAULT 0.00;
 ALTER TABLE posts ADD COLUMN review_score_bonus DECIMAL(10, 2) DEFAULT 0.00;
 ```
+
+### Post Response Format
+When fetching posts, review information is included:
+```json
+{
+  "reviews": {
+    "count": 15,
+    "averageRating": 4.2,
+    "scoreBonus": 7.5,
+    "deletedCount": 2
+  }
+}
+```
+
+### Deleted Reviews Tab
+Each post includes a count of deleted reviews, which users can explore to see:
+- **Deleted Review Content**: Original review text and rating
+- **Deletion Reason**: Why the post owner removed the review
+- **Timeline**: When the review was created and deleted
+- **Accountability**: Who deleted the review and when
 
 ## API Endpoints
 
@@ -111,6 +154,29 @@ Content-Type: application/json
 #### Delete Review
 ```http
 DELETE /api/v1/reviews/456
+Authorization: Bearer <token>
+```
+
+#### Delete Review by Post Owner (with reason tracking)
+```http
+DELETE /api/v1/reviews/456/owner-delete
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "deletionReason": "This review contains false information about our service quality and pricing. We have documentation proving the claims are incorrect."
+}
+```
+
+#### Get Deleted Reviews for a Post
+```http
+GET /api/v1/reviews/post/123/deleted?page=1&limit=10
+Authorization: Bearer <token>
+```
+
+#### Get Deleted Reviews Summary
+```http
+GET /api/v1/reviews/post/123/deleted-summary
 Authorization: Bearer <token>
 ```
 
@@ -186,6 +252,60 @@ Authorization: Bearer <token>
 5. **Verification**: Owner can mark as verified customer
 6. **Updates**: Reviewers can edit their reviews
 7. **Deletion**: Reviewers can remove their reviews
+
+### 🛡️ **Accountability System**
+1. **Owner Deletion Tracking**: Post owners must provide reasons when deleting reviews
+2. **Transparency**: All deleted reviews are preserved with deletion reasons
+3. **Audit Trail**: Complete history of review deletions for accountability
+4. **Reason Validation**: Deletion reasons must be substantial (10-500 characters)
+5. **Public Visibility**: Users can see deleted reviews and why they were removed
+
+### 📊 **Deletion Tracking Features**
+- **Reason Requirement**: Post owners must explain why a review was deleted
+- **Historical Preservation**: Original review content is preserved
+- **Timeline Tracking**: When reviews were created, updated, and deleted
+- **Owner Attribution**: Clear identification of who deleted each review
+- **Statistical Analysis**: Summary of deleted reviews with rating distributions
+
+## Benefits of the Accountability System
+
+### 🎯 **For Post Owners**
+- **Justified Actions**: Must provide legitimate reasons for review deletions
+- **Professional Image**: Shows responsible management of feedback
+- **Conflict Resolution**: Addresses concerns transparently
+- **Quality Control**: Removes inappropriate or false reviews with explanation
+
+### 👥 **For Reviewers**
+- **Transparency**: Can see why their reviews were removed
+- **Fair Treatment**: Understand the reasoning behind deletions
+- **Appeal Process**: Can address concerns raised in deletion reasons
+- **Accountability**: Post owners must justify their actions
+
+### 🏛️ **For the Platform**
+- **Trust Building**: Transparent system builds user confidence
+- **Abuse Prevention**: Prevents arbitrary deletion of negative reviews
+- **Data Integrity**: Maintains complete review history
+- **Community Standards**: Establishes expectations for responsible behavior
+
+### 🔍 **For Users**
+- **Informed Decisions**: Can see both active and deleted reviews
+- **Pattern Recognition**: Identify posts with frequent review deletions
+- **Quality Assessment**: Better understanding of service reliability
+- **Transparency**: Complete picture of review history
+
+## Implementation Details
+
+### 🗄️ **Data Preservation Strategy**
+- **Soft Deletion**: Reviews are moved to deleted_reviews table
+- **Complete History**: All original data is preserved
+- **Audit Trail**: Full timeline of review lifecycle
+- **Performance**: Efficient queries with proper indexing
+
+### 🔐 **Access Control**
+- **Public Visibility**: Deleted reviews are visible to all users
+- **Owner Attribution**: Clear identification of who deleted reviews
+- **Reason Validation**: Substantial explanations required
+- **Rate Limiting**: Prevents abuse of deletion system
 
 ## Use Cases
 

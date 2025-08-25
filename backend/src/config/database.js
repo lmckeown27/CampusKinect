@@ -131,6 +131,24 @@ const createTables = async () => {
       );
     `);
 
+    // Post drafts table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS post_drafts (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        university_id INTEGER REFERENCES universities(id) ON DELETE CASCADE,
+        content TEXT DEFAULT '',
+        post_type VARCHAR(20),
+        primary_tags TEXT[] DEFAULT '{}',
+        secondary_tags TEXT[] DEFAULT '{}',
+        images TEXT[] DEFAULT '{}',
+        event_details JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, university_id)
+      );
+    `);
+
     // Conversations table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS conversations (
@@ -138,8 +156,12 @@ const createTables = async () => {
         user1_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         user2_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         post_id INTEGER REFERENCES posts(id) ON DELETE SET NULL,
+        is_active BOOLEAN DEFAULT TRUE,
+        last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(user1_id, user2_id, post_id)
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user1_id, user2_id, post_id),
+        CHECK (user1_id != user2_id)
       );
     `);
 
@@ -150,9 +172,29 @@ const createTables = async () => {
         conversation_id INTEGER REFERENCES conversations(id) ON DELETE CASCADE,
         sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         content TEXT NOT NULL,
-        message_type VARCHAR(20) DEFAULT 'text' CHECK (message_type IN ('text', 'image', 'contact')),
+        message_type VARCHAR(20) DEFAULT 'text' CHECK (message_type IN ('text', 'image', 'contact', 'location', 'file')),
+        media_url VARCHAR(500),
         is_read BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        is_deleted BOOLEAN DEFAULT FALSE,
+        deleted_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Message requests table for users who haven't been contacted yet
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS message_requests (
+        id SERIAL PRIMARY KEY,
+        from_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        to_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        post_id INTEGER REFERENCES posts(id) ON DELETE SET NULL,
+        message TEXT NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'ignored')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(from_user_id, to_user_id, post_id),
+        CHECK (from_user_id != to_user_id)
       );
     `);
 
@@ -196,6 +238,38 @@ const createTables = async () => {
       );
     `);
 
+    // Deleted reviews table for tracking deleted reviews with reasons
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS deleted_reviews (
+        id SERIAL PRIMARY KEY,
+        original_review_id INTEGER, -- Keep reference to original review ID
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        reviewer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        rating INTEGER NOT NULL,
+        title VARCHAR(200),
+        content TEXT NOT NULL,
+        is_verified_customer BOOLEAN DEFAULT FALSE,
+        is_anonymous BOOLEAN DEFAULT FALSE,
+        deleted_by INTEGER REFERENCES users(id) ON DELETE SET NULL, -- Post owner who deleted it
+        deletion_reason TEXT NOT NULL, -- Required reason for deletion
+        deletion_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        original_created_at TIMESTAMP, -- When the review was originally created
+        original_updated_at TIMESTAMP -- When the review was last updated
+      );
+    `);
+
+    // Post interactions table for tracking user interactions (messages, shares, bookmarks, reposts)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS post_interactions (
+        id SERIAL PRIMARY KEY,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        interaction_type VARCHAR(20) NOT NULL CHECK (interaction_type IN ('message', 'share', 'bookmark', 'repost')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(post_id, user_id, interaction_type)
+      );
+    `);
+
     // Add scoring system fields
     await pool.query(`
       ALTER TABLE posts ADD COLUMN IF NOT EXISTS base_score DECIMAL(10, 2) DEFAULT 50.00;
@@ -222,26 +296,25 @@ const createTables = async () => {
     `);
 
     // Create indexes for better performance
-    await pool.query(`
-      CREATE INDEX IF NOT EXISTS idx_posts_university_id ON posts(university_id);
-      CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
-      CREATE INDEX IF NOT EXISTS idx_posts_post_type ON posts(post_type);
-      CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
-      CREATE INDEX IF NOT EXISTS idx_posts_expires_at ON posts(expires_at);
-      CREATE INDEX IF NOT EXISTS idx_posts_target_scope ON posts(target_scope);
-      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-      CREATE INDEX IF NOT EXISTS idx_users_university_id ON users(university_id);
-      CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id);
-      CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
-      CREATE INDEX IF NOT EXISTS idx_post_universities_post_id ON post_universities(post_id);
-      CREATE INDEX IF NOT EXISTS idx_post_universities_university_id ON post_universities(university_id);
-      CREATE INDEX IF NOT EXISTS idx_reviews_post_id ON reviews(post_id);
-      CREATE INDEX IF NOT EXISTS idx_reviews_reviewer_id ON reviews(reviewer_id);
-      CREATE INDEX IF NOT EXISTS idx_reviews_rating ON reviews(rating);
-      CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON reviews(created_at);
-      CREATE INDEX IF NOT EXISTS idx_review_responses_review_id ON review_responses(review_id);
-      CREATE INDEX IF NOT EXISTS idx_review_responses_responder_id ON review_responses(responder_id);
-    `);
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_university_id ON posts(university_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_post_type ON posts(post_type)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_expires_at ON posts(expires_at)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_is_active ON posts(is_active)');
+    
+    // Message system indexes
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_user1_id ON conversations(user1_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_user2_id ON conversations(user2_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_post_id ON conversations(post_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_last_message_at ON conversations(last_message_at)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_is_read ON messages(is_read)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_message_requests_from_user_id ON message_requests(from_user_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_message_requests_to_user_id ON message_requests(to_user_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_message_requests_status ON message_requests(status)');
 
     console.log('✅ Database tables created successfully');
   } catch (error) {

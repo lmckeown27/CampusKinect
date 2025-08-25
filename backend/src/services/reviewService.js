@@ -162,6 +162,191 @@ class ReviewService {
   }
 
   /**
+   * Delete a review by post owner (with reason tracking)
+   * @param {number} reviewId - Review ID
+   * @param {number} postOwnerId - User ID of post owner
+   * @param {string} deletionReason - Required reason for deletion
+   * @returns {Object} Deleted review information
+   */
+  async deleteReviewByOwner(reviewId, postOwnerId, deletionReason) {
+    try {
+      // Verify the user is the post owner
+      const ownershipCheck = await query(`
+        SELECT p.id 
+        FROM posts p
+        JOIN reviews r ON p.id = r.post_id
+        WHERE r.id = $1 AND p.user_id = $2
+      `, [reviewId, postOwnerId]);
+
+      if (ownershipCheck.rows.length === 0) {
+        throw new Error('You can only delete reviews on your own posts');
+      }
+
+      // Get the review data before deletion
+      const reviewData = await query(`
+        SELECT * FROM reviews WHERE id = $1
+      `, [reviewId]);
+
+      if (reviewData.rows.length === 0) {
+        throw new Error('Review not found');
+      }
+
+      const review = reviewData.rows[0];
+
+      // Store the deleted review with reason
+      const deletedReviewResult = await query(`
+        INSERT INTO deleted_reviews (
+          original_review_id, post_id, reviewer_id, rating, title, content,
+          is_verified_customer, is_anonymous, deleted_by, deletion_reason,
+          original_created_at, original_updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING *
+      `, [
+        review.id,
+        review.post_id,
+        review.reviewer_id,
+        review.rating,
+        review.title,
+        review.content,
+        review.is_verified_customer,
+        review.is_anonymous,
+        postOwnerId,
+        deletionReason,
+        review.created_at,
+        review.updated_at
+      ]);
+
+      // Delete the original review
+      await query('DELETE FROM reviews WHERE id = $1', [reviewId]);
+
+      // Update post review statistics
+      await this.updatePostReviewStats(review.post_id);
+
+      // Clear post cache
+      await this.clearPostCache(review.post_id);
+
+      return deletedReviewResult.rows[0];
+    } catch (error) {
+      console.error('Error deleting review by owner:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get deleted reviews for a specific post
+   * @param {number} postId - Post ID
+   * @param {Object} options - Query options
+   * @param {number} options.page - Page number
+   * @param {number} options.limit - Reviews per page
+   * @returns {Object} Deleted reviews with pagination
+   */
+  async getDeletedReviews(postId, options = {}) {
+    const { page = 1, limit = 10 } = options;
+
+    try {
+      const offset = (page - 1) * limit;
+
+      // Get deleted reviews with user information
+      const result = await query(`
+        SELECT 
+          dr.id,
+          dr.original_review_id,
+          dr.rating,
+          dr.title,
+          dr.content,
+          dr.is_anonymous,
+          dr.deletion_reason,
+          dr.deletion_timestamp,
+          dr.original_created_at,
+          dr.original_updated_at,
+          CASE 
+            WHEN dr.is_anonymous THEN 'Anonymous'
+            ELSE u.display_name
+          END as reviewer_name,
+          CASE 
+            WHEN dr.is_anonymous THEN NULL
+            ELSE u.username
+          END as reviewer_username,
+          u2.display_name as deleted_by_name,
+          u2.username as deleted_by_username
+        FROM deleted_reviews dr
+        LEFT JOIN users u ON dr.reviewer_id = u.id
+        LEFT JOIN users u2 ON dr.deleted_by = u2.id
+        WHERE dr.post_id = $1
+        ORDER BY dr.deletion_timestamp DESC
+        LIMIT $2 OFFSET $3
+      `, [postId, limit, offset]);
+
+      // Get total count
+      const countResult = await query(`
+        SELECT COUNT(*) as total FROM deleted_reviews WHERE post_id = $1
+      `, [postId]);
+
+      const total = parseInt(countResult.rows[0].total);
+
+      return {
+        deletedReviews: result.rows,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit)
+        }
+      };
+    } catch (error) {
+      console.error('Error getting deleted reviews:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get deleted reviews summary for a post
+   * @param {number} postId - Post ID
+   * @returns {Object} Deleted reviews summary
+   */
+  async getDeletedReviewsSummary(postId) {
+    try {
+      const result = await query(`
+        SELECT 
+          COUNT(*) as total_deleted,
+          COUNT(CASE WHEN deleted_by IS NOT NULL THEN 1 END) as deleted_by_owner,
+          COUNT(CASE WHEN deleted_by IS NULL THEN 1 END) as deleted_by_system,
+          AVG(rating) as average_rating_before_deletion,
+          COUNT(CASE WHEN rating = 5 THEN 1 END) as five_star_deleted,
+          COUNT(CASE WHEN rating = 4 THEN 1 END) as four_star_deleted,
+          COUNT(CASE WHEN rating = 3 THEN 1 END) as three_star_deleted,
+          COUNT(CASE WHEN rating = 2 THEN 1 END) as two_star_deleted,
+          COUNT(CASE WHEN rating = 1 THEN 1 END) as one_star_deleted
+        FROM deleted_reviews 
+        WHERE post_id = $1
+      `, [postId]);
+
+      const summary = result.rows[0];
+
+      // Calculate percentage distributions
+      const total = parseInt(summary.total_deleted);
+      if (total > 0) {
+        summary.rating_distribution = {
+          five_star: Math.round((summary.five_star_deleted / total) * 100),
+          four_star: Math.round((summary.four_star_deleted / total) * 100),
+          three_star: Math.round((summary.three_star_deleted / total) * 100),
+          two_star: Math.round((summary.two_star_deleted / total) * 100),
+          one_star: Math.round((summary.one_star_deleted / total) * 100)
+        };
+      } else {
+        summary.rating_distribution = {
+          five_star: 0, four_star: 0, three_star: 0, two_star: 0, one_star: 0
+        };
+      }
+
+      return summary;
+    } catch (error) {
+      console.error('Error getting deleted reviews summary:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get reviews for a specific post
    * @param {number} postId - Post ID
    * @param {Object} options - Query options

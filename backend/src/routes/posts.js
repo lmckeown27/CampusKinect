@@ -10,6 +10,7 @@ const { calculateNextRepostDate, getRepostHistory, stopRecurringPost } = require
 const { updatePostScores } = require('../services/scoringService');
 const { getFeedPositionedPosts, getSmartFeedWithPositioning } = require('../services/scoringService');
 const multiUniversityScoringService = require('../services/multiUniversityScoringService');
+const personalizedFeedService = require('../services/personalizedFeedService');
 
 const router = express.Router();
 
@@ -64,6 +65,7 @@ router.get('/organized', [
         p.review_count,
         p.average_rating,
         p.review_score_bonus,
+        (SELECT COUNT(*) FROM deleted_reviews WHERE post_id = p.id) as deleted_review_count,
         u.username,
         u.first_name,
         u.last_name,
@@ -201,7 +203,8 @@ router.get('/organized', [
         state: post.university_state
       },
       tags: post.tags || [],
-      imageCount: post.image_count
+      imageCount: post.image_count,
+      deletedReviewCount: post.deleted_review_count || 0
     }));
 
     res.json({
@@ -291,6 +294,121 @@ router.get('/smart-feed', [
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve smart feed',
+      error: error.message
+    });
+  }
+});
+
+// GET /api/v1/posts/personalized-feed - Get personalized feed based on user interactions and bookmarks
+router.get('/personalized-feed', [
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  query('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
+  query('mainTab').optional().isIn(['goods-services', 'events', 'combined']).withMessage('Invalid main tab category'),
+  query('subTab').optional().isString().withMessage('Sub tab must be a string'),
+  query('offers').optional().isBoolean().withMessage('Offers filter must be boolean'),
+  query('requests').optional().isBoolean().withMessage('Requests filter must be boolean'),
+  validate
+], async (req, res) => {
+  try {
+    const { 
+      limit = 20, 
+      offset = 0, 
+      mainTab = 'combined', 
+      subTab = 'all',
+      offers,
+      requests
+    } = req.query;
+
+    // Get user ID from authentication (if available)
+    const userId = req.user ? req.user.id : null;
+    
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: {
+          message: 'Authentication required for personalized feed'
+        }
+      });
+    }
+
+    const options = { offers, requests };
+    
+    const personalizedFeed = await personalizedFeedService.getPersonalizedFeed(
+      userId,
+      parseInt(limit),
+      parseInt(offset),
+      mainTab,
+      subTab,
+      options
+    );
+
+    // Format posts with personalization data
+    const formattedPosts = personalizedFeed.posts.map(post => ({
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      postType: post.post_type,
+      durationType: post.duration_type,
+      repostFrequency: post.repost_frequency,
+      isRecurring: post.duration_type === 'recurring',
+      originalPostId: post.original_post_id,
+      expiresAt: post.expires_at,
+      eventStart: post.event_start,
+      eventEnd: post.event_end,
+      isFulfilled: post.is_fulfilled,
+      isActive: post.is_active,
+      viewCount: post.view_count,
+      createdAt: post.created_at,
+      updatedAt: post.updated_at,
+      poster: {
+        id: post.user_id,
+        username: post.username,
+        firstName: post.first_name,
+        lastName: post.last_name,
+        displayName: post.display_name,
+        profilePicture: post.profile_picture
+      },
+      university: {
+        id: post.university_id,
+        name: post.university_name,
+        city: post.university_city,
+        state: post.university_state
+      },
+      tags: post.tags || [],
+      engagement: {
+        messageCount: post.message_count,
+        shareCount: post.share_count,
+        bookmarkCount: post.bookmark_count,
+        repostCount: post.repost_count,
+        engagementScore: post.engagement_score
+      },
+      scoring: {
+        baseScore: post.base_score,
+        timeUrgencyBonus: post.time_urgency_bonus,
+        finalScore: post.final_score
+      },
+      reviews: {
+        count: post.review_count || 0,
+        averageRating: parseFloat(post.average_rating) || 0,
+        scoreBonus: post.review_score_bonus || 0
+      },
+      personalization: post.personalization
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        posts: formattedPosts,
+        pagination: personalizedFeed.pagination,
+        personalization: personalizedFeed.personalization
+      }
+    });
+
+  } catch (error) {
+    console.error('Get personalized feed error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve personalized feed',
       error: error.message
     });
   }
@@ -2071,6 +2189,1521 @@ router.get('/scope/:scope', async (req, res) => {
   } catch (error) {
     console.error('Error getting posts by scope:', error);
     res.status(500).json({ error: 'Failed to get posts by scope' });
+  }
+});
+
+// GET /api/v1/posts/create-tags - Get available tags for Create Post interface
+router.get('/create-tags', async (req, res) => {
+  try {
+    const { postType } = req.query; // 'goods-services' or 'events'
+    
+    if (!postType || !['goods-services', 'events'].includes(postType)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Invalid post type. Must be "goods-services" or "events"'
+        }
+      });
+    }
+    
+    let availableTags;
+    
+    if (postType === 'goods-services') {
+      availableTags = {
+        primary: [
+          { 
+            id: 'offer', 
+            name: 'Offer', 
+            description: 'I have something to provide', 
+            icon: '🛍️',
+            required: true,
+            exclusive: true,
+            category: 'primary',
+            alwaysVisible: true
+          },
+          { 
+            id: 'request', 
+            name: 'Request', 
+            description: 'I need something', 
+            icon: '🔍',
+            required: true,
+            exclusive: true,
+            category: 'primary',
+            alwaysVisible: true
+          }
+        ],
+        tagsTab: {
+          id: 'tags',
+          name: 'Tags',
+          description: 'Select additional categories',
+          icon: '🏷️',
+          type: 'popup',
+          categories: [
+            { 
+              id: 'leasing', 
+              name: 'Leasing', 
+              description: 'Housing and apartments', 
+              icon: '🏠',
+              tags: ['housing', 'apartment', 'lease', 'roommate', 'sublet'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            },
+            { 
+              id: 'tutoring', 
+              name: 'Tutoring', 
+              description: 'Academic help and services', 
+              icon: '📚',
+              tags: ['tutoring', 'homework', 'study', 'academic', 'math', 'science', 'english'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            },
+            { 
+              id: 'books', 
+              name: 'Books', 
+              description: 'Textbooks and materials', 
+              icon: '📖',
+              tags: ['textbook', 'book', 'reading', 'course', 'education'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            },
+            { 
+              id: 'rides', 
+              name: 'Rides', 
+              description: 'Transportation and carpooling', 
+              icon: '🚗',
+              tags: ['ride', 'carpool', 'transport', 'drive', 'travel'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            },
+            { 
+              id: 'food', 
+              name: 'Food', 
+              description: 'Food sharing and dining', 
+              icon: '🍕',
+              tags: ['food', 'dining', 'meal', 'cooking', 'restaurant'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            },
+            { 
+              id: 'electronics', 
+              name: 'Electronics', 
+              description: 'Tech devices and accessories', 
+              icon: '💻',
+              tags: ['laptop', 'phone', 'tablet', 'accessories', 'tech'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            },
+            { 
+              id: 'clothing', 
+              name: 'Clothing', 
+              description: 'Apparel and fashion items', 
+              icon: '👕',
+              tags: ['clothes', 'shoes', 'accessories', 'fashion', 'style'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            },
+            { 
+              id: 'other', 
+              name: 'Other', 
+              description: 'Miscellaneous services', 
+              icon: '🔧',
+              tags: ['other', 'misc', 'service', 'help'],
+              required: false,
+              maxSelections: 3,
+              category: 'secondary'
+            }
+          ]
+        }
+      };
+    } else if (postType === 'events') {
+      availableTags = {
+        primary: [], // No primary tags for events
+        tagsTab: {
+          id: 'tags',
+          name: 'Tags',
+          description: 'Select event category',
+          icon: '🏷️',
+          type: 'popup',
+          categories: [
+            { 
+              id: 'sport', 
+              name: 'Sport', 
+              description: 'Athletic and fitness events', 
+              icon: '⚽',
+              tags: ['sport', 'athletic', 'game', 'tournament', 'fitness'],
+              required: true,
+              maxSelections: 1,
+              category: 'event'
+            },
+            { 
+              id: 'rush', 
+              name: 'Rush', 
+              description: 'Greek life and recruitment', 
+              icon: '🏛️',
+              tags: ['rush', 'greek', 'fraternity', 'sorority', 'recruitment'],
+              required: true,
+              maxSelections: 1,
+              category: 'event'
+            },
+            { 
+              id: 'philanthropy', 
+              name: 'Philanthropy', 
+              description: 'Charity and community service', 
+              icon: '🤝',
+              tags: ['philanthropy', 'charity', 'community', 'service', 'volunteer'],
+              required: true,
+              maxSelections: 1,
+              category: 'event'
+            },
+            { 
+              id: 'academic', 
+              name: 'Academic', 
+              description: 'Educational and learning events', 
+              icon: '🎓',
+              tags: ['academic', 'lecture', 'workshop', 'seminar', 'conference'],
+              required: true,
+              maxSelections: 1,
+              category: 'event'
+            },
+            { 
+              id: 'social', 
+              name: 'Social', 
+              description: 'Social and entertainment events', 
+              icon: '🎊',
+              tags: ['social', 'party', 'club', 'entertainment', 'music'],
+              required: true,
+              maxSelections: 1,
+              category: 'event'
+            },
+            { 
+              id: 'cultural', 
+              name: 'Cultural', 
+              description: 'Diversity and heritage events', 
+              icon: '🌍',
+              tags: ['cultural', 'diversity', 'heritage', 'international', 'celebration'],
+              required: true,
+              maxSelections: 1,
+              category: 'event'
+            },
+            { 
+              id: 'career', 
+              name: 'Career', 
+              description: 'Professional development and networking', 
+              icon: '💼',
+              tags: ['career', 'networking', 'job', 'internship', 'professional'],
+              required: true,
+              maxSelections: 1,
+              category: 'event'
+            }
+          ]
+        }
+      };
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        postType,
+        availableTags,
+        validation: {
+          content: {
+            minLength: 10,
+            maxLength: 5000,
+            required: true
+          },
+          images: {
+            maxCount: 10,
+            required: false
+          },
+          tags: {
+            primary: {
+              required: postType === 'goods-services',
+              maxSelections: postType === 'goods-services' ? 1 : 0
+            },
+            secondary: {
+              required: false,
+              maxSelections: 5
+            }
+          }
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error('Get create tags error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve available tags',
+      error: error.message
+    });
+  }
+});
+
+// @route   POST /api/v1/posts/create
+// @desc    Create a new post with enhanced tag system
+// @access  Private
+router.post('/create', [
+  auth,
+  requireVerification,
+  body('content').isLength({ min: 10, max: 5000 }).withMessage('Content must be between 10 and 5000 characters').trim(),
+  body('postType').isIn(['goods-services', 'events']).withMessage('Post type must be goods-services or events'),
+  body('primaryTags').isArray({ min: 1, max: 1 }).withMessage('Must select exactly one primary tag'),
+  body('secondaryTags').optional().isArray({ max: 5 }).withMessage('Maximum 5 secondary tags allowed'),
+  body('images').optional().isArray({ max: 10 }).withMessage('Maximum 10 images allowed'),
+  body('eventDetails').optional().isObject().withMessage('Event details must be an object'),
+  body('postDuration').optional().isObject().withMessage('Post duration must be an object'),
+  validate
+], async (req, res) => {
+  try {
+    const {
+      content,
+      postType,
+      primaryTags,
+      secondaryTags = [],
+      images = [],
+      eventDetails = {},
+      postDuration = {}
+    } = req.body;
+
+    const userId = req.user.id;
+    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+
+    // Validate tag selections based on post type
+    let validationErrors = [];
+    
+    if (postType === 'goods-services') {
+      // For goods/services, primary tags must be 'offer' or 'request'
+      const validPrimaryTags = ['offer', 'request'];
+      if (!validPrimaryTags.includes(primaryTags[0])) {
+        validationErrors.push('Primary tag must be either "offer" or "request" for goods/services posts');
+      }
+      
+      // Validate secondary tags are from the correct category
+      const validSecondaryTags = ['leasing', 'tutoring', 'books', 'rides', 'food', 'electronics', 'clothing', 'other'];
+      const invalidSecondaryTags = secondaryTags.filter(tag => !validSecondaryTags.includes(tag));
+      if (invalidSecondaryTags.length > 0) {
+        validationErrors.push(`Invalid secondary tags: ${invalidSecondaryTags.join(', ')}`);
+      }
+    } else if (postType === 'events') {
+      // For events, primary tags should be event categories
+      const validPrimaryTags = ['sport', 'rush', 'philanthropy', 'academic', 'social', 'cultural', 'career'];
+      if (!validPrimaryTags.includes(primaryTags[0])) {
+        validationErrors.push('Primary tag must be a valid event category');
+      }
+      
+      // Events don't use the same secondary tag system
+      if (secondaryTags.length > 0) {
+        validationErrors.push('Secondary tags are not used for event posts');
+      }
+    }
+
+    // Validate post duration
+    if (postDuration && !postDuration.runIndefinitely) {
+      if (!postDuration.expiryDate) {
+        validationErrors.push('Expiry date is required when post is not set to run indefinitely');
+      }
+      
+      const expiryDate = new Date(postDuration.expiryDate);
+      const now = new Date();
+      if (expiryDate <= now) {
+        validationErrors.push('Expiry date must be in the future');
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Validation failed',
+          details: validationErrors
+        }
+      });
+    }
+
+    // Determine the actual post type for database storage
+    let dbPostType;
+    let durationType = 'one-time';
+    
+    if (postType === 'goods-services') {
+      dbPostType = primaryTags[0]; // 'offer' or 'request'
+      durationType = 'one-time';
+    } else if (postType === 'events') {
+      dbPostType = 'event';
+      durationType = 'event';
+    }
+
+    // Calculate expiry date
+    let expiresAt = null;
+    if (postDuration && !postDuration.runIndefinitely && postDuration.expiryDate) {
+      expiresAt = new Date(postDuration.expiryDate);
+    }
+
+    // Start transaction
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+
+      // Create post
+      const postResult = await client.query(`
+        INSERT INTO posts (
+          user_id, 
+          university_id, 
+          title, 
+          description, 
+          post_type, 
+          duration_type,
+          expires_at,
+          event_start,
+          event_end
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING id, title, description, post_type, duration_type, expires_at, created_at
+      `, [
+        userId, 
+        universityId, 
+        `${postType} - ${primaryTags[0]}`, // Simple title
+        content, 
+        dbPostType, 
+        durationType,
+        expiresAt,
+        eventDetails.startDate || null,
+        eventDetails.endDate || null
+      ]);
+
+      const post = postResult.rows[0];
+
+      // Add primary tags
+      for (const tagName of primaryTags) {
+        await addTagToPost(client, post.id, tagName, 'primary');
+      }
+
+      // Add secondary tags
+      for (const tagName of secondaryTags) {
+        await addTagToPost(client, post.id, tagName, 'secondary');
+      }
+
+      // Add images if provided
+      if (images && images.length > 0) {
+        for (let i = 0; i < images.length; i++) {
+          const imageUrl = images[i];
+          await client.query(`
+            INSERT INTO post_images (post_id, image_url, image_order)
+            VALUES ($1, $2, $3)
+          `, [post.id, imageUrl, i]);
+        }
+      }
+
+      await client.query('COMMIT');
+
+      // Calculate and update initial scores
+      await updatePostScores(post.id);
+
+      // Clear cache
+      const cacheKey = generateCacheKey('post', post.id);
+      await redisDel(cacheKey);
+
+      // Get full post with tags and images
+      const fullPostResult = await query(`
+        SELECT 
+          p.*,
+          u.username,
+          u.first_name,
+          u.last_name,
+          u.display_name,
+          u.profile_picture,
+          un.name as university_name,
+          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
+          ARRAY_AGG(DISTINCT pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        JOIN universities un ON p.university_id = un.id
+        LEFT JOIN post_tags pt ON p.id = pt.post_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
+        LEFT JOIN post_images pi ON p.id = pi.post_id
+        WHERE p.id = $1
+        GROUP BY p.id, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture, un.name
+      `, [post.id]);
+
+      const fullPost = fullPostResult.rows[0];
+
+      const formattedPost = {
+        id: fullPost.id,
+        title: fullPost.title,
+        description: fullPost.description,
+        postType: fullPost.post_type,
+        durationType: fullPost.duration_type,
+        expiresAt: fullPost.expires_at,
+        eventStart: fullPost.event_start,
+        eventEnd: fullPost.event_end,
+        isFulfilled: fullPost.is_fulfilled,
+        viewCount: fullPost.view_count,
+        createdAt: fullPost.created_at,
+        updatedAt: fullPost.updated_at,
+        poster: {
+          id: fullPost.user_id,
+          username: fullPost.username,
+          firstName: fullPost.first_name,
+          lastName: fullPost.last_name,
+          displayName: fullPost.display_name,
+          profilePicture: fullPost.profile_picture
+        },
+        university: {
+          id: fullPost.university_id,
+          name: fullPost.university_name
+        },
+        tags: fullPost.tags || [],
+        images: fullPost.images || [],
+        metadata: {
+          postType: postType,
+          primaryTags: primaryTags,
+          secondaryTags: secondaryTags,
+          postDuration: postDuration
+        }
+      };
+
+      res.status(201).json({
+        success: true,
+        message: 'Post created successfully',
+        data: {
+          post: formattedPost
+        }
+      });
+
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+
+  } catch (error) {
+    console.error('Create post error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to create post. Please try again.',
+        details: error.message
+      }
+    });
+  }
+});
+
+// Helper function to add tags to posts
+async function addTagToPost(client, postId, tagName, category) {
+  // Get or create tag
+  let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
+  
+  let tagId;
+  if (tagResult.rows.length === 0) {
+    // Create new tag
+    const newTagResult = await client.query(`
+      INSERT INTO tags (name, category) 
+      VALUES ($1, $2) 
+      RETURNING id
+    `, [tagName, category]);
+    tagId = newTagResult.rows[0].id;
+  } else {
+    tagId = tagResult.rows[0].id;
+  }
+
+  // Link tag to post
+  await client.query(`
+    INSERT INTO post_tags (post_id, tag_id) 
+    VALUES ($1, $2)
+  `, [postId, tagId]);
+}
+
+// @route   GET /api/v1/posts/create-template
+// @desc    Get post creation template and validation rules
+// @access  Private
+router.get('/create-template', auth, async (req, res) => {
+  try {
+    const template = {
+      postTypes: [
+        {
+          id: 'goods-services',
+          name: 'Goods/Services',
+          description: 'Buy, sell, trade, or request goods and services',
+          icon: '🛍️',
+          primaryTags: [
+            {
+              id: 'offer',
+              name: 'Offer',
+              description: 'I have something to provide',
+              icon: '🛍️',
+              required: true,
+              exclusive: true,
+              alwaysVisible: true
+            },
+            {
+              id: 'request',
+              name: 'Request',
+              description: 'I need something',
+              icon: '🔍',
+              required: true,
+              exclusive: true,
+              alwaysVisible: true
+            }
+          ],
+          tagsTab: {
+            id: 'tags',
+            name: 'Tags',
+            description: 'Select additional categories',
+            icon: '🏷️',
+            type: 'popup',
+            categories: [
+              {
+                id: 'leasing',
+                name: 'Leasing',
+                description: 'Housing and apartments',
+                icon: '🏠',
+                maxSelections: 3
+              },
+              {
+                id: 'tutoring',
+                name: 'Tutoring',
+                description: 'Academic help and services',
+                icon: '📚',
+                maxSelections: 3
+              },
+              {
+                id: 'books',
+                name: 'Books',
+                description: 'Textbooks and materials',
+                icon: '📖',
+                maxSelections: 3
+              },
+              {
+                id: 'rides',
+                name: 'Rides',
+                description: 'Transportation and carpooling',
+                icon: '🚗',
+                maxSelections: 3
+              },
+              {
+                id: 'food',
+                name: 'Food',
+                description: 'Food sharing and dining',
+                icon: '🍕',
+                maxSelections: 3
+              },
+              {
+                id: 'electronics',
+                name: 'Electronics',
+                description: 'Tech devices and accessories',
+                icon: '💻',
+                maxSelections: 3
+              },
+              {
+                id: 'clothing',
+                name: 'Clothing',
+                description: 'Apparel and fashion items',
+                icon: '👕',
+                maxSelections: 3
+              },
+              {
+                id: 'other',
+                name: 'Other',
+                description: 'Miscellaneous services',
+                icon: '🔧',
+                maxSelections: 3
+              }
+            ]
+          }
+        },
+        {
+          id: 'events',
+          name: 'Events',
+          description: 'Create or promote events and activities',
+          icon: '📅',
+          primaryTags: [], // No primary tags for events
+          tagsTab: {
+            id: 'tags',
+            name: 'Tags',
+            description: 'Select event category',
+            icon: '🏷️',
+            type: 'popup',
+            categories: [
+              {
+                id: 'sport',
+                name: 'Sport',
+                description: 'Athletic and fitness events',
+                icon: '⚽',
+                maxSelections: 1
+              },
+              {
+                id: 'rush',
+                name: 'Rush',
+                description: 'Greek life and recruitment',
+                icon: '🏛️',
+                maxSelections: 1
+              },
+              {
+                id: 'philanthropy',
+                name: 'Philanthropy',
+                description: 'Charity and community service',
+                icon: '🤝',
+                maxSelections: 1
+              },
+              {
+                id: 'academic',
+                name: 'Academic',
+                description: 'Educational and learning events',
+                icon: '🎓',
+                maxSelections: 1
+              },
+              {
+                id: 'social',
+                name: 'Social',
+                description: 'Social and entertainment events',
+                icon: '🎊',
+                maxSelections: 1
+              },
+              {
+                id: 'cultural',
+                name: 'Cultural',
+                description: 'Diversity and heritage events',
+                icon: '🌍',
+                maxSelections: 1
+              },
+              {
+                id: 'career',
+                name: 'Career',
+                description: 'Professional development and networking',
+                icon: '💼',
+                maxSelections: 1
+              }
+            ]
+          }
+        }
+      ],
+      validation: {
+        content: {
+          minLength: 10,
+          maxLength: 5000,
+          required: true,
+          placeholder: 'What would you like to share?'
+        },
+        images: {
+          maxCount: 10,
+          required: false,
+          supportedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+          maxSizeMB: 5
+        },
+        postDuration: {
+          required: false,
+          options: {
+            runIndefinitely: {
+              id: 'runIndefinitely',
+              name: 'Run Indefinitely',
+              description: 'Post will remain active until manually deleted',
+              icon: '♾️',
+              default: false
+            },
+            customDuration: {
+              id: 'customDuration',
+              name: 'Set Expiry Date',
+              description: 'Post will be automatically deleted on specified date',
+              icon: '📅',
+              quickPresets: [
+                { id: '1day', name: '1 Day', days: 1, description: 'Expires tomorrow' },
+                { id: '7days', name: '7 Days', days: 7, description: 'Expires in a week' },
+                { id: '14days', name: '14 Days', days: 14, description: 'Expires in two weeks' },
+                { id: '30days', name: '30 Days', days: 30, description: 'Expires in a month' },
+                { id: '60days', name: '60 Days', days: 60, description: 'Expires in two months' },
+                { id: '90days', name: '90 Days', days: 90, description: 'Expires in three months' }
+              ],
+              minDays: 1,
+              maxDays: 365,
+              default: 30
+            }
+          }
+        },
+        tags: {
+          primary: {
+            required: true,
+            maxSelections: 1,
+            message: 'Please select a primary category'
+          },
+          secondary: {
+            required: false,
+            maxSelections: 5,
+            message: 'Select up to 5 additional categories'
+          }
+        }
+      },
+      ui: {
+        layout: 'single-column',
+        textAreaHeight: '120px',
+        imageUpload: {
+          position: 'inline',
+          maxPreviewSize: '100px'
+        },
+        tagSelection: {
+          style: 'chips',
+          showIcons: true,
+          showDescriptions: true,
+          popupMode: true
+        }
+      }
+    };
+
+    res.json({
+      success: true,
+      data: template
+    });
+
+  } catch (error) {
+    console.error('Get create template error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve create template',
+      error: error.message
+    });
+  }
+});
+
+// @route   POST /api/v1/posts/validate
+// @desc    Validate post creation data before submission
+// @access  Private
+router.post('/validate', [
+  auth,
+  body('content').isLength({ min: 10, max: 5000 }).withMessage('Content must be between 10 and 5000 characters').trim(),
+  body('postType').isIn(['goods-services', 'events']).withMessage('Post type must be goods-services or events'),
+  body('primaryTags').isArray({ min: 1, max: 1 }).withMessage('Must select exactly one primary tag'),
+  body('secondaryTags').optional().isArray({ max: 5 }).withMessage('Maximum 5 secondary tags allowed'),
+  body('images').optional().isArray({ max: 10 }).withMessage('Maximum 10 images allowed'),
+  validate
+], async (req, res) => {
+  try {
+    const {
+      content,
+      postType,
+      primaryTags,
+      secondaryTags = [],
+      images = []
+    } = req.body;
+
+    const validation = {
+      isValid: true,
+      errors: [],
+      warnings: [],
+      suggestions: []
+    };
+
+    // Content validation
+    if (!content || content.trim().length < 10) {
+      validation.isValid = false;
+      validation.errors.push('Content must be at least 10 characters long');
+    } else if (content.length > 5000) {
+      validation.isValid = false;
+      validation.errors.push('Content cannot exceed 5000 characters');
+    }
+
+    // Post type validation
+    if (!postType || !['goods-services', 'events'].includes(postType)) {
+      validation.isValid = false;
+      validation.errors.push('Invalid post type selected');
+    }
+
+    // Primary tags validation
+    if (!primaryTags || primaryTags.length !== 1) {
+      validation.isValid = false;
+      validation.errors.push('Must select exactly one primary category');
+    } else {
+      const primaryTag = primaryTags[0];
+      
+      if (postType === 'goods-services') {
+        if (!['offer', 'request'].includes(primaryTag)) {
+          validation.isValid = false;
+          validation.errors.push('Primary tag must be either "offer" or "request" for goods/services posts');
+        }
+      } else if (postType === 'events') {
+        const validEventTags = ['sport', 'rush', 'philanthropy', 'academic', 'social', 'cultural', 'career'];
+        if (!validEventTags.includes(primaryTag)) {
+          validation.isValid = false;
+          validation.errors.push('Invalid event category selected');
+        }
+      }
+    }
+
+    // Secondary tags validation
+    if (secondaryTags && secondaryTags.length > 0) {
+      if (postType === 'goods-services') {
+        const validSecondaryTags = ['leasing', 'tutoring', 'books', 'rides', 'food', 'electronics', 'clothing', 'other'];
+        const invalidTags = secondaryTags.filter(tag => !validSecondaryTags.includes(tag));
+        if (invalidTags.length > 0) {
+          validation.isValid = false;
+          validation.errors.push(`Invalid secondary tags: ${invalidTags.join(', ')}`);
+        }
+        
+        if (secondaryTags.length > 5) {
+          validation.isValid = false;
+          validation.errors.push('Maximum 5 secondary tags allowed');
+        }
+      } else if (postType === 'events') {
+        validation.warnings.push('Secondary tags are not used for event posts');
+        secondaryTags.length = 0; // Clear secondary tags for events
+      }
+    }
+
+    // Image validation
+    if (images && images.length > 10) {
+      validation.isValid = false;
+      validation.errors.push('Maximum 10 images allowed');
+    }
+
+    // Content quality suggestions
+    if (content && content.length < 50) {
+      validation.suggestions.push('Consider adding more details to make your post more engaging');
+    }
+
+    if (images && images.length === 0) {
+      validation.suggestions.push('Adding images can make your post more attractive and informative');
+    }
+
+    if (postType === 'goods-services' && secondaryTags.length === 0) {
+      validation.suggestions.push('Adding specific categories helps others find your post');
+    }
+
+    // Tag combination suggestions
+    if (postType === 'goods-services' && primaryTags[0] === 'offer') {
+      if (secondaryTags.includes('books') && content.toLowerCase().includes('textbook')) {
+        validation.suggestions.push('Great! You\'ve tagged this as books and mentioned textbooks');
+      }
+    }
+
+    if (postType === 'events' && primaryTags[0] === 'academic') {
+      if (content.toLowerCase().includes('lecture') || content.toLowerCase().includes('workshop')) {
+        validation.suggestions.push('Perfect! Academic event with relevant content');
+      }
+    }
+
+    res.json({
+      success: true,
+      data: {
+        validation,
+        postData: {
+          content,
+          postType,
+          primaryTags,
+          secondaryTags: postType === 'events' ? [] : secondaryTags,
+          images
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Post validation error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to validate post data',
+        details: error.message
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/posts/create-stats
+// @desc    Get post creation statistics and analytics
+// @access  Private
+router.get('/create-stats', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+
+    // Get user's post creation statistics
+    const userStatsResult = await query(`
+      SELECT 
+        COUNT(*) as total_posts,
+        COUNT(CASE WHEN post_type = 'offer' THEN 1 END) as offer_posts,
+        COUNT(CASE WHEN post_type = 'request' THEN 1 END) as request_posts,
+        COUNT(CASE WHEN post_type = 'event' THEN 1 END) as event_posts,
+        AVG(view_count) as avg_views,
+        MAX(view_count) as max_views,
+        AVG(engagement_score) as avg_engagement,
+        MAX(engagement_score) as max_engagement
+      FROM posts 
+      WHERE user_id = $1 AND university_id = $2 AND is_active = true
+    `, [userId, universityId]);
+
+    // Get most successful post types at this university
+    const universityStatsResult = await query(`
+      SELECT 
+        post_type,
+        COUNT(*) as post_count,
+        AVG(view_count) as avg_views,
+        AVG(engagement_score) as avg_engagement,
+        AVG(bookmark_count) as avg_bookmarks
+      FROM posts 
+      WHERE university_id = $1 AND is_active = true AND created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY post_type
+      ORDER BY avg_engagement DESC
+    `, [universityId]);
+
+    // Get most popular tags
+    const popularTagsResult = await query(`
+      SELECT 
+        t.name as tag_name,
+        t.category as tag_category,
+        COUNT(pt.post_id) as usage_count,
+        AVG(p.view_count) as avg_views
+      FROM tags t
+      JOIN post_tags pt ON t.id = pt.tag_id
+      JOIN posts p ON pt.post_id = p.id
+      WHERE p.university_id = $1 AND p.is_active = true AND p.created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY t.id, t.name, t.category
+      ORDER BY usage_count DESC
+      LIMIT 10
+    `, [universityId]);
+
+    // Get best posting times (based on engagement)
+    const bestTimesResult = await query(`
+      SELECT 
+        EXTRACT(HOUR FROM created_at) as hour,
+        COUNT(*) as post_count,
+        AVG(engagement_score) as avg_engagement
+      FROM posts 
+      WHERE university_id = $1 AND is_active = true AND created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY EXTRACT(HOUR FROM created_at)
+      ORDER BY avg_engagement DESC
+      LIMIT 5
+    `, [universityId]);
+
+    // Get user's tag usage
+    const userTagUsageResult = await query(`
+      SELECT 
+        t.name as tag_name,
+        t.category as tag_category,
+        COUNT(pt.post_id) as usage_count
+      FROM tags t
+      JOIN post_tags pt ON t.id = pt.tag_id
+      JOIN posts p ON pt.post_id = p.id
+      WHERE p.user_id = $1 AND p.university_id = $2 AND p.is_active = true
+      GROUP BY t.id, t.name, t.category
+      ORDER BY usage_count DESC
+    `, [userId, universityId]);
+
+    const stats = {
+      user: {
+        totalPosts: parseInt(userStatsResult.rows[0]?.total_posts || 0),
+        offerPosts: parseInt(userStatsResult.rows[0]?.offer_posts || 0),
+        requestPosts: parseInt(userStatsResult.rows[0]?.request_posts || 0),
+        eventPosts: parseInt(userStatsResult.rows[0]?.event_posts || 0),
+        averageViews: parseFloat(userStatsResult.rows[0]?.avg_views || 0).toFixed(1),
+        maxViews: parseInt(userStatsResult.rows[0]?.max_views || 0),
+        averageEngagement: parseFloat(userStatsResult.rows[0]?.avg_engagement || 0).toFixed(2),
+        maxEngagement: parseFloat(userStatsResult.rows[0]?.max_engagement || 0).toFixed(2)
+      },
+      university: {
+        postTypePerformance: universityStatsResult.rows.map(row => ({
+          postType: row.post_type,
+          postCount: parseInt(row.post_count),
+          averageViews: parseFloat(row.avg_views || 0).toFixed(1),
+          averageEngagement: parseFloat(row.avg_engagement || 0).toFixed(2),
+          averageBookmarks: parseFloat(row.avg_bookmarks || 0).toFixed(1)
+        })),
+        popularTags: popularTagsResult.rows.map(row => ({
+          name: row.tag_name,
+          category: row.tag_category,
+          usageCount: parseInt(row.usage_count),
+          averageViews: parseFloat(row.avg_views || 0).toFixed(1)
+        })),
+        bestPostingTimes: bestTimesResult.rows.map(row => ({
+          hour: parseInt(row.hour),
+          postCount: parseInt(row.post_count),
+          averageEngagement: parseFloat(row.avg_engagement || 0).toFixed(2),
+          timeLabel: `${row.hour}:00`
+        }))
+      },
+      userTags: userTagUsageResult.rows.map(row => ({
+        name: row.tag_name,
+        category: row.tag_category,
+        usageCount: parseInt(row.usage_count)
+      }))
+    };
+
+    // Generate insights and recommendations
+    const insights = [];
+    
+    if (stats.user.totalPosts === 0) {
+      insights.push({
+        type: 'info',
+        message: 'Welcome! This will be your first post. Consider adding images to make it more engaging.',
+        priority: 'high'
+      });
+    } else {
+      // Engagement insights
+      if (stats.user.averageEngagement < 0.5) {
+        insights.push({
+          type: 'suggestion',
+          message: 'Your posts could be more engaging. Try adding images and using popular tags.',
+          priority: 'medium'
+        });
+      }
+      
+      // Post type insights
+      if (stats.user.offerPosts === 0) {
+        insights.push({
+          type: 'suggestion',
+          message: 'Try creating an "Offer" post - they tend to get good engagement.',
+          priority: 'low'
+        });
+      }
+      
+      if (stats.user.eventPosts === 0) {
+        insights.push({
+          type: 'suggestion',
+          message: 'Event posts often get high visibility. Consider creating one!',
+          priority: 'low'
+        });
+      }
+    }
+
+    // Best posting time recommendation
+    if (stats.university.bestPostingTimes.length > 0) {
+      const bestTime = stats.university.bestPostingTimes[0];
+      insights.push({
+        type: 'tip',
+        message: `Posts around ${bestTime.timeLabel} tend to get the best engagement.`,
+        priority: 'medium'
+      });
+    }
+
+    // Popular tag recommendations
+    if (stats.university.popularTags.length > 0) {
+      const topTag = stats.university.popularTags[0];
+      insights.push({
+        type: 'tip',
+        message: `"${topTag.name}" is the most popular tag. Consider using it if relevant.`,
+        priority: 'low'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        stats,
+        insights,
+        recommendations: {
+          bestPostingTimes: stats.university.bestPostingTimes.slice(0, 3),
+          topTags: stats.university.popularTags.slice(0, 5),
+          successfulPostTypes: stats.university.postTypePerformance
+            .filter(p => p.averageEngagement > 0.5)
+            .sort((a, b) => b.averageEngagement - a.averageEngagement)
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Get create stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve post statistics',
+      error: error.message
+    });
+  }
+});
+
+// @route   POST /api/v1/posts/draft
+// @desc    Save a draft post
+// @access  Private
+router.post('/draft', [
+  auth,
+  body('content').optional().isLength({ max: 5000 }).withMessage('Content cannot exceed 5000 characters').trim(),
+  body('postType').optional().isIn(['goods-services', 'events']).withMessage('Post type must be goods-services or events'),
+  body('primaryTags').optional().isArray({ max: 1 }).withMessage('Maximum 1 primary tag allowed'),
+  body('secondaryTags').optional().isArray({ max: 5 }).withMessage('Maximum 5 secondary tags allowed'),
+  body('images').optional().isArray({ max: 10 }).withMessage('Maximum 10 images allowed'),
+  body('eventDetails').optional().isObject().withMessage('Event details must be an object'),
+  validate
+], async (req, res) => {
+  try {
+    const {
+      content = '',
+      postType,
+      primaryTags = [],
+      secondaryTags = [],
+      images = [],
+      eventDetails = {}
+    } = req.body;
+
+    const userId = req.user.id;
+    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+
+    // Check if user already has a draft
+    const existingDraftResult = await query(`
+      SELECT id FROM post_drafts 
+      WHERE user_id = $1 AND university_id = $2
+    `, [userId, universityId]);
+
+    let draftId;
+    
+    if (existingDraftResult.rows.length > 0) {
+      // Update existing draft
+      draftId = existingDraftResult.rows[0].id;
+      await query(`
+        UPDATE post_drafts SET
+          content = $1,
+          post_type = $2,
+          primary_tags = $3,
+          secondary_tags = $4,
+          images = $5,
+          event_details = $6,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $7
+      `, [content, postType, primaryTags, secondaryTags, images, eventDetails, draftId]);
+    } else {
+      // Create new draft
+      const newDraftResult = await query(`
+        INSERT INTO post_drafts (
+          user_id, 
+          university_id, 
+          content, 
+          post_type, 
+          primary_tags, 
+          secondary_tags, 
+          images, 
+          event_details
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id
+      `, [userId, universityId, content, postType, primaryTags, secondaryTags, images, eventDetails]);
+      
+      draftId = newDraftResult.rows[0].id;
+    }
+
+    res.json({
+      success: true,
+      message: 'Draft saved successfully',
+      data: {
+        draftId,
+        savedAt: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Save draft error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to save draft',
+        details: error.message
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/posts/draft
+// @desc    Get user's draft post
+// @access  Private
+router.get('/draft', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+
+    const draftResult = await query(`
+      SELECT 
+        id,
+        content,
+        post_type,
+        primary_tags,
+        secondary_tags,
+        images,
+        event_details,
+        created_at,
+        updated_at
+      FROM post_drafts 
+      WHERE user_id = $1 AND university_id = $2
+    `, [userId, universityId]);
+
+    if (draftResult.rows.length === 0) {
+      return res.json({
+        success: true,
+        data: {
+          hasDraft: false,
+          draft: null
+        }
+      });
+    }
+
+    const draft = draftResult.rows[0];
+
+    res.json({
+      success: true,
+      data: {
+        hasDraft: true,
+        draft: {
+          id: draft.id,
+          content: draft.content,
+          postType: draft.post_type,
+          primaryTags: draft.primary_tags || [],
+          secondaryTags: draft.secondary_tags || [],
+          images: draft.images || [],
+          eventDetails: draft.event_details || {},
+          createdAt: draft.created_at,
+          updatedAt: draft.updated_at
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Get draft error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to retrieve draft',
+        details: error.message
+      }
+    });
+  }
+});
+
+// @route   DELETE /api/v1/posts/draft
+// @desc    Delete user's draft post
+// @access  Private
+router.delete('/draft', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+
+    await query(`
+      DELETE FROM post_drafts 
+      WHERE user_id = $1 AND university_id = $2
+    `, [userId, universityId]);
+
+    res.json({
+      success: true,
+      message: 'Draft deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete draft error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to delete draft',
+        details: error.message
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/posts/create-tips
+// @desc    Get post creation tips and best practices
+// @access  Private
+router.get('/create-tips', auth, async (req, res) => {
+  try {
+    const { postType } = req.query;
+    
+    const tips = {
+      general: [
+        {
+          id: 'content-length',
+          title: 'Write Detailed Descriptions',
+          description: 'Posts with 50+ characters get 40% more engagement',
+          icon: '📝',
+          category: 'content',
+          priority: 'high'
+        },
+        {
+          id: 'add-images',
+          title: 'Include Images',
+          description: 'Posts with images get 2x more views and engagement',
+          icon: '🖼️',
+          category: 'media',
+          priority: 'high'
+        },
+        {
+          id: 'use-tags',
+          title: 'Use Relevant Tags',
+          description: 'Proper tagging helps others find your post',
+          icon: '🏷️',
+          category: 'discovery',
+          priority: 'medium'
+        },
+        {
+          id: 'posting-time',
+          title: 'Post at Peak Times',
+          description: 'Posts between 6-9 PM get the most engagement',
+          icon: '⏰',
+          category: 'timing',
+          priority: 'medium'
+        }
+      ],
+      'goods-services': [
+        {
+          id: 'clear-pricing',
+          title: 'Include Clear Pricing',
+          description: 'Mention if free, price range, or negotiable',
+          icon: '💰',
+          category: 'details',
+          priority: 'high'
+        },
+        {
+          id: 'condition-info',
+          title: 'Describe Condition',
+          description: 'New, like-new, good, fair - be specific',
+          icon: '🔍',
+          category: 'details',
+          priority: 'medium'
+        },
+        {
+          id: 'location-details',
+          title: 'Mention Location',
+          description: 'Campus area, building, or meeting point',
+          icon: '📍',
+          category: 'details',
+          priority: 'medium'
+        },
+        {
+          id: 'contact-method',
+          title: 'Preferred Contact',
+          description: 'How should people reach you?',
+          icon: '📱',
+          category: 'communication',
+          priority: 'low'
+        }
+      ],
+      events: [
+        {
+          id: 'event-details',
+          title: 'Complete Event Info',
+          description: 'Date, time, location, and what to expect',
+          icon: '📅',
+          category: 'details',
+          priority: 'high'
+        },
+        {
+          id: 'cost-info',
+          title: 'Mention Cost',
+          description: 'Free, ticket price, or donation suggested',
+          icon: '🎫',
+          category: 'details',
+          priority: 'medium'
+        },
+        {
+          id: 'attire-info',
+          title: 'Dress Code',
+          description: 'Casual, business casual, formal, or themed',
+          icon: '👔',
+          category: 'details',
+          priority: 'low'
+        },
+        {
+          id: 'rsvp-info',
+          title: 'RSVP Details',
+          description: 'Required, optional, or deadline',
+          icon: '✅',
+          category: 'details',
+          priority: 'low'
+        }
+      ]
+    };
+
+    // Add dynamic tips based on user's posting history
+    const userId = req.user.id;
+    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+
+    const userStatsResult = await query(`
+      SELECT 
+        COUNT(*) as total_posts,
+        AVG(view_count) as avg_views,
+        AVG(engagement_score) as avg_engagement
+      FROM posts 
+      WHERE user_id = $1 AND university_id = $2 AND is_active = true
+    `, [userId, universityId]);
+
+    if (userStatsResult.rows.length > 0) {
+      const stats = userStatsResult.rows[0];
+      const totalPosts = parseInt(stats.total_posts || 0);
+      const avgViews = parseFloat(stats.avg_views || 0);
+      const avgEngagement = parseFloat(stats.avg_engagement || 0);
+
+      if (totalPosts === 0) {
+        tips.personalized = [
+          {
+            id: 'first-post',
+            title: 'Welcome to CampusConnect!',
+            description: 'This is your first post. Start with something simple and engaging.',
+            icon: '🎉',
+            category: 'motivation',
+            priority: 'high'
+          }
+        ];
+      } else if (avgViews < 10) {
+        tips.personalized = [
+          {
+            id: 'low-views',
+            title: 'Boost Your Visibility',
+            description: 'Your posts could get more views. Try adding images and using popular tags.',
+            icon: '📈',
+            category: 'improvement',
+            priority: 'medium'
+          }
+        ];
+      } else if (avgEngagement < 0.3) {
+        tips.personalized = [
+          {
+            id: 'low-engagement',
+            title: 'Increase Engagement',
+            description: 'Your posts get views but low engagement. Try asking questions or including calls to action.',
+            icon: '💬',
+            category: 'improvement',
+            priority: 'medium'
+          }
+        ];
+      } else {
+        tips.personalized = [
+          {
+            id: 'doing-great',
+            title: 'You\'re Doing Great!',
+            description: 'Your posts are performing well. Keep up the good work!',
+            icon: '🌟',
+            category: 'motivation',
+            priority: 'low'
+          }
+        ];
+      }
+    }
+
+    // Add post-type specific tips
+    if (postType === 'goods-services') {
+      tips.current = tips['goods-services'];
+    } else if (postType === 'events') {
+      tips.current = tips.events;
+    } else {
+      tips.current = tips.general;
+    }
+
+    res.json({
+      success: true,
+      data: {
+        tips,
+        summary: {
+          totalTips: tips.general.length + tips['goods-services'].length + tips.events.length + (tips.personalized ? tips.personalized.length : 0),
+          categories: ['general', 'goods-services', 'events', 'personalized'].filter(cat => tips[cat]),
+          lastUpdated: new Date().toISOString()
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Get create tips error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve creation tips',
+      error: error.message
+    });
   }
 });
 

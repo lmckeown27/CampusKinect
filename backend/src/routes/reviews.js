@@ -236,6 +236,143 @@ router.delete('/:reviewId', [
   }
 });
 
+// @route   DELETE /api/v1/reviews/:reviewId/owner-delete
+// @desc    Delete a review by post owner (with reason tracking)
+// @access  Private (post owner only)
+router.delete('/:reviewId/owner-delete', [
+  param('reviewId').isInt({ min: 1 }).withMessage('Review ID must be a positive integer'),
+  body('deletionReason').isLength({ min: 10, max: 500 }).withMessage('Deletion reason must be between 10 and 500 characters'),
+  validate
+], async (req, res) => {
+  try {
+    const reviewId = parseInt(req.params.reviewId);
+    const deletionReason = req.body.deletionReason;
+
+    const deletedReview = await reviewService.deleteReviewByOwner(reviewId, req.user.id, deletionReason);
+
+    res.json({
+      success: true,
+      message: 'Review deleted successfully with reason tracking',
+      data: {
+        deletedReview: {
+          id: deletedReview.id,
+          originalReviewId: deletedReview.original_review_id,
+          postId: deletedReview.post_id,
+          deletionReason: deletedReview.deletion_reason,
+          deletionTimestamp: deletedReview.deletion_timestamp
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Owner delete review error:', error);
+    res.status(400).json({
+      success: false,
+      error: {
+        message: error.message
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/reviews/post/:postId/deleted
+// @desc    Get deleted reviews for a specific post
+// @access  Private
+router.get('/post/:postId/deleted', [
+  param('postId').isInt({ min: 1 }).withMessage('Post ID must be a positive integer'),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
+  validate
+], async (req, res) => {
+  try {
+    const postId = parseInt(req.params.postId);
+    const options = {
+      page: parseInt(req.query.page) || 1,
+      limit: parseInt(req.query.limit) || 10
+    };
+
+    const result = await reviewService.getDeletedReviews(postId, options);
+
+    res.json({
+      success: true,
+      data: {
+        deletedReviews: result.deletedReviews.map(review => ({
+          id: review.id,
+          originalReviewId: review.original_review_id,
+          rating: review.rating,
+          title: review.title,
+          content: review.content,
+          isAnonymous: review.is_anonymous,
+          deletionReason: review.deletion_reason,
+          deletionTimestamp: review.deletion_timestamp,
+          originalCreatedAt: review.original_created_at,
+          originalUpdatedAt: review.original_updated_at,
+          reviewer: {
+            name: review.reviewer_name,
+            username: review.reviewer_username
+          },
+          deletedBy: {
+            name: review.deleted_by_name,
+            username: review.deleted_by_username
+          }
+        })),
+        pagination: result.pagination
+      }
+    });
+
+  } catch (error) {
+    console.error('Get deleted reviews error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to retrieve deleted reviews'
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/reviews/post/:postId/deleted-summary
+// @desc    Get deleted reviews summary for a post
+// @access  Private
+router.get('/post/:postId/deleted-summary', [
+  param('postId').isInt({ min: 1 }).withMessage('Post ID must be a positive integer'),
+  validate
+], async (req, res) => {
+  try {
+    const postId = parseInt(req.params.postId);
+    const summary = await reviewService.getDeletedReviewsSummary(postId);
+
+    res.json({
+      success: true,
+      data: {
+        summary: {
+          totalDeleted: summary.total_deleted,
+          deletedByOwner: summary.deleted_by_owner,
+          deletedBySystem: summary.deleted_by_system,
+          averageRatingBeforeDeletion: parseFloat(summary.average_rating_before_deletion) || 0,
+          ratingDistribution: summary.rating_distribution,
+          counts: {
+            fiveStar: summary.five_star_deleted,
+            fourStar: summary.four_star_deleted,
+            threeStar: summary.three_star_deleted,
+            twoStar: summary.two_star_deleted,
+            oneStar: summary.one_star_deleted
+          }
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Get deleted reviews summary error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to retrieve deleted reviews summary'
+      }
+    });
+  }
+});
+
 // @route   POST /api/v1/reviews/:reviewId/response
 // @desc    Add a response to a review (post owner only)
 // @access  Private (post owner only)
