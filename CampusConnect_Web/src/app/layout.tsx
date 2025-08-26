@@ -5,10 +5,10 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CampusConnect - Student Community Hub",
+  title: "CampusKinect - Student Community Hub",
   description: "Connect with your campus community. Share events, find roommates, get tutoring, and more.",
   keywords: "campus, student, community, events, housing, tutoring, university",
-  authors: [{ name: "CampusConnect Team" }],
+  authors: [{ name: "CampusKinect Team" }],
   viewport: "width=device-width, initial-scale=1",
   themeColor: "#2563eb",
 };

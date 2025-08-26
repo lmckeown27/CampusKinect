@@ -1,0 +1,13 @@
+# Images Directory
+
+This directory contains:
+- User profile pictures
+- Post images
+- Background images
+- Campus photos
+- Event images
+
+Place your image files here:
+- .jpg, .jpeg, .png, .webp, .avif formats supported
+- Use descriptive names: campus-background.jpg, user-avatar.png
+- Optimize images for web use 

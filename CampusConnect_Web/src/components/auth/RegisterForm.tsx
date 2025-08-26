@@ -134,7 +134,13 @@ const RegisterForm: React.FC = () => {
     return 'text-green-600';
   };
 
-  const years = [1, 2, 3, 4, 5];
+  const years = [
+    { value: 1, label: 'Freshman' },
+    { value: 2, label: 'Sophomore' },
+    { value: 3, label: 'Junior' },
+    { value: 4, label: 'Senior' },
+    { value: 5, label: 'Super Senior' }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -142,12 +148,20 @@ const RegisterForm: React.FC = () => {
         {/* Header */}
         <div className="text-center">
           <div className="mx-auto h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-white font-bold text-xl">C</span>
+            <span className="text-white font-bold text-xl">K</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Join CampusConnect and connect with your university community
+            Join CampusKinect and connect with your university community
           </p>
+          <div className="mt-4">
+            <Link 
+              href="/" 
+              className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
+            >
+              ← Back to Home
+            </Link>
+          </div>
         </div>
 
         {/* Error Display */}
@@ -366,7 +380,7 @@ const RegisterForm: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {years.map(year => (
-                    <option key={year} value={year}>Year {year}</option>
+                    <option key={year.value} value={year.value}>{year.label}</option>
                   ))}
                 </select>
               </div>

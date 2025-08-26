@@ -1,8 +1,6 @@
-# 🚀 CampusConnect Web Frontend - Development Guide
+# 🚀 CampusKinect Web Frontend - Development Guide
 
-## 🎯 What We've Built
-
-The CampusConnect Web Frontend is a complete, production-ready React application built with Next.js 14, TypeScript, and Tailwind CSS. Here's what's included:
+The CampusKinect Web Frontend is a complete, production-ready React application built with Next.js 14, TypeScript, and Tailwind CSS. Here's what's included:
 
 ### ✨ **Complete Feature Set**
 - **🏠 Home Tab**: 3-tab system (Goods/Services, All, Events) with side pullout panels
@@ -28,7 +26,7 @@ The CampusConnect Web Frontend is a complete, production-ready React application
 
 ### **Step 1: Install Dependencies**
 ```bash
-cd CampusConnect_Web
+cd CampusKinect_Web
 npm install
 ```
 
@@ -40,8 +38,8 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api/v1
 NEXT_PUBLIC_WS_URL=ws://localhost:3001
 
 # Authentication
-NEXT_PUBLIC_JWT_STORAGE_KEY=campusconnect_token
-NEXT_PUBLIC_REFRESH_TOKEN_KEY=campusconnect_refresh_token
+NEXT_PUBLIC_JWT_STORAGE_KEY=campuskinect_token
+NEXT_PUBLIC_REFRESH_TOKEN_KEY=campuskinect_refresh_token
 
 # Development
 NODE_ENV=development
@@ -355,7 +353,7 @@ npm test -- --testNamePattern="ComponentName"
 4. **Run Tests**: Verify everything works with `npm test`
 
 ### **Development Priorities**
-1. **Backend Integration**: Connect to your CampusConnect backend
+1. **Backend Integration**: Connect to your CampusKinect backend
 2. **Real Data**: Replace mock data with actual API calls
 3. **User Testing**: Get feedback on the UI/UX
 4. **Performance**: Optimize based on real usage patterns
@@ -371,4 +369,4 @@ npm test -- --testNamePattern="ComponentName"
 
 **Happy Coding! 🚀**
 
-The CampusConnect Web Frontend is now ready for development. Start building amazing features for your campus community! 
+The CampusKinect Web Frontend is now ready for development. Start building amazing features for your campus community! 

@@ -19,9 +19,9 @@ const Header: React.FC = () => {
         {/* App Title */}
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">C</span>
+            <span className="text-white font-bold text-lg">K</span>
           </div>
-          <h1 className="text-xl font-bold text-gray-900">CampusConnect</h1>
+          <h1 className="text-xl font-bold text-gray-900">CampusKinect</h1>
         </div>
 
         {/* Right Side - User Profile & Actions */}

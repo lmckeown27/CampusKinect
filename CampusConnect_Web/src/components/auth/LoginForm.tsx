@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '../../stores/authStore';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, Info } from 'lucide-react';
 
 const LoginForm: React.FC = () => {
   const { login, isLoading, error } = useAuthStore();
@@ -28,25 +28,83 @@ const LoginForm: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Helper function to get appropriate error message and icon
+  const getErrorDisplay = (errorMessage: string) => {
+    if (errorMessage.toLowerCase().includes('invalid credentials') || 
+        errorMessage.toLowerCase().includes('not found') ||
+        errorMessage.toLowerCase().includes('does not exist')) {
+      return {
+        message: 'The email or password you entered is incorrect. Please check your credentials and try again.',
+        icon: <AlertCircle className="text-red-500" size={20} />,
+        type: 'error'
+      };
+    }
+    
+    if (errorMessage.toLowerCase().includes('not verified') || 
+        errorMessage.toLowerCase().includes('verification')) {
+      return {
+        message: 'Please verify your email address before logging in. Check your email for a verification code.',
+        icon: <Info className="text-blue-500" size={20} />,
+        type: 'info'
+      };
+    }
+    
+    return {
+      message: errorMessage,
+      icon: <AlertCircle className="text-red-500" size={20} />,
+      type: 'error'
+    };
+  };
+
+  const errorDisplay = error ? getErrorDisplay(error) : null;
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
           <div className="mx-auto h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-white font-bold text-xl">C</span>
+            <span className="text-white font-bold text-xl">K</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Sign in to your CampusConnect account
+            Sign in to your CampusKinect account
           </p>
+          <div className="mt-4">
+            <Link 
+              href="/" 
+              className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
+            >
+              ← Back to Home
+            </Link>
+          </div>
         </div>
 
         {/* Error Display */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-2">
-            <AlertCircle className="text-red-500" size={20} />
-            <p className="text-red-700 text-sm">{error}</p>
+        {errorDisplay && (
+          <div className={`border rounded-lg p-4 flex items-start space-x-3 ${
+            errorDisplay.type === 'info' 
+              ? 'bg-blue-50 border-blue-200' 
+              : 'bg-red-50 border-red-200'
+          }`}>
+            {errorDisplay.icon}
+            <div className="flex-1">
+              <p className={`text-sm ${
+                errorDisplay.type === 'info' ? 'text-blue-700' : 'text-red-700'
+              }`}>
+                {errorDisplay.message}
+              </p>
+              {errorDisplay.type === 'info' && (
+                <div className="mt-2">
+                  <Link 
+                    href="/auth/resend-code" 
+                    className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+                  >
+                    Resend verification code
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

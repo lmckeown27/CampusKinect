@@ -19,6 +19,18 @@ import {
   User
 } from 'lucide-react';
 
+// Helper function to convert year number to descriptive name
+const getYearLabel = (year: number): string => {
+  const yearLabels: { [key: number]: string } = {
+    1: 'Freshman',
+    2: 'Sophomore', 
+    3: 'Junior',
+    4: 'Senior',
+    5: 'Super Senior'
+  };
+  return yearLabels[year] || `Year ${year}`;
+};
+
 interface PostCardProps {
   post: Post;
 }
@@ -79,7 +91,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               
               {post.user?.major && (
                 <p className="text-xs text-gray-500 truncate">
-                  {post.user.major} • Year {post.user.year}
+                  {post.user.major} • {getYearLabel(post.user.year)}
                 </p>
               )}
             </div>

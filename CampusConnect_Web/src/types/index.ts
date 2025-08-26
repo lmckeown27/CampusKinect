@@ -1,4 +1,4 @@
-// Core data types for CampusConnect
+// Core data types for CampusKinect
 export interface User {
   id: string;
   username: string;

@@ -43,8 +43,34 @@ export const useAuthStore = create<AuthStore>()(
             error: null 
           });
         } catch (error: any) {
+          let errorMessage = 'Login failed';
+          
+          // Handle specific error scenarios
+          if (error.response?.status === 401) {
+            if (error.response?.data?.message?.toLowerCase().includes('not found') ||
+                error.response?.data?.message?.toLowerCase().includes('does not exist')) {
+              errorMessage = 'Account not found. This email is not registered in our database.';
+            } else if (error.response?.data?.message?.toLowerCase().includes('invalid credentials')) {
+              errorMessage = 'Invalid email or password. Please check your credentials.';
+            } else {
+              errorMessage = 'Invalid email or password. Please check your credentials.';
+            }
+          } else if (error.response?.status === 403) {
+            if (error.response?.data?.message?.toLowerCase().includes('not verified')) {
+              errorMessage = 'Email not verified. Please check your email for a verification code.';
+            } else {
+              errorMessage = 'Account access denied. Please contact support.';
+            }
+          } else if (error.response?.status === 422) {
+            errorMessage = 'Please check your email format and try again.';
+          } else if (error.response?.status >= 500) {
+            errorMessage = 'Server error. Please try again later.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
           set({ 
-            error: error.message || 'Login failed', 
+            error: errorMessage, 
             isLoading: false 
           });
           throw error;
@@ -63,8 +89,29 @@ export const useAuthStore = create<AuthStore>()(
             error: null 
           });
         } catch (error: any) {
+          let errorMessage = 'Registration failed';
+          
+          // Handle specific error scenarios
+          if (error.response?.status === 409) {
+            if (error.response?.data?.message?.toLowerCase().includes('email') && 
+                error.response?.data?.message?.toLowerCase().includes('already exists')) {
+              errorMessage = 'An account with this email already exists. Please sign in instead.';
+            } else if (error.response?.data?.message?.toLowerCase().includes('username') && 
+                       error.response?.data?.message?.toLowerCase().includes('already exists')) {
+              errorMessage = 'This username is already taken. Please choose a different one.';
+            } else {
+              errorMessage = 'Account already exists. Please sign in instead.';
+            }
+          } else if (error.response?.status === 422) {
+            errorMessage = 'Please check your information and try again.';
+          } else if (error.response?.status >= 500) {
+            errorMessage = 'Server error. Please try again later.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
           set({ 
-            error: error.message || 'Registration failed', 
+            error: errorMessage, 
             isLoading: false 
           });
           throw error;

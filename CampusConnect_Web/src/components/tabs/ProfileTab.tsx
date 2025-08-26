@@ -5,6 +5,18 @@ import { useAuthStore } from '../../stores/authStore';
 import { Post } from '../../types';
 import { Edit, Settings, Bookmark, Trash2, MoreHorizontal, User, Calendar, MapPin, GraduationCap } from 'lucide-react';
 
+// Helper function to convert year number to descriptive name
+const getYearLabel = (year: number): string => {
+  const yearLabels: { [key: number]: string } = {
+    1: 'Freshman',
+    2: 'Sophomore', 
+    3: 'Junior',
+    4: 'Senior',
+    5: 'Super Senior'
+  };
+  return yearLabels[year] || `Year ${year}`;
+};
+
 const ProfileTab: React.FC = () => {
   const { user, updateUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'posts' | 'bookmarks'>('posts');
@@ -65,6 +77,14 @@ const ProfileTab: React.FC = () => {
       createdAt: '2024-01-12T09:15:00Z',
       updatedAt: '2024-01-12T09:15:00Z',
     },
+  ];
+
+  const years = [
+    { value: 1, label: 'Freshman' },
+    { value: 2, label: 'Sophomore' },
+    { value: 3, label: 'Junior' },
+    { value: 4, label: 'Senior' },
+    { value: 5, label: 'Super Senior' }
   ];
 
   const handleSaveProfile = async () => {
@@ -178,7 +198,7 @@ const ProfileTab: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-2 text-gray-600">
                   <Calendar size={16} />
-                  <span>Year {user.year}</span>
+                  <span>{getYearLabel(user.year)}</span>
                 </div>
                 <div className="flex items-center space-x-2 text-gray-600">
                   <MapPin size={16} />
@@ -245,8 +265,8 @@ const ProfileTab: React.FC = () => {
                   onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {[1, 2, 3, 4, 5].map(year => (
-                    <option key={year} value={year}>Year {year}</option>
+                  {years.map(year => (
+                    <option key={year.value} value={year.value}>{year.label}</option>
                   ))}
                 </select>
               </div>

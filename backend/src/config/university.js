@@ -97,12 +97,3 @@ module.exports = {
   getPrimaryUniversity,
   validateUniversityEmail
 }; 
-};
-
-module.exports = {
-  PRIMARY_UNIVERSITY,
-  UNIVERSITY_CONFIG,
-  isPrimaryUniversity,
-  getPrimaryUniversity,
-  validateUniversityEmail
-}; 
