@@ -322,7 +322,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### **Community**
 - **Discord**: Join our developer community
-- **Email**: support@campuskinect.com
+- **Email**: liam.mckeown38415@gmail.com
 - **Twitter**: @CampusKinectDev
 
 ---

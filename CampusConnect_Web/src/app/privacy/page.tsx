@@ -223,9 +223,9 @@ export default function PrivacyPolicyPage() {
                 </p>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-gray-700">
-                    <strong>Email:</strong> privacy@campuskinect.com<br />
-                    <strong>Data Protection Officer:</strong> dpo@campuskinect.com<br />
-                    <strong>Support Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM PST
+                    <strong>Email:</strong> liam.mckeown38415@gmail.com<br />
+                    <strong>Data Protection Officer:</strong> liam.mckeown38415@gmail.com<br />
+                    <strong>Support Hours:</strong> Whenever I'm free
                   </p>
                 </div>
               </section>
