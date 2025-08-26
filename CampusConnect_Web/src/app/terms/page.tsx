@@ -50,20 +50,12 @@ export default function TermsOfServicePage() {
               {/* Eligibility */}
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">2. Eligibility</h3>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <div className="flex items-start space-x-3">
-                    <Users size={20} className="text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="text-blue-800 font-medium">Educational Email Required</p>
-                      <p className="text-blue-700 text-sm mt-1">
-                        You must have a valid educational email address (.edu, .ac.uk, .ca, .edu.au, .de, .fr) 
-                        to create an account and use CampusKinect.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 leading-relaxed mb-4">
                   CampusKinect is exclusively for university students with valid educational email addresses. 
+                  You must have a valid educational email address (.edu, .ac.uk, .ca, .edu.au, .de, .fr) 
+                  to create an account and use CampusKinect.
+                </p>
+                <p className="text-gray-700 leading-relaxed">
                   You must be at least 18 years old or have parental consent to use our services.
                 </p>
               </section>

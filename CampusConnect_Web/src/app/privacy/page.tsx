@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
 
                 <h4 className="text-lg font-medium text-gray-900 mb-3">2.2 Usage Information</h4>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  We automatically collect information about how you use CampusConnect:
+                  We automatically collect information about how you use CampusKinect:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mb-4">
                   <li>Posts and interactions</li>
@@ -76,18 +76,10 @@ export default function PrivacyPolicyPage() {
                   <li>Device and browser information</li>
                 </ul>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-3">
-                    <Database size={20} className="text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="text-blue-800 font-medium">Educational Email Verification</p>
-                      <p className="text-blue-700 text-sm mt-1">
-                        We verify your educational email address to ensure you are a legitimate university student. 
-                        This helps maintain the integrity of our academic community.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  We verify your educational email address to ensure you are a legitimate university student. 
+                  This helps maintain the integrity of our academic community.
+                </p>
               </section>
 
               {/* How We Use Information */}
@@ -123,20 +115,10 @@ export default function PrivacyPolicyPage() {
                 </ul>
 
                 <h4 className="text-lg font-medium text-gray-900 mb-3">4.2 What We Don't Share</h4>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-3">
-                    <Shield size={20} className="text-green-600 mt-0.5" />
-                    <div>
-                      <p className="text-green-800 font-medium">We Never Share:</p>
-                      <ul className="text-green-700 text-sm mt-2 space-y-1">
-                        <li>• Your email address with other users</li>
-                        <li>• Your password or account credentials</li>
-                        <li>• Your personal messages without consent</li>
-                        <li>• Your data with third-party advertisers</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  We never share your email address with other users, your password or account credentials, 
+                  your personal messages without consent, or your data with third-party advertisers.
+                </p>
               </section>
 
               {/* Data Security */}
@@ -153,18 +135,10 @@ export default function PrivacyPolicyPage() {
                   <li>Secure hosting infrastructure</li>
                 </ul>
                 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-3">
-                    <Eye size={20} className="text-yellow-600 mt-0.5" />
-                    <div>
-                      <p className="text-yellow-800 font-medium">Your Responsibility</p>
-                      <p className="text-yellow-700 text-sm mt-1">
-                        While we protect your data, you should also use strong passwords, keep your account secure, 
-                        and be cautious about sharing personal information with other users.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  While we protect your data, you should also use strong passwords, keep your account secure, 
+                  and be cautious about sharing personal information with other users.
+                </p>
               </section>
 
               {/* Data Retention */}
@@ -206,7 +180,7 @@ export default function PrivacyPolicyPage() {
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">9. Third-Party Services</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  CampusConnect may integrate with third-party services (such as email providers for verification). 
+                  CampusKinect may integrate with third-party services (such as email providers for verification). 
                   These services have their own privacy policies, and we encourage you to review them.
                 </p>
               </section>
@@ -215,7 +189,7 @@ export default function PrivacyPolicyPage() {
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">10. Children's Privacy</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  CampusConnect is not intended for children under 13 years of age. We do not knowingly collect 
+                  CampusKinect is not intended for children under 13 years of age. We do not knowingly collect 
                   personal information from children under 13. If you are a parent or guardian and believe your 
                   child has provided us with personal information, please contact us.
                 </p>
@@ -225,7 +199,7 @@ export default function PrivacyPolicyPage() {
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">11. International Users</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  CampusConnect is operated from the United States. If you are accessing our platform from outside 
+                  CampusKinect is operated from the United States. If you are accessing our platform from outside 
                   the U.S., please be aware that your information may be transferred to, stored, and processed 
                   in the U.S. where our servers are located.
                 </p>
@@ -236,7 +210,7 @@ export default function PrivacyPolicyPage() {
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">12. Changes to This Privacy Policy</h3>
                 <p className="text-gray-700 leading-relaxed">
                   We may update this Privacy Policy from time to time. We will notify you of any material changes 
-                  through the platform or email. Your continued use of CampusConnect after changes constitutes 
+                  through the platform or email. Your continued use of CampusKinect after changes constitutes 
                   acceptance of the updated policy.
                 </p>
               </section>
@@ -249,8 +223,8 @@ export default function PrivacyPolicyPage() {
                 </p>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-gray-700">
-                    <strong>Email:</strong> privacy@campusconnect.com<br />
-                    <strong>Data Protection Officer:</strong> dpo@campusconnect.com<br />
+                    <strong>Email:</strong> privacy@campuskinect.com<br />
+                    <strong>Data Protection Officer:</strong> dpo@campuskinect.com<br />
                     <strong>Support Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM PST
                   </p>
                 </div>
@@ -260,7 +234,7 @@ export default function PrivacyPolicyPage() {
             {/* Footer */}
             <div className="mt-12 pt-8 border-t border-gray-200 text-center">
               <p className="text-gray-600 text-sm">
-                This Privacy Policy is effective as of the date listed above and applies to all users of CampusConnect.
+                  This Privacy Policy is effective as of the date listed above and applies to all users of CampusKinect.
               </p>
               <div className="mt-4">
                 <Link 
