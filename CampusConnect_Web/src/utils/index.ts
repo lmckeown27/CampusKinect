@@ -1,9 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
-// Merge Tailwind classes with clsx and tailwind-merge
+// Merge classes with clsx (simplified version without tailwind-merge)
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return clsx(inputs);
 }
 
 // Date formatting utilities
@@ -48,16 +47,16 @@ export function formatDuration(duration: string): string {
   return duration;
 }
 
-// Post type utilities
+// Post type utilities - Updated to use custom CSS classes
 export function getPostTypeColor(postType: string): string {
   const colors = {
-    goods: 'bg-blue-100 text-blue-800',
-    services: 'bg-green-100 text-green-800',
-    events: 'bg-purple-100 text-purple-800',
-    housing: 'bg-orange-100 text-orange-800',
-    tutoring: 'bg-indigo-100 text-indigo-800',
+    goods: 'badge-goods',
+    services: 'badge-services',
+    events: 'badge-event',
+    housing: 'badge-housing',
+    tutoring: 'badge-tutoring',
   };
-  return colors[postType as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  return colors[postType as keyof typeof colors] || 'badge';
 }
 
 export function getPostTypeIcon(postType: string): string {
@@ -71,13 +70,13 @@ export function getPostTypeIcon(postType: string): string {
   return icons[postType as keyof typeof icons] || '📝';
 }
 
-// Grade utilities
+// Grade utilities - Updated to use custom CSS classes
 export function getGradeColor(grade: number): string {
-  if (grade >= 90) return 'text-green-600';
-  if (grade >= 80) return 'text-blue-600';
-  if (grade >= 70) return 'text-yellow-600';
-  if (grade >= 60) return 'text-orange-600';
-  return 'text-red-600';
+  if (grade >= 90) return 'text-success';
+  if (grade >= 80) return 'text-primary';
+  if (grade >= 70) return 'text-warning';
+  if (grade >= 60) return 'text-warning';
+  return 'text-error';
 }
 
 export function getGradeLabel(grade: number): string {

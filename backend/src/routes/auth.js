@@ -195,7 +195,7 @@ router.post('/login', [
         throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
       }
       
-      return true
+      return true;
     }),
   body('password').notEmpty().withMessage('Password is required'),
   validate
@@ -804,19 +804,6 @@ router.get('/me', auth, async (req, res) => {
         }
       }
     });
-
-  } catch (error) {
-    console.error('Get profile error:', error);
-    res.status(500).json({
-      success: false,
-      error: {
-        message: 'Failed to get profile. Please try again.'
-      }
-    });
-  }
-});
-
-module.exports = router; 
 
   } catch (error) {
     console.error('Get profile error:', error);
