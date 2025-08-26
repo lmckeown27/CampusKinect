@@ -2,40 +2,35 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Shield, Users, FileText, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Shield, AlertTriangle } from 'lucide-react';
 
 export default function TermsOfServicePage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="bg-white border-b border-neutral-200 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center space-x-4">
             <Link 
               href="/" 
-              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors"
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
             >
               <ArrowLeft size={20} />
               <span>Back to Home</span>
             </Link>
             <div className="h-6 w-px bg-neutral-300"></div>
-            <div className="flex items-center space-x-2">
-              <Shield size={24} className="text-primary" />
-              <h1 className="text-2xl font-bold text-neutral-900">Terms of Service</h1>
+            <div className="flex items-center space-x-3">
+              <Shield size={28} className="text-primary" />
+              <h1 className="text-3xl font-bold text-neutral-900">Terms of Service</h1>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-neutral-100">
           <div className="prose prose-lg max-w-none">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">CampusKinect Terms of Service</h2>
-              <p className="text-gray-600">Last updated: {new Date().toLocaleDateString()}</p>
-            </div>
-
             <div className="space-y-8">
               {/* Introduction */}
               <section>
@@ -116,7 +111,7 @@ export default function TermsOfServicePage() {
                   <li>Meeting in public places for first-time in-person interactions</li>
                   <li>Verifying user identities before sharing personal information</li>
                   <li>Reporting suspicious or inappropriate behavior</li>
-                  <li>Using common sense and following your university's safety guidelines</li>
+                  <li>Using common sense and following your university&apos;s safety guidelines</li>
                 </ul>
               </section>
 
@@ -124,7 +119,7 @@ export default function TermsOfServicePage() {
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">7. Disclaimers</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  CampusKinect is provided "as is" without warranties of any kind. We are not responsible for:
+                  CampusKinect is provided &quot;as is&quot; without warranties of any kind. We are not responsible for:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
                   <li>The accuracy of user-generated content</li>
@@ -162,7 +157,7 @@ export default function TermsOfServicePage() {
                 <div className="bg-gray-50 rounded-lg p-4 mt-4">
                   <p className="text-gray-700">
                     <strong>Email:</strong> liam.mckeown38415@gmail.com<br />
-                    <strong>Support Hours:</strong> Whenever I'm free<br />
+                    <strong>Support Hours:</strong> Whenever I&apos;m free<br />
                     <strong>Cookie Settings:</strong> <Link href="/cookie-settings" className="text-primary hover:text-primary-600">Manage Cookie Preferences</Link>
                   </p>
                 </div>

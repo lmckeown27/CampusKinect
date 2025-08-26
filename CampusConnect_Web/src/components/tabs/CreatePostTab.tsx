@@ -5,12 +5,7 @@ import { usePostsStore } from '../../stores/postsStore';
 import { CreatePostForm } from '../../types';
 import TagSelector from '../ui/TagSelector';
 import DurationSelector from '../ui/DurationSelector';
-import { 
-  Camera, 
-  X, 
-  Upload,
-  AlertCircle
-} from 'lucide-react';
+import { Plus, X, Calendar, MapPin, Tag, Clock, Image as ImageIcon, AlertCircle } from 'lucide-react';
 
 const CreatePostTab: React.FC = () => {
   const { createPost, isLoading, error } = usePostsStore();
@@ -128,7 +123,7 @@ const CreatePostTab: React.FC = () => {
   const postTypes = [
     { value: 'goods', label: 'Goods', icon: '📦' },
     { value: 'services', label: 'Services', icon: '🔧' },
-    { value: 'events', label: 'Events', icon: '🎉' },
+    { value: 'events', label: 'Events', icon: '��' },
     { value: 'housing', label: 'Housing', icon: '🏠' },
     { value: 'tutoring', label: 'Tutoring', icon: '📚' },
   ];
@@ -139,7 +134,7 @@ const CreatePostTab: React.FC = () => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Create New Post</h1>
-          <p className="text-gray-600 mt-2">Share what you have to offer or what you're looking for</p>
+          <p className="text-gray-600">What&apos;s on your mind?</p>
         </div>
 
         {/* Error Display */}
@@ -303,7 +298,7 @@ const CreatePostTab: React.FC = () => {
                   className="hidden"
                 />
                 <div className="space-y-2">
-                  <Camera className="mx-auto h-8 w-8 text-gray-400" />
+                  <ImageIcon className="mx-auto h-8 w-8 text-gray-400" />
                   <div className="text-sm text-gray-600">
                     <span className="font-medium text-blue-600 hover:text-blue-500">
                       Click to upload

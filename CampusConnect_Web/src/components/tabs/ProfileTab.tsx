@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Edit, Save, X, User, Mail, Calendar, MapPin, GraduationCap, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { Post } from '../../types';
-import { Edit, Settings, Bookmark, Trash2, MoreHorizontal, User, Calendar, MapPin, GraduationCap } from 'lucide-react';
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {

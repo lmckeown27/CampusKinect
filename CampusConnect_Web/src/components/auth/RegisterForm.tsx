@@ -143,77 +143,73 @@ const RegisterForm: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full">
         {/* Header */}
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-            <span className="text-white font-bold text-xl">K</span>
+        <div className="text-center mb-8">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+            <span className="text-white font-bold text-2xl">K</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Join CampusKinect and connect with your university community
+          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+            Join <span className="text-primary">CampusKinect</span>
+          </h1>
+          <p className="text-neutral-600">
+            Create your account to get started
           </p>
-          <div className="mt-4">
-            <Link 
-              href="/" 
-              className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
-            >
-              ← Back to Home
-            </Link>
-          </div>
         </div>
 
-        {/* Error Display */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-2">
-            <AlertCircle className="text-red-500" size={20} />
-            <p className="text-red-700 text-sm">{error}</p>
-          </div>
-        )}
-
         {/* Registration Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            {/* Username */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username *
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={formData.username}
-                onChange={(e) => handleInputChange('username', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  validationErrors.username ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Choose a unique username"
-              />
-              {validationErrors.username && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.username}</p>
-              )}
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-neutral-100">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 mb-2">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                  placeholder="First name"
+                />
+                {validationErrors.firstName && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.firstName}</p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                  placeholder="Last name"
+                />
+                {validationErrors.lastName && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.lastName}</p>
+                )}
+              </div>
             </div>
 
-            {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email address *
+              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+                Email Address
               </label>
               <input
-                id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
-                required
+                id="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  validationErrors.email ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Enter your .edu email"
+                required
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                placeholder="Enter your email"
               />
               {validationErrors.email && (
                 <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
@@ -226,24 +222,40 @@ const RegisterForm: React.FC = () => {
               )}
             </div>
 
-            {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password *
+              <label htmlFor="year" className="block text-sm font-medium text-neutral-700 mb-2">
+                Academic Year
+              </label>
+              <select
+                id="year"
+                value={formData.year}
+                onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
+                required
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 bg-white"
+              >
+                <option value="">Select your year</option>
+                {years.map(year => (
+                  <option key={year.value} value={year.value}>{year.label}</option>
+                ))}
+              </select>
+              {validationErrors.year && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+                Password
               </label>
               <div className="relative">
                 <input
-                  id="password"
-                  name="password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
+                  id="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    validationErrors.password ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Create a strong password"
+                  required
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                  placeholder="Create a password"
                 />
                 <button
                   type="button"
@@ -288,21 +300,17 @@ const RegisterForm: React.FC = () => {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
                 Confirm password *
               </label>
               <div className="relative">
                 <input
-                  id="confirmPassword"
-                  name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
+                  id="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    validationErrors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  required
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
                   placeholder="Confirm your password"
                 />
                 <button
@@ -318,124 +326,57 @@ const RegisterForm: React.FC = () => {
               )}
             </div>
 
-            {/* First Name & Last Name */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                  First name *
-                </label>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  autoComplete="given-name"
-                  required
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    validationErrors.firstName ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="First name"
-                />
-                {validationErrors.firstName && (
-                  <p className="mt-1 text-sm text-red-600">{validationErrors.firstName}</p>
-                )}
-              </div>
-              
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Last name *
-                </label>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  autoComplete="family-name"
-                  required
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    validationErrors.lastName ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Last name"
-                />
-                {validationErrors.lastName && (
-                  <p className="mt-1 text-sm text-red-600">{validationErrors.lastName}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Year & Major */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-2">
-                  Year *
-                </label>
-                <select
-                  id="year"
-                  name="year"
-                  required
-                  value={formData.year}
-                  onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {years.map(year => (
-                    <option key={year.value} value={year.value}>{year.label}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label htmlFor="major" className="block text-sm font-medium text-gray-700 mb-2">
-                  Major *
-                </label>
-                <input
-                  id="major"
-                  name="major"
-                  type="text"
-                  required
-                  value={formData.major}
-                  onChange={(e) => handleInputChange('major', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    validationErrors.major ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., Computer Science"
-                />
-                {validationErrors.major && (
-                  <p className="mt-1 text-sm text-red-600">{validationErrors.major}</p>
-                )}
-              </div>
+            {/* Major */}
+            <div>
+              <label htmlFor="major" className="block text-sm font-medium text-neutral-700 mb-2">
+                Major *
+              </label>
+              <input
+                type="text"
+                id="major"
+                value={formData.major}
+                onChange={(e) => handleInputChange('major', e.target.value)}
+                required
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                placeholder="e.g., Computer Science"
+              />
+              {validationErrors.major && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.major}</p>
+              )}
             </div>
 
             {/* Hometown */}
             <div>
-              <label htmlFor="hometown" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="hometown" className="block text-sm font-medium text-neutral-700 mb-2">
                 Hometown *
               </label>
               <input
-                id="hometown"
-                name="hometown"
                 type="text"
-                required
+                id="hometown"
                 value={formData.hometown}
                 onChange={(e) => handleInputChange('hometown', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  validationErrors.hometown ? 'border-red-300' : 'border-gray-300'
-                }`}
+                required
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
                 placeholder="Where are you from?"
               />
               {validationErrors.hometown && (
                 <p className="mt-1 text-sm text-red-600">{validationErrors.hometown}</p>
               )}
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <div>
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="text-red-500" size={20} />
+                  <p className="text-red-700 text-sm font-medium">{error}</p>
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-base font-medium text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">
@@ -443,27 +384,23 @@ const RegisterForm: React.FC = () => {
                   <span>Creating account...</span>
                 </div>
               ) : (
-                'Create account'
+                'Create Account'
               )}
             </button>
-          </div>
+          </form>
 
-          {/* Sign In Link */}
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link
-                href="/auth/login"
-                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-              >
-                Sign in
-              </Link>
-            </p>
+          <div className="mt-6 text-center">
+            <Link 
+              href="/" 
+              className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
+            >
+              ← Back to Home
+            </Link>
           </div>
-        </form>
+        </div>
 
         {/* Footer */}
-        <div className="text-center text-xs text-gray-500">
+        <div className="text-center text-xs text-gray-500 mt-8">
           <p>By creating an account, you agree to our Terms of Service and Privacy Policy</p>
         </div>
       </div>

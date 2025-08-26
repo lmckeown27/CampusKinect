@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Search, Filter, MapPin, Calendar, Tag, X } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
 import PostCard from '../ui/PostCard';
 import TagSelector from '../ui/TagSelector';
-import { Search, Filter, X } from 'lucide-react';
 
 const HomeTab: React.FC = () => {
   const { 
@@ -207,7 +207,7 @@ const HomeTab: React.FC = () => {
             <div className="space-y-3">
               <div className="p-3 bg-blue-50 rounded-lg">
                 <h4 className="font-medium text-blue-900">Popular This Week</h4>
-                <p className="text-sm text-blue-700 mt-1">Check out what's trending on campus</p>
+                <p className="text-sm text-blue-700 mt-1">Check out what&apos;s trending on campus</p>
               </div>
               
               <div className="p-3 bg-green-50 rounded-lg">

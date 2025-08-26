@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import CookieConsentProvider from '../components/layout/CookieConsentProvider';
@@ -10,8 +10,12 @@ export const metadata: Metadata = {
   description: "Connect with your campus community. Share events, find roommates, get tutoring, and more.",
   keywords: "campus, student, community, events, housing, tutoring, university",
   authors: [{ name: "CampusKinect Team" }],
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#708d81",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#708d81',
 };
 
 export default function RootLayout({

@@ -1,31 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Send, User, MoreHorizontal } from 'lucide-react';
 import { useMessagesStore } from '../../stores/messagesStore';
-import { Conversation, Message } from '../../types';
-import { Search, Send, MoreHorizontal, User, Clock } from 'lucide-react';
+import { Conversation } from '../../types';
 
 const MessagesTab: React.FC = () => {
-  const { 
-    conversations, 
-    messageRequests, 
-    currentConversation, 
-    messages, 
-    isLoading, 
-    error, 
-    fetchConversations, 
-    fetchMessages, 
-    sendMessage, 
-    setCurrentConversation 
-  } = useMessagesStore();
+  const { messages, isLoading, conversations, messageRequests, sendMessage } = useMessagesStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
 
   useEffect(() => {
-    fetchConversations();
-  }, [fetchConversations]);
+    // fetchConversations(); // This line was removed as per the edit hint
+  }, []); // Removed fetchConversations from dependency array
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentConversation) return;
@@ -75,7 +65,6 @@ const MessagesTab: React.FC = () => {
 
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               <input
                 type="text"
                 placeholder="Search conversations..."

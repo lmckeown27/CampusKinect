@@ -2,40 +2,35 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Lock, Eye, Shield, Database, Bell, Users } from 'lucide-react';
+import { ArrowLeft, Lock } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="bg-white border-b border-neutral-200 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center space-x-4">
             <Link 
               href="/" 
-              className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
             >
               <ArrowLeft size={20} />
               <span>Back to Home</span>
             </Link>
-            <div className="h-6 w-px bg-gray-300"></div>
-            <div className="flex items-center space-x-2">
-              <Lock size={24} className="text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Privacy Policy</h1>
+            <div className="h-6 w-px bg-neutral-300"></div>
+            <div className="flex items-center space-x-3">
+              <Lock size={28} className="text-primary" />
+              <h1 className="text-3xl font-bold text-neutral-900">Privacy Policy</h1>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-neutral-100">
           <div className="prose prose-lg max-w-none">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">CampusKinect Privacy Policy</h2>
-              <p className="text-gray-600">Last updated: {new Date().toLocaleDateString()}</p>
-            </div>
-
             <div className="space-y-8">
               {/* Introduction */}
               <section>
@@ -114,7 +109,7 @@ export default function PrivacyPolicyPage() {
                   <li><strong>Legal Requirements:</strong> When required by law or to protect rights</li>
                 </ul>
 
-                <h4 className="text-lg font-medium text-gray-900 mb-3">4.2 What We Don't Share</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-3">4.2 What We Don&apos;t Share</h4>
                 <p className="text-gray-700 leading-relaxed mb-4">
                   We never share your email address with other users, your password or account credentials, 
                   your personal messages without consent, or your data with third-party advertisers.
@@ -225,9 +220,9 @@ export default function PrivacyPolicyPage() {
                 </p>
               </section>
 
-              {/* Children's Privacy */}
+              {/* Children&apos;s Privacy */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">10. Children's Privacy</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">10. Children&apos;s Privacy</h3>
                 <p className="text-gray-700 leading-relaxed">
                   CampusKinect is not intended for children under 13 years of age. We do not knowingly collect 
                   personal information from children under 13. If you are a parent or guardian and believe your 
@@ -265,7 +260,7 @@ export default function PrivacyPolicyPage() {
                   <p className="text-gray-700">
                     <strong>Email:</strong> liam.mckeown38415@gmail.com<br />
                     <strong>Data Protection Officer:</strong> liam.mckeown38415@gmail.com<br />
-                    <strong>Support Hours:</strong> Whenever I'm free
+                    <strong>Support Hours:</strong> Whenever I&apos;m free
                   </p>
                 </div>
               </section>

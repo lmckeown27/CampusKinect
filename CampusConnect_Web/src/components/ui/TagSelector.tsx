@@ -96,9 +96,9 @@ const TagSelector: React.FC<TagSelectorProps> = ({
             ))}
           </div>
         ) : searchQuery ? (
-          <p className="text-sm text-gray-500">No tags found matching "{searchQuery}"</p>
+          <p className="text-sm text-gray-500">No tags found matching &quot;{searchQuery}&quot;</p>
         ) : (
-          <p className="text-sm text-gray-500">All popular tags are selected</p>
+          <p className="text-sm text-gray-500">Type &quot;tag&quot; to add a new tag</p>
         )}
       </div>
 

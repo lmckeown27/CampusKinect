@@ -17,11 +17,11 @@ const Header: React.FC = () => {
     <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
       <div className="px-4 py-3 flex items-center justify-between">
         {/* App Title */}
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">K</span>
           </div>
-          <h1 className="text-xl font-bold text-gray-900">CampusKinect</h1>
+          <h1 className="text-xl font-bold text-neutral-900">CampusKinect</h1>
         </div>
 
         {/* Right Side - User Profile & Actions */}
