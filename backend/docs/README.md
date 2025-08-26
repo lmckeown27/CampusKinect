@@ -37,6 +37,10 @@ Testing guides and procedures:
 - **test-backend.js** - Comprehensive backend testing script
 - **migrate-grading-system.js** - Database migration script
 
+### 🚀 **Frontend Development** (`/frontend/`)
+Frontend development guidelines and specifications:
+- **FRONTEND_DEVELOPMENT_GUIDE.md** - Comprehensive guide for Web, iOS, and Android development
+
 ## 🚀 Quick Start
 
 ### 1. **Database Setup**
@@ -67,6 +71,7 @@ node test-backend.js
 - **[Personalized Feed](system/PERSONALIZED_FEED_README.md)** - New post prioritization
 - **[API Documentation](api/)** - All UI frameworks and API specs
 - **[Testing Guide](testing/)** - Backend testing procedures
+- **[Frontend Development](frontend/FRONTEND_DEVELOPMENT_GUIDE.md)** - Complete frontend implementation guide
 
 ## 📋 Documentation Index
 

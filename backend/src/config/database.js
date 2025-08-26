@@ -49,13 +49,15 @@ const createTables = async () => {
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         domain VARCHAR(255) UNIQUE NOT NULL,
-        city VARCHAR(100) NOT NULL,
-        state VARCHAR(100) NOT NULL,
-        country VARCHAR(100) DEFAULT 'USA',
+        city VARCHAR(100),
+        state VARCHAR(100),
+        country VARCHAR(100) DEFAULT 'US',
         latitude DECIMAL(10, 8),
         longitude DECIMAL(11, 8),
         cluster_id INTEGER,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
@@ -341,5 +343,7 @@ if (require.main === module) {
 module.exports = {
   pool,
   query: (text, params) => pool.query(text, params),
+  initDatabase
+}; 
   initDatabase
 }; 

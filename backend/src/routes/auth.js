@@ -8,6 +8,7 @@ const { validate, commonValidations } = require('../middleware/validation');
 const { auth } = require('../middleware/auth');
 const { sendVerificationCode } = require('../services/emailService');
 const { UNIVERSITY_CONFIG } = require('../config/university');
+const educationalDomainService = require('../services/educationalDomainService');
 
 const router = express.Router();
 
@@ -25,14 +26,11 @@ router.post('/register', [
   body('email')
     .isEmail().withMessage('Please provide a valid email address')
     .custom(async (value) => {
-      // Check if it's a .edu email
-      if (!value.endsWith('.edu')) {
-        throw new Error('Email must be a valid .edu address');
-      }
+      // Use the educational domain service to validate
+      const validation = await educationalDomainService.validateEducationalDomain(value);
       
-      // Check if it's Cal Poly SLO (must be exactly @calpoly.edu)
-      if (!/^[^@]+@calpoly\.edu$/.test(value)) {
-        throw new Error('Thank you for your interest in CampusConnect! We\'re currently working out all the bugs with Cal Poly SLO first before expanding to other universities. Please check back later or contact us if you\'d like to be notified when we expand to your university.');
+      if (!validation.isValid) {
+        throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
       }
       
       // Check if email is already registered
@@ -68,12 +66,30 @@ router.post('/register', [
     const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS) || 12);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Create user (automatically assigned to Cal Poly SLO for now)
+    // Get or create university for the user's email domain
+    const domain = email.split('@')[1];
+    let universityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly SLO
+    
+    // Try to find existing university
+    const universityResult = await query('SELECT id FROM universities WHERE domain = $1', [domain]);
+    if (universityResult.rows.length > 0) {
+      universityId = universityResult.rows[0].id;
+    } else {
+      // Create new university entry
+      const newUniversityResult = await query(`
+        INSERT INTO universities (name, domain, country, is_active)
+        VALUES ($1, $2, $3, true)
+        RETURNING id
+      `, [domain, domain, 'US']); // Default country, will be updated by validation service
+      universityId = newUniversityResult.rows[0].id;
+    }
+    
+    // Create user with detected university
     const result = await query(`
       INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, created_at
-    `, [username, email, passwordHash, firstName, lastName, year, major, hometown, UNIVERSITY_CONFIG.primaryUniversityId]);
+    `, [username, email, passwordHash, firstName, lastName, year, major, hometown, universityId]);
 
     const user = result.rows[0];
 
@@ -171,18 +187,15 @@ router.post('/register', [
 router.post('/login', [
   body('email')
     .isEmail().withMessage('Please provide a valid email address')
-    .custom((value) => {
-      // Check if it's a .edu email
-      if (!value.endsWith('.edu')) {
-        throw new Error('Email must be a valid .edu address');
+    .custom(async (value) => {
+      // Use the educational domain service to validate
+      const validation = await educationalDomainService.validateEducationalDomain(value);
+      
+      if (!validation.isValid) {
+        throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
       }
       
-      // Check if it's Cal Poly SLO
-      if (!value.endsWith('@calpoly.edu')) {
-        throw new Error('Thank you for your interest in CampusConnect! We\'re currently working out all the bugs with Cal Poly SLO first before expanding to other universities. Please check back later or contact us if you\'d like to be notified when we expand to your university.');
-      }
-      
-      return true;
+      return true
     }),
   body('password').notEmpty().withMessage('Password is required'),
   validate
@@ -791,6 +804,19 @@ router.get('/me', auth, async (req, res) => {
         }
       }
     });
+
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to get profile. Please try again.'
+      }
+    });
+  }
+});
+
+module.exports = router; 
 
   } catch (error) {
     console.error('Get profile error:', error);

@@ -1,7 +1,6 @@
 // University Configuration
-// This file configures the primary university for the app
-// Currently restricted to Cal Poly SLO only for cost/data management
-// Future expansion can modify this to support multiple universities
+// This file configures universities for the app
+// Supports 5 major first-world countries with smart domain validation
 
 const PRIMARY_UNIVERSITY = {
   id: 11,
@@ -9,7 +8,7 @@ const PRIMARY_UNIVERSITY = {
   domain: 'calpoly.edu',
   city: 'San Luis Obispo',
   state: 'CA',
-  country: 'USA',
+  country: 'US',
   abbreviation: 'Cal Poly SLO'
 };
 
@@ -22,8 +21,18 @@ const UNIVERSITY_CONFIG = {
   // University name for display purposes
   displayName: PRIMARY_UNIVERSITY.name,
   
-  // Domain validation - only allow .calpoly.edu emails
-  allowedDomains: ['calpoly.edu'],
+  // Domain validation - now supports multiple educational domains
+  allowedDomains: ['calpoly.edu'], // Legacy support
+  
+  // Supported countries and their educational domains
+  supportedCountries: {
+    'US': ['.edu'],
+    'UK': ['.ac.uk'],
+    'Canada': ['.ca'],
+    'Australia': ['.edu.au'],
+    'Germany': ['.de'],
+    'France': ['.fr']
+  },
   
   // Geographic cluster (for future expansion)
   clusterId: 1, // California cluster
@@ -79,6 +88,15 @@ const getPrimaryUniversity = () => {
 const validateUniversityEmail = (email) => {
   const domain = email.split('@')[1];
   return UNIVERSITY_CONFIG.allowedDomains.includes(domain);
+};
+
+module.exports = {
+  PRIMARY_UNIVERSITY,
+  UNIVERSITY_CONFIG,
+  isPrimaryUniversity,
+  getPrimaryUniversity,
+  validateUniversityEmail
+}; 
 };
 
 module.exports = {
