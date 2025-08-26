@@ -56,7 +56,7 @@ export default function TermsOfServicePage() {
                   to create an account and use CampusKinect.
                 </p>
                 <p className="text-gray-700 leading-relaxed">
-                  You must be at least 18 years old or have parental consent to use our services.
+                  CampusKinect is exclusively for university students with valid educational email addresses.
                 </p>
               </section>
 
