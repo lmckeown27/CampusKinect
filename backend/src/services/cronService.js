@@ -1,5 +1,7 @@
 const cron = require('node-cron');
 const { processRecurringPosts } = require('./recurringPostService');
+const relativeGradingService = require('./relativeGradingService');
+const marketSizeService = require('./marketSizeService');
 
 /**
  * Cron Service
@@ -32,6 +34,54 @@ const scheduleRecurringPostProcessing = () => {
   console.log('✅ Recurring post processing scheduled successfully');
 };
 
+// Update market sizes every day at 2:00 AM
+const scheduleMarketSizeUpdates = () => {
+  console.log('⏰ Scheduling market size updates for 2:00 AM daily...');
+  
+  cron.schedule('0 2 * * *', async () => {
+    console.log('🕕 2:00 AM - Starting daily market size updates...');
+    
+    try {
+      const result = await marketSizeService.updateAllMarketSizes();
+      console.log(`✅ Daily market size updates completed: ${result.updated} universities updated`);
+      
+      // Update post market sizes after university updates
+      const postResult = await marketSizeService.updatePostMarketSizes();
+      console.log(`✅ Post market sizes updated: ${postResult.updated} posts updated`);
+      
+    } catch (error) {
+      console.error('❌ Daily market size updates failed:', error);
+    }
+  }, {
+    scheduled: true,
+    timezone: "America/Los_Angeles"
+  });
+  
+  console.log('✅ Market size updates scheduled successfully');
+};
+
+// Update relative grades every 5 minutes during active hours (8 AM - 10 PM)
+const scheduleGradeUpdates = () => {
+  console.log('⏰ Scheduling grade updates every 5 minutes during active hours...');
+  
+  cron.schedule('*/5 8-22 * * *', async () => {
+    console.log('🔄 Running scheduled grade updates...');
+    
+    try {
+      const result = await relativeGradingService.recalculateAllMarketGrades();
+      console.log(`✅ Grade updates completed for all markets`);
+      
+    } catch (error) {
+      console.error('❌ Scheduled grade updates failed:', error);
+    }
+  }, {
+    scheduled: true,
+    timezone: "America/Los_Angeles"
+  });
+  
+  console.log('✅ Grade updates scheduled successfully');
+};
+
 // Process recurring posts every hour for testing (can be removed in production)
 const scheduleHourlyProcessing = () => {
   if (process.env.NODE_ENV === 'development') {
@@ -57,6 +107,8 @@ const scheduleHourlyProcessing = () => {
 const initializeCronJobs = () => {
   try {
     scheduleRecurringPostProcessing();
+    scheduleMarketSizeUpdates();
+    scheduleGradeUpdates();
     scheduleHourlyProcessing();
     
     console.log('🎯 All cron jobs initialized successfully');

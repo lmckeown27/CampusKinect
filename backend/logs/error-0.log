@@ -408,3 +408,452 @@
 2025-08-24 16:00:14 -07:00: [2025-08-24T23:00:14.502Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sun Aug 24 2025 16:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
 2025-08-24 18:02:45 -07:00: [2025-08-25T01:02:45.341Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sun Aug 24 2025 18:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
 2025-08-24 21:01:12 -07:00: [2025-08-25T04:01:12.235Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Sun Aug 24 2025 21:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 01:04:57 -07:00: [2025-08-25T08:04:57.285Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 01:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 02:03:44 -07:00: [2025-08-25T09:03:44.272Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 02:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 03:10:13 -07:00: [2025-08-25T10:10:13.732Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 03:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 04:16:38 -07:00: [2025-08-25T11:16:38.750Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 04:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 05:06:59 -07:00: [2025-08-25T12:06:59.758Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 05:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 06:01:04 -07:00: [2025-08-25T13:01:04.405Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 06:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 06:01:04 -07:00: [2025-08-25T13:01:04.470Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 06:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 07:02:55 -07:00: [2025-08-25T14:02:55.267Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 07:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 08:02:04 -07:00: [2025-08-25T15:02:04.474Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 08:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 09:00:02 -07:00: [2025-08-25T16:00:02.945Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 09:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 10:00:10 -07:00: [2025-08-25T17:00:10.973Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 10:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 11:05:01 -07:00: [2025-08-25T18:05:01.311Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 11:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 12:03:04 -07:00: [2025-08-25T19:03:04.736Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 12:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 15:12:48 -07:00: [2025-08-25T22:12:48.297Z] [PID: 59147] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Mon Aug 25 2025 15:00:00 GMT-0700 (Pacific Daylight Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.020Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.030Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.034Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/grading/market/small/distribution',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/grading/market/small/distribution\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/grading/market/small/distribution',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.036Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/grading/calculate-market/small',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/grading/calculate-market/small\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/read.js:137:5\n' +
+2025-08-25 19:25:18 -07:00:     '    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n' +
+2025-08-25 19:25:18 -07:00:     '    at invokeCallback (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/raw-body/index.js:238:16)\n' +
+2025-08-25 19:25:18 -07:00:     '    at done (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/raw-body/index.js:227:7)',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/grading/calculate-market/small',
+2025-08-25 19:25:18 -07:00:   method: 'POST',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.046Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/grading/post/1',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/grading/post/1\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/grading/post/1',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.049Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/reshuffle/eligibility?mainTab=combined',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/reshuffle/eligibility?mainTab=combined\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/reshuffle/eligibility?mainTab=combined',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.052Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/reshuffle/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/reshuffle/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/reshuffle/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.055Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/update-all',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/update-all\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/read.js:137:5\n' +
+2025-08-25 19:25:18 -07:00:     '    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n' +
+2025-08-25 19:25:18 -07:00:     '    at invokeCallback (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/raw-body/index.js:238:16)\n' +
+2025-08-25 19:25:18 -07:00:     '    at done (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/raw-body/index.js:227:7)',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/update-all',
+2025-08-25 19:25:18 -07:00:   method: 'POST',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.057Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/grading/calculate-all-markets',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/grading/calculate-all-markets\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/read.js:137:5\n' +
+2025-08-25 19:25:18 -07:00:     '    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n' +
+2025-08-25 19:25:18 -07:00:     '    at invokeCallback (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/raw-body/index.js:238:16)\n' +
+2025-08-25 19:25:18 -07:00:     '    at done (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/raw-body/index.js:227:7)',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/grading/calculate-all-markets',
+2025-08-25 19:25:18 -07:00:   method: 'POST',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.060Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.063Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.064Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.064Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.065Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:18 -07:00: ❌ Error: {
+2025-08-25 19:25:18 -07:00:   message: 'Route not found - /api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   stack: 'Error: Route not found - /api/v1/market-size/statistics\n' +
+2025-08-25 19:25:18 -07:00:     '    at notFound (/Users/liammckeown/Desktop/CampusConnect/backend/src/middleware/notFound.js:2:17)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9\n' +
+2025-08-25 19:25:18 -07:00:     '    at Function.process_params (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:346:12)\n' +
+2025-08-25 19:25:18 -07:00:     '    at next (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:280:10)\n' +
+2025-08-25 19:25:18 -07:00:     '    at urlencodedParser (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/body-parser/lib/types/urlencoded.js:94:7)\n' +
+2025-08-25 19:25:18 -07:00:     '    at Layer.handle [as handle_request] (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/layer.js:95:5)\n' +
+2025-08-25 19:25:18 -07:00:     '    at trim_prefix (/Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:328:13)\n' +
+2025-08-25 19:25:18 -07:00:     '    at /Users/liammckeown/Desktop/CampusConnect/backend/node_modules/express/lib/router/index.js:286:9',
+2025-08-25 19:25:18 -07:00:   url: '/api/v1/market-size/statistics',
+2025-08-25 19:25:18 -07:00:   method: 'GET',
+2025-08-25 19:25:18 -07:00:   ip: '::1',
+2025-08-25 19:25:18 -07:00:   userAgent: 'axios/1.11.0',
+2025-08-25 19:25:18 -07:00:   timestamp: '2025-08-26T02:25:18.066Z'
+2025-08-25 19:25:18 -07:00: }
+2025-08-25 19:25:48 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:48 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:48 -07:00:         ^
+2025-08-25 19:25:48 -07:00: 
+2025-08-25 19:25:48 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:48 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:48 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:48 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:48 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:48 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:48 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:48 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:48 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:48 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:48 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:48 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:48 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:48 -07:00:         ^
+2025-08-25 19:25:48 -07:00: 
+2025-08-25 19:25:48 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:48 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:48 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:48 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:48 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:48 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:48 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:48 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:48 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:48 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:48 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:48 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:48 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:48 -07:00:         ^
+2025-08-25 19:25:48 -07:00: 
+2025-08-25 19:25:48 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:48 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:48 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:48 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:48 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:48 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:48 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:48 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:48 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:48 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:48 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:49 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:49 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:49 -07:00:         ^
+2025-08-25 19:25:49 -07:00: 
+2025-08-25 19:25:49 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:49 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:49 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:49 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:49 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:49 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:49 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:49 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:49 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:49 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:49 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:49 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:49 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:49 -07:00:         ^
+2025-08-25 19:25:49 -07:00: 
+2025-08-25 19:25:49 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:49 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:49 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:49 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:49 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:49 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:49 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:49 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:49 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:49 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:49 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:49 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:49 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:49 -07:00:         ^
+2025-08-25 19:25:49 -07:00: 
+2025-08-25 19:25:49 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:49 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:49 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:49 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:49 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:49 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:49 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:49 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:49 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:49 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:49 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:49 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:49 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:49 -07:00:         ^
+2025-08-25 19:25:49 -07:00: 
+2025-08-25 19:25:49 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:49 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:49 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:49 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:49 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:49 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:49 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:49 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:49 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:49 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:49 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:50 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:50 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:50 -07:00:         ^
+2025-08-25 19:25:50 -07:00: 
+2025-08-25 19:25:50 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:50 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:50 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:50 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:50 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:50 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:50 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:50 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:50 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:50 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:50 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:50 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:50 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:50 -07:00:         ^
+2025-08-25 19:25:50 -07:00: 
+2025-08-25 19:25:50 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:50 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:50 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:50 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:50 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:50 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:50 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:50 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:50 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:50 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:50 -07:00:     at require (node:internal/modules/helpers:135:16)
+2025-08-25 19:25:50 -07:00: /Users/liammckeown/Desktop/CampusConnect/backend/src/routes/posts.js:3
+2025-08-25 19:25:50 -07:00: const { query, pool } = require('../config/database');
+2025-08-25 19:25:50 -07:00:         ^
+2025-08-25 19:25:50 -07:00: 
+2025-08-25 19:25:50 -07:00: SyntaxError: Identifier 'query' has already been declared
+2025-08-25 19:25:50 -07:00:     at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+2025-08-25 19:25:50 -07:00:     at Module._compile (node:internal/modules/cjs/loader:1704:20)
+2025-08-25 19:25:50 -07:00:     at Object..js (node:internal/modules/cjs/loader:1895:10)
+2025-08-25 19:25:50 -07:00:     at Module.load (node:internal/modules/cjs/loader:1465:32)
+2025-08-25 19:25:50 -07:00:     at Function._load (node:internal/modules/cjs/loader:1282:12)
+2025-08-25 19:25:50 -07:00:     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:25:50 -07:00:     at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+2025-08-25 19:25:50 -07:00:     at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+2025-08-25 19:25:50 -07:00:     at Hook._require.Module.require (/Users/liammckeown/.nvm/versions/node/v22.17.1/lib/node_modules/pm2/node_modules/require-in-the-middle/index.js:101:39)
+2025-08-25 19:25:50 -07:00:     at require (node:internal/modules/helpers:135:16)

@@ -1,5 +1,5 @@
 const express = require('express');
-const { body, query, param } = require('express-validator');
+const { body, query: queryValidator, param } = require('express-validator');
 const { query, pool } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
@@ -18,10 +18,10 @@ const router = express.Router();
 // @desc    Get organized feed with recurring posts prioritized
 // @access  Public
 router.get('/organized', [
-  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Invalid post type'),
-  query('tags').optional().isArray().withMessage('Tags must be an array'),
+  queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  queryValidator('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Invalid post type'),
+  queryValidator('tags').optional().isArray().withMessage('Tags must be an array'),
   validate
 ], async (req, res) => {
   try {
@@ -123,7 +123,7 @@ router.get('/organized', [
     queryParams.push(limit, offset);
 
     // Execute organized query
-    const result = await query(organizedQuery, queryParams);
+    const result = await queryValidator(organizedQuery, queryParams);
 
     // Get total count
     let countQuery = `
@@ -238,8 +238,8 @@ router.get('/organized', [
 
 // GET /api/v1/posts/feed-positioned - Get posts with feed positioning probabilities
 router.get('/feed-positioned', [
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
+  queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  queryValidator('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
   validate
 ], async (req, res) => {
   try {
@@ -269,8 +269,8 @@ router.get('/feed-positioned', [
 
 // GET /api/v1/posts/smart-feed - Get smart feed with positioning metadata
 router.get('/smart-feed', [
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
+  queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  queryValidator('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
   validate
 ], async (req, res) => {
   try {
@@ -301,12 +301,12 @@ router.get('/smart-feed', [
 
 // GET /api/v1/posts/personalized-feed - Get personalized feed based on user interactions and bookmarks
 router.get('/personalized-feed', [
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
-  query('mainTab').optional().isIn(['goods-services', 'events', 'combined']).withMessage('Invalid main tab category'),
-  query('subTab').optional().isString().withMessage('Sub tab must be a string'),
-  query('offers').optional().isBoolean().withMessage('Offers filter must be boolean'),
-  query('requests').optional().isBoolean().withMessage('Requests filter must be boolean'),
+  queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  queryValidator('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
+  queryValidator('mainTab').optional().isIn(['goods-services', 'events', 'combined']).withMessage('Invalid main tab category'),
+  queryValidator('subTab').optional().isString().withMessage('Sub tab must be a string'),
+  queryValidator('offers').optional().isBoolean().withMessage('Offers filter must be boolean'),
+  queryValidator('requests').optional().isBoolean().withMessage('Requests filter must be boolean'),
   validate
 ], async (req, res) => {
   try {
@@ -416,12 +416,12 @@ router.get('/personalized-feed', [
 
 // GET /api/v1/posts/tabbed - Get posts organized by main tabs with slide-out sub-tab selection
 router.get('/tabbed', [
-  query('mainTab').optional().isIn(['goods-services', 'events', 'combined']).withMessage('Invalid main tab category'),
-  query('subTab').optional().isString().withMessage('Sub tab must be a string'),
-  query('offers').optional().isBoolean().withMessage('Offers filter must be boolean'),
-  query('requests').optional().isBoolean().withMessage('Requests filter must be boolean'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
+  queryValidator('mainTab').optional().isIn(['goods-services', 'events', 'combined']).withMessage('Invalid main tab category'),
+  queryValidator('subTab').optional().isString().withMessage('Sub tab must be a string'),
+  queryValidator('offers').optional().isBoolean().withMessage('Offers filter must be boolean'),
+  queryValidator('requests').optional().isBoolean().withMessage('Requests filter must be boolean'),
+  queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  queryValidator('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer'),
   validate
 ], async (req, res) => {
   try {
@@ -622,7 +622,7 @@ router.get('/tabbed', [
     baseQuery += ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
     queryParams.push(parseInt(limit), parseInt(offset));
     
-    const result = await query(baseQuery, queryParams);
+    const result = await queryValidator(baseQuery, queryParams);
     
     // Format posts with tab-specific information
     const formattedPosts = result.rows.map(post => ({
@@ -712,7 +712,7 @@ router.get('/tabbed', [
       }
     }
     
-    const countResult = await query(countQuery, countParams);
+    const countResult = await queryValidator(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
     
     // Get tab metadata for slide-out panel
@@ -953,7 +953,7 @@ router.get('/tabs', async (req, res) => {
               countParams.push(subTab.tags);
             }
             
-            const countResult = await query(countQuery, countParams);
+            const countResult = await queryValidator(countQuery, countParams);
             const postCount = parseInt(countResult.rows[0].total);
             
             return {
@@ -1006,13 +1006,13 @@ router.get('/tabs', async (req, res) => {
 // @desc    Get posts with filtering, sorting, and pagination
 // @access  Public (with optional auth for personalized results)
 router.get('/', [
-  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('universityId').optional().isInt().withMessage('University ID must be an integer'),
-  query('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Invalid post type'),
-  query('tags').optional().isArray().withMessage('Tags must be an array'),
-  query('sortBy').optional().isIn(['recent', 'expiring', 'recurring', 'organized']).withMessage('Invalid sort option'),
-  query('expandCluster').optional().isBoolean().withMessage('Expand cluster must be boolean'),
+  queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  queryValidator('universityId').optional().isInt().withMessage('University ID must be an integer'),
+  queryValidator('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Invalid post type'),
+  queryValidator('tags').optional().isArray().withMessage('Tags must be an array'),
+  queryValidator('sortBy').optional().isIn(['recent', 'expiring', 'recurring', 'organized']).withMessage('Invalid sort option'),
+  queryValidator('expandCluster').optional().isBoolean().withMessage('Expand cluster must be boolean'),
   validate
 ], async (req, res) => {
   try {
@@ -1127,7 +1127,7 @@ router.get('/', [
     queryParams.push(limit, offset);
 
     // Execute query
-    const result = await query(baseQuery, queryParams);
+    const result = await queryValidator(baseQuery, queryParams);
 
     // Get total count for pagination (Cal Poly SLO only for now)
     let countQuery = `
@@ -1228,14 +1228,14 @@ router.get('/:id', [
     const { id } = req.params;
 
     // Increment view count
-    await query(`
+    await queryValidator(`
       UPDATE posts 
       SET view_count = view_count + 1 
       WHERE id = $1
     `, [id]);
 
     // Get post with details
-    const result = await query(`
+    const result = await queryValidator(`
       SELECT 
         p.*,
         u.username,
@@ -1359,7 +1359,7 @@ router.post('/', [
     const client = await pool.connect();
     
     try {
-      await client.query('BEGIN');
+      await client.queryValidator('BEGIN');
 
       // Calculate next repost date for recurring posts
       let nextRepostDate = null;
@@ -1368,7 +1368,7 @@ router.post('/', [
       }
 
       // Create post
-      const postResult = await client.query(`
+      const postResult = await client.queryValidator(`
         INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, repost_frequency, next_repost_date, expires_at, event_start, event_end)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         RETURNING id, title, description, post_type, duration_type, repost_frequency, next_repost_date, expires_at, event_start, event_end, created_at
@@ -1380,12 +1380,12 @@ router.post('/', [
       if (tags && tags.length > 0) {
         for (const tagName of tags) {
           // Get or create tag
-          let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
+          let tagResult = await client.queryValidator('SELECT id FROM tags WHERE name = $1', [tagName]);
           
           let tagId;
           if (tagResult.rows.length === 0) {
             // Create new tag
-            const newTagResult = await client.query(`
+            const newTagResult = await client.queryValidator(`
               INSERT INTO tags (name, category) 
               VALUES ($1, 'custom') 
               RETURNING id
@@ -1396,14 +1396,14 @@ router.post('/', [
           }
 
           // Link tag to post
-          await client.query(`
+          await client.queryValidator(`
             INSERT INTO post_tags (post_id, tag_id) 
             VALUES ($1, $2)
           `, [post.id, tagId]);
         }
       }
 
-      await client.query('COMMIT');
+      await client.queryValidator('COMMIT');
 
       // Calculate and update initial scores
       await updatePostScores(post.id);
@@ -1413,7 +1413,7 @@ router.post('/', [
       await redisDel(cacheKey);
 
       // Get full post with tags
-      const fullPostResult = await query(`
+      const fullPostResult = await queryValidator(`
         SELECT 
           p.*,
           u.username,
@@ -1471,7 +1471,7 @@ router.post('/', [
       });
 
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.queryValidator('ROLLBACK');
       throw error;
     } finally {
       client.release();
@@ -1522,10 +1522,10 @@ router.put('/:id', [
     const client = await pool.connect();
     
     try {
-      await client.query('BEGIN');
+      await client.queryValidator('BEGIN');
 
       // Update post
-      const updateResult = await client.query(`
+      const updateResult = await client.queryValidator(`
         UPDATE posts 
         SET title = $1, description = $2, post_type = $3, duration_type = $4, 
             expires_at = $5, event_start = $6, event_end = $7, updated_at = CURRENT_TIMESTAMP
@@ -1547,15 +1547,15 @@ router.put('/:id', [
       // Update tags if provided
       if (tags) {
         // Remove existing tags
-        await client.query('DELETE FROM post_tags WHERE post_id = $1', [id]);
+        await client.queryValidator('DELETE FROM post_tags WHERE post_id = $1', [id]);
 
         // Add new tags
         for (const tagName of tags) {
-          let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
+          let tagResult = await client.queryValidator('SELECT id FROM tags WHERE name = $1', [tagName]);
           
           let tagId;
           if (tagResult.rows.length === 0) {
-            const newTagResult = await client.query(`
+            const newTagResult = await client.queryValidator(`
               INSERT INTO tags (name, category) 
               VALUES ($1, 'custom') 
               RETURNING id
@@ -1565,14 +1565,14 @@ router.put('/:id', [
             tagId = tagResult.rows[0].id;
           }
 
-          await client.query(`
+          await client.queryValidator(`
             INSERT INTO post_tags (post_id, tag_id) 
             VALUES ($1, $2)
           `, [id, tagId]);
         }
       }
 
-      await client.query('COMMIT');
+      await client.queryValidator('COMMIT');
 
       // Clear cache
       const cacheKey = generateCacheKey('post', id);
@@ -1597,7 +1597,7 @@ router.put('/:id', [
       });
 
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.queryValidator('ROLLBACK');
       throw error;
     } finally {
       client.release();
@@ -1627,7 +1627,7 @@ router.delete('/:id', [
     const { id } = req.params;
 
     // Mark post as fulfilled (soft delete)
-    const result = await query(`
+    const result = await queryValidator(`
       UPDATE posts 
       SET is_active = false, updated_at = CURRENT_TIMESTAMP
       WHERE id = $1
@@ -1675,7 +1675,7 @@ router.post('/:id/fulfill', [
   try {
     const { id } = req.params;
 
-    const result = await query(`
+    const result = await queryValidator(`
       UPDATE posts 
       SET is_fulfilled = true, updated_at = CURRENT_TIMESTAMP
       WHERE id = $1
@@ -1948,7 +1948,7 @@ router.post('/multi-university', auth, async (req, res) => {
       RETURNING id
     `;
     
-    const postResult = await query(postQuery, [
+    const postResult = await queryValidator(postQuery, [
       userId, primaryUniversityId, title, description, postType, durationType, 
       expiresAt, eventStart, eventEnd
     ]);
@@ -1962,18 +1962,18 @@ router.post('/multi-university', auth, async (req, res) => {
     if (tags && tags.length > 0) {
       for (const tagName of tags) {
         // Get or create tag
-        let tagResult = await query('SELECT id FROM tags WHERE name = $1', [tagName]);
+        let tagResult = await queryValidator('SELECT id FROM tags WHERE name = $1', [tagName]);
         let tagId;
         
         if (tagResult.rows.length === 0) {
-          const newTagResult = await query('INSERT INTO tags (name, category) VALUES ($1, $2) RETURNING id', [tagName, 'other']);
+          const newTagResult = await queryValidator('INSERT INTO tags (name, category) VALUES ($1, $2) RETURNING id', [tagName, 'other']);
           tagId = newTagResult.rows[0].id;
         } else {
           tagId = tagResult.rows[0].id;
         }
         
         // Link tag to post
-        await query('INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [postId, tagId]);
+        await queryValidator('INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [postId, tagId]);
       }
     }
     
@@ -1993,7 +1993,7 @@ router.post('/multi-university', auth, async (req, res) => {
       GROUP BY p.id, u.name, u.city, u.state
     `;
     
-    const completePostResult = await query(completePostQuery, [postId]);
+    const completePostResult = await queryValidator(completePostQuery, [postId]);
     const post = completePostResult.rows[0];
     
     // Get all targeted universities
@@ -2029,7 +2029,7 @@ router.put('/:id/universities', auth, async (req, res) => {
     
     // Verify user owns the post
     const ownershipQuery = 'SELECT user_id FROM posts WHERE id = $1';
-    const ownershipResult = await query(ownershipQuery, [postId]);
+    const ownershipResult = await queryValidator(ownershipQuery, [postId]);
     
     if (ownershipResult.rows.length === 0) {
       return res.status(404).json({ error: 'Post not found' });
@@ -2158,12 +2158,12 @@ router.get('/scope/:scope', async (req, res) => {
     
     // Execute queries
     const postsResult = scope === 'single' 
-      ? await query(postsQuery, [limit, offset])
-      : await query(postsQuery, [scope, limit, offset]);
+      ? await queryValidator(postsQuery, [limit, offset])
+      : await queryValidator(postsQuery, [scope, limit, offset]);
     
     const countResult = scope === 'single'
-      ? await query(countQuery)
-      : await query(countQuery, [scope]);
+      ? await queryValidator(countQuery)
+      : await queryValidator(countQuery, [scope]);
     
     const posts = postsResult.rows;
     const total = parseInt(countResult.rows[0].total);
@@ -2549,10 +2549,10 @@ router.post('/create', [
     const client = await pool.connect();
     
     try {
-      await client.query('BEGIN');
+      await client.queryValidator('BEGIN');
 
       // Create post
-      const postResult = await client.query(`
+      const postResult = await client.queryValidator(`
         INSERT INTO posts (
           user_id, 
           university_id, 
@@ -2594,14 +2594,14 @@ router.post('/create', [
       if (images && images.length > 0) {
         for (let i = 0; i < images.length; i++) {
           const imageUrl = images[i];
-          await client.query(`
+          await client.queryValidator(`
             INSERT INTO post_images (post_id, image_url, image_order)
             VALUES ($1, $2, $3)
           `, [post.id, imageUrl, i]);
         }
       }
 
-      await client.query('COMMIT');
+      await client.queryValidator('COMMIT');
 
       // Calculate and update initial scores
       await updatePostScores(post.id);
@@ -2611,7 +2611,7 @@ router.post('/create', [
       await redisDel(cacheKey);
 
       // Get full post with tags and images
-      const fullPostResult = await query(`
+      const fullPostResult = await queryValidator(`
         SELECT 
           p.*,
           u.username,
@@ -2678,7 +2678,7 @@ router.post('/create', [
       });
 
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.queryValidator('ROLLBACK');
       throw error;
     } finally {
       client.release();
@@ -2699,12 +2699,12 @@ router.post('/create', [
 // Helper function to add tags to posts
 async function addTagToPost(client, postId, tagName, category) {
   // Get or create tag
-  let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
+  let tagResult = await client.queryValidator('SELECT id FROM tags WHERE name = $1', [tagName]);
   
   let tagId;
   if (tagResult.rows.length === 0) {
     // Create new tag
-    const newTagResult = await client.query(`
+    const newTagResult = await client.queryValidator(`
       INSERT INTO tags (name, category) 
       VALUES ($1, $2) 
       RETURNING id
@@ -2715,7 +2715,7 @@ async function addTagToPost(client, postId, tagName, category) {
   }
 
   // Link tag to post
-  await client.query(`
+  await client.queryValidator(`
     INSERT INTO post_tags (post_id, tag_id) 
     VALUES ($1, $2)
   `, [postId, tagId]);
@@ -3122,7 +3122,7 @@ router.get('/create-stats', auth, async (req, res) => {
     const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
 
     // Get user's post creation statistics
-    const userStatsResult = await query(`
+    const userStatsResult = await queryValidator(`
       SELECT 
         COUNT(*) as total_posts,
         COUNT(CASE WHEN post_type = 'offer' THEN 1 END) as offer_posts,
@@ -3137,7 +3137,7 @@ router.get('/create-stats', auth, async (req, res) => {
     `, [userId, universityId]);
 
     // Get most successful post types at this university
-    const universityStatsResult = await query(`
+    const universityStatsResult = await queryValidator(`
       SELECT 
         post_type,
         COUNT(*) as post_count,
@@ -3151,7 +3151,7 @@ router.get('/create-stats', auth, async (req, res) => {
     `, [universityId]);
 
     // Get most popular tags
-    const popularTagsResult = await query(`
+    const popularTagsResult = await queryValidator(`
       SELECT 
         t.name as tag_name,
         t.category as tag_category,
@@ -3167,7 +3167,7 @@ router.get('/create-stats', auth, async (req, res) => {
     `, [universityId]);
 
     // Get best posting times (based on engagement)
-    const bestTimesResult = await query(`
+    const bestTimesResult = await queryValidator(`
       SELECT 
         EXTRACT(HOUR FROM created_at) as hour,
         COUNT(*) as post_count,
@@ -3180,7 +3180,7 @@ router.get('/create-stats', auth, async (req, res) => {
     `, [universityId]);
 
     // Get user's tag usage
-    const userTagUsageResult = await query(`
+    const userTagUsageResult = await queryValidator(`
       SELECT 
         t.name as tag_name,
         t.category as tag_category,
@@ -3341,7 +3341,7 @@ router.post('/draft', [
     const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
 
     // Check if user already has a draft
-    const existingDraftResult = await query(`
+    const existingDraftResult = await queryValidator(`
       SELECT id FROM post_drafts 
       WHERE user_id = $1 AND university_id = $2
     `, [userId, universityId]);
@@ -3351,7 +3351,7 @@ router.post('/draft', [
     if (existingDraftResult.rows.length > 0) {
       // Update existing draft
       draftId = existingDraftResult.rows[0].id;
-      await query(`
+      await queryValidator(`
         UPDATE post_drafts SET
           content = $1,
           post_type = $2,
@@ -3364,7 +3364,7 @@ router.post('/draft', [
       `, [content, postType, primaryTags, secondaryTags, images, eventDetails, draftId]);
     } else {
       // Create new draft
-      const newDraftResult = await query(`
+      const newDraftResult = await queryValidator(`
         INSERT INTO post_drafts (
           user_id, 
           university_id, 
@@ -3411,7 +3411,7 @@ router.get('/draft', auth, async (req, res) => {
     const userId = req.user.id;
     const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
 
-    const draftResult = await query(`
+    const draftResult = await queryValidator(`
       SELECT 
         id,
         content,
@@ -3476,7 +3476,7 @@ router.delete('/draft', auth, async (req, res) => {
     const userId = req.user.id;
     const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
 
-    await query(`
+    await queryValidator(`
       DELETE FROM post_drafts 
       WHERE user_id = $1 AND university_id = $2
     `, [userId, universityId]);
@@ -3614,7 +3614,7 @@ router.get('/create-tips', auth, async (req, res) => {
     const userId = req.user.id;
     const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
 
-    const userStatsResult = await query(`
+    const userStatsResult = await queryValidator(`
       SELECT 
         COUNT(*) as total_posts,
         AVG(view_count) as avg_views,

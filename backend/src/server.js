@@ -21,6 +21,9 @@ const messageRoutes = require('./routes/messages');
 const searchRoutes = require('./routes/search');
 const uploadRoutes = require('./routes/upload');
 const reviewRoutes = require('./routes/reviews');
+const gradingRoutes = require('./routes/grading');
+const reshuffleRoutes = require('./routes/reshuffle');
+const marketSizeRoutes = require('./routes/marketSize');
 const { UNIVERSITY_CONFIG } = require('./config/university');
 const { initializeCronJobs } = require('./services/cronService');
 
@@ -126,6 +129,9 @@ app.use(`/api/${process.env.API_VERSION || 'v1'}/messages`, messageRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/search`, searchRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/upload`, uploadRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/reviews`, reviewRoutes);
+app.use(`/api/${process.env.API_VERSION || 'v1'}/grading`, gradingRoutes);
+app.use(`/api/${process.env.API_VERSION || 'v1'}/reshuffle`, reshuffleRoutes);
+app.use(`/api/${process.env.API_VERSION || 'v1'}/market-size`, marketSizeRoutes);
 
 // Error handling middleware
 app.use(notFound);

@@ -393,6 +393,282 @@ class PersonalizedFeedService {
       };
     }
   }
+
+  /**
+   * Get new post prioritized feed with proper grade distribution
+   * @param {number} userId - User ID
+   * @param {number} limit - Number of posts to return
+   * @param {string} mainTab - Main tab filter
+   * @param {string} subTab - Sub tab filter
+   * @returns {Object} New post prioritized feed
+   */
+  async getNewPostPrioritizedFeed(userId, limit = 10, mainTab = 'combined', subTab = 'all') {
+    try {
+      // Get user's bookmarked posts to exclude them
+      const bookmarkedPosts = await this.getUserBookmarkedPosts(userId);
+      const bookmarkedPostIds = bookmarkedPosts.map(post => post.post_id);
+
+      // Get user's interaction history
+      const userInteractions = await this.getUserInteractionHistory(userId);
+      const interactedPostIds = userInteractions.map(i => i.post_id);
+
+      // Build the new post prioritized query
+      const { query: prioritizedQuery, params } = this.buildNewPostPrioritizedQuery(
+        userId, 
+        limit, 
+        mainTab, 
+        subTab, 
+        bookmarkedPostIds,
+        interactedPostIds
+      );
+
+      // Execute the query
+      const result = await query(prioritizedQuery, params);
+
+      // Apply grade-based distribution
+      const distributedPosts = this.applyGradeDistribution(result.rows, limit);
+
+      // Check if we need to show tag exhaustion message
+      const exhaustionInfo = await this.checkTagExhaustion(userId, mainTab, subTab, interactedPostIds);
+
+      return {
+        posts: distributedPosts,
+        pagination: {
+          limit,
+          total: distributedPosts.length,
+          hasMore: distributedPosts.length === limit
+        },
+        personalization: {
+          bookmarkedPostsExcluded: bookmarkedPostIds.length,
+          newPostsShown: distributedPosts.length,
+          userInteractionCount: userInteractions.length
+        },
+        exhaustionInfo
+      };
+
+    } catch (error) {
+      console.error('Error getting new post prioritized feed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Build new post prioritized query with grade distribution
+   */
+  buildNewPostPrioritizedQuery(userId, limit, mainTab, subTab, bookmarkedPostIds, interactedPostIds) {
+    let baseQuery = `
+      SELECT 
+        p.id, p.user_id, p.university_id, p.title, p.description, p.post_type, 
+        p.duration_type, p.repost_frequency, p.original_post_id, p.message_count,
+        p.share_count, p.bookmark_count, p.repost_count, p.engagement_score,
+        p.base_score, p.time_urgency_bonus, p.final_score, p.expires_at, 
+        p.event_start, p.event_end, p.is_fulfilled, p.is_active, p.view_count,
+        p.created_at, p.updated_at, p.review_count, p.average_rating, p.review_score_bonus,
+        p.relative_grade, p.market_size,
+        u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
+        un.name as university_name, un.city as university_city, un.state as university_state,
+        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags
+      FROM posts p
+      JOIN users u ON p.user_id = u.id
+      JOIN universities un ON p.university_id = un.id
+      LEFT JOIN post_images pi ON p.id = pi.post_id
+      LEFT JOIN post_tags pt ON p.id = pt.post_id
+      LEFT JOIN tags t ON pt.tag_id = t.id
+      WHERE p.is_active = true
+    `;
+
+    const params = [];
+    let paramCount = 0;
+
+    // Add main tab filter
+    if (mainTab === 'goods-services') {
+      paramCount++;
+      baseQuery += ` AND p.post_type IN ('offer', 'request')`;
+    } else if (mainTab === 'events') {
+      paramCount++;
+      baseQuery += ` AND p.post_type = 'event'`;
+    }
+
+    // Add sub tab filter
+    if (subTab && subTab !== 'all') {
+      const subTabTags = this.getSubTabTags(subTab);
+      if (subTabTags.length > 0) {
+        paramCount++;
+        baseQuery += ` AND EXISTS (
+          SELECT 1 FROM post_tags pt2 
+          JOIN tags t2 ON pt2.tag_id = t2.id 
+          WHERE pt2.post_id = p.id AND t2.name = ANY($${paramCount})
+        )`;
+        params.push(subTabTags);
+      }
+    }
+
+    // Exclude bookmarked and interacted posts
+    if (bookmarkedPostIds.length > 0 || interactedPostIds.length > 0) {
+      const excludedIds = [...bookmarkedPostIds, ...interactedPostIds];
+      paramCount++;
+      baseQuery += ` AND p.id != ALL($${paramCount})`;
+      params.push(excludedIds);
+    }
+
+    // Group by post and order by grade and score
+    baseQuery += `
+      GROUP BY p.id, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
+               un.name, un.city, un.state
+      ORDER BY 
+        p.relative_grade ASC, -- A=1, B=2, C=3, D=4
+        p.final_score DESC,   -- Higher scores within same grade
+        p.created_at DESC     -- Newer posts first
+      LIMIT $${paramCount + 1}
+    `;
+
+    params.push(limit * 2); // Get more posts than needed for distribution
+
+    return { query: baseQuery, params };
+  }
+
+  /**
+   * Apply grade distribution to posts (20% new, 35% A, 25% B, 15% C, 5% D)
+   */
+  applyGradeDistribution(posts, targetLimit) {
+    const distribution = {
+      A: Math.ceil(targetLimit * 0.35), // 35% A-grade
+      B: Math.ceil(targetLimit * 0.25), // 25% B-grade
+      C: Math.ceil(targetLimit * 0.15), // 15% C-grade
+      D: Math.ceil(targetLimit * 0.05)  // 5% D-grade
+    };
+
+    const distributed = [];
+    const gradeCounts = { A: 0, B: 0, C: 0, D: 0 };
+
+    // First pass: collect posts by grade
+    const postsByGrade = { A: [], B: [], C: [], D: [] };
+    posts.forEach(post => {
+      if (post.relative_grade && postsByGrade[post.relative_grade]) {
+        postsByGrade[post.relative_grade].push(post);
+      }
+    });
+
+    // Distribute posts according to target distribution
+    for (const grade of ['A', 'B', 'C', 'D']) {
+      const targetCount = distribution[grade];
+      const availablePosts = postsByGrade[grade];
+      
+      for (let i = 0; i < Math.min(targetCount, availablePosts.length); i++) {
+        if (distributed.length < targetLimit) {
+          distributed.push(availablePosts[i]);
+          gradeCounts[grade]++;
+        }
+      }
+    }
+
+    // Fill remaining slots with any available posts
+    for (const grade of ['A', 'B', 'C', 'D']) {
+      const availablePosts = postsByGrade[grade];
+      const usedCount = gradeCounts[grade];
+      
+      for (let i = usedCount; i < availablePosts.length; i++) {
+        if (distributed.length < targetLimit) {
+          distributed.push(availablePosts[i]);
+        }
+      }
+    }
+
+    return distributed.slice(0, targetLimit);
+  }
+
+  /**
+   * Check if user has exhausted posts in current tag/category
+   */
+  async checkTagExhaustion(userId, mainTab, subTab, interactedPostIds) {
+    try {
+      let exhaustionQuery = `
+        SELECT COUNT(*) as total_posts
+        FROM posts p
+        WHERE p.is_active = true
+      `;
+
+      const params = [];
+      let paramCount = 0;
+
+      // Add main tab filter
+      if (mainTab === 'goods-services') {
+        paramCount++;
+        exhaustionQuery += ` AND p.post_type IN ('offer', 'request')`;
+      } else if (mainTab === 'events') {
+        paramCount++;
+        exhaustionQuery += ` AND p.post_type = 'event'`;
+      }
+
+      // Add sub tab filter
+      if (subTab && subTab !== 'all') {
+        const subTabTags = this.getSubTabTags(subTab);
+        if (subTabTags.length > 0) {
+          paramCount++;
+          exhaustionQuery += ` AND EXISTS (
+            SELECT 1 FROM post_tags pt2 
+            JOIN tags t2 ON pt2.tag_id = t2.id 
+            WHERE pt2.post_id = p.id AND t2.name = ANY($${paramCount})
+          )`;
+          params.push(subTabTags);
+        }
+      }
+
+      // Exclude interacted posts
+      if (interactedPostIds.length > 0) {
+        paramCount++;
+        exhaustionQuery += ` AND p.id != ALL($${paramCount})`;
+        params.push(interactedPostIds);
+      }
+
+      const result = await query(exhaustionQuery, params);
+      const totalAvailablePosts = parseInt(result.rows[0].total_posts);
+
+      if (totalAvailablePosts === 0) {
+        // Suggest alternative tags/categories
+        const suggestions = this.getAlternativeSuggestions(mainTab, subTab);
+        return {
+          exhausted: true,
+          message: `You've seen all available ${subTab !== 'all' ? subTab : mainTab} posts!`,
+          suggestions
+        };
+      }
+
+      return {
+        exhausted: false,
+        remainingPosts: totalAvailablePosts
+      };
+
+    } catch (error) {
+      console.error('Error checking tag exhaustion:', error);
+      return { exhausted: false, remainingPosts: 0 };
+    }
+  }
+
+  /**
+   * Get alternative tag/category suggestions
+   */
+  getAlternativeSuggestions(mainTab, subTab) {
+    const suggestions = [];
+
+    if (mainTab === 'goods-services') {
+      if (subTab === 'offer') {
+        suggestions.push({ type: 'category', name: 'request', message: 'Try viewing request posts instead' });
+      } else if (subTab === 'request') {
+        suggestions.push({ type: 'category', name: 'offer', message: 'Try viewing offer posts instead' });
+      } else if (subTab !== 'all') {
+        suggestions.push({ type: 'category', name: 'all', message: 'Try viewing all goods and services' });
+      }
+      suggestions.push({ type: 'tab', name: 'events', message: 'Try viewing events instead' });
+    } else if (mainTab === 'events') {
+      if (subTab !== 'all') {
+        suggestions.push({ type: 'subtab', name: 'all', message: 'Try viewing all events' });
+      }
+      suggestions.push({ type: 'tab', name: 'goods-services', message: 'Try viewing goods and services instead' });
+    }
+
+    return suggestions;
+  }
 }
 
 module.exports = new PersonalizedFeedService(); 

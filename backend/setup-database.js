@@ -109,7 +109,25 @@ const createTables = async () => {
         is_active BOOLEAN DEFAULT TRUE,
         view_count INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -- Scoring fields
+        message_count INTEGER DEFAULT 0,
+        share_count INTEGER DEFAULT 0,
+        bookmark_count INTEGER DEFAULT 0,
+        repost_count INTEGER DEFAULT 0,
+        engagement_score DECIMAL(10,2) DEFAULT 0.00,
+        base_score DECIMAL(10,2) DEFAULT 25.00,
+        time_urgency_bonus DECIMAL(10,2) DEFAULT 0.00,
+        final_score DECIMAL(10,2) DEFAULT 25.00,
+        review_count INTEGER DEFAULT 0,
+        average_rating DECIMAL(3,2) DEFAULT 0.00,
+        review_score_bonus DECIMAL(10,2) DEFAULT 0.00,
+        -- Relative grading fields
+        relative_grade CHAR(1) CHECK (relative_grade IN ('A', 'B', 'C', 'D')),
+        market_size VARCHAR(20) DEFAULT 'small',
+        -- Interaction tracking
+        last_interaction_at TIMESTAMP,
+        interaction_count INTEGER DEFAULT 0
       );
     `);
     console.log('✅ Posts table created');
@@ -187,7 +205,29 @@ const createTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+
+    // Post interactions table for tracking user interactions
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS post_interactions (
+        id SERIAL PRIMARY KEY,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        interaction_type VARCHAR(20) NOT NULL CHECK (interaction_type IN ('message', 'share', 'bookmark', 'repost', 'view')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(post_id, user_id, interaction_type)
+      );
+    `);
     console.log('✅ Messages table created');
+
+    // Create indexes for relative grading system
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_posts_relative_grade ON posts(relative_grade);
+      CREATE INDEX IF NOT EXISTS idx_posts_market_grade ON posts(market_size, relative_grade, final_score);
+      CREATE INDEX IF NOT EXISTS idx_posts_interaction_tracking ON posts(last_interaction_at, interaction_count);
+      CREATE INDEX IF NOT EXISTS idx_post_interactions_user_post ON post_interactions(user_id, post_id);
+      CREATE INDEX IF NOT EXISTS idx_post_interactions_type ON post_interactions(interaction_type);
+    `);
+    console.log('✅ Relative grading indexes created');
 
     // User sessions table
     await pool.query(`
