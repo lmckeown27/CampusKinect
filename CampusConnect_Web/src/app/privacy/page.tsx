@@ -170,9 +170,49 @@ export default function PrivacyPolicyPage() {
               {/* Cookies and Tracking */}
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">8. Cookies and Tracking</h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 leading-relaxed mb-4">
                   We use cookies and similar technologies to enhance your experience, analyze usage patterns, 
-                  and provide personalized content. You can control cookie settings through your browser preferences.
+                  and provide personalized content. Cookies are small text files stored on your device when you visit our website.
+                </p>
+                
+                <h4 className="text-lg font-medium text-gray-900 mb-3">Types of Cookies We Use</h4>
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-gray-900">Essential Cookies</p>
+                      <p className="text-sm text-gray-600">
+                        Required for basic website functionality, including authentication and security features. 
+                        These cannot be disabled.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-gray-900">Analytics Cookies</p>
+                      <p className="text-sm text-gray-600">
+                        Help us understand how visitors use our website to improve performance and user experience.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-gray-900">Functional Cookies</p>
+                      <p className="text-sm text-gray-600">
+                        Enable enhanced features like personalization and remembering your preferences.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  You can control cookie settings through your browser preferences or use our 
+                  <Link href="/cookie-settings" className="text-primary hover:text-primary-600 font-medium mx-1">
+                    Cookie Settings
+                  </Link>
+                  page to manage your preferences directly on our website.
                 </p>
               </section>
 

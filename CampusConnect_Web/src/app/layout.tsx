@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import CookieConsentProvider from '../components/layout/CookieConsentProvider';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: "CampusKinect - Student Community Hub",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   keywords: "campus, student, community, events, housing, tutoring, university",
   authors: [{ name: "CampusKinect Team" }],
   viewport: "width=device-width, initial-scale=1",
-  themeColor: "#2563eb",
+  themeColor: "#708d81",
 };
 
 export default function RootLayout({
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {children}
+        <CookieConsentProvider />
       </body>
     </html>
   );

@@ -13,15 +13,15 @@ export default function TermsOfServicePage() {
           <div className="flex items-center space-x-4">
             <Link 
               href="/" 
-              className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors"
             >
               <ArrowLeft size={20} />
               <span>Back to Home</span>
             </Link>
-            <div className="h-6 w-px bg-gray-300"></div>
+            <div className="h-6 w-px bg-neutral-300"></div>
             <div className="flex items-center space-x-2">
-              <Shield size={24} className="text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Terms of Service</h1>
+              <Shield size={24} className="text-primary" />
+              <h1 className="text-2xl font-bold text-neutral-900">Terms of Service</h1>
             </div>
           </div>
         </div>
@@ -50,13 +50,10 @@ export default function TermsOfServicePage() {
               {/* Eligibility */}
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">2. Eligibility</h3>
-                <p className="text-gray-700 leading-relaxed mb-4">
+                <p className="text-gray-700 leading-relaxed">
                   CampusKinect is exclusively for university students with valid educational email addresses. 
                   You must have a valid educational email address (.edu, .ac.uk, .ca, .edu.au, .de, .fr) 
                   to create an account and use CampusKinect.
-                </p>
-                <p className="text-gray-700 leading-relaxed">
-                  CampusKinect is exclusively for university students with valid educational email addresses.
                 </p>
               </section>
 
@@ -165,7 +162,8 @@ export default function TermsOfServicePage() {
                 <div className="bg-gray-50 rounded-lg p-4 mt-4">
                   <p className="text-gray-700">
                     <strong>Email:</strong> liam.mckeown38415@gmail.com<br />
-                    <strong>Support Hours:</strong> Whenever I'm free
+                    <strong>Support Hours:</strong> Whenever I'm free<br />
+                    <strong>Cookie Settings:</strong> <Link href="/cookie-settings" className="text-primary hover:text-primary-600">Manage Cookie Preferences</Link>
                   </p>
                 </div>
               </section>
