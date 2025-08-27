@@ -28,6 +28,11 @@ const LoginForm: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const isEducationalEmail = (email: string): boolean => {
+    const eduDomains = ['.edu', '.ac.uk', '.ca', '.edu.au', '.de', '.fr'];
+    return eduDomains.some(domain => email.toLowerCase().includes(domain));
+  };
+
   // Helper function to get appropriate error message and icon
   const getErrorDisplay = (errorMessage: string) => {
     if (errorMessage.toLowerCase().includes('invalid credentials') || 
@@ -86,17 +91,24 @@ const LoginForm: React.FC = () => {
             <div className="space-y-3" style={{ marginBottom: '2rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  University Email Address
+                  University Email
                 </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  required
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder=""
-                />
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                    placeholder="yourname@yourcollege.edu"
+                  />
+                  {formData.email && !isEducationalEmail(formData.email) && (
+                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                      <p style={{ color: 'red', fontSize: '14px', fontWeight: '500' }}>Use university email</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

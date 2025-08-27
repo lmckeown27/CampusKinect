@@ -174,7 +174,7 @@ const RegisterForm: React.FC = () => {
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   required
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder=""
+                  placeholder="Liam"
                 />
                 {validationErrors.firstName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.firstName}</p>
@@ -193,7 +193,7 @@ const RegisterForm: React.FC = () => {
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
                   required
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder=""
+                  placeholder="McKeown"
                 />
                 {validationErrors.lastName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.lastName}</p>
@@ -206,17 +206,24 @@ const RegisterForm: React.FC = () => {
             <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  University Email Address
+                  University Email
                 </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  required
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder=""
-                />
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                    placeholder="yourname@yourcollege.edu"
+                  />
+                  {formData.email && !isEducationalEmail(formData.email) && (
+                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                      <p style={{ color: 'red', fontSize: '14px', fontWeight: '500' }}>Use university email</p>
+                    </div>
+                  )}
+                </div>
                 {validationErrors.email && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
                 )}
@@ -306,6 +313,11 @@ const RegisterForm: React.FC = () => {
                   >
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
+                  {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                    <div className="absolute inset-y-0 right-20 flex items-center pointer-events-none">
+                      <p style={{ color: 'red', fontSize: '14px', fontWeight: '500' }}>Passwords must match</p>
+                    </div>
+                  )}
                 </div>
                 {validationErrors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.confirmPassword}</p>
@@ -348,7 +360,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.major}
                   onChange={(e) => handleInputChange('major', e.target.value)}
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder=""
+                  placeholder="Economics"
                 />
                 {validationErrors.major && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.major}</p>
@@ -368,7 +380,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.hometown}
                   onChange={(e) => handleInputChange('hometown', e.target.value)}
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder=""
+                  placeholder="San Jose"
                 />
                 {validationErrors.hometown && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.hometown}</p>
