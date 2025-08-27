@@ -63,11 +63,11 @@ const RegisterForm: React.FC = () => {
     }
 
     if (!formData.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = 'University email address is required';
     } else if (!isValidEmail(formData.email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = 'Please enter a valid university email address';
     } else if (!isEducationalEmail(formData.email)) {
-      errors.email = 'Please use your educational email address (.edu, .ac.uk, etc.)';
+      errors.email = 'Please use your educational university email address (.edu, .ac.uk, etc.)';
     }
 
     if (!formData.password) {
@@ -202,10 +202,11 @@ const RegisterForm: React.FC = () => {
             </div>
             </div>
 
+            {/* University Email Address */}
             <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Email Address
+                  University Email Address
                 </label>
                 <input
                   type="email"
@@ -218,12 +219,6 @@ const RegisterForm: React.FC = () => {
                 />
                 {validationErrors.email && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
-                )}
-                {formData.email && !validationErrors.email && isEducationalEmail(formData.email) && (
-                  <p className="mt-1 text-sm text-green-600 flex items-center">
-                    <CheckCircle size={16} className="mr-1" />
-                    Valid educational email
-                  </p>
                 )}
               </div>
             </div>

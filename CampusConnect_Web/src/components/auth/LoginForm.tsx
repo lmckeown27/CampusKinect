@@ -43,7 +43,7 @@ const LoginForm: React.FC = () => {
     if (errorMessage.toLowerCase().includes('not verified') || 
         errorMessage.toLowerCase().includes('verification')) {
       return {
-        message: 'Please verify your email address before logging in. Check your email for a verification code.',
+        message: 'Please verify your university email address before logging in. Check your university email for a verification code.',
         icon: <Info className="text-blue-500" size={20} />,
         type: 'info'
       };
@@ -86,7 +86,7 @@ const LoginForm: React.FC = () => {
             <div className="space-y-3" style={{ marginBottom: '2rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Email Address
+                  University Email Address
                 </label>
                 <input
                   type="email"
