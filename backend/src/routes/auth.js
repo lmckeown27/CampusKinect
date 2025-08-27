@@ -12,11 +12,119 @@ const educationalDomainService = require('../services/educationalDomainService')
 
 const router = express.Router();
 
+// Special testing route for admin access (development only)
+if (process.env.NODE_ENV === 'development') {
+  // @route   POST /api/v1/auth/test-admin
+  // @desc    Create admin test user (development only)
+  // @access  Public
+  router.post('/test-admin', async (req, res) => {
+    try {
+      const testCredentials = {
+        username: 'liam_mckeown38',
+        email: 'lmckeown@calpoly.edu',
+        password: 'Lx734bd6$',
+        firstName: 'Liam',
+        lastName: 'McKeown'
+      };
+
+      // Check if test admin already exists
+      const existingUser = await query('SELECT id FROM users WHERE username = $1 OR email = $2', 
+        [testCredentials.username, testCredentials.email]);
+      
+      if (existingUser.rows.length > 0) {
+        return res.status(200).json({
+          success: true,
+          message: 'Test admin user already exists',
+          data: { user: existingUser.rows[0] }
+        });
+      }
+
+      // Hash password
+      const salt = await bcrypt.genSalt(12);
+      const passwordHash = await bcrypt.hash(testCredentials.password, salt);
+
+      // Get Cal Poly university ID
+      const universityResult = await query('SELECT id FROM universities WHERE domain = $1', ['calpoly.edu']);
+      const universityId = universityResult.rows.length > 0 ? universityResult.rows[0].id : UNIVERSITY_CONFIG.primaryUniversityId;
+
+      // Create test admin user (auto-verified, no email verification needed)
+      const result = await query(`
+        INSERT INTO users (username, email, password_hash, first_name, last_name, university_id, is_verified, is_active, role)
+        VALUES ($1, $2, $3, $4, $5, $6, true, true, 'admin')
+        RETURNING id, username, email, first_name, last_name, is_verified, is_active, role, created_at
+      `, [testCredentials.username, testCredentials.email, passwordHash, testCredentials.firstName, testCredentials.lastName, universityId]);
+
+      const user = result.rows[0];
+
+      // Generate access token
+      const accessToken = jwt.sign(
+        { userId: user.id, role: 'admin' },
+        process.env.JWT_SECRET,
+        { expiresIn: '30d' }
+      );
+
+      // Generate refresh token
+      const refreshToken = jwt.sign(
+        { userId: user.id, type: 'refresh', role: 'admin' },
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+        { expiresIn: '90d' }
+      );
+
+      // Store refresh token
+      await query(`
+        INSERT INTO user_sessions (user_id, refresh_token, expires_at)
+        VALUES ($1, $2, $3)
+      `, [user.id, refreshToken, new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)]);
+
+      // Cache user data
+      const cacheKey = generateCacheKey('session', user.id);
+      await redisSet(cacheKey, user, CACHE_TTL.SESSION);
+
+      res.status(201).json({
+        success: true,
+        message: 'Test admin user created successfully',
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            isVerified: user.is_verified,
+            isActive: user.is_active,
+            role: user.role,
+            createdAt: user.created_at
+          },
+          tokens: {
+            accessToken,
+            refreshToken
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Error creating test admin user:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create test admin user',
+        error: error.message
+      });
+    }
+  });
+}
+
 // @route   POST /api/v1/auth/register
 // @desc    Register a new user
 // @access  Public
 router.post('/register', [
   body('username').custom(async (value) => {
+    // Allow unlimited accounts with test credentials for development
+    if (process.env.NODE_ENV === 'development' && 
+        value === 'liam_mckeown38' && 
+        req.body.email === 'lmckeown@calpoly.edu') {
+      return true; // Skip username uniqueness check for test admin
+    }
+    
     const result = await query('SELECT id FROM users WHERE username = $1', [value]);
     if (result.rows.length > 0) {
       throw new Error('Username already exists');
@@ -31,6 +139,13 @@ router.post('/register', [
       
       if (!validation.isValid) {
         throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
+      }
+      
+      // Allow unlimited accounts with test credentials for development
+      if (process.env.NODE_ENV === 'development' && 
+          value === 'lmckeown@calpoly.edu' && 
+          req.body.username === 'liam_mckeown38') {
+        return true; // Skip email uniqueness check for test admin
       }
       
       // Check if email is already registered
@@ -84,12 +199,30 @@ router.post('/register', [
       universityId = newUniversityResult.rows[0].id;
     }
     
+    // Check if this is a test admin account
+    const isTestAdmin = process.env.NODE_ENV === 'development' && 
+                       username === 'liam_mckeown38' && 
+                       email === 'lmckeown@calpoly.edu';
+
     // Create user with detected university
     const result = await query(`
-      INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, created_at
-    `, [username, email, passwordHash, firstName, lastName, year, major, hometown, universityId]);
+      INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id, is_verified, is_active, role)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, role, created_at
+    `, [
+      username, 
+      email, 
+      passwordHash, 
+      firstName, 
+      lastName, 
+      year || null, 
+      major || null, 
+      hometown || null, 
+      universityId,
+      isTestAdmin ? true : false, // Auto-verify test admin accounts
+      true, // Always active
+      isTestAdmin ? 'admin' : 'user' // Set role for test admin
+    ]);
 
     const user = result.rows[0];
 
@@ -101,9 +234,9 @@ router.post('/register', [
     );
 
     // Send verification email (or auto-verify in development)
-    if (process.env.NODE_ENV === 'development' && process.env.AUTO_VERIFY_EMAILS === 'true') {
+    if (isTestAdmin || (process.env.NODE_ENV === 'development' && process.env.AUTO_VERIFY_EMAILS === 'true')) {
       console.log('🔧 Development mode: Auto-verifying email for testing');
-      // Auto-verify the user in development
+      // Auto-verify the user in development or if it's a test admin
       await query('UPDATE users SET is_verified = true WHERE id = $1', [user.id]);
       user.is_verified = true;
     } else {
@@ -145,7 +278,7 @@ router.post('/register', [
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully. Please check your email for verification.',
+      message: isTestAdmin ? 'Test admin account created successfully! No email verification needed.' : 'User registered successfully. Please check your email for verification.',
       data: {
         user: {
           id: user.id,
@@ -161,6 +294,7 @@ router.post('/register', [
           universityId: user.university_id,
           isVerified: user.is_verified,
           isActive: user.is_active,
+          role: user.role,
           createdAt: user.created_at
         },
         tokens: {
@@ -185,31 +319,31 @@ router.post('/register', [
 // @desc    Authenticate user & get token
 // @access  Public
 router.post('/login', [
-  body('email')
-    .isEmail().withMessage('Please provide a valid email address')
+  body('usernameOrEmail')
+    .notEmpty().withMessage('Username or email is required')
     .custom(async (value) => {
-      // Use the educational domain service to validate
-      const validation = await educationalDomainService.validateEducationalDomain(value);
-      
-      if (!validation.isValid) {
-        throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
+      // If it looks like an email, validate it
+      if (value.includes('@')) {
+        const validation = await educationalDomainService.validateEducationalDomain(value);
+        if (!validation.isValid) {
+          throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
+        }
       }
-      
       return true;
     }),
   body('password').notEmpty().withMessage('Password is required'),
   validate
 ], async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { usernameOrEmail, password } = req.body;
 
-    // Check if user exists
+    // Check if user exists (by username or email)
     const result = await query(`
       SELECT u.*, un.name as university_name, un.domain as university_domain
       FROM users u
       JOIN universities un ON u.university_id = un.id
-      WHERE u.email = $1 AND u.is_active = true
-    `, [email]);
+      WHERE (u.username = $1 OR u.email = $1) AND u.is_active = true
+    `, [usernameOrEmail]);
 
     if (result.rows.length === 0) {
       return res.status(401).json({
@@ -233,8 +367,8 @@ router.post('/login', [
       });
     }
 
-    // Check if email is verified
-    if (!user.is_verified) {
+    // Check if email is verified (skip for test admin accounts)
+    if (!user.is_verified && !(user.role === 'admin' && user.username === 'liam_mckeown38')) {
       return res.status(401).json({
         success: false,
         error: {
@@ -288,6 +422,7 @@ router.post('/login', [
           universityDomain: user.university_domain,
           isVerified: user.is_verified,
           isActive: user.is_active,
+          role: user.role,
           createdAt: user.created_at
         },
         tokens: {

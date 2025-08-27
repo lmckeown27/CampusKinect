@@ -51,11 +51,11 @@ export const useAuthStore = create<AuthStore>()(
           if (error.response?.status === 401) {
             if (error.response?.data?.message?.toLowerCase().includes('not found') ||
                 error.response?.data?.message?.toLowerCase().includes('does not exist')) {
-              errorMessage = 'Account not found. This email is not registered in our database.';
+              errorMessage = 'Account not found. This username or email is not registered in our database.';
             } else if (error.response?.data?.message?.toLowerCase().includes('invalid credentials')) {
-              errorMessage = 'Invalid email or password. Please check your credentials.';
+              errorMessage = 'Invalid username/email or password. Please check your credentials.';
             } else {
-              errorMessage = 'Invalid email or password. Please check your credentials.';
+              errorMessage = 'Invalid username/email or password. Please check your credentials.';
             }
           } else if (error.response?.status === 403) {
             if (error.response?.data?.message?.toLowerCase().includes('not verified')) {
@@ -64,7 +64,7 @@ export const useAuthStore = create<AuthStore>()(
               errorMessage = 'Account access denied. Please contact support.';
             }
           } else if (error.response?.status === 422) {
-            errorMessage = 'Please check your email format and try again.';
+            errorMessage = 'Please check your username or email format and try again.';
           } else if (error.response?.status >= 500) {
             errorMessage = 'Server error. Please try again later.';
           } else if (error.message) {

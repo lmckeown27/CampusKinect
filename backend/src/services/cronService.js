@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { processRecurringPosts, cleanupInvalidPosts } = require('./recurringPostService');
+const { processRecurringPosts, cleanupInvalidPosts, getRecurringPostsSummary } = require('./recurringPostService');
 const relativeGradingService = require('./relativeGradingService');
 const marketSizeService = require('./marketSizeService');
 
@@ -28,6 +28,25 @@ const scheduleRecurringPostProcessing = () => {
     console.log('🕕 6:00 AM - Starting daily recurring post processing...');
     
     try {
+      // Get summary before processing
+      const summary = await getRecurringPostsSummary();
+      
+      if (summary.total === 0) {
+        console.log('ℹ️ No recurring posts exist - skipping processing');
+        return;
+      }
+      
+      if (summary.valid === 0) {
+        console.log('ℹ️ No valid recurring posts exist - skipping processing');
+        return;
+      }
+      
+      if (summary.needsReposting === 0) {
+        console.log('ℹ️ No posts need reposting today - skipping processing');
+        return;
+      }
+      
+      console.log(`🔄 Processing ${summary.needsReposting} posts that need reposting...`);
       const result = await processRecurringPosts();
       console.log(`✅ Daily recurring post processing completed: ${result.reposted}/${result.processed} posts reposted`);
       
@@ -103,6 +122,25 @@ const scheduleHourlyProcessing = () => {
       console.log('🕐 Daily recurring post processing (development mode)...');
       
       try {
+        // Get summary before processing
+        const summary = await getRecurringPostsSummary();
+        
+        if (summary.total === 0) {
+          console.log('ℹ️ No recurring posts exist - skipping development processing');
+          return;
+        }
+        
+        if (summary.valid === 0) {
+          console.log('ℹ️ No valid recurring posts exist - skipping development processing');
+          return;
+        }
+        
+        if (summary.needsReposting === 0) {
+          console.log('ℹ️ No posts need reposting today - skipping development processing');
+          return;
+        }
+        
+        console.log(`🔄 Development processing: ${summary.needsReposting} posts need reposting...`);
         const result = await processRecurringPosts();
         console.log(`✅ Daily processing completed: ${result.reposted}/${result.processed} posts reposted, ${result.skipped} skipped`);
         
@@ -136,6 +174,25 @@ const triggerRecurringPostProcessing = async () => {
   console.log('🔧 Manually triggering recurring post processing...');
   
   try {
+    // Get summary before processing
+    const summary = await getRecurringPostsSummary();
+    
+    if (summary.total === 0) {
+      console.log('ℹ️ No recurring posts exist - nothing to process');
+      return { processed: 0, reposted: 0, skipped: 0, errors: [] };
+    }
+    
+    if (summary.valid === 0) {
+      console.log('ℹ️ No valid recurring posts exist - nothing to process');
+      return { processed: 0, reposted: 0, skipped: 0, errors: [] };
+    }
+    
+    if (summary.needsReposting === 0) {
+      console.log('ℹ️ No posts need reposting today - nothing to process');
+      return { processed: 0, reposted: 0, skipped: 0, errors: [] };
+    }
+    
+    console.log(`🔄 Manual processing: ${summary.needsReposting} posts need reposting...`);
     const result = await processRecurringPosts();
     console.log(`✅ Manual processing completed: ${result.reposted}/${result.processed} posts reposted, ${result.skipped} skipped`);
     return result;

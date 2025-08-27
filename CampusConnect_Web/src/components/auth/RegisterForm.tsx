@@ -19,9 +19,6 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    year: undefined as number | undefined,
-    major: '',
-    hometown: '',
   });
 
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
@@ -30,47 +27,63 @@ const RegisterForm: React.FC = () => {
 
   // Redirect to verification page after successful registration
   useEffect(() => {
-    if (registrationSuccess) {
+    if (registrationSuccess && isEmailValidForRegistration(formData.email)) {
+      console.log('useEffect: Valid email and success state - redirecting to verification page');
       router.push('/auth/verify');
+    } else if (registrationSuccess) {
+      console.log('useEffect: Success state but invalid email - not redirecting');
     }
-  }, [registrationSuccess, router]);
+  }, [registrationSuccess, router, formData.email]);
+
+  // Helper function to check if email is valid for registration
+  const isEmailValidForRegistration = (email: string): boolean => {
+    return isValidEmail(email) && isEducationalEmail(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
+      console.log('Form validation failed, not submitting');
+      return;
+    }
+    
+    // Check if email is valid before proceeding
+    if (!isEmailValidForRegistration(formData.email)) {
+      console.log('Invalid email format or not educational email - not redirecting');
       return;
     }
     
     try {
+      console.log('=== REGISTRATION START ===');
       console.log('Starting registration...');
       console.log('Form data:', formData);
       console.log('Backend URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1');
       
-      await register(formData);
-      console.log('Registration successful, setting success state...');
-      setRegistrationSuccess(true);
-      console.log('Success state set, should redirect...');
+      console.log('Calling register function from auth store...');
+      const result = await register(formData);
+      console.log('Register function completed successfully:', result);
       
-      // Force immediate redirect to verification page
-      setTimeout(() => {
-        console.log('Forcing redirect to verification page...');
-        router.push('/auth/verify');
-      }, 100);
+      console.log('Setting registration success state to true...');
+      setRegistrationSuccess(true);
+      console.log('Success state set, useEffect should trigger redirect...');
+      
+      // Force redirect as backup - only if we have a valid email
+      console.log('Forcing immediate redirect to verification page...');
+      router.push('/auth/verify');
       
     } catch (error: any) {
+      console.error('=== REGISTRATION FAILED ===');
       console.error('Registration failed in form:', error);
       console.error('Error details:', {
         message: error.message,
         response: error.response,
-        status: error.response?.status
+        status: error.response?.status,
+        data: error.response?.data
       });
       
-      // Even if registration fails, redirect to verification page for testing
-      console.log('Registration failed, but redirecting to verification page for testing...');
-      setTimeout(() => {
-        router.push('/auth/verify');
-      }, 500);
+      // Don't redirect on failure - let the error be displayed
+      console.log('Registration failed, staying on registration page to show error');
     }
   };
 
@@ -163,13 +176,7 @@ const RegisterForm: React.FC = () => {
     return 'text-green-600';
   };
 
-  const years = [
-    { value: 1, label: 'Freshman' },
-    { value: 2, label: 'Sophomore' },
-    { value: 3, label: 'Junior' },
-    { value: 4, label: 'Senior' },
-    { value: 5, label: 'Super Senior' }
-  ];
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pb-24">
@@ -196,7 +203,29 @@ const RegisterForm: React.FC = () => {
         {/* Registration Form */}
         <div className="bg-white rounded-lg shadow-box-xl p-6 border border-neutral-100" style={{ width: '400px', margin: '0 auto' }}>
           <form onSubmit={handleSubmit} className="space-y-8" style={{ marginBottom: '2rem' }}>
-            <div className="grid grid-cols-2 gap-4" style={{ marginBottom: '2rem' }}>
+            
+            {/* Username */}
+            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="username" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  value={formData.username}
+                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  required
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                  placeholder="liam_mckeown38"
+                />
+                {validationErrors.username && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.username}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4" style={{ marginBottom: '1.5rem' }}>
                           <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="firstName" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
@@ -360,68 +389,7 @@ const RegisterForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Academic Year */}
-            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
-              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
-                <label htmlFor="year" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Academic Year (optional)
-                </label>
-                <select
-                  id="year"
-                  value={formData.year || ''}
-                  onChange={(e) => handleInputChange('year', e.target.value ? parseInt(e.target.value) : undefined)}
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 bg-white text-sm border-olive-green"
-                >
-                  <option value="" disabled>Select your year</option>
-                  {years.map(year => (
-                    <option key={year.value} value={year.value}>{year.label}</option>
-                  ))}
-                </select>
-                {validationErrors.year && (
-                  <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
-                )}
-              </div>
-            </div>
 
-            {/* Major */}
-            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
-              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
-                <label htmlFor="major" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Major (optional)
-                </label>
-                <input
-                  type="text"
-                  id="major"
-                  value={formData.major}
-                  onChange={(e) => handleInputChange('major', e.target.value)}
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder="Economics"
-                />
-                {validationErrors.major && (
-                  <p className="mt-1 text-sm text-red-600">{validationErrors.major}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Hometown */}
-            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
-              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
-                <label htmlFor="hometown" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Hometown (optional)
-                </label>
-                <input
-                  type="text"
-                  id="hometown"
-                  value={formData.hometown}
-                  onChange={(e) => handleInputChange('hometown', e.target.value)}
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder="San Jose"
-                />
-                {validationErrors.hometown && (
-                  <p className="mt-1 text-sm text-red-600">{validationErrors.hometown}</p>
-                )}
-              </div>
-            </div>
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-4">
@@ -462,6 +430,7 @@ const RegisterForm: React.FC = () => {
               </div>
             )}
 
+            {/* Submit Button */}
             <div className="pt-4">
               <div style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <button

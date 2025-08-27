@@ -99,7 +99,7 @@ export interface CreatePostForm {
 }
 
 export interface LoginForm {
-  email: string;
+  usernameOrEmail: string;
   password: string;
 }
 

@@ -1,24 +1,67 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { useAuthStore } from '../../stores/authStore';
 import { Eye, EyeOff, AlertCircle, Info } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const LoginForm: React.FC = () => {
   const { login, isLoading, error } = useAuthStore();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
+    usernameOrEmail: '',
     password: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check for empty fields
+    if (!formData.usernameOrEmail.trim() || !formData.password.trim()) {
+      alert(`⚠️ VALIDATION ERROR!
+      
+❌ Missing required fields:
+• Username/Email: ${formData.usernameOrEmail.trim() ? '✅ Filled' : '❌ EMPTY'}
+• Password: ${formData.password.trim() ? '✅ Filled' : '❌ EMPTY'}
+
+💡 Please fill in all required fields before submitting.`);
+      return;
+    }
+    
+    // Show form data in alert
+    alert(`🔍 LOGIN ATTEMPT DEBUG INFO:
+    
+📝 Form Data:
+• Username/Email: ${formData.usernameOrEmail}
+• Password: ${formData.password ? '***' : 'EMPTY'}
+
+🔗 Backend URL: ${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}
+
+⏳ Starting login process...`);
+    
     try {
       await login(formData);
+      
+      // Show success alert
+      alert(`✅ LOGIN SUCCESS!
+      
+🎯 User authenticated successfully
+🔑 Access token generated
+📱 Redirecting to home page...`);
+      
+      // Redirect to home page after successful login
+      router.push('/home');
+      
     } catch (error) {
+      // Show error alert
+      alert(`❌ LOGIN FAILED!
+      
+🚨 Error: ${error instanceof Error ? error.message : 'Unknown error'}
+📊 Response: ${error instanceof Error && 'response' in error ? JSON.stringify((error as any).response?.data) : 'No response data'}
+💡 Check browser console for more details`);
+      
       // Error is handled by the store
       console.error('Login failed:', error);
     }
@@ -39,7 +82,7 @@ const LoginForm: React.FC = () => {
         errorMessage.toLowerCase().includes('not found') ||
         errorMessage.toLowerCase().includes('does not exist')) {
       return {
-        message: 'The email or password you entered is incorrect. Please check your credentials and try again.',
+        message: 'The username/email or password you entered is incorrect. Please check your credentials and try again.',
         icon: <AlertCircle className="text-red-500" size={20} />,
         type: 'error'
       };
@@ -90,20 +133,20 @@ const LoginForm: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-8" style={{ marginBottom: '2rem' }}>
             <div className="space-y-3" style={{ marginBottom: '2rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
-                <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  University Email
+                <label htmlFor="usernameOrEmail" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Username or University Email
                 </label>
                 <div className="relative">
                   <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    type="text"
+                    id="usernameOrEmail"
+                    value={formData.usernameOrEmail}
+                    onChange={(e) => handleInputChange('usernameOrEmail', e.target.value)}
                     required
                     className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                    placeholder="yourname@yourcollege.edu"
+                    placeholder=""
                   />
-                  {formData.email && !isEducationalEmail(formData.email) && (
+                  {formData.usernameOrEmail && formData.usernameOrEmail.includes('@') && !isEducationalEmail(formData.usernameOrEmail) && (
                     <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                       <p style={{ color: 'red', fontSize: '14px', fontWeight: '500' }}>Use university email</p>
                     </div>

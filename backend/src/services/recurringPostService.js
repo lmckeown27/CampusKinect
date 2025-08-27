@@ -42,6 +42,20 @@ const getPostsToRepost = async () => {
   try {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
     
+    // First, check if there are any valid recurring posts at all
+    const totalRecurringPosts = await query(`
+      SELECT COUNT(*) as total
+      FROM posts 
+      WHERE duration_type = 'recurring' AND is_active = true
+    `);
+    
+    if (totalRecurringPosts.rows[0].total === 0) {
+      console.log('ℹ️ No recurring posts exist in the system');
+      return [];
+    }
+    
+    console.log(`🔍 Found ${totalRecurringPosts.rows[0].total} total recurring posts in system`);
+    
     const result = await query(`
       SELECT 
         p.id,
@@ -66,28 +80,60 @@ const getPostsToRepost = async () => {
         AND p.title != ''
         AND p.title != 'Test Post'
         AND p.title != 'Placeholder'
+        AND p.title != 'Dummy Post'
+        AND p.title != 'Sample Post'
         AND p.description IS NOT NULL 
         AND p.description != ''
         AND p.description != 'Test description'
         AND p.description != 'Placeholder description'
+        AND p.description != 'Dummy description'
+        AND p.description != 'Sample description'
         AND p.user_id IS NOT NULL
         AND p.user_id > 0
         AND p.university_id IS NOT NULL
         AND p.university_id > 0
+        AND p.title NOT LIKE '%test%'
+        AND p.title NOT LIKE '%placeholder%'
+        AND p.title NOT LIKE '%dummy%'
+        AND p.title NOT LIKE '%sample%'
+        AND p.title NOT LIKE '%fake%'
+        AND p.description NOT LIKE '%test%'
+        AND p.description NOT LIKE '%placeholder%'
+        AND p.description NOT LIKE '%dummy%'
+        AND p.description NOT LIKE '%sample%'
+        AND p.description NOT LIKE '%fake%'
     `, [today]);
+    
+    if (result.rows.length === 0) {
+      console.log('ℹ️ No valid recurring posts need reposting today');
+      return [];
+    }
     
     // Additional validation: filter out posts with suspicious patterns
     const validPosts = result.rows.filter(post => {
       // Skip posts with very short or suspicious content
-      if (post.title && post.title.length < 3) return false;
-      if (post.description && post.description.length < 5) return false;
+      if (post.title && post.title.length < 3) {
+        console.log(`⚠️ Skipping post ID ${post.id}: title too short (${post.title.length} chars)`);
+        return false;
+      }
+      if (post.description && post.description.length < 5) {
+        console.log(`⚠️ Skipping post ID ${post.id}: description too short (${post.description.length} chars)`);
+        return false;
+      }
       
-      // Skip posts with test/placeholder keywords
-      const testKeywords = ['test', 'placeholder', 'dummy', 'fake', 'sample', 'example'];
+      // Skip posts with test/placeholder keywords (case-insensitive)
+      const testKeywords = ['test', 'placeholder', 'dummy', 'fake', 'sample', 'example', 'temporary', 'temp'];
       const titleLower = post.title.toLowerCase();
       const descLower = post.description.toLowerCase();
       
       if (testKeywords.some(keyword => titleLower.includes(keyword) || descLower.includes(keyword))) {
+        console.log(`⚠️ Skipping test/placeholder post ID ${post.id}: "${post.title}"`);
+        return false;
+      }
+      
+      // Skip posts with suspicious patterns
+      if (titleLower.includes('post') && titleLower.length < 10) {
+        console.log(`⚠️ Skipping suspicious post ID ${post.id}: "${post.title}"`);
         return false;
       }
       
@@ -95,6 +141,11 @@ const getPostsToRepost = async () => {
     });
     
     console.log(`🔍 Found ${result.rows.length} total recurring posts, ${validPosts.length} are valid for reposting`);
+    
+    if (validPosts.length === 0) {
+      console.log('ℹ️ No valid posts passed final validation - stopping repost processing');
+      return [];
+    }
     
     return validPosts;
   } catch (error) {
@@ -179,8 +230,8 @@ const processRecurringPosts = async () => {
     const postsToRepost = await getPostsToRepost();
     
     if (postsToRepost.length === 0) {
-      console.log('ℹ️ No valid recurring posts need reposting today');
-      return { processed: 0, reposted: 0, skipped: 0 };
+      console.log('ℹ️ No valid recurring posts need reposting today - stopping processing');
+      return { processed: 0, reposted: 0, skipped: 0, errors: [] };
     }
     
     console.log(`📝 Found ${postsToRepost.length} valid recurring posts to process`);
@@ -191,11 +242,14 @@ const processRecurringPosts = async () => {
     
     for (const post of postsToRepost) {
       try {
+        console.log(`🔄 Processing post ID ${post.id}: "${post.title}"`);
         const result = await createRepost(post);
         if (result) {
           repostedCount++;
+          console.log(`✅ Successfully reposted post ID ${post.id}`);
         } else {
           skippedCount++;
+          console.log(`⏭️ Skipped reposting post ID ${post.id} (validation failed)`);
         }
       } catch (error) {
         console.error(`❌ Failed to repost post ID ${post.id}:`, error);
@@ -210,6 +264,10 @@ const processRecurringPosts = async () => {
     
     if (errors.length > 0) {
       console.error(`❌ ${errors.length} posts failed to repost:`, errors);
+    }
+    
+    if (repostedCount === 0) {
+      console.log('ℹ️ No posts were actually reposted - all were either skipped or failed');
     }
     
     return {
@@ -277,16 +335,20 @@ const cleanupInvalidPosts = async () => {
   try {
     console.log('🧹 Cleaning up invalid/placeholder posts...');
     
-    // Find posts that should be cleaned up
+    // Find posts that should be cleaned up - more comprehensive detection
     const result = await query(`
       SELECT id, title, description, user_id, university_id
       FROM posts 
-      WHERE (title IS NULL OR title = '' OR title = 'Test Post' OR title = 'Placeholder')
-         OR (description IS NULL OR description = '' OR description = 'Test description' OR description = 'Placeholder description')
+      WHERE (title IS NULL OR title = '' OR title = 'Test Post' OR title = 'Placeholder' OR title = 'Dummy Post' OR title = 'Sample Post')
+         OR (description IS NULL OR description = '' OR description = 'Test description' OR description = 'Placeholder description' OR description = 'Dummy description' OR description = 'Sample description')
          OR user_id IS NULL OR user_id <= 0
          OR university_id IS NULL OR university_id <= 0
-         OR title LIKE '%test%' OR title LIKE '%placeholder%' OR title LIKE '%dummy%'
-         OR description LIKE '%test%' OR description LIKE '%placeholder%' OR description LIKE '%dummy%'
+         OR title LIKE '%test%' OR title LIKE '%placeholder%' OR title LIKE '%dummy%' OR title LIKE '%sample%' OR title LIKE '%fake%'
+         OR description LIKE '%test%' OR description LIKE '%placeholder%' OR description LIKE '%dummy%' OR description LIKE '%sample%' OR description LIKE '%fake%'
+         OR title LIKE '%temp%' OR title LIKE '%temporary%'
+         OR description LIKE '%temp%' OR description LIKE '%temporary%'
+         OR (title LIKE '%post%' AND LENGTH(title) < 10)
+         OR (description LIKE '%description%' AND LENGTH(description) < 15)
     `);
     
     if (result.rows.length === 0) {
@@ -294,18 +356,27 @@ const cleanupInvalidPosts = async () => {
       return { cleaned: 0 };
     }
     
-    console.log(`🔍 Found ${result.rows.length} invalid posts to clean up`);
+    console.log(`🔍 Found ${result.rows.length} invalid posts to clean up:`);
+    
+    // Log what we're cleaning up for transparency
+    result.rows.forEach(post => {
+      console.log(`   🗑️ Post ID ${post.id}: "${post.title}" - "${post.description}"`);
+    });
     
     // Mark them as inactive instead of deleting (safer approach)
     const cleanupResult = await query(`
       UPDATE posts 
       SET is_active = false, updated_at = CURRENT_TIMESTAMP
-      WHERE (title IS NULL OR title = '' OR title = 'Test Post' OR title = 'Placeholder')
-         OR (description IS NULL OR description = '' OR description = 'Test description' OR description = 'Placeholder description')
+      WHERE (title IS NULL OR title = '' OR title = 'Test Post' OR title = 'Placeholder' OR title = 'Dummy Post' OR title = 'Sample Post')
+         OR (description IS NULL OR description = '' OR description = 'Test description' OR description = 'Placeholder description' OR description = 'Dummy description' OR description = 'Sample description')
          OR user_id IS NULL OR user_id <= 0
          OR university_id IS NULL OR university_id <= 0
-         OR title LIKE '%test%' OR title LIKE '%placeholder%' OR title LIKE '%dummy%'
-         OR description LIKE '%test%' OR description LIKE '%placeholder%' OR description LIKE '%dummy%'
+         OR title LIKE '%test%' OR title LIKE '%placeholder%' OR title LIKE '%dummy%' OR title LIKE '%sample%' OR title LIKE '%fake%'
+         OR description LIKE '%test%' OR description LIKE '%placeholder%' OR description LIKE '%dummy%' OR description LIKE '%sample%' OR description LIKE '%fake%'
+         OR title LIKE '%temp%' OR title LIKE '%temporary%'
+         OR description LIKE '%temp%' OR description LIKE '%temporary%'
+         OR (title LIKE '%post%' AND LENGTH(title) < 10)
+         OR (description LIKE '%description%' AND LENGTH(description) < 15)
     `);
     
     console.log(`✅ Cleaned up ${cleanupResult.rowCount} invalid posts (marked as inactive)`);
@@ -318,6 +389,106 @@ const cleanupInvalidPosts = async () => {
   }
 };
 
+/**
+ * Get a summary of recurring posts status
+ */
+const getRecurringPostsSummary = async () => {
+  try {
+    console.log('📊 Getting recurring posts summary...');
+    
+    // Count total recurring posts
+    const totalResult = await query(`
+      SELECT COUNT(*) as total
+      FROM posts 
+      WHERE duration_type = 'recurring' AND is_active = true
+    `);
+    
+    const totalRecurring = totalResult.rows[0].total;
+    
+    if (totalRecurring === 0) {
+      console.log('ℹ️ No recurring posts exist in the system');
+      return { total: 0, valid: 0, invalid: 0, needsReposting: 0 };
+    }
+    
+    // Count valid recurring posts
+    const validResult = await query(`
+      SELECT COUNT(*) as valid
+      FROM posts 
+      WHERE duration_type = 'recurring' 
+        AND is_active = true
+        AND title IS NOT NULL 
+        AND title != ''
+        AND title NOT LIKE '%test%'
+        AND title NOT LIKE '%placeholder%'
+        AND title NOT LIKE '%dummy%'
+        AND title NOT LIKE '%sample%'
+        AND title NOT LIKE '%fake%'
+        AND description IS NOT NULL 
+        AND description != ''
+        AND description NOT LIKE '%test%'
+        AND description NOT LIKE '%placeholder%'
+        AND description NOT LIKE '%dummy%'
+        AND description NOT LIKE '%sample%'
+        AND description NOT LIKE '%fake%'
+        AND user_id IS NOT NULL
+        AND user_id > 0
+        AND university_id IS NOT NULL
+        AND university_id > 0
+    `);
+    
+    const validPosts = validResult.rows[0].valid;
+    const invalidPosts = totalRecurring - validPosts;
+    
+    // Count posts that need reposting today
+    const today = new Date().toISOString().split('T')[0];
+    const needsRepostingResult = await query(`
+      SELECT COUNT(*) as needsReposting
+      FROM posts 
+      WHERE duration_type = 'recurring'
+        AND is_active = true
+        AND next_repost_date <= $1
+        AND (event_end IS NULL OR event_end >= $1)
+        AND title IS NOT NULL 
+        AND title != ''
+        AND title NOT LIKE '%test%'
+        AND title NOT LIKE '%placeholder%'
+        AND title NOT LIKE '%dummy%'
+        AND title NOT LIKE '%sample%'
+        AND title NOT LIKE '%fake%'
+        AND description IS NOT NULL 
+        AND description != ''
+        AND description NOT LIKE '%test%'
+        AND description NOT LIKE '%placeholder%'
+        AND description NOT LIKE '%dummy%'
+        AND description NOT LIKE '%sample%'
+        AND description NOT LIKE '%fake%'
+        AND user_id IS NOT NULL
+        AND user_id > 0
+        AND university_id IS NOT NULL
+        AND university_id > 0
+    `, [today]);
+    
+    const needsReposting = needsRepostingResult.rows[0].needsReposting;
+    
+    console.log(`📊 Recurring Posts Summary:`);
+    console.log(`   📝 Total recurring posts: ${totalRecurring}`);
+    console.log(`   ✅ Valid posts: ${validPosts}`);
+    console.log(`   ❌ Invalid posts: ${invalidPosts}`);
+    console.log(`   🔄 Need reposting today: ${needsReposting}`);
+    
+    return {
+      total: totalRecurring,
+      valid: validPosts,
+      invalid: invalidPosts,
+      needsReposting: needsReposting
+    };
+    
+  } catch (error) {
+    console.error('Error getting recurring posts summary:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   REPOST_FREQUENCIES,
   calculateNextRepostDate,
@@ -326,5 +497,6 @@ module.exports = {
   processRecurringPosts,
   getRepostHistory,
   stopRecurringPost,
-  cleanupInvalidPosts
+  cleanupInvalidPosts,
+  getRecurringPostsSummary
 }; 

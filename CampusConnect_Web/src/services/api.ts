@@ -219,7 +219,7 @@ class ApiService {
   // Verification
   public async verifyEmail(verificationCode: string): Promise<{ user: User; tokens: AuthTokens }> {
     const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
-      await this.api.post('/auth/verify', { verificationCode });
+      await this.api.post('/auth/verify-code', { code: verificationCode });
     
     if (response.data.success && response.data.data) {
       this.setTokens(response.data.data.tokens);
@@ -232,7 +232,7 @@ class ApiService {
 
   public async resendVerificationCode(email: string): Promise<void> {
     const response: AxiosResponse<ApiResponse<void>> = 
-      await this.api.post('/auth/resend-verification', { email });
+      await this.api.post('/auth/resend-code', { email });
     
     if (!response.data.success) {
       throw new Error(response.data.message || 'Failed to resend verification code');

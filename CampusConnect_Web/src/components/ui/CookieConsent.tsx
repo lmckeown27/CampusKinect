@@ -9,19 +9,18 @@ export default function CookieConsent() {
 
   // Check if user has already consented on mount
   useEffect(() => {
-    console.log('CookieConsent component is MOUNTING');
     const hasUserConsented = localStorage.getItem('cookie-consent') !== null;
     const hasUserPreferences = localStorage.getItem('cookie-preferences') !== null;
     
+    // TEMPORARILY FORCE VISIBILITY FOR DEBUGGING
+    setIsVisible(true);
+    
     if (hasUserConsented || hasUserPreferences) {
-      setIsVisible(false);
+      // setIsVisible(false); // Commented out temporarily
     }
   }, []);
 
   const handleAcceptAll = () => {
-    console.log('Accept All button clicked - FUNCTION EXECUTING');
-    alert('Accept All clicked!'); // This should definitely work if the function is called
-    
     // Save to localStorage
     localStorage.setItem('cookie-consent', 'true');
     localStorage.setItem('cookie-preferences', JSON.stringify({
@@ -30,33 +29,21 @@ export default function CookieConsent() {
       functional: true
     }));
     
-    setActionTaken('accepting');
-    
-    // Hide banner after delay
-    setTimeout(() => {
-      setIsVisible(false);
-    }, 1000);
+    // Hide banner immediately
+    setIsVisible(false);
   };
 
   const handleRejectAll = () => {
-    console.log('Reject All button clicked - FUNCTION EXECUTING');
-    alert('Reject All clicked!'); // This should definitely work if the function is called
-    
     // Clear localStorage
     localStorage.removeItem('cookie-consent');
     localStorage.removeItem('cookie-preferences');
     
-    setActionTaken('rejecting');
-    
-    // Hide banner after delay
-    setTimeout(() => {
-      setIsVisible(false);
-    }, 1000);
+    // Hide banner immediately
+    setIsVisible(false);
   };
 
   const handleCustomize = () => {
-    console.log('Customize button clicked - FUNCTION EXECUTING');
-    alert('Customize clicked!'); // This should definitely work if the function is called
+    // Navigate to cookie settings
     window.location.href = '/cookie-settings';
   }
 
@@ -74,53 +61,42 @@ export default function CookieConsent() {
               <h3 className="font-semibold text-neutral-900 text-lg">We use cookies</h3>
             </div>
             <p className="text-neutral-600 text-sm leading-relaxed mb-4 sm:mb-0">
-              {actionTaken === 'accepting' ? (
-                <span className="text-green-600 font-medium">Accepting cookies... Please wait.</span>
-              ) : actionTaken === 'rejecting' ? (
-                <span className="text-red-600 font-medium">Rejecting cookies... Please wait.</span>
-              ) : (
-                <>
-                  We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. 
-                  By clicking "Accept All", you consent to our use of cookies.{' '}
-                  <Link href="/cookie-settings" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
-                    Learn more
-                  </Link>
-                </>
-              )}
+              We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. 
+              By clicking "Accept All", you consent to our use of cookies.{' '}
+              <Link href="/cookie-settings" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+                Learn more
+              </Link>
             </p>
           </div>
           
           <div className="flex flex-row gap-3 w-full sm:w-auto">
             <button
               onClick={handleAcceptAll}
-              disabled={actionTaken !== null}
-              className="px-6 py-2.5 text-sm font-medium text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 text-sm font-medium text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               style={{ 
                 backgroundColor: '#708d81',
                 backgroundImage: 'none'
               }}
             >
-              {actionTaken === 'accepting' ? 'Accepting...' : 'Accept All'}
+              Accept All
             </button>
             
             <button
               onClick={handleCustomize}
-              disabled={actionTaken !== null}
-              className="px-6 py-2.5 text-sm font-medium text-primary border-2 border-primary rounded-xl hover:bg-primary hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 text-sm font-medium text-primary border-2 border-primary rounded-xl hover:bg-primary hover:text-white transition-all duration-200"
             >
               Customize
             </button>
             
             <button
               onClick={handleRejectAll}
-              disabled={actionTaken !== null}
-              className="px-6 py-2.5 text-sm font-medium text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 text-sm font-medium text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               style={{ 
                 backgroundColor: '#99afa7',
                 backgroundImage: 'none'
               }}
             >
-              {actionTaken === 'rejecting' ? 'Rejecting...' : 'Reject All'}
+              Reject All
             </button>
           </div>
         </div>
