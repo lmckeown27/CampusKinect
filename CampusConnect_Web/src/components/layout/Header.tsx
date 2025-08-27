@@ -18,7 +18,7 @@ const Header: React.FC = () => {
       <div className="px-4 py-3 flex items-center justify-between">
         {/* App Title */}
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-600 rounded-md flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">K</span>
           </div>
           <h1 className="text-xl font-bold text-neutral-900">CampusKinect</h1>

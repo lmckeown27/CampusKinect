@@ -147,7 +147,7 @@ const RegisterForm: React.FC = () => {
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-8 w-full">
-          <div className="h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+          <div className="h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-lg flex items-center justify-center mb-6 shadow-xl">
             <span className="text-white font-bold text-2xl">K</span>
           </div>
           <h1 
@@ -165,39 +165,39 @@ const RegisterForm: React.FC = () => {
         </div>
 
         {/* Registration Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-neutral-100">
+        <div className="bg-white rounded-lg shadow-box-xl p-8 border border-neutral-100">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 mb-2">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  required
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                  placeholder="First name"
-                />
+                          <div>
+              <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 mb-2">
+                First Name
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                value={formData.firstName}
+                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                required
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                placeholder="First name"
+              />
                 {validationErrors.firstName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.firstName}</p>
                 )}
               </div>
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  required
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                  placeholder="Last name"
-                />
+                          <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                value={formData.lastName}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                required
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                placeholder="Last name"
+              />
                 {validationErrors.lastName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.lastName}</p>
                 )}
@@ -214,7 +214,7 @@ const RegisterForm: React.FC = () => {
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
                 placeholder="Enter your email"
               />
               {validationErrors.email && (
@@ -237,7 +237,7 @@ const RegisterForm: React.FC = () => {
                 value={formData.year}
                 onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
                 required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 bg-white"
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 bg-white"
               >
                 <option value="">Select your year</option>
                 {years.map(year => (
@@ -260,7 +260,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   required
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
                   placeholder="Create a password"
                 />
                 <button
@@ -316,7 +316,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   required
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
                   placeholder="Confirm your password"
                 />
                 <button
@@ -343,7 +343,7 @@ const RegisterForm: React.FC = () => {
                 value={formData.major}
                 onChange={(e) => handleInputChange('major', e.target.value)}
                 required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
                 placeholder="e.g., Computer Science"
               />
               {validationErrors.major && (
@@ -362,7 +362,7 @@ const RegisterForm: React.FC = () => {
                 value={formData.hometown}
                 onChange={(e) => handleInputChange('hometown', e.target.value)}
                 required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
                 placeholder="Where are you from?"
               />
               {validationErrors.hometown && (
@@ -371,7 +371,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <div className="bg-red-50 border border-red-200 rounded-md p-4">
                 <div className="flex items-center space-x-2">
                   <AlertCircle className="text-red-500" size={20} />
                   <p className="text-red-700 text-sm font-medium">{error}</p>
@@ -382,7 +382,7 @@ const RegisterForm: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">
