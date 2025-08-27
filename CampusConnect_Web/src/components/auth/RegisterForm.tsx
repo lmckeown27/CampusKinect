@@ -16,7 +16,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    year: 1,
+    year: undefined as number | undefined,
     major: '',
     hometown: '',
   });
@@ -88,13 +88,7 @@ const RegisterForm: React.FC = () => {
       errors.lastName = 'Last name is required';
     }
 
-    if (!formData.major.trim()) {
-      errors.major = 'Major is required';
-    }
-
-    if (!formData.hometown.trim()) {
-      errors.hometown = 'Hometown is required';
-    }
+    // Major and hometown are optional fields
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -187,7 +181,7 @@ const RegisterForm: React.FC = () => {
                 )}
               </div>
             </div>
-                          <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
+                          <div className="space-y-3">
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="lastName" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
                   Last Name
@@ -208,7 +202,7 @@ const RegisterForm: React.FC = () => {
             </div>
             </div>
 
-            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
                   Email Address
@@ -234,30 +228,8 @@ const RegisterForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
-              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
-                <label htmlFor="year" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Academic Year
-                </label>
-                <select
-                  id="year"
-                  value={formData.year}
-                  onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-                  required
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 bg-white text-lg"
-                >
-                  <option value="">Select your year</option>
-                  {years.map(year => (
-                    <option key={year.value} value={year.value}>{year.label}</option>
-                  ))}
-                </select>
-                {validationErrors.year && (
-                  <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+            {/* Password */}
+            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="password" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
                   Password
@@ -315,7 +287,7 @@ const RegisterForm: React.FC = () => {
           </div>
 
             {/* Confirm Password */}
-            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="confirmPassword" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
                   Confirm password *
@@ -344,18 +316,40 @@ const RegisterForm: React.FC = () => {
               </div>
             </div>
 
+            {/* Academic Year */}
+            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="year" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Academic Year (optional)
+                </label>
+                <select
+                  id="year"
+                  value={formData.year || ''}
+                  onChange={(e) => handleInputChange('year', e.target.value ? parseInt(e.target.value) : undefined)}
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 bg-white text-sm"
+                >
+                  <option value="" disabled>Select your year</option>
+                  {years.map(year => (
+                    <option key={year.value} value={year.value}>{year.label}</option>
+                  ))}
+                </select>
+                {validationErrors.year && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
+                )}
+              </div>
+            </div>
+
             {/* Major */}
-            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="major" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Major *
+                  Major (optional)
                 </label>
                 <input
                   type="text"
                   id="major"
                   value={formData.major}
                   onChange={(e) => handleInputChange('major', e.target.value)}
-                  required
                   className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
                   placeholder=""
                 />
@@ -366,17 +360,16 @@ const RegisterForm: React.FC = () => {
             </div>
 
             {/* Hometown */}
-            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+            <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="hometown" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
-                  Hometown *
+                  Hometown (optional)
                 </label>
                 <input
                   type="text"
                   id="hometown"
                   value={formData.hometown}
                   onChange={(e) => handleInputChange('hometown', e.target.value)}
-                  required
                   className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
                   placeholder=""
                 />

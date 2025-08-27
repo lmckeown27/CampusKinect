@@ -5,9 +5,9 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  year: number;
-  major: string;
-  hometown: string;
+  year?: number;
+  major?: string;
+  hometown?: string;
   universityId: string;
   profileImage?: string;
   bio?: string;
@@ -110,9 +110,9 @@ export interface RegisterForm {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  year: number;
-  major: string;
-  hometown: string;
+  year?: number;
+  major?: string;
+  hometown?: string;
 }
 
 // UI state types
