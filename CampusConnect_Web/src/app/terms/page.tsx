@@ -2,22 +2,39 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Shield, AlertTriangle } from 'lucide-react';
-import SmartBackLink from '../../components/ui/SmartBackLink';
+import { Shield, AlertTriangle, ArrowLeft } from 'lucide-react';
 
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100">
       {/* Header */}
-      <div className="bg-white border-b border-neutral-200 shadow-sm">
+      <div className="bg-white border-b border-neutral-200 shadow-sm relative">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center space-x-4">
-            <SmartBackLink />
-            <div className="h-6 w-px bg-neutral-300"></div>
-            <div className="flex items-center space-x-3">
-              <Shield size={28} className="text-primary" />
-              <h1 className="text-3xl font-bold text-neutral-900">Terms of Service</h1>
-            </div>
+          {/* Back to Login Link - Positioned absolutely on left */}
+          <div className="absolute left-4 sm:left-6 lg:left-8 top-6 w-auto h-auto">
+            <Link 
+              href="/auth/login"
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
+            >
+              <ArrowLeft size={20} />
+              <span>Login</span>
+            </Link>
+          </div>
+          
+          {/* Privacy Policy Link - Positioned below Login link */}
+          <div className="absolute left-4 sm:left-6 lg:left-8 top-16 w-auto h-auto">
+            <Link 
+              href="/privacy"
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
+            >
+              <ArrowLeft size={20} />
+              <span>Privacy</span>
+            </Link>
+          </div>
+          
+          {/* Centered Title */}
+          <div className="flex items-center justify-center">
+            <h1 className="text-3xl font-bold text-neutral-900">Terms of Service</h1>
           </div>
         </div>
       </div>
@@ -99,78 +116,74 @@ export default function TermsOfServicePage() {
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">6. Safety and Security</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  While we strive to maintain a safe environment, CampusKinect is a community platform where users 
-                  interact directly with each other. We recommend:
+                  We are committed to maintaining a safe and secure platform for all users. We implement various 
+                  security measures to protect your information and maintain platform integrity.
                 </p>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-                  <li>Meeting in public places for first-time in-person interactions</li>
-                  <li>Verifying user identities before sharing personal information</li>
-                  <li>Reporting suspicious or inappropriate behavior</li>
-                  <li>Using common sense and following your university&apos;s safety guidelines</li>
-                </ul>
+                <p className="text-gray-700 leading-relaxed">
+                  If you encounter any suspicious activity or security concerns, please report them immediately 
+                  through our support channels.
+                </p>
               </section>
 
-              {/* Disclaimers */}
+              {/* Account Termination */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">7. Disclaimers</h3>
-                <p className="text-gray-700 leading-relaxed">
-                  CampusKinect is provided &quot;as is&quot; without warranties of any kind. We are not responsible for:
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">7. Account Termination</h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  We reserve the right to suspend or terminate your account if you violate these Terms of Service 
+                  or engage in behavior that is harmful to our community.
                 </p>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-                  <li>The accuracy of user-generated content</li>
-                  <li>User conduct or interactions</li>
-                  <li>Any damages resulting from platform use</li>
-                  <li>Third-party services or content</li>
-                </ul>
-              </section>
-
-              {/* Termination */}
-              <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">8. Account Termination</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  We may suspend or terminate your account if you violate these Terms or engage in inappropriate behavior. 
                   You may also terminate your account at any time by contacting our support team.
                 </p>
               </section>
 
               {/* Changes to Terms */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">9. Changes to Terms</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">8. Changes to Terms</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  We may update these Terms of Service from time to time. We will notify users of significant changes 
-                  through the platform or email. Continued use of CampusKinect after changes constitutes acceptance 
-                  of the new terms.
+                  We may update these Terms of Service from time to time. We will notify you of any material changes 
+                  via email or through our platform. Your continued use of CampusKinect after such changes constitutes 
+                  acceptance of the new terms.
                 </p>
               </section>
 
               {/* Contact Information */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">10. Contact Information</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">9. Contact Information</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  If you have questions about these Terms of Service, please contact us at:
+                  If you have any questions about these Terms of Service, please contact us at:
                 </p>
-                <div className="bg-gray-50 rounded-lg p-4 mt-4">
-                  <p className="text-gray-700">
-                    <strong>Email:</strong> liam.mckeown38415@gmail.com<br />
-                    <strong>Support Hours:</strong> Whenever I&apos;m free<br />
-                    <strong>Cookie Settings:</strong> <Link href="/cookie-settings" className="text-primary hover:text-primary-600">Manage Cookie Preferences</Link>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                  <p className="text-blue-800 font-medium">CampusKinect Support</p>
+                  <p className="text-blue-700 text-sm mt-1">
+                    Email: liam.mckeown38415@gmail.com<br />
+                    Response time: Whenever I get around to it
                   </p>
                 </div>
               </section>
-            </div>
 
-            {/* Footer */}
-            <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-              <p className="text-gray-600 text-sm">
-                By using CampusKinect, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
-              </p>
-              <div className="mt-4">
-                <Link 
-                  href="/privacy" 
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                >
-                  View Privacy Policy →
-                </Link>
+              {/* Footer Navigation */}
+              <div className="border-t border-gray-200 pt-8 mt-12">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-gray-500">
+                    Last updated: August 2025
+                  </div>
+                  <div className="flex items-center">
+                    <Link 
+                      href="/auth/login" 
+                      className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
+                    >
+                      Login
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <Link 
+                      href="/auth/register" 
+                      className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
+                    >
+                      Create Account
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

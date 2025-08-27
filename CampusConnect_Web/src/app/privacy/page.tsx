@@ -2,22 +2,39 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Lock } from 'lucide-react';
-import SmartBackLink from '../../components/ui/SmartBackLink';
+import { Lock, ArrowLeft } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100">
       {/* Header */}
-      <div className="bg-white border-b border-neutral-200 shadow-sm">
+      <div className="bg-white border-b border-neutral-200 shadow-sm relative">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center space-x-4">
-            <SmartBackLink />
-            <div className="h-6 w-px bg-neutral-300"></div>
-            <div className="flex items-center space-x-3">
-              <Lock size={28} className="text-primary" />
-              <h1 className="text-3xl font-bold text-neutral-900">Privacy Policy</h1>
-            </div>
+          {/* Back to Login Link - Positioned absolutely on left */}
+          <div className="absolute left-4 sm:left-6 lg:left-8 top-6 w-auto h-auto">
+            <Link 
+              href="/auth/login"
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
+            >
+              <ArrowLeft size={20} />
+              <span>Login</span>
+            </Link>
+          </div>
+          
+          {/* Terms of Service Link - Positioned below Login link */}
+          <div className="absolute left-4 sm:left-6 lg:left-8 top-16 w-auto h-auto">
+            <Link 
+              href="/terms"
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
+            >
+              <ArrowLeft size={20} />
+              <span>Terms</span>
+            </Link>
+          </div>
+          
+          {/* Centered Title */}
+          <div className="flex items-center justify-center">
+            <h1 className="text-3xl font-bold text-neutral-900">Privacy Policy</h1>
           </div>
         </div>
       </div>
@@ -98,16 +115,17 @@ export default function PrivacyPolicyPage() {
                   We may share your information in the following circumstances:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mb-4">
-                  <li><strong>Public Profile:</strong> Your name, major, and year are visible to other users</li>
-                  <li><strong>Posts:</strong> Content you post is visible to the community</li>
-                  <li><strong>Messages:</strong> Direct messages are shared with recipients</li>
-                  <li><strong>Legal Requirements:</strong> When required by law or to protect rights</li>
+                  <li>With your consent or at your direction</li>
+                  <li>To comply with legal obligations or court orders</li>
+                  <li>To protect our rights, property, or safety</li>
+                  <li>To investigate potential violations of our terms</li>
+                  <li>With service providers who assist in platform operations</li>
                 </ul>
 
-                <h4 className="text-lg font-medium text-gray-900 mb-3">4.2 What We Don&apos;t Share</h4>
-                <p className="text-gray-700 leading-relaxed mb-4">
-                  We never share your email address with other users, your password or account credentials, 
-                  your personal messages without consent, or your data with third-party advertisers.
+                <h4 className="text-lg font-medium text-gray-900 mb-3">4.2 What We Don't Share</h4>
+                <p className="text-gray-700 leading-relaxed">
+                  We do not sell, rent, or trade your personal information to third parties for marketing purposes. 
+                  Your personal information is only shared as described in this policy.
                 </p>
               </section>
 
@@ -115,29 +133,35 @@ export default function PrivacyPolicyPage() {
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">5. Data Security</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  We implement industry-standard security measures to protect your information:
+                  We implement appropriate technical and organizational security measures to protect your personal information, including:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mb-4">
                   <li>Encryption of data in transit and at rest</li>
-                  <li>Secure authentication and access controls</li>
-                  <li>Regular security audits and updates</li>
-                  <li>Limited access to personal information by staff</li>
-                  <li>Secure hosting infrastructure</li>
+                  <li>Regular security assessments and updates</li>
+                  <li>Access controls and authentication measures</li>
+                  <li>Secure data centers and infrastructure</li>
+                  <li>Employee training on data protection</li>
                 </ul>
-                
-                <p className="text-gray-700 leading-relaxed mb-4">
-                  While we protect your data, you should also use strong passwords, keep your account secure, 
-                  and be cautious about sharing personal information with other users.
+                <p className="text-gray-700 leading-relaxed">
+                  However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.
                 </p>
               </section>
 
               {/* Data Retention */}
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">6. Data Retention</h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  We retain your personal information for as long as necessary to:
+                </p>
+                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mb-4">
+                  <li>Provide our services to you</li>
+                  <li>Comply with legal obligations</li>
+                  <li>Resolve disputes and enforce agreements</li>
+                  <li>Maintain platform security and integrity</li>
+                </ul>
                 <p className="text-gray-700 leading-relaxed">
-                  We retain your information for as long as your account is active or as needed to provide services. 
-                  When you delete your account, we will remove your personal information within 30 days, 
-                  though some information may be retained for legal or security purposes.
+                  When you delete your account, we will delete or anonymize your personal information, 
+                  except where retention is required by law.
                 </p>
               </section>
 
@@ -149,130 +173,111 @@ export default function PrivacyPolicyPage() {
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mb-4">
                   <li>Access and review your personal information</li>
-                  <li>Update or correct your profile information</li>
-                  <li>Delete your account and personal data</li>
-                  <li>Control your privacy settings and visibility</li>
-                  <li>Opt out of non-essential communications</li>
-                  <li>Request data portability</li>
+                  <li>Update or correct inaccurate information</li>
+                  <li>Request deletion of your personal information</li>
+                  <li>Opt out of certain communications</li>
+                  <li>Export your data in a portable format</li>
+                  <li>Withdraw consent for data processing</li>
                 </ul>
+                <p className="text-gray-700 leading-relaxed">
+                  To exercise these rights, please contact us using the information provided below.
+                </p>
               </section>
 
               {/* Cookies and Tracking */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">8. Cookies and Tracking</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">8. Cookies and Tracking Technologies</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  We use cookies and similar technologies to enhance your experience, analyze usage patterns, 
-                  and provide personalized content. Cookies are small text files stored on your device when you visit our website.
+                  We use cookies and similar technologies to:
                 </p>
-                
-                <h4 className="text-lg font-medium text-gray-900 mb-3">Types of Cookies We Use</h4>
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="font-medium text-gray-900">Essential Cookies</p>
-                      <p className="text-sm text-gray-600">
-                        Required for basic website functionality, including authentication and security features. 
-                        These cannot be disabled.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="font-medium text-gray-900">Analytics Cookies</p>
-                      <p className="text-sm text-gray-600">
-                        Help us understand how visitors use our website to improve performance and user experience.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="font-medium text-gray-900">Functional Cookies</p>
-                      <p className="text-sm text-gray-600">
-                        Enable enhanced features like personalization and remembering your preferences.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-gray-700 leading-relaxed mb-4">
-                  You can control cookie settings through your browser preferences or use our 
-                  <Link href="/cookie-settings" className="text-primary hover:text-primary-600 font-medium mx-1">
-                    Cookie Settings
-                  </Link>
-                  page to manage your preferences directly on our website.
+                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mb-4">
+                  <li>Remember your preferences and settings</li>
+                  <li>Analyze platform usage and performance</li>
+                  <li>Provide personalized content and features</li>
+                  <li>Ensure platform security and functionality</li>
+                </ul>
+                <p className="text-gray-700 leading-relaxed">
+                  You can control cookie settings through your browser preferences and our cookie consent banner.
                 </p>
               </section>
 
               {/* Third-Party Services */}
               <section>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">9. Third-Party Services</h3>
-                <p className="text-gray-700 leading-relaxed">
-                  CampusKinect may integrate with third-party services (such as email providers for verification). 
-                  These services have their own privacy policies, and we encourage you to review them.
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  Our platform may contain links to third-party websites or services. We are not responsible for 
+                  the privacy practices of these third parties. We encourage you to review their privacy policies 
+                  before providing any personal information.
                 </p>
               </section>
 
-              {/* Children&apos;s Privacy */}
+              {/* Children's Privacy */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">10. Children&apos;s Privacy</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">10. Children's Privacy</h3>
                 <p className="text-gray-700 leading-relaxed">
                   CampusKinect is not intended for children under 13 years of age. We do not knowingly collect 
-                  personal information from children under 13. If you are a parent or guardian and believe your 
-                  child has provided us with personal information, please contact us.
+                  personal information from children under 13. If you believe we have collected information from 
+                  a child under 13, please contact us immediately.
                 </p>
               </section>
 
-              {/* International Users */}
+              {/* International Transfers */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">11. International Users</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">11. International Data Transfers</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  CampusKinect is operated from the United States. If you are accessing our platform from outside 
-                  the U.S., please be aware that your information may be transferred to, stored, and processed 
-                  in the U.S. where our servers are located.
+                  Your information may be transferred to and processed in countries other than your own. 
+                  We ensure that such transfers comply with applicable data protection laws and implement 
+                  appropriate safeguards to protect your information.
                 </p>
               </section>
 
-              {/* Changes to Privacy Policy */}
+              {/* Changes to Policy */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">12. Changes to This Privacy Policy</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">12. Changes to This Policy</h3>
                 <p className="text-gray-700 leading-relaxed">
                   We may update this Privacy Policy from time to time. We will notify you of any material changes 
-                  through the platform or email. Your continued use of CampusKinect after changes constitutes 
+                  via email or through our platform. Your continued use of CampusKinect after such changes constitutes 
                   acceptance of the updated policy.
                 </p>
               </section>
 
               {/* Contact Information */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">13. Contact Us</h3>
-                <p className="text-gray-700 leading-relaxed mb-4">
-                  If you have questions about this Privacy Policy or our data practices, please contact us:
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">13. Contact Information</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  If you have any questions about this Privacy Policy or our data practices, please contact us:
                 </p>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-gray-700">
-                    <strong>Email:</strong> liam.mckeown38415@gmail.com<br />
-                    <strong>Data Protection Officer:</strong> liam.mckeown38415@gmail.com<br />
-                    <strong>Support Hours:</strong> Whenever I&apos;m free
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                  <p className="text-blue-800 font-medium">CampusKinect Privacy Team</p>
+                  <p className="text-blue-700 text-sm mt-1">
+                    Email: liam.mckeown38415@gmail.com<br />
+                    Response time: Whenever I get around to it
                   </p>
                 </div>
               </section>
-            </div>
 
-            {/* Footer */}
-            <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-              <p className="text-gray-600 text-sm">
-                  This Privacy Policy is effective as of the date listed above and applies to all users of CampusKinect.
-              </p>
-              <div className="mt-4">
-                <Link 
-                  href="/terms" 
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                >
-                  View Terms of Service →
-                </Link>
+              {/* Footer Navigation */}
+              <div className="border-t border-gray-200 pt-8 mt-12">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-gray-500">
+                    Last updated: August 2025
+                  </div>
+                  <div className="flex items-center">
+                    <Link 
+                      href="/auth/login" 
+                      className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
+                    >
+                      Login
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <Link 
+                      href="/auth/register" 
+                      className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
+                    >
+                      Create Account
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
