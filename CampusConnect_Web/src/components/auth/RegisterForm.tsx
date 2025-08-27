@@ -165,104 +165,113 @@ const RegisterForm: React.FC = () => {
         </div>
 
         {/* Registration Form */}
-        <div className="bg-white rounded-lg shadow-box-xl p-8 border border-neutral-100">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-                          <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 mb-2">
-                First Name
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                value={formData.firstName}
-                onChange={(e) => handleInputChange('firstName', e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                placeholder="First name"
-              />
+        <div className="bg-white rounded-lg shadow-box-xl p-6 border border-neutral-100" style={{ width: '400px', margin: '0 auto' }}>
+          <form onSubmit={handleSubmit} className="space-y-8" style={{ marginBottom: '2rem' }}>
+            <div className="grid grid-cols-2 gap-4" style={{ marginBottom: '2rem' }}>
+                          <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="firstName" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  required
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  placeholder=""
+                />
                 {validationErrors.firstName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.firstName}</p>
                 )}
               </div>
-                          <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
-                Last Name
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) => handleInputChange('lastName', e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                placeholder="Last name"
-              />
+            </div>
+                          <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="lastName" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  required
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  placeholder=""
+                />
                 {validationErrors.lastName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.lastName}</p>
                 )}
               </div>
             </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                placeholder="Enter your email"
-              />
-              {validationErrors.email && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
-              )}
-              {formData.email && !validationErrors.email && isEducationalEmail(formData.email) && (
-                <p className="mt-1 text-sm text-green-600 flex items-center">
-                  <CheckCircle size={16} className="mr-1" />
-                  Valid educational email
-                </p>
-              )}
             </div>
 
-            <div>
-              <label htmlFor="year" className="block text-sm font-medium text-neutral-700 mb-2">
-                Academic Year
-              </label>
-              <select
-                id="year"
-                value={formData.year}
-                onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-                required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 bg-white"
-              >
-                <option value="">Select your year</option>
-                {years.map(year => (
-                  <option key={year.value} value={year.value}>{year.label}</option>
-                ))}
-              </select>
-              {validationErrors.year && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Email Address
+                </label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
                   required
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                  placeholder="Create a password"
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  placeholder=""
                 />
+                {validationErrors.email && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                )}
+                {formData.email && !validationErrors.email && isEducationalEmail(formData.email) && (
+                  <p className="mt-1 text-sm text-green-600 flex items-center">
+                    <CheckCircle size={16} className="mr-1" />
+                    Valid educational email
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="year" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Academic Year
+                </label>
+                <select
+                  id="year"
+                  value={formData.year}
+                  onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
+                  required
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 bg-white text-lg"
+                >
+                  <option value="">Select your year</option>
+                  {years.map(year => (
+                    <option key={year.value} value={year.value}>{year.label}</option>
+                  ))}
+                </select>
+                {validationErrors.year && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="password" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    required
+                    className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                    placeholder=""
+                  />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -303,71 +312,78 @@ const RegisterForm: React.FC = () => {
                 <p className="mt-1 text-sm text-red-600">{validationErrors.password}</p>
               )}
             </div>
+          </div>
 
             {/* Confirm Password */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
-                Confirm password *
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  id="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  required
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                  placeholder="Confirm your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="confirmPassword" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Confirm password *
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    id="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    required
+                    className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                    placeholder=""
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+                {validationErrors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.confirmPassword}</p>
+                )}
               </div>
-              {validationErrors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.confirmPassword}</p>
-              )}
             </div>
 
             {/* Major */}
-            <div>
-              <label htmlFor="major" className="block text-sm font-medium text-neutral-700 mb-2">
-                Major *
-              </label>
-              <input
-                type="text"
-                id="major"
-                value={formData.major}
-                onChange={(e) => handleInputChange('major', e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                placeholder="e.g., Computer Science"
-              />
-              {validationErrors.major && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.major}</p>
-              )}
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="major" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Major *
+                </label>
+                <input
+                  type="text"
+                  id="major"
+                  value={formData.major}
+                  onChange={(e) => handleInputChange('major', e.target.value)}
+                  required
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  placeholder=""
+                />
+                {validationErrors.major && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.major}</p>
+                )}
+              </div>
             </div>
 
             {/* Hometown */}
-            <div>
-              <label htmlFor="hometown" className="block text-sm font-medium text-neutral-700 mb-2">
-                Hometown *
-              </label>
-              <input
-                type="text"
-                id="hometown"
-                value={formData.hometown}
-                onChange={(e) => handleInputChange('hometown', e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                placeholder="Where are you from?"
-              />
-              {validationErrors.hometown && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.hometown}</p>
-              )}
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="hometown" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Hometown *
+                </label>
+                <input
+                  type="text"
+                  id="hometown"
+                  value={formData.hometown}
+                  onChange={(e) => handleInputChange('hometown', e.target.value)}
+                  required
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  placeholder=""
+                />
+                {validationErrors.hometown && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.hometown}</p>
+                )}
+              </div>
             </div>
 
             {error && (
@@ -379,20 +395,24 @@ const RegisterForm: React.FC = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {isLoading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>Creating account...</span>
-                </div>
-              ) : (
-                'Create Account'
-              )}
-            </button>
+            <div className="pt-4">
+              <div style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-md text-lg font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Creating account...</span>
+                    </div>
+                  ) : (
+                    'Create Account'
+                  )}
+                </button>
+              </div>
+            </div>
           </form>
 
           <div className="mt-6 text-center">

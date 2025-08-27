@@ -81,37 +81,40 @@ const LoginForm: React.FC = () => {
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-lg shadow-box-xl p-8 border border-neutral-100">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                placeholder="Enter your email"
-              />
+        <div className="bg-white rounded-lg shadow-box-xl p-6 border border-neutral-100" style={{ width: '400px', margin: '0 auto' }}>
+          <form onSubmit={handleSubmit} className="space-y-8" style={{ marginBottom: '2rem' }}>
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="email" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  required
+                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  placeholder=""
+                />
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  id="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  required
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400"
-                  placeholder="Enter your password"
-                />
+            <div className="space-y-3" style={{ marginBottom: '2rem' }}>
+              <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <label htmlFor="password" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    id="password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    required
+                    className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                    placeholder=""
+                  />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -121,6 +124,7 @@ const LoginForm: React.FC = () => {
                 </button>
               </div>
             </div>
+          </div>
 
             {errorDisplay && (
               <div className={`bg-${errorDisplay.type === 'info' ? 'blue' : 'red'}-50 border border-${errorDisplay.type === 'info' ? 'blue' : 'red'}-200 rounded-xl p-4`}>
@@ -141,13 +145,17 @@ const LoginForm: React.FC = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </button>
+            <div className="pt-4">
+              <div style={{ width: '320px', margin: '0 auto', display: 'block' }}>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-md text-lg font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                >
+                  {isLoading ? 'Signing in...' : 'Sign In'}
+                </button>
+              </div>
+            </div>
           </form>
 
           <div className="mt-6 text-center">
