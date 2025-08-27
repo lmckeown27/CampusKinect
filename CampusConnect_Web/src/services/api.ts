@@ -17,7 +17,7 @@ class ApiService {
   private baseURL: string;
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
     
     this.api = axios.create({
       baseURL: this.baseURL,
@@ -213,6 +213,29 @@ class ApiService {
     
     if (!response.data.success) {
       throw new Error(response.data.message || 'Failed to delete post');
+    }
+  }
+
+  // Verification
+  public async verifyEmail(verificationCode: string): Promise<{ user: User; tokens: AuthTokens }> {
+    const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
+      await this.api.post('/auth/verify', { verificationCode });
+    
+    if (response.data.success && response.data.data) {
+      this.setTokens(response.data.data.tokens);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Email verification failed');
+  }
+
+  public async resendVerificationCode(email: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<void>> = 
+      await this.api.post('/auth/resend-verification', { email });
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to resend verification code');
     }
   }
 

@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { processRecurringPosts } = require('./recurringPostService');
+const { processRecurringPosts, cleanupInvalidPosts } = require('./recurringPostService');
 const relativeGradingService = require('./relativeGradingService');
 const marketSizeService = require('./marketSizeService');
 
@@ -7,6 +7,18 @@ const marketSizeService = require('./marketSizeService');
  * Cron Service
  * Handles scheduled tasks like processing recurring posts
  */
+
+// Clean up invalid posts once when system starts
+const performInitialCleanup = async () => {
+  console.log('🧹 Performing initial cleanup of invalid posts...');
+  
+  try {
+    const result = await cleanupInvalidPosts();
+    console.log(`✅ Initial cleanup completed: ${result.cleaned} posts cleaned up`);
+  } catch (error) {
+    console.error('❌ Initial cleanup failed:', error);
+  }
+};
 
 // Process recurring posts every day at 6:00 AM
 const scheduleRecurringPostProcessing = () => {
@@ -82,30 +94,31 @@ const scheduleGradeUpdates = () => {
   console.log('✅ Grade updates scheduled successfully');
 };
 
-// Process recurring posts every hour for testing (can be removed in production)
+// Process recurring posts daily for testing (reduced from hourly to save processing power)
 const scheduleHourlyProcessing = () => {
   if (process.env.NODE_ENV === 'development') {
-    console.log('🧪 Development mode: Scheduling hourly recurring post processing...');
+    console.log('🧪 Development mode: Scheduling daily recurring post processing...');
     
-    cron.schedule('0 * * * *', async () => {
-      console.log('🕐 Hourly recurring post processing (development mode)...');
+    cron.schedule('0 12 * * *', async () => {
+      console.log('🕐 Daily recurring post processing (development mode)...');
       
       try {
         const result = await processRecurringPosts();
-        console.log(`✅ Hourly processing completed: ${result.reposted}/${result.processed} posts reposted`);
+        console.log(`✅ Daily processing completed: ${result.reposted}/${result.processed} posts reposted, ${result.skipped} skipped`);
         
       } catch (error) {
-        console.error('❌ Hourly processing failed:', error);
+        console.error('❌ Daily processing failed:', error);
       }
     });
     
-    console.log('✅ Hourly processing scheduled for development');
+    console.log('✅ Daily processing scheduled for development (12:00 PM)');
   }
 };
 
 // Initialize all cron jobs
 const initializeCronJobs = () => {
   try {
+    performInitialCleanup(); // Call the new function here
     scheduleRecurringPostProcessing();
     scheduleMarketSizeUpdates();
     scheduleGradeUpdates();
@@ -124,7 +137,7 @@ const triggerRecurringPostProcessing = async () => {
   
   try {
     const result = await processRecurringPosts();
-    console.log(`✅ Manual processing completed: ${result.reposted}/${result.processed} posts reposted`);
+    console.log(`✅ Manual processing completed: ${result.reposted}/${result.processed} posts reposted, ${result.skipped} skipped`);
     return result;
     
   } catch (error) {
@@ -133,7 +146,23 @@ const triggerRecurringPostProcessing = async () => {
   }
 };
 
+// Manual cleanup trigger for testing
+const triggerCleanup = async () => {
+  console.log('🔧 Manually triggering cleanup of invalid posts...');
+  
+  try {
+    const result = await cleanupInvalidPosts();
+    console.log(`✅ Manual cleanup completed: ${result.cleaned} posts cleaned up`);
+    return result;
+    
+  } catch (error) {
+    console.error('❌ Manual cleanup failed:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   initializeCronJobs,
-  triggerRecurringPostProcessing
+  triggerRecurringPostProcessing,
+  triggerCleanup
 }; 

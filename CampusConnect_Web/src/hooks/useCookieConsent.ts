@@ -20,13 +20,17 @@ export function useCookieConsent() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    console.log('useCookieConsent hook: useEffect running');
     loadCookieConsent();
   }, []);
 
   const loadCookieConsent = () => {
+    console.log('useCookieConsent hook: loadCookieConsent called');
     try {
       const consentData = localStorage.getItem(COOKIE_CONSENT_KEY);
       const preferencesData = localStorage.getItem(COOKIE_PREFERENCES_KEY);
+      
+      console.log('useCookieConsent hook: localStorage data:', { consentData, preferencesData });
       
       if (consentData && preferencesData) {
         const preferences: CookiePreferences = JSON.parse(preferencesData);
@@ -36,10 +40,14 @@ export function useCookieConsent() {
           timestamp: Date.now(),
         };
         setConsent(consentInfo);
+        console.log('useCookieConsent hook: consent data set');
+      } else {
+        console.log('useCookieConsent hook: no existing consent data');
       }
     } catch (error) {
-      console.error('Error loading cookie consent:', error);
+      console.error('useCookieConsent hook: Error loading cookie consent:', error);
     } finally {
+      console.log('useCookieConsent hook: setting isLoaded to true');
       setIsLoaded(true);
     }
   };

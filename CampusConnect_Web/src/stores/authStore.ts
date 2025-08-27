@@ -17,6 +17,8 @@ interface AuthActions {
   checkAuth: () => Promise<void>;
   clearError: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
+  verifyEmail: (verificationCode: string) => Promise<void>;
+  resendVerificationCode: (email: string) => Promise<void>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -82,9 +84,10 @@ export const useAuthStore = create<AuthStore>()(
         
         try {
           const { user, tokens } = await apiService.register(userData);
+          // Don't set isAuthenticated to true until email is verified
           set({ 
             user, 
-            isAuthenticated: true, 
+            isAuthenticated: false, // Keep false until email verified
             isLoading: false,
             error: null 
           });
@@ -163,6 +166,68 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error: any) {
           set({ 
             error: error.message || 'Profile update failed', 
+            isLoading: false 
+          });
+          throw error;
+        }
+      },
+
+      verifyEmail: async (verificationCode: string) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const { user, tokens } = await apiService.verifyEmail(verificationCode);
+          set({ 
+            user, 
+            isAuthenticated: true, 
+            isLoading: false,
+            error: null 
+          });
+        } catch (error: any) {
+          let errorMessage = 'Email verification failed';
+          
+          if (error.response?.status === 400) {
+            errorMessage = 'Invalid verification code. Please check and try again.';
+          } else if (error.response?.status === 410) {
+            errorMessage = 'Verification code has expired. Please request a new one.';
+          } else if (error.response?.status >= 500) {
+            errorMessage = 'Server error. Please try again later.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          set({ 
+            error: errorMessage, 
+            isLoading: false 
+          });
+          throw error;
+        }
+      },
+
+      resendVerificationCode: async (email: string) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          await apiService.resendVerificationCode(email);
+          set({ 
+            isLoading: false,
+            error: null 
+          });
+        } catch (error: any) {
+          let errorMessage = 'Failed to resend verification code';
+          
+          if (error.response?.status === 404) {
+            errorMessage = 'Email not found. Please check your email address.';
+          } else if (error.response?.status === 429) {
+            errorMessage = 'Too many requests. Please wait before requesting another code.';
+          } else if (error.response?.status >= 500) {
+            errorMessage = 'Server error. Please try again later.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          set({ 
+            error: errorMessage, 
             isLoading: false 
           });
           throw error;
