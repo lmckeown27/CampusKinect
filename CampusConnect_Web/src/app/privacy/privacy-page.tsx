@@ -2,8 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Lock } from 'lucide-react';
-import SmartBackLink from '../../components/ui/SmartBackLink';
+import { ArrowLeft, Lock } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   return (
@@ -12,7 +11,13 @@ export default function PrivacyPolicyPage() {
       <div className="bg-white border-b border-neutral-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center space-x-4">
-            <SmartBackLink />
+            <Link 
+              href="/home" 
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
+            >
+              <ArrowLeft size={20} />
+              <span>Back to Home</span>
+            </Link>
             <div className="h-6 w-px bg-neutral-300"></div>
             <div className="flex items-center space-x-3">
               <Lock size={28} className="text-primary" />

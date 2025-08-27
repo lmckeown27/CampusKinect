@@ -46,46 +46,36 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Authentication Section - Login Form */}
+        {/* Authentication Options */}
         <div className="bg-white rounded-3xl shadow-2xl p-10 border border-neutral-100">
           <h2 className="text-2xl font-bold text-neutral-900 text-center mb-8">
-            Sign In
+            Get Started
           </h2>
-          
-          {/* Login Form */}
-          <form className="space-y-5">
-            <div>
-              <input
-                type="email"
-                placeholder="Email address"
-                className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                required
-              />
-            </div>
-            
-            <div>
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                required
-              />
-            </div>
-            
-            <button
-              type="submit"
-              className="w-full py-4 px-6 bg-primary text-white font-semibold rounded-xl hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+
+          <div className="space-y-5">
+            <Link 
+              href="/auth/register" 
+              className="w-full flex justify-center py-4 px-6 border border-transparent rounded-xl text-lg font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              Create Account
+            </Link>
+            <Link 
+              href="/auth/login" 
+              className="w-full flex justify-center py-4 px-6 border-2 border-neutral-200 rounded-xl text-lg font-semibold text-neutral-700 bg-white hover:bg-neutral-50 hover:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               Sign In
-            </button>
-          </form>
+            </Link>
+          </div>
 
-          {/* Signup Link */}
-          <div className="mt-6 pt-6 border-t border-neutral-200">
-            <p className="text-neutral-600 text-sm">
-              Don't have an account?{' '}
-              <Link href="/auth/register" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
-                Create one here
+          <div className="mt-8 text-center">
+            <p className="text-sm text-neutral-500 leading-relaxed">
+              By continuing, you agree to our{' '}
+              <Link href="/terms" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link href="/privacy" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+                Privacy Policy
               </Link>
             </p>
           </div>

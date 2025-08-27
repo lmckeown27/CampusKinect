@@ -62,14 +62,20 @@ const LoginForm: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="mx-auto h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+        <div className="flex flex-col items-center justify-center mb-8 w-full">
+          <div className="h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl">
             <span className="text-white font-bold text-2xl">K</span>
           </div>
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            Welcome back to <span className="text-primary">CampusKinect</span>
+          <h1 
+            className="text-3xl font-bold text-neutral-900 mb-2 w-full"
+            style={{ textAlign: 'center' }}
+          >
+            <span className="text-primary">CampusKinect</span>
           </h1>
-          <p className="text-neutral-600">
+          <p 
+            className="text-neutral-600 w-full"
+            style={{ textAlign: 'center' }}
+          >
             Sign in to your account
           </p>
         </div>
@@ -146,10 +152,10 @@ const LoginForm: React.FC = () => {
 
           <div className="mt-6 text-center">
             <Link 
-              href="/" 
+              href="/auth/register" 
               className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
             >
-              ← Back to Home
+              ← Don't have an Account?
             </Link>
           </div>
         </div>

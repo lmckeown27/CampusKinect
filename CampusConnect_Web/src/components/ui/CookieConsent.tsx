@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Shield } from 'lucide-react';
 import { useCookieConsent } from '../../hooks/useCookieConsent';
 
 export default function CookieConsent() {
   const { preferences, saveCookieConsent, clearCookieConsent } = useCookieConsent();
+  const [isVisible, setIsVisible] = useState(true);
 
   const handleAcceptAll = () => {
     saveCookieConsent({
@@ -14,15 +15,22 @@ export default function CookieConsent() {
       analytics: true,
       functional: true
     });
+    setIsVisible(false); // Hide the banner
   };
 
   const handleRejectAll = () => {
     clearCookieConsent();
+    setIsVisible(false); // Hide the banner
   };
 
   const handleCustomize = () => {
     // Navigate to cookie settings page
     window.location.href = '/cookie-settings';
+  }
+
+  // Don't render if banner should be hidden
+  if (!isVisible) {
+    return null;
   }
 
   return (
@@ -43,12 +51,12 @@ export default function CookieConsent() {
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex flex-row gap-3 w-full sm:w-auto">
             <button
-              onClick={handleRejectAll}
-              className="px-6 py-2.5 text-sm font-medium text-neutral-700 bg-neutral-100 rounded-xl hover:bg-neutral-200 transition-colors duration-200"
+              onClick={handleAcceptAll}
+              className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-primary to-primary-600 rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              Reject All
+              Accept All
             </button>
             <button
               onClick={handleCustomize}
@@ -57,10 +65,10 @@ export default function CookieConsent() {
               Customize
             </button>
             <button
-              onClick={handleAcceptAll}
-              className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-primary to-primary-600 rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              onClick={handleRejectAll}
+              className="px-6 py-2.5 text-sm font-medium text-neutral-700 bg-neutral-100 rounded-xl hover:bg-neutral-200 transition-colors duration-200"
             >
-              Accept All
+              Reject All
             </button>
           </div>
         </div>

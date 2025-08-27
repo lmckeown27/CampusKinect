@@ -2,13 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Shield, BarChart3, Users, CheckCircle, Save, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Shield, BarChart3, Users, Save, RefreshCw } from 'lucide-react';
 import { useCookieConsent } from '../../hooks/useCookieConsent';
-import SmartBackLink from '../../components/ui/SmartBackLink';
 
 export default function CookieSettingsPage() {
   const { preferences, saveCookieConsent, clearCookieConsent, isLoaded } = useCookieConsent();
-
   const [localPreferences, setLocalPreferences] = useState(preferences);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -59,7 +57,13 @@ export default function CookieSettingsPage() {
       <div className="bg-white border-b border-neutral-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center space-x-4">
-            <SmartBackLink />
+            <Link 
+              href="/home" 
+              className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
+            >
+              <ArrowLeft size={20} />
+              <span>Back to Home</span>
+            </Link>
             <div className="h-6 w-px bg-neutral-300"></div>
             <div className="flex items-center space-x-3">
               <Shield size={28} className="text-primary" />
@@ -162,24 +166,24 @@ export default function CookieSettingsPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-row items-center gap-4 justify-end flex-wrap">
+            <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button
                 onClick={handleReset}
-                className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
               >
                 <RefreshCw size={16} />
                 Reset to Current
               </button>
               <button
                 onClick={handleClearAll}
-                className="px-4 py-2 text-sm font-medium text-error bg-white border border-error/30 rounded-lg hover:bg-error/5 transition-colors whitespace-nowrap"
+                className="px-4 py-2 text-sm font-medium text-error bg-white border border-error/30 rounded-lg hover:bg-error/5 transition-colors"
               >
                 Clear All Preferences
               </button>
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex items-center justify-center gap-2 px-6 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-6 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isSaving ? (
                   <>
