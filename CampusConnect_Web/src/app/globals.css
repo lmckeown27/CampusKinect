@@ -966,3 +966,40 @@ textarea.border-4 {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Custom Olive Green Border Override */
+.border-olive-green {
+  border-color: #708d81 !important;
+}
+
+.border-olive-green:focus {
+  border-color: #5a7268 !important;
+}
+
+/* Additional focus state override for all olive green bordered elements */
+.border-olive-green:focus-within {
+  border-color: #5a7268 !important;
+}
+
+/* Override any conflicting focus styles */
+input.border-olive-green:focus,
+select.border-olive-green:focus {
+  border-color: #5a7268 !important;
+}
+
+/* Ensure focus ring doesn't interfere with border color */
+.border-olive-green:focus {
+  border-color: #5a7268 !important;
+  box-shadow: 0 0 0 4px rgba(112, 141, 129, 0.2) !important;
+}
+
+/* Handle focus-within for password fields with eye icons */
+.border-olive-green:focus-within {
+  border-color: #5a7268 !important;
+}
+
+/* Override any existing focus border colors */
+.border-olive-green:focus,
+.border-olive-green:focus-within {
+  border-color: #5a7268 !important;
+}

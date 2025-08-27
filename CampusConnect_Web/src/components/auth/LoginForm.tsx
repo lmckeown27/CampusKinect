@@ -59,7 +59,7 @@ const LoginForm: React.FC = () => {
   const errorDisplay = error ? getErrorDisplay(error) : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pb-24">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-8 w-full">
@@ -94,7 +94,7 @@ const LoginForm: React.FC = () => {
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   required
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder=""
                 />
               </div>
@@ -112,13 +112,14 @@ const LoginForm: React.FC = () => {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
-                    className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-primary hover:text-primary-600 transition-colors bg-transparent border-none"
+                  style={{ background: 'transparent', boxShadow: 'none' }}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -150,7 +151,17 @@ const LoginForm: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-md text-lg font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-md text-lg font-semibold text-white focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  style={{ 
+                    backgroundColor: '#708d81',
+                    backgroundImage: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#5a7268';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
                 >
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </button>
@@ -166,6 +177,20 @@ const LoginForm: React.FC = () => {
               ← Don't have an Account?
             </Link>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center text-xs text-gray-500 mt-8">
+          <p>
+            By logging in, you agree to our{' '}
+            <Link href="/terms" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+              Privacy Policy
+            </Link>
+          </p>
         </div>
       </div>
     </div>

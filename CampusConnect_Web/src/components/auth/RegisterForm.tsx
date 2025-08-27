@@ -137,7 +137,7 @@ const RegisterForm: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pb-24">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-8 w-full">
@@ -173,7 +173,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   required
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder=""
                 />
                 {validationErrors.firstName && (
@@ -192,7 +192,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
                   required
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder=""
                 />
                 {validationErrors.lastName && (
@@ -213,7 +213,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   required
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder=""
                 />
                 {validationErrors.email && (
@@ -241,13 +241,14 @@ const RegisterForm: React.FC = () => {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
-                    className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-primary hover:text-primary-600 transition-colors bg-transparent border-none"
+                  style={{ background: 'transparent', boxShadow: 'none' }}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -299,13 +300,14 @@ const RegisterForm: React.FC = () => {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     required
-                    className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-primary hover:text-primary-600 transition-colors bg-transparent border-none"
+                    style={{ background: 'transparent', boxShadow: 'none' }}
                   >
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -326,7 +328,7 @@ const RegisterForm: React.FC = () => {
                   id="year"
                   value={formData.year || ''}
                   onChange={(e) => handleInputChange('year', e.target.value ? parseInt(e.target.value) : undefined)}
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 bg-white text-sm"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 bg-white text-sm border-olive-green"
                 >
                   <option value="" disabled>Select your year</option>
                   {years.map(year => (
@@ -350,7 +352,7 @@ const RegisterForm: React.FC = () => {
                   id="major"
                   value={formData.major}
                   onChange={(e) => handleInputChange('major', e.target.value)}
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder=""
                 />
                 {validationErrors.major && (
@@ -370,7 +372,7 @@ const RegisterForm: React.FC = () => {
                   id="hometown"
                   value={formData.hometown}
                   onChange={(e) => handleInputChange('hometown', e.target.value)}
-                  className="w-full pt-10 pb-6 px-4 border-2 border-neutral-200 rounded-md focus:outline-none focus:border-neutral-400 focus:ring-4 focus:ring-neutral-200 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder=""
                 />
                 {validationErrors.hometown && (
@@ -393,7 +395,17 @@ const RegisterForm: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-md text-lg font-semibold text-white bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-md text-lg font-semibold text-white focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  style={{ 
+                    backgroundColor: '#708d81',
+                    backgroundImage: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#5a7268';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
                 >
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
@@ -420,7 +432,16 @@ const RegisterForm: React.FC = () => {
 
         {/* Footer */}
         <div className="text-center text-xs text-gray-500 mt-8">
-          <p>By creating an account, you agree to our Terms of Service and Privacy Policy</p>
+          <p>
+            By creating an account, you agree to our{' '}
+            <Link href="/terms" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+              Privacy Policy
+            </Link>
+          </p>
         </div>
       </div>
     </div>
