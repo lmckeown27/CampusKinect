@@ -1,35 +1,49 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
-import { User, Settings, LogOut, Bell } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Menu, X, Bell, User, LogOut } from 'lucide-react';
+import { useNavigation } from './NavigationContext';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuthStore();
   const router = useRouter();
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const { showNavigation, setShowNavigation } = useNavigation();
+  const [showProfileMenu, setShowProfileMenu] = useState(false); // State for profile menu
 
   const handleLogout = () => {
-    // Show logout confirmation
-    alert(`👋 LOGGING OUT!
-    
-🚪 Logging out of CampusKinect
-🔄 Clearing session data
-📱 Redirecting to login page...`);
-    
-    logout(() => {
-      // Redirect to login page after logout
-      router.push('/auth/login');
-    });
-    setShowProfileMenu(false);
+    if (confirm('Are you sure you want to logout?')) {
+      logout(() => {
+        router.push('/auth/login');
+      });
+    }
+  };
+
+  const toggleNavigation = () => {
+    setShowNavigation(!showNavigation);
   };
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white border-b border-[#708d81] z-50">
+
+      
       <div className="px-4 py-3 flex items-center justify-between">
-        {/* App Title */}
+        {/* Left Side - Navigation Toggle & App Title */}
         <div className="flex items-center space-x-3">
+          {/* Navigation Toggle Button */}
+          <button
+            onClick={toggleNavigation}
+            className={`p-2 rounded-lg transition-all duration-200 ${
+              showNavigation 
+                ? 'text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0]' 
+                : 'text-white bg-[#708d81] hover:bg-[#5a7268]'
+            }`}
+            title={showNavigation ? "Hide Navigation" : "Show Navigation"}
+          >
+            {showNavigation ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          
           <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-600 rounded-md flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">K</span>
           </div>
@@ -45,7 +59,7 @@ const Header: React.FC = () => {
 
           {/* Settings */}
           <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-full transition-colors">
-            <Settings size={20} />
+            <User size={20} />
           </button>
 
           {/* User Profile */}

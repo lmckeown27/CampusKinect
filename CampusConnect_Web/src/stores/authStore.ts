@@ -134,16 +134,23 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       checkAuth: async () => {
-        set({ isLoading: true });
-        
         try {
-          const user = await apiService.checkAuth();
-          set({ 
-            user, 
-            isAuthenticated: true, 
-            isLoading: false 
-          });
-        } catch (error: any) {
+          // Check if we have stored auth data
+          const { user, isAuthenticated } = get();
+          
+          if (user && isAuthenticated) {
+            // Verify the token is still valid by making a request to /auth/me
+            const currentUser = await apiService.checkAuth();
+            set({ 
+              user: currentUser, 
+              isAuthenticated: true, 
+              isLoading: false 
+            });
+          } else {
+            set({ isLoading: false });
+          }
+        } catch (error) {
+          // If the token is invalid, clear the auth state
           set({ 
             user: null, 
             isAuthenticated: false, 
