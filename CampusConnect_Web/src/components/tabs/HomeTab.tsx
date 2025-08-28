@@ -26,7 +26,13 @@ const HomeTab: React.FC = () => {
   const [showNewPostModal, setShowNewPostModal] = useState(false);
   
   // Separate state for Offer/Request tags to ensure complete isolation
-  const [offerRequestTags, setOfferRequestTags] = useState<string[]>([]);
+  // Each category has its own Offer/Request state
+  const [offerRequestTags, setOfferRequestTags] = useState<{[key: string]: string[]}>({
+    goods: [],
+    services: [],
+    housing: [],
+    tutoring: []
+  });
   
   // Track previous activeFilter to detect changes
   const prevActiveFilterRef = useRef<string[]>(['all']);
@@ -69,7 +75,7 @@ const HomeTab: React.FC = () => {
   // Filter posts based on selected subtags
   const getFilteredPostsBySubtags = () => {
     // Combine both regular tags and offer/request tags
-    const allSelectedTags = [...selectedTags, ...offerRequestTags];
+    const allSelectedTags = [...selectedTags, ...Object.values(offerRequestTags).flat()];
     
     if (allSelectedTags.length === 0) {
       return filteredPosts;
@@ -114,7 +120,19 @@ const HomeTab: React.FC = () => {
 
   // Check if Offer/Request tags are currently available for selection
   const areOfferRequestTagsAvailable = () => {
-    return shouldShowOfferRequestTags() && !activeFilter.includes('events');
+    const selectedCategories = activeFilter.filter(f => f !== 'all');
+    // Show offer/request tags if:
+    // 1. Only non-events categories are selected, OR
+    // 2. Both events and non-events categories are selected
+    const hasNonEventsCategories = selectedCategories.some(category => 
+      category === 'goods' || 
+      category === 'services' || 
+      category === 'housing' || 
+      category === 'tutoring'
+    );
+    
+    // Show tags if there are non-events categories (regardless of whether events is also selected)
+    return hasNonEventsCategories;
   };
 
   // Handle main category changes while preserving Offer/Request tags
@@ -127,8 +145,55 @@ const HomeTab: React.FC = () => {
     const hadEvents = previousCategories.includes('events');
     
     if (hasEvents && !hadEvents) {
-      // Events was added - clear Offer/Request tags
-      setOfferRequestTags([]);
+      // Events was added - only clear Offer/Request tags if Events is the only category selected
+      // If other categories are also selected, preserve the tags for those categories
+      const hasOtherCategories = newCategories.some(cat => 
+        cat === 'goods' || cat === 'services' || cat === 'housing' || cat === 'tutoring'
+      );
+      
+      if (!hasOtherCategories) {
+        // Only Events selected - clear all Offer/Request tags
+        setOfferRequestTags({
+          goods: [],
+          services: [],
+          housing: [],
+          tutoring: []
+        });
+      }
+      // If Events + other categories are selected, preserve existing tags for non-events categories
+    } else {
+      // Handle category additions and removals for Offer/Request tags
+      const addedCategories = newCategories.filter(cat => !previousCategories.includes(cat));
+      const removedCategories = previousCategories.filter(cat => !newCategories.includes(cat));
+      
+      if (addedCategories.length > 0 || removedCategories.length > 0) {
+        setOfferRequestTags(prev => {
+          const newState = { ...prev };
+          
+          // For added categories, apply existing Offer/Request tags if they were selected for other categories
+          addedCategories.forEach(category => {
+            if (category in newState) {
+              const existingTags: string[] = [];
+              Object.entries(prev).forEach(([cat, tags]) => {
+                if (cat !== category && tags.length > 0) {
+                  existingTags.push(...tags);
+                }
+              });
+              // Apply unique existing tags to the new category
+              newState[category as keyof typeof newState] = [...new Set(existingTags)];
+            }
+          });
+          
+          // For removed categories, clear their Offer/Request tags
+          removedCategories.forEach(category => {
+            if (category in newState) {
+              newState[category as keyof typeof newState] = [];
+            }
+          });
+          
+          return newState;
+        });
+      }
     }
     
     // Update active filter
@@ -200,12 +265,28 @@ const HomeTab: React.FC = () => {
 
   const handleTagSelect = (tag: string) => {
     if (tag === 'Offer' || tag === 'Request') {
-      // Handle Offer/Request tags separately
-      setOfferRequestTags(prev => 
-        prev.includes(tag) 
-          ? prev.filter(t => t !== tag)
-          : [...prev, tag]
-      );
+      // Handle Offer/Request tags separately - they are context-specific
+      const selectedCategories = activeFilter.filter(f => f !== 'all');
+      
+      // For Offer/Request tags, we need to know which category they're being selected for
+      // Since these buttons are global, we'll apply the tag to all currently selected categories
+      if (selectedCategories.length > 0) {
+        setOfferRequestTags(prev => {
+          const newState = { ...prev };
+          selectedCategories.forEach(category => {
+            if (category in newState) {
+              if (newState[category as keyof typeof newState].includes(tag)) {
+                // Remove tag from this category
+                newState[category as keyof typeof newState] = newState[category as keyof typeof newState].filter(t => t !== tag);
+              } else {
+                // Add tag to this category
+                newState[category as keyof typeof newState] = [...newState[category as keyof typeof newState], tag];
+              }
+            }
+          });
+          return newState;
+        });
+      }
     } else {
       // Handle other tags normally
       setSelectedTags(prev => 
@@ -218,7 +299,12 @@ const HomeTab: React.FC = () => {
 
   const handleTagClear = () => {
     setSelectedTags([]);
-    setOfferRequestTags([]);
+    setOfferRequestTags({
+      goods: [],
+      services: [],
+      housing: [],
+      tutoring: []
+    });
     clearFilters();
   };
 
@@ -262,21 +348,21 @@ const HomeTab: React.FC = () => {
             <button
               onClick={() => handleTagSelect('Offer')}
               className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                offerRequestTags.includes('Offer')
+                offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')
                   ? 'text-white shadow-sm'
                   : 'text-[#708d81] hover:text-[#5a7268]'
               }`}
               style={{
-                backgroundColor: offerRequestTags.includes('Offer') ? '#708d81' : '#f0f2f0',
+                backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')) ? '#708d81' : '#f0f2f0',
                 width: '100px'
               }}
               onMouseEnter={(e) => {
-                if (!offerRequestTags.includes('Offer')) {
+                if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
                   e.currentTarget.style.backgroundColor = '#e8ebe8';
                 }
               }}
               onMouseLeave={(e) => {
-                if (!offerRequestTags.includes('Offer')) {
+                if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
                   e.currentTarget.style.backgroundColor = '#f0f2f0';
                 }
               }}
@@ -317,22 +403,22 @@ const HomeTab: React.FC = () => {
             <button
               onClick={() => handleTagSelect('Request')}
               className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                offerRequestTags.includes('Request')
+                offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')
                   ? 'text-white shadow-sm'
                   : 'text-[#708d81] hover:text-[#5a7268]'
               }`}
               style={{
-                backgroundColor: offerRequestTags.includes('Request') ? '#708d81' : '#f0f2f0',
+                backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')) ? '#708d81' : '#f0f2f0',
                 width: '100px',
                 marginLeft: '24px'
               }}
               onMouseEnter={(e) => {
-                if (!offerRequestTags.includes('Request')) {
+                if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
                   e.currentTarget.style.backgroundColor = '#e8ebe8';
                 }
               }}
               onMouseLeave={(e) => {
-                if (!offerRequestTags.includes('Request')) {
+                if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
                   e.currentTarget.style.backgroundColor = '#f0f2f0';
                 }
               }}
@@ -343,24 +429,27 @@ const HomeTab: React.FC = () => {
         </div>
 
         {/* Offer/Request Status Indicator */}
-        {areOfferRequestTagsAvailable() && (offerRequestTags.includes('Offer') || offerRequestTags.includes('Request')) && (
+        {areOfferRequestTagsAvailable() && (
           <div className="text-center mt-2">
             <span className="text-xs text-[#708d81] opacity-70">
-              {offerRequestTags.includes('Offer') && offerRequestTags.includes('Request') 
+              {(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer') || offerRequestTags.tutoring.includes('Offer')) &&
+               (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request') || offerRequestTags.tutoring.includes('Request'))
                 ? 'Showing both Offers and Requests'
-                : offerRequestTags.includes('Offer') 
+                : offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer') || offerRequestTags.tutoring.includes('Offer')
                   ? 'Showing Offers only'
-                  : 'Showing Requests only'
+                  : offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request') || offerRequestTags.tutoring.includes('Request')
+                    ? 'Showing Requests only'
+                    : 'Showing both Offers and Requests'
               }
             </span>
           </div>
         )}
 
-        {/* Events Warning - Show when Events is selected */}
-        {activeFilter.includes('events') && (
+        {/* Events Warning - Show when only Events is selected */}
+        {activeFilter.includes('events') && !areOfferRequestTagsAvailable() && (
           <div className="text-center mt-2">
             <span className="text-xs text-[#708d81] opacity-70">
-              Note: Offer/Request tags are not available for Events
+              Note: Offer/Request tags are not available for Events only
             </span>
           </div>
         )}
