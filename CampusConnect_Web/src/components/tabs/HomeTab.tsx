@@ -94,7 +94,14 @@ const HomeTab: React.FC = () => {
           {/* Filter Button */}
           <button
             onClick={() => setShowLeftPanel(!showLeftPanel)}
-            className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-lg transition-colors"
+            className="p-2 text-[#708d81] hover:text-[#5a7268] rounded-lg transition-colors"
+            style={{ backgroundColor: 'transparent' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f0f2f0';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
             <Filter size={20} />
           </button>
@@ -108,9 +115,22 @@ const HomeTab: React.FC = () => {
               onClick={() => setActiveFilter(tab.id as any)}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                 activeFilter === tab.id
-                  ? 'bg-[#708d81] text-white'
-                  : 'text-[#708d81] hover:bg-[#f0f2f0]'
+                  ? 'text-white shadow-sm'
+                  : 'text-[#708d81] hover:text-[#5a7268]'
               }`}
+              style={{
+                backgroundColor: activeFilter === tab.id ? '#708d81' : '#f0f2f0'
+              }}
+              onMouseEnter={(e) => {
+                if (activeFilter !== tab.id) {
+                  e.currentTarget.style.backgroundColor = '#e8ebe8';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeFilter !== tab.id) {
+                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                }
+              }}
             >
               {tab.label} ({tab.count})
             </button>
@@ -122,12 +142,21 @@ const HomeTab: React.FC = () => {
       <div className="flex">
         {/* Left Panel - Filters */}
         {showLeftPanel && (
-          <div className="w-64 bg-white border-r border-[#708d81] p-4">
+          <div className="w-60 bg-white border-r border-[#708d81] p-4 mr-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-[#708d81]">Filters</h3>
               <button
                 onClick={() => setShowLeftPanel(false)}
-                className="p-1 text-[#708d81] opacity-60 hover:opacity-100"
+                className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                  e.currentTarget.style.opacity = '1';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.opacity = '0.6';
+                }}
               >
                 <X size={20} />
               </button>
@@ -146,7 +175,14 @@ const HomeTab: React.FC = () => {
             {/* Clear All Filters */}
             <button
               onClick={clearFilters}
-              className="w-full py-2 px-4 bg-[#f0f2f0] text-[#708d81] rounded-lg hover:bg-[#e8ebe8] transition-colors"
+              className="w-full py-2 px-4 text-[#708d81] rounded-lg transition-colors"
+              style={{ backgroundColor: '#f0f2f0' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#e8ebe8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0f2f0';
+              }}
             >
               Clear All Filters
             </button>
@@ -154,7 +190,7 @@ const HomeTab: React.FC = () => {
         )}
 
         {/* Center - Posts Feed */}
-        <div className="flex-1 px-4 py-4">
+        <div className="flex-1">
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700">{error}</p>
@@ -181,7 +217,18 @@ const HomeTab: React.FC = () => {
                   <button
                     onClick={handleLoadMore}
                     disabled={isLoading}
-                    className="px-6 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    style={{ backgroundColor: '#708d81' }}
+                    onMouseEnter={(e) => {
+                      if (!isLoading) {
+                        e.currentTarget.style.backgroundColor = '#5a7268';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isLoading) {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                      }
+                    }}
                   >
                     {isLoading ? 'Loading...' : 'Load More Posts'}
                   </button>
@@ -190,43 +237,7 @@ const HomeTab: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Right Panel - Trending/Suggestions */}
-        {showRightPanel && (
-          <div className="w-80 bg-white border-l border-[#708d81] p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[#708d81]">Trending</h3>
-              <button
-                onClick={() => setShowRightPanel(false)}
-                className="p-1 text-[#708d81] opacity-60 hover:opacity-100"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Trending Content */}
-            <div className="space-y-4">
-              <div className="p-3 bg-[#708d81] rounded-lg">
-                <h4 className="text-white font-medium mb-2">Trending Posts</h4>
-                <p className="text-white text-sm opacity-90">Popular content will appear here</p>
-              </div>
-              
-              <div className="p-3 bg-[#708d81] rounded-lg">
-                <h4 className="text-white font-medium mb-2">Suggestions</h4>
-                <p className="text-white text-sm opacity-90">Personalized recommendations</p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-
-      {/* Floating Action Button */}
-      <button
-        onClick={() => setShowNewPostModal(true)}
-        className="fixed right-4 bottom-24 w-12 h-12 bg-[#708d81] text-white rounded-full shadow-lg hover:bg-[#5a7268] transition-colors flex items-center justify-center"
-      >
-        <Plus size={24} />
-      </button>
     </div>
   );
 };

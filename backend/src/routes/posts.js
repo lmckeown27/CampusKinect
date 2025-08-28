@@ -151,7 +151,7 @@ router.get('/organized', [
       countParams.push(tags);
     }
 
-    const countResult = await dbQuery(countQuery, countParams);
+    const countResult = await query(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
 
     // Format posts with organization info
@@ -1155,7 +1155,7 @@ router.get('/', [
       countParams.push(tags);
     }
 
-    const countResult = await dbQuery(countQuery, countParams);
+    const countResult = await query(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
 
     // Format posts

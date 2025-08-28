@@ -153,7 +153,7 @@ const ProfileTab: React.FC = () => {
     <div style={{ backgroundColor: '#f8f9f6' }}>
       {/* Profile Header */}
       <div className="bg-white border-b border-[#708d81]">
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="max-w-xl mx-auto px-4 py-6">
           <div className="flex items-start space-x-6">
             {/* Profile Image */}
             <div className="relative">
@@ -218,7 +218,7 @@ const ProfileTab: React.FC = () => {
       {/* Edit Profile Form */}
       {isEditing && (
         <div className="bg-white border-b border-[#708d81]">
-          <div className="max-w-3xl mx-auto px-4 py-6">
+          <div className="max-w-xl mx-auto px-4 py-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#708d81] mb-2">
@@ -317,7 +317,7 @@ const ProfileTab: React.FC = () => {
 
       {/* Profile Stats */}
       <div className="bg-white border-b border-[#708d81]">
-        <div className="max-w-3xl mx-auto px-4 py-4">
+        <div className="max-w-xl mx-auto px-4 py-4">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-[#708d81]">{mockPosts.length}</div>
@@ -336,7 +336,7 @@ const ProfileTab: React.FC = () => {
       </div>
 
       {/* Content Tabs */}
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-xl mx-auto px-4 py-6">
         {/* Tab Navigation */}
         <div className="flex space-x-1 bg-[#f0f2f0] p-1 rounded-lg mb-6">
           <button

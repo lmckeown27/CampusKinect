@@ -50,7 +50,7 @@ const MessagesTab: React.FC = () => {
     <div style={{ backgroundColor: '#f8f9f6' }}>
       <div className="flex h-full">
         {/* Left Sidebar - Conversations */}
-        <div className="w-full sm:w-80 bg-white border-r border-[#708d81] flex flex-col">
+        <div className="w-full sm:w-64 bg-white border-r border-[#708d81] flex flex-col">
           {/* Header */}
           <div className="p-4 border-b border-[#708d81]">
             <div className="flex items-center justify-between">
