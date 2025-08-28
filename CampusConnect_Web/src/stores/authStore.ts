@@ -13,7 +13,7 @@ interface AuthState {
 interface AuthActions {
   login: (credentials: LoginForm) => Promise<void>;
   register: (userData: RegisterForm) => Promise<void>;
-  logout: () => void;
+  logout: (redirectCallback?: () => void) => void;
   checkAuth: () => Promise<void>;
   clearError: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
@@ -121,13 +121,16 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      logout: () => {
+      logout: (redirectCallback?: () => void) => {
         apiService.logout();
         set({ 
           user: null, 
           isAuthenticated: false, 
           error: null 
         });
+        if (redirectCallback) {
+          redirectCallback();
+        }
       },
 
       checkAuth: async () => {

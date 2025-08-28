@@ -1,15 +1,27 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
 import { User, Settings, LogOut, Bell } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuthStore();
+  const router = useRouter();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    // Show logout confirmation
+    alert(`👋 LOGGING OUT!
+    
+🚪 Logging out of CampusKinect
+🔄 Clearing session data
+📱 Redirecting to login page...`);
+    
+    logout(() => {
+      // Redirect to login page after logout
+      router.push('/auth/login');
+    });
     setShowProfileMenu(false);
   };
 
