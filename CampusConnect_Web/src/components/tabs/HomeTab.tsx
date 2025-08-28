@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MapPin, Calendar, Tag, X } from 'lucide-react';
+import { Search, Filter, MapPin, Calendar, Tag, X, Plus } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
 import PostCard from '../ui/PostCard';
 import TagSelector from '../ui/TagSelector';
@@ -23,6 +23,7 @@ const HomeTab: React.FC = () => {
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState<'all' | 'goods' | 'services' | 'events' | 'housing' | 'tutoring'>('all');
+  const [showNewPostModal, setShowNewPostModal] = useState(false);
 
   useEffect(() => {
     fetchPosts(1, true);
@@ -74,45 +75,44 @@ const HomeTab: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={{ backgroundColor: '#f8f9f6' }}>
       {/* Search and Filter Header */}
-      <div className="sticky top-16 bg-white border-b border-gray-200 px-4 py-3 z-40">
+      <div className="sticky top-16 bg-white border-b border-[#708d81] px-4 py-4 z-30">
         <div className="flex items-center space-x-3">
           {/* Search Bar */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#708d81] opacity-60" size={20} />
             <input
               type="text"
               placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
             />
           </div>
 
           {/* Filter Button */}
           <button
             onClick={() => setShowLeftPanel(!showLeftPanel)}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-lg transition-colors"
           >
             <Filter size={20} />
           </button>
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex space-x-1 mt-3 overflow-x-auto">
+        <div className="flex space-x-1 mt-4">
           {filterTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveFilter(tab.id as any)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                 activeFilter === tab.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-[#708d81] text-white'
+                  : 'text-[#708d81] hover:bg-[#f0f2f0]'
               }`}
             >
-              {tab.label}
-              <span className="ml-1 text-xs opacity-75">({tab.count})</span>
+              {tab.label} ({tab.count})
             </button>
           ))}
         </div>
@@ -122,12 +122,12 @@ const HomeTab: React.FC = () => {
       <div className="flex">
         {/* Left Panel - Filters */}
         {showLeftPanel && (
-          <div className="w-80 bg-white border-r border-gray-200 p-4">
+          <div className="w-64 bg-white border-r border-[#708d81] p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+              <h3 className="text-lg font-semibold text-[#708d81]">Filters</h3>
               <button
                 onClick={() => setShowLeftPanel(false)}
-                className="p-1 text-gray-400 hover:text-gray-600"
+                className="p-1 text-[#708d81] opacity-60 hover:opacity-100"
               >
                 <X size={20} />
               </button>
@@ -135,7 +135,7 @@ const HomeTab: React.FC = () => {
 
             {/* Tags Filter */}
             <div className="mb-6">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Popular Tags</h4>
+              <h4 className="text-sm font-medium text-[#708d81] mb-3">Popular Tags</h4>
               <TagSelector
                 selectedTags={selectedTags}
                 onTagSelect={handleTagSelect}
@@ -146,7 +146,7 @@ const HomeTab: React.FC = () => {
             {/* Clear All Filters */}
             <button
               onClick={clearFilters}
-              className="w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="w-full py-2 px-4 bg-[#f0f2f0] text-[#708d81] rounded-lg hover:bg-[#e8ebe8] transition-colors"
             >
               Clear All Filters
             </button>
@@ -163,12 +163,12 @@ const HomeTab: React.FC = () => {
 
           {isLoading && filteredPosts.length === 0 ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
             </div>
           ) : filteredPosts.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No posts found</p>
-              <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or search terms</p>
+              <p className="text-[#708d81] text-lg">No posts found</p>
+              <p className="text-[#708d81] text-sm mt-2">Try adjusting your filters or search terms</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -181,7 +181,7 @@ const HomeTab: React.FC = () => {
                   <button
                     onClick={handleLoadMore}
                     disabled={isLoading}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {isLoading ? 'Loading...' : 'Load More Posts'}
                   </button>
@@ -193,41 +193,40 @@ const HomeTab: React.FC = () => {
 
         {/* Right Panel - Trending/Suggestions */}
         {showRightPanel && (
-          <div className="w-80 bg-white border-l border-gray-200 p-4">
+          <div className="w-80 bg-white border-l border-[#708d81] p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Trending</h3>
+              <h3 className="text-lg font-semibold text-[#708d81]">Trending</h3>
               <button
                 onClick={() => setShowRightPanel(false)}
-                className="p-1 text-gray-400 hover:text-gray-600"
+                className="p-1 text-[#708d81] opacity-60 hover:opacity-100"
               >
                 <X size={20} />
               </button>
             </div>
-            
-            <div className="space-y-3">
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <h4 className="font-medium text-blue-900">Popular This Week</h4>
-                <p className="text-sm text-blue-700 mt-1">Check out what&apos;s trending on campus</p>
+
+            {/* Trending Content */}
+            <div className="space-y-4">
+              <div className="p-3 bg-[#708d81] rounded-lg">
+                <h4 className="text-white font-medium mb-2">Trending Posts</h4>
+                <p className="text-white text-sm opacity-90">Popular content will appear here</p>
               </div>
               
-              <div className="p-3 bg-green-50 rounded-lg">
-                <h4 className="font-medium text-green-900">New Features</h4>
-                <p className="text-sm text-green-700 mt-1">Discover the latest updates</p>
+              <div className="p-3 bg-[#708d81] rounded-lg">
+                <h4 className="text-white font-medium mb-2">Suggestions</h4>
+                <p className="text-white text-sm opacity-90">Personalized recommendations</p>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Floating Action Button for Right Panel */}
-      {!showRightPanel && (
-        <button
-          onClick={() => setShowRightPanel(true)}
-          className="fixed right-4 bottom-24 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
-        >
-          <span className="text-lg">→</span>
-        </button>
-      )}
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setShowNewPostModal(true)}
+        className="fixed right-4 bottom-24 w-12 h-12 bg-[#708d81] text-white rounded-full shadow-lg hover:bg-[#5a7268] transition-colors flex items-center justify-center"
+      >
+        <Plus size={24} />
+      </button>
     </div>
   );
 };

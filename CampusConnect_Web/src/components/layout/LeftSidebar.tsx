@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { Home, Plus, MessageCircle, User } from 'lucide-react';
 
-const BottomNavigation: React.FC = () => {
+const LeftSidebar: React.FC = () => {
   const pathname = usePathname();
   const { unreadCount } = useMessagesStore();
 
@@ -39,15 +39,21 @@ const BottomNavigation: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#708d81] z-50">
-      <div className="flex items-center justify-around px-4 py-2">
+    <nav className="fixed left-0 top-16 bottom-0 w-64 lg:w-72 xl:w-80 bg-white border-r border-[#708d81] z-40 flex flex-col py-6">
+      {/* Navigation Header */}
+      <div className="px-6 mb-8">
+        <h2 className="text-lg font-semibold text-[#708d81]">Navigation</h2>
+      </div>
+      
+      {/* Navigation Items */}
+      <div className="flex-1 px-4">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`flex flex-col items-center justify-center w-full py-2 px-3 rounded-lg transition-colors ${
+              className={`flex items-center space-x-3 w-full px-4 py-3 mb-2 rounded-lg transition-colors ${
                 item.current
                   ? 'text-[#708d81] bg-[#f0f2f0]'
                   : 'text-[#708d81] hover:text-[#5a7268] hover:bg-[#f8f9f6]'
@@ -61,7 +67,7 @@ const BottomNavigation: React.FC = () => {
                   </span>
                 )}
               </div>
-              <span className="text-xs mt-1 font-medium">{item.name}</span>
+              <span className="text-sm font-medium">{item.name}</span>
             </Link>
           );
         })}
@@ -70,4 +76,4 @@ const BottomNavigation: React.FC = () => {
   );
 };
 
-export default BottomNavigation; 
+export default LeftSidebar; 

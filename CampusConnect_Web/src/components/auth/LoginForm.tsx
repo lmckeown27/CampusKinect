@@ -235,7 +235,7 @@ const LoginForm: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-xs text-gray-500 mt-8">
+        <div className="text-center text-xs text-[#708d81] mt-8">
           <p>
             By logging in, you agree to our{' '}
             <Link href="/terms" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">

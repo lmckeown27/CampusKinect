@@ -129,12 +129,12 @@ const CreatePostTab: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      <div className="max-w-2xl mx-auto px-4">
+    <div className="py-6" style={{ backgroundColor: '#f8f9f6' }}>
+      <div className="max-w-3xl mx-auto px-4">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Create New Post</h1>
-          <p className="text-gray-600">What&apos;s on your mind?</p>
+          <h1 className="text-2xl font-bold text-[#708d81]">Create New Post</h1>
+          <p className="text-[#708d81] opacity-70">What&apos;s on your mind?</p>
         </div>
 
         {/* Error Display */}

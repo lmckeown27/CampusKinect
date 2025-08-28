@@ -150,10 +150,10 @@ const ProfileTab: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={{ backgroundColor: '#f8f9f6' }}>
       {/* Profile Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="bg-white border-b border-[#708d81]">
+        <div className="max-w-3xl mx-auto px-4 py-6">
           <div className="flex items-start space-x-6">
             {/* Profile Image */}
             <div className="relative">
@@ -164,11 +164,11 @@ const ProfileTab: React.FC = () => {
                   className="w-24 h-24 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 bg-[#708d81] rounded-full flex items-center justify-center">
                   <User size={48} className="text-white" />
                 </div>
               )}
-              <button className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+              <button className="absolute bottom-0 right-0 w-8 h-8 bg-[#708d81] text-white rounded-full flex items-center justify-center hover:bg-[#5a7268] transition-colors">
                 <Edit size={16} />
               </button>
             </div>
@@ -177,14 +177,14 @@ const ProfileTab: React.FC = () => {
             <div className="flex-1">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <h1 className="text-2xl font-bold text-[#708d81]">
                     {user.firstName} {user.lastName}
                   </h1>
-                  <p className="text-gray-600">{user.email}</p>
+                  <p className="text-[#708d81] opacity-70">{user.email}</p>
                 </div>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] transition-colors"
                 >
                   {isEditing ? 'Cancel' : 'Edit Profile'}
                 </button>
@@ -192,15 +192,15 @@ const ProfileTab: React.FC = () => {
 
               {/* Profile Details */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center space-x-2 text-gray-600">
+                <div className="flex items-center space-x-2 text-[#708d81] opacity-70">
                   <GraduationCap size={16} />
                   <span>{user.major}</span>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-600">
+                <div className="flex items-center space-x-2 text-[#708d81] opacity-70">
                   <Calendar size={16} />
-                  <span>{getYearLabel(user.year)}</span>
+                  <span>{user.year ? getYearLabel(user.year) : 'Not specified'}</span>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-600">
+                <div className="flex items-center space-x-2 text-[#708d81] opacity-70">
                   <MapPin size={16} />
                   <span>{user.hometown}</span>
                 </div>
@@ -208,7 +208,7 @@ const ProfileTab: React.FC = () => {
 
               {/* Bio */}
               {user.bio && (
-                <p className="mt-4 text-gray-700">{user.bio}</p>
+                <p className="mt-4 text-[#708d81] opacity-70">{user.bio}</p>
               )}
             </div>
           </div>
@@ -217,53 +217,53 @@ const ProfileTab: React.FC = () => {
 
       {/* Edit Profile Form */}
       {isEditing && (
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="bg-white border-b border-[#708d81]">
+          <div className="max-w-3xl mx-auto px-4 py-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#708d81] mb-2">
                   First Name
                 </label>
                 <input
                   type="text"
                   value={editForm.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#708d81] mb-2">
                   Last Name
                 </label>
                 <input
                   type="text"
                   value={editForm.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#708d81] mb-2">
                   Major
                 </label>
                 <input
                   type="text"
                   value={editForm.major}
                   onChange={(e) => handleInputChange('major', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#708d81] mb-2">
                   Year
                 </label>
                 <select
                   value={editForm.year}
-                  onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => handleInputChange('year', parseInt(e.target.value || '0'))}
+                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                 >
                   {years.map(year => (
                     <option key={year.value} value={year.value}>{year.label}</option>
@@ -272,26 +272,26 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#708d81] mb-2">
                   Hometown
                 </label>
                 <input
                   type="text"
                   value={editForm.hometown}
                   onChange={(e) => handleInputChange('hometown', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#708d81] mb-2">
                   Bio
                 </label>
                 <textarea
                   value={editForm.bio}
                   onChange={(e) => handleInputChange('bio', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                   placeholder="Tell us about yourself..."
                 />
               </div>
@@ -300,13 +300,13 @@ const ProfileTab: React.FC = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={handleCancelEdit}
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+                className="px-4 py-2 text-[#708d81] hover:text-[#5a7268] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveProfile}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] transition-colors"
               >
                 Save Changes
               </button>
@@ -316,35 +316,35 @@ const ProfileTab: React.FC = () => {
       )}
 
       {/* Profile Stats */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+      <div className="bg-white border-b border-[#708d81]">
+        <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-blue-600">{mockPosts.length}</div>
-              <div className="text-sm text-gray-600">Posts</div>
+              <div className="text-2xl font-bold text-[#708d81]">{mockPosts.length}</div>
+              <div className="text-sm text-[#708d81] opacity-70">Posts</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">{mockBookmarks.length}</div>
-              <div className="text-sm text-gray-600">Bookmarks</div>
+              <div className="text-2xl font-bold text-[#708d81]">{mockBookmarks.length}</div>
+              <div className="text-sm text-[#708d81] opacity-70">Bookmarks</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-purple-600">95%</div>
-              <div className="text-sm text-gray-600">Avg. Grade</div>
+              <div className="text-2xl font-bold text-[#708d81]">95%</div>
+              <div className="text-sm text-[#708d81] opacity-70">Avg. Grade</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Content Tabs */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="max-w-3xl mx-auto px-4 py-6">
         {/* Tab Navigation */}
-        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6">
+        <div className="flex space-x-1 bg-[#f0f2f0] p-1 rounded-lg mb-6">
           <button
             onClick={() => setActiveTab('posts')}
             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'posts'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-[#708d81] shadow-sm'
+                : 'text-[#708d81] hover:text-[#5a7268]'
             }`}
           >
             My Posts ({mockPosts.length})
@@ -353,8 +353,8 @@ const ProfileTab: React.FC = () => {
             onClick={() => setActiveTab('bookmarks')}
             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'bookmarks'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-[#708d81] shadow-sm'
+                : 'text-[#708d81] hover:text-[#5a7268]'
             }`}
           >
             Bookmarks ({mockBookmarks.length})
@@ -367,7 +367,7 @@ const ProfileTab: React.FC = () => {
             mockPosts.length > 0 ? (
               mockPosts.map(post => renderPostCard(post, true))
             ) : (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#708d81] opacity-70">
                 <p className="text-lg mb-2">No posts yet</p>
                 <p className="text-sm">Create your first post to get started</p>
               </div>
@@ -376,7 +376,7 @@ const ProfileTab: React.FC = () => {
             mockBookmarks.length > 0 ? (
               mockBookmarks.map(post => renderPostCard(post))
             ) : (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#708d81] opacity-70">
                 <p className="text-lg mb-2">No bookmarks yet</p>
                 <p className="text-sm">Bookmark posts you're interested in</p>
               </div>

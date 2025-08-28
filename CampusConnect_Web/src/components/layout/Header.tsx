@@ -26,7 +26,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
+    <header className="fixed top-0 left-0 right-0 bg-white border-b border-[#708d81] z-50">
       <div className="px-4 py-3 flex items-center justify-between">
         {/* App Title */}
         <div className="flex items-center space-x-3">
@@ -39,12 +39,12 @@ const Header: React.FC = () => {
         {/* Right Side - User Profile & Actions */}
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+          <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-full transition-colors">
             <Bell size={20} />
           </button>
 
           {/* Settings */}
-          <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+          <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-full transition-colors">
             <Settings size={20} />
           </button>
 
@@ -52,7 +52,7 @@ const Header: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-[#f0f2f0] transition-colors"
             >
               {user?.profileImage ? (
                 <img
@@ -65,19 +65,19 @@ const Header: React.FC = () => {
                   <User size={16} className="text-white" />
                 </div>
               )}
-              <span className="text-sm font-medium text-gray-700 hidden sm:block">
+              <span className="text-sm font-medium text-[#708d81] hidden sm:block">
                 {user?.firstName} {user?.lastName}
               </span>
             </button>
 
             {/* Profile Dropdown Menu */}
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#708d81] py-2 z-50">
+                <div className="px-4 py-2 border-b border-[#f0f2f0]">
+                  <p className="text-sm font-medium text-[#708d81]">
                     {user?.firstName} {user?.lastName}
                   </p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
+                  <p className="text-xs text-[#708d81] opacity-70">{user?.email}</p>
                 </div>
                 
                 <button
@@ -85,7 +85,7 @@ const Header: React.FC = () => {
                     // Navigate to profile
                     setShowProfileMenu(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm text-[#708d81] hover:bg-[#f0f2f0] transition-colors"
                 >
                   View Profile
                 </button>
