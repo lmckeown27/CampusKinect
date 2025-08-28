@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import CookieConsentProvider from '../components/layout/CookieConsentProvider';
+import { NavigationProvider } from '../components/layout/NavigationContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,8 +27,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
-        <CookieConsentProvider />
+        <NavigationProvider>
+          {children}
+          <CookieConsentProvider />
+        </NavigationProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit, Save, X, User, Mail, Calendar, MapPin, GraduationCap, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { Post } from '../../types';
@@ -18,17 +18,74 @@ const getYearLabel = (year: number): string => {
 };
 
 const ProfileTab: React.FC = () => {
-  const { user, updateUser } = useAuthStore();
+  const { user: authUser, updateUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'posts' | 'bookmarks'>('posts');
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Mock user data for testing (same as MainLayout)
+  const mockUser = {
+    firstName: "Liam",
+    lastName: "McKeown",
+    email: "liam.mckeown38415@gmail.com",
+    username: "liam_mckeown38",
+    major: "Computer Science",
+    year: 3,
+    hometown: "San Jose, CA",
+    profileImage: null
+  };
+  
+  // Use mock user if authStore doesn't have user data
+  const [user, setUser] = useState(() => {
+    // Try to load from localStorage first, then fall back to mock data
+    const savedProfile = localStorage.getItem('campusConnect_profile');
+    if (savedProfile) {
+      try {
+        const parsedProfile = JSON.parse(savedProfile);
+        return { ...mockUser, ...parsedProfile };
+      } catch (error) {
+        console.error('Failed to parse saved profile:', error);
+        return mockUser;
+      }
+    }
+    return mockUser;
+  });
+  
+  // Load saved profile data from localStorage on component mount
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('campusConnect_profile');
+    console.log('Loading from localStorage:', savedProfile);
+    if (savedProfile) {
+      try {
+        const parsedProfile = JSON.parse(savedProfile);
+        console.log('Parsed profile:', parsedProfile);
+        setUser((prevUser: any) => ({ ...prevUser, ...parsedProfile }));
+      } catch (error) {
+        console.error('Failed to parse saved profile:', error);
+      }
+    }
+  }, []);
+  
   const [editForm, setEditForm] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    bio: user?.bio || '',
     major: user?.major || '',
     year: user?.year || 1,
     hometown: user?.hometown || '',
   });
+
+  // Keep editForm synchronized with user state and localStorage
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('campusConnect_profile');
+    const currentUserData = savedProfile ? JSON.parse(savedProfile) : user;
+    
+    setEditForm({
+      firstName: currentUserData?.firstName || '',
+      lastName: currentUserData?.lastName || '',
+      major: currentUserData?.major || '',
+      year: currentUserData?.year || 1,
+      hometown: currentUserData?.hometown || '',
+    });
+  }, [user]);
 
   // Mock data for posts and bookmarks
   const mockPosts: Post[] = [
@@ -89,7 +146,23 @@ const ProfileTab: React.FC = () => {
 
   const handleSaveProfile = async () => {
     try {
-      await updateUser(editForm);
+      console.log('Saving profile:', editForm);
+      
+      // Update local state immediately
+      setUser((prevUser: any) => ({
+        ...prevUser,
+        ...editForm
+      }));
+      
+      // Try to update in authStore if available
+      if (authUser) {
+        await updateUser(editForm);
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('campusConnect_profile', JSON.stringify(editForm));
+      console.log('Profile saved to localStorage');
+
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -100,7 +173,6 @@ const ProfileTab: React.FC = () => {
     setEditForm({
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
-      bio: user?.bio || '',
       major: user?.major || '',
       year: user?.year || 1,
       hometown: user?.hometown || '',
@@ -180,7 +252,7 @@ const ProfileTab: React.FC = () => {
                   <h1 className="text-2xl font-bold text-[#708d81]">
                     {user.firstName} {user.lastName}
                   </h1>
-                  <p className="text-[#708d81] opacity-70">{user.email}</p>
+                  <p className="text-[#708d81] opacity-70">@{user.username}</p>
                 </div>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
@@ -206,10 +278,11 @@ const ProfileTab: React.FC = () => {
                 </div>
               </div>
 
-              {/* Bio */}
-              {user.bio && (
-                <p className="mt-4 text-[#708d81] opacity-70">{user.bio}</p>
-              )}
+              {/* Major Display */}
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-[#708d81] mb-2">Major</h3>
+                <p className="text-[#708d81] opacity-70">{user.major || 'Not specified'}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -227,8 +300,8 @@ const ProfileTab: React.FC = () => {
                 <input
                   type="text"
                   value={editForm.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+                  disabled
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                 />
               </div>
               
@@ -239,8 +312,8 @@ const ProfileTab: React.FC = () => {
                 <input
                   type="text"
                   value={editForm.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+                  disabled
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                 />
               </div>
 
@@ -280,19 +353,6 @@ const ProfileTab: React.FC = () => {
                   value={editForm.hometown}
                   onChange={(e) => handleInputChange('hometown', e.target.value)}
                   className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-[#708d81] mb-2">
-                  Bio
-                </label>
-                <textarea
-                  value={editForm.bio}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-                  placeholder="Tell us about yourself..."
                 />
               </div>
             </div>

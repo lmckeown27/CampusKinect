@@ -7,17 +7,19 @@ interface TagSelectorProps {
   selectedTags: string[];
   onTagSelect: (tag: string) => void;
   onClearAll: () => void;
+  availableTags?: string[];
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({
   selectedTags,
   onTagSelect,
   onClearAll,
+  availableTags,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mock popular tags - in real app, these would come from the backend
-  const popularTags = [
+  // Use provided availableTags or fall back to default popular tags
+  const popularTags = availableTags || [
     'textbooks', 'furniture', 'electronics', 'clothing', 'sports',
     'tutoring', 'study-group', 'roommate', 'sublease', 'carpool',
     'events', 'parties', 'clubs', 'volunteer', 'internship'
@@ -34,7 +36,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Search Input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#708d81] opacity-60" size={16} />
@@ -51,16 +53,16 @@ const TagSelector: React.FC<TagSelectorProps> = ({
       {selectedTags.length > 0 && (
         <div className="mt-4">
           <span className="text-sm font-medium text-[#708d81]">Selected Tags</span>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {selectedTags.map((tag) => (
+          <div className="flex flex-wrap mt-3">
+            {selectedTags.map((tag, index) => (
               <span
                 key={tag}
-                className="px-3 py-1 bg-[#708d81] text-white text-sm rounded-full flex items-center space-x-2"
+                className={`px-4 py-2 bg-[#708d81] text-white text-sm rounded-full flex items-center space-x-2 ${index > 0 ? 'ml-4' : ''}`}
               >
                 <span>{tag}</span>
                 <button
                   onClick={() => onTagSelect(tag)}
-                  className="ml-1 hover:text-[#f0f2f0] transition-colors"
+                  className="ml-2 hover:text-[#f0f2f0] transition-colors"
                 >
                   <X size={14} />
                 </button>
@@ -74,12 +76,12 @@ const TagSelector: React.FC<TagSelectorProps> = ({
       {searchQuery && (
         <div className="mt-4">
           <span className="text-sm font-medium text-[#708d81]">Popular Tags</span>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {filteredTags.map((tag) => (
+          <div className="flex flex-wrap mt-3">
+            {filteredTags.map((tag, index) => (
               <button
                 key={tag}
                 onClick={() => handleTagSelect(tag)}
-                className="px-3 py-1 bg-[#f0f2f0] text-[#708d81] text-sm rounded-full hover:bg-[#e8ebe8] transition-colors"
+                className={`px-4 py-2 bg-[#f0f2f0] text-[#708d81] text-sm rounded-full hover:bg-[#e8ebe8] transition-colors ${index > 0 ? 'ml-4' : ''}`}
               >
                 {tag}
               </button>
@@ -87,7 +89,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
           </div>
           
           {filteredTags.length === 0 && (
-            <div className="mt-2">
+            <div className="mt-3">
               <p className="text-sm text-[#708d81] opacity-70">No tags found matching "{searchQuery}"</p>
               <p className="text-sm text-[#708d81] opacity-70">Type "tag" to add a new tag</p>
             </div>
@@ -96,14 +98,14 @@ const TagSelector: React.FC<TagSelectorProps> = ({
       )}
 
       {/* Quick Add Section */}
-      <div className="pt-2 border-t border-[#708d81]">
-        <span className="text-sm font-medium text-[#708d81] mb-2 block">Quick Add</span>
-        <div className="flex flex-wrap gap-2">
-          {['textbooks', 'furniture', 'tutoring'].map((tag) => (
+      <div className="pt-3 border-t border-[#708d81]">
+        <span className="text-sm font-medium text-[#708d81] mb-3 block">Quick Add</span>
+        <div className="flex flex-wrap gap-3">
+          {popularTags.slice(0, 3).map((tag) => (
             <button
               key={tag}
               onClick={() => handleTagSelect(tag)}
-              className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full hover:bg-green-200 transition-colors"
+              className="px-4 py-2 bg-green-100 text-green-800 text-sm rounded-full hover:bg-green-200 transition-colors"
             >
               + #{tag}
             </button>

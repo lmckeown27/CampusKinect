@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Plus, MessageCircle, User, Settings } from 'lucide-react';
+import { Home, Plus, MessageCircle, User } from 'lucide-react';
 
 const LeftSidebar: React.FC = () => {
   const pathname = usePathname();
@@ -39,12 +39,12 @@ const LeftSidebar: React.FC = () => {
   ];
 
   return (
-    <nav className="w-64 lg:w-72 xl:w-80 border-r border-[#708d81] flex flex-col py-6 transition-all duration-300 ease-in-out transform" style={{ backgroundColor: '#708d81' }}>
+    <nav className="w-64 lg:w-72 xl:w-80 border-r border-[#708d81] flex flex-col py-6 transition-all duration-300 ease-in-out transform rounded-r-lg" style={{ backgroundColor: '#708d81' }}>
 
       
       {/* Navigation Header */}
       <div className="px-6 mb-8">
-        <h2 className="text-xl font-bold text-white">CampusConnect</h2> {/* White text for visibility */}
+        {/* Header removed for cleaner interface */}
       </div>
       
       {/* Navigation Items */}
@@ -54,13 +54,14 @@ const LeftSidebar: React.FC = () => {
           return (
             <div // Wrapped Link in a div for mouse events
               key={item.name}
-              className={`flex items-center space-x-4 w-full px-4 py-3 mb-2 rounded-xl transition-colors cursor-pointer ${
+              className={`flex items-center space-x-4 w-full px-4 py-3 rounded-xl transition-colors cursor-pointer ${
                 item.current
                   ? 'text-white font-semibold'
                   : 'text-[#708d81]'
               }`}
               style={{
-                backgroundColor: item.current ? '#5a7268' : '#f0f2f0'
+                backgroundColor: item.current ? '#5a7268' : '#f0f2f0',
+                marginBottom: '16px'
               }}
               onMouseEnter={(e) => {
                 if (!item.current) {
@@ -95,19 +96,7 @@ const LeftSidebar: React.FC = () => {
       {/* Bottom Section - Additional Options */}
       <div className="px-4 mt-8">
         <div className="border-t border-[#f0f2f0] pt-4">
-          <button 
-            className="flex items-center space-x-4 w-full px-4 py-3 text-[#708d81] rounded-xl transition-colors"
-            style={{ backgroundColor: '#f0f2f0' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#e8ebe8';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#f0f2f0';
-            }}
-          >
-            <Settings size={24} /> {/* Added Settings icon */}
-            <span className="text-base font-medium">Settings</span>
-          </button>
+          {/* Settings button moved to profile sidebar */}
         </div>
       </div>
     </nav>
