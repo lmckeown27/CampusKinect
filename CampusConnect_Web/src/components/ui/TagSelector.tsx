@@ -62,7 +62,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                 <span>{tag}</span>
                 <button
                   onClick={() => onTagSelect(tag)}
-                  className="ml-2 hover:text-[#f0f2f0] transition-colors"
+                  className="ml-2 hover:text-[#f0f2f0] transition-colors cursor-pointer"
                 >
                   <X size={14} />
                 </button>
@@ -81,7 +81,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
               <button
                 key={tag}
                 onClick={() => handleTagSelect(tag)}
-                className={`px-4 py-2 bg-[#f0f2f0] text-[#708d81] text-sm rounded-full hover:bg-[#e8ebe8] transition-colors ${index > 0 ? 'ml-4' : ''}`}
+                className={`px-4 py-2 bg-[#f0f2f0] text-[#708d81] text-sm rounded-full hover:bg-[#e8ebe8] transition-colors cursor-pointer ${index > 0 ? 'ml-4' : ''}`}
               >
                 {tag}
               </button>
@@ -105,7 +105,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
             <button
               key={tag}
               onClick={() => handleTagSelect(tag)}
-              className="px-4 py-2 bg-green-100 text-green-800 text-sm rounded-full hover:bg-green-200 transition-colors"
+              className="px-4 py-2 bg-green-100 text-green-800 text-sm rounded-full hover:bg-green-200 transition-colors cursor-pointer"
             >
               + #{tag}
             </button>

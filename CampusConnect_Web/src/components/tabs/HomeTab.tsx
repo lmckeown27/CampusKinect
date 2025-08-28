@@ -347,7 +347,7 @@ const HomeTab: React.FC = () => {
           {areOfferRequestTagsAvailable() && (
             <button
               onClick={() => handleTagSelect('Offer')}
-              className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+              className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')
                   ? 'text-white shadow-sm'
                   : 'text-[#708d81] hover:text-[#5a7268]'
@@ -374,7 +374,7 @@ const HomeTab: React.FC = () => {
           {/* All Tag - Always visible */}
           <button
             onClick={() => handleCategoryChange(['all'])}
-            className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+            className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
               activeFilter.length === 1 && activeFilter[0] === 'all'
                 ? 'text-white shadow-sm'
                 : 'text-[#708d81] hover:text-[#5a7268]'
@@ -402,7 +402,7 @@ const HomeTab: React.FC = () => {
           {areOfferRequestTagsAvailable() && (
             <button
               onClick={() => handleTagSelect('Request')}
-              className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+              className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')
                   ? 'text-white shadow-sm'
                   : 'text-[#708d81] hover:text-[#5a7268]'
@@ -467,7 +467,7 @@ const HomeTab: React.FC = () => {
                     : [...activeFilter, tag.id];
                   handleCategoryChange(newFilter);
                 }}
-                className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                   activeFilter.includes(tag.id)
                     ? 'text-white shadow-sm'
                     : 'text-[#708d81] hover:text-[#5a7268]'
@@ -501,51 +501,56 @@ const HomeTab: React.FC = () => {
           })}
         </div>
 
-        {/* Sub-Tags (appear when a main tag is selected) */}
+        {/* Individual Sub-Tag Popups for each selected tag - Horizontal Layout */}
         {getAvailableSubtags().length > 0 && (
-          <div className="flex flex-wrap justify-center" style={{ marginTop: '16px' }}>
-            <div className="w-full text-center mb-3">
-              <span className="text-sm font-medium text-[#708d81] opacity-80">
-                {activeFilter.filter(f => f !== 'all').length === 1 
-                  ? `Available Categories for ${activeFilter.filter(f => f !== 'all')[0].charAt(0).toUpperCase() + activeFilter.filter(f => f !== 'all')[0].slice(1)}`
-                  : `Available Categories for ${activeFilter.filter(f => f !== 'all').map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(' & ')}`
-                }
-              </span>
-              {selectedTags.length > 0 && (
-                <div className="mt-2 text-xs text-[#708d81] opacity-70">
-                  Selected: {selectedTags.length} subtag{selectedTags.length !== 1 ? 's' : ''}
-                  {Object.entries(getSelectedSubtagsByCategory()).map(([category, count]) => count > 0 && (
-                    <span key={category} className="ml-2">
-                      • {category.charAt(0).toUpperCase() + category.slice(1)}: {count}
-                    </span>
-                  ))}
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+            {activeFilter.filter(f => f !== 'all').map((category, index) => {
+              // Simple fixed positioning with clear spacing
+              let leftPosition;
+              if (index === 0) leftPosition = '20%';
+              else if (index === 1) leftPosition = '45%';
+              else if (index === 2) leftPosition = '70%';
+              else leftPosition = '50%'; // fallback
+              
+              return (
+                <div 
+                  key={category} 
+                  className="absolute top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" 
+                  style={{ 
+                    width: '280px', 
+                    height: '400px',
+                    left: leftPosition
+                  }}
+                >
+                {/* Header */}
+                <div className="flex items-center justify-between p-3 border-b border-gray-200">
+                  <h3 className="text-base font-semibold text-[#708d81]">
+                    {category.charAt(0).toUpperCase() + category.slice(1)} Categories
+                  </h3>
+                  <button
+                    onClick={() => setShowLeftPanel(false)}
+                    className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer"
+                  >
+                    <X size={18} />
+                  </button>
                 </div>
-              )}
-            </div>
-            
-            {/* Show subtags organized by category */}
-            {Object.entries(getSubtagsByCategory()).map(([category, categorySubtags]) => (
-              <div key={category} className="w-full mb-3">
-                <div className="text-center mb-2">
-                  <span className="text-xs font-medium text-[#708d81] opacity-80 uppercase tracking-wide">
-                    {category} Categories
-                  </span>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {categorySubtags.map((subTag) => (
+
+                {/* Selected tags summary for this category */}
+                {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length > 0 && (
+                  <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
+                    <div className="text-xs text-[#708d81] opacity-70">
+                      Selected: {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length} subtag{selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                )}
+
+                {/* Scrollable category buttons for this category */}
+                <div className="category-buttons-container p-4">
+                  {subTags[category as keyof typeof subTags]?.map((subTag) => (
                     <button
                       key={subTag}
                       onClick={() => handleTagSelect(subTag)}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                        selectedTags.includes(subTag)
-                          ? 'text-white shadow-sm'
-                          : 'text-[#708d81] hover:text-[#5a7268]'
-                      }`}
-                      style={{
-                        backgroundColor: selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0',
-                        width: 'auto',
-                        minWidth: '100px'
-                      }}
+                      className={`category-button cursor-pointer ${selectedTags.includes(subTag) ? 'selected' : ''}`}
                       onMouseEnter={(e) => {
                         if (!selectedTags.includes(subTag)) {
                           e.currentTarget.style.backgroundColor = '#e8ebe8';
@@ -553,7 +558,7 @@ const HomeTab: React.FC = () => {
                       }}
                       onMouseLeave={(e) => {
                         if (!selectedTags.includes(subTag)) {
-                          e.currentTarget.style.backgroundColor = '#f0f2f0';
+                          e.currentTarget.style.backgroundColor = selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0';
                         }
                       }}
                     >
@@ -561,122 +566,131 @@ const HomeTab: React.FC = () => {
                     </button>
                   ))}
                 </div>
+
+                {/* Footer with actions for this category */}
+                <div className="p-3 border-t border-gray-200 bg-gray-50">
+                  <div className="flex justify-between items-center gap-3">
+                    {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length > 0 && (
+                      <button
+                        onClick={handleTagClear}
+                        className="px-3 py-2 text-sm text-[#708d81] bg-[#f0f2f0] rounded-lg hover:bg-[#e8ebe8] transition-colors cursor-pointer"
+                      >
+                        Clear All ({selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length})
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setShowLeftPanel(false)}
+                      className="px-4 py-2 text-sm text-white bg-[#708d81] rounded-lg hover:bg-[#5a7268] transition-colors cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
               </div>
-            ))}
-            
-            {/* Clear selected subtags button */}
-            {selectedTags.length > 0 && (
-              <div className="w-full text-center mt-3">
+            );
+          })}
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="flex">
+          {/* Left Panel - Filters */}
+          {showLeftPanel && (
+            <div className="w-60 bg-white border-r border-[#708d81] p-4 mr-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-[#708d81]">Filters</h3>
                 <button
-                  onClick={handleTagClear}
-                  className="px-4 py-2 text-sm text-[#708d81] bg-[#f0f2f0] rounded-lg hover:bg-[#e8ebe8] transition-colors"
+                  onClick={() => setShowLeftPanel(false)}
+                  className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors cursor-pointer"
+                  style={{ backgroundColor: 'transparent' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.opacity = '0.6';
+                  }}
                 >
-                  Clear All Subtags ({selectedTags.length})
+                  <X size={20} />
                 </button>
+              </div>
+
+              {/* Tags Filter */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-[#708d81] mb-3">Popular Tags</h4>
+                <TagSelector
+                  selectedTags={selectedTags}
+                  onTagSelect={handleTagSelect}
+                  onClearAll={handleTagClear}
+                />
+              </div>
+
+              {/* Clear All Filters */}
+              <button
+                onClick={clearFilters}
+                className="w-full py-2 px-4 text-[#708d81] rounded-lg transition-colors cursor-pointer"
+                style={{ backgroundColor: '#f0f2f0' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#e8ebe8';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                }}
+              >
+                Clear All Filters
+              </button>
+            </div>
+          )}
+
+          {/* Center - Posts Feed */}
+          <div className="flex-1">
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-700">{error}</p>
+              </div>
+            )}
+
+            {isLoading && getFilteredPostsBySubtags().length === 0 ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
+              </div>
+            ) : getFilteredPostsBySubtags().length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-[#708d81] text-lg">No posts found</p>
+                <p className="text-[#708d81] text-sm mt-2">Try adjusting your filters or search terms</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {getFilteredPostsBySubtags().map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
+                
+                {hasMore && (
+                  <div className="text-center py-6">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={isLoading}
+                      className="px-6 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                      style={{ backgroundColor: '#708d81' }}
+                      onMouseEnter={(e) => {
+                        if (!isLoading) {
+                          e.currentTarget.style.backgroundColor = '#5a7268';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isLoading) {
+                          e.currentTarget.style.backgroundColor = '#708d81';
+                        }
+                      }}
+                    >
+                      {isLoading ? 'Loading...' : 'Load More Posts'}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
-      </div>
-
-      {/* Main Content */}
-      <div className="flex">
-        {/* Left Panel - Filters */}
-        {showLeftPanel && (
-          <div className="w-60 bg-white border-r border-[#708d81] p-4 mr-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[#708d81]">Filters</h3>
-              <button
-                onClick={() => setShowLeftPanel(false)}
-                className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors"
-                style={{ backgroundColor: 'transparent' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f0f2f0';
-                  e.currentTarget.style.opacity = '1';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.opacity = '0.6';
-                }}
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Tags Filter */}
-            <div className="mb-6">
-              <h4 className="text-sm font-medium text-[#708d81] mb-3">Popular Tags</h4>
-              <TagSelector
-                selectedTags={selectedTags}
-                onTagSelect={handleTagSelect}
-                onClearAll={handleTagClear}
-              />
-            </div>
-
-            {/* Clear All Filters */}
-            <button
-              onClick={clearFilters}
-              className="w-full py-2 px-4 text-[#708d81] rounded-lg transition-colors"
-              style={{ backgroundColor: '#f0f2f0' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e8ebe8';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f0f2f0';
-              }}
-            >
-              Clear All Filters
-            </button>
-          </div>
-        )}
-
-        {/* Center - Posts Feed */}
-        <div className="flex-1">
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700">{error}</p>
-            </div>
-          )}
-
-          {isLoading && getFilteredPostsBySubtags().length === 0 ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
-            </div>
-          ) : getFilteredPostsBySubtags().length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-[#708d81] text-lg">No posts found</p>
-              <p className="text-[#708d81] text-sm mt-2">Try adjusting your filters or search terms</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {getFilteredPostsBySubtags().map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-              
-              {hasMore && (
-                <div className="text-center py-6">
-                  <button
-                    onClick={handleLoadMore}
-                    disabled={isLoading}
-                    className="px-6 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    style={{ backgroundColor: '#708d81' }}
-                    onMouseEnter={(e) => {
-                      if (!isLoading) {
-                        e.currentTarget.style.backgroundColor = '#5a7268';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isLoading) {
-                        e.currentTarget.style.backgroundColor = '#708d81';
-                      }
-                    }}
-                  >
-                    {isLoading ? 'Loading...' : 'Load More Posts'}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>
