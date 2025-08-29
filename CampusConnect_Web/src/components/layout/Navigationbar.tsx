@@ -3,9 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Plus, MessageCircle, User } from 'lucide-react';
+import { Home, Plus, MessageCircle } from 'lucide-react';
 
-const LeftSidebar: React.FC = () => {
+const Navigationbar: React.FC = () => {
   const pathname = usePathname();
 
   // Debug logging
@@ -30,16 +30,10 @@ const LeftSidebar: React.FC = () => {
       icon: MessageCircle,
       current: pathname === '/messages',
     },
-    {
-      name: 'Profile',
-      href: '/profile',
-      icon: User,
-      current: pathname === '/profile',
-    },
   ];
 
   return (
-    <nav className="w-64 lg:w-72 xl:w-80 border-r border-[#708d81] flex flex-col py-6 transition-all duration-300 ease-in-out transform rounded-r-lg" style={{ backgroundColor: '#708d81' }}>
+    <nav className="w-64 lg:w-72 xl:w-80 border-r border-[#708d81] flex flex-col py-6 transition-all duration-300 ease-in-out transform rounded-lg" style={{ backgroundColor: '#708d81' }}>
 
       
       {/* Navigation Header */}
@@ -54,7 +48,7 @@ const LeftSidebar: React.FC = () => {
           return (
             <div // Wrapped Link in a div for mouse events
               key={item.name}
-              className={`flex items-center space-x-4 w-full px-4 py-3 rounded-xl transition-colors cursor-pointer ${
+              className={`flex items-center space-x-4 w-full px-4 py-3 rounded-lg transition-colors cursor-pointer ${
                 item.current
                   ? 'text-white font-semibold'
                   : 'text-[#708d81]'
@@ -103,4 +97,4 @@ const LeftSidebar: React.FC = () => {
   );
 };
 
-export default LeftSidebar; 
+export default Navigationbar; 
