@@ -52,6 +52,35 @@ const CreatePostTab: React.FC = () => {
   });
   const [showTagSelector, setShowTagSelector] = useState(false);
 
+  // Define sub-tags for each post type (same as Home tab)
+  const subTags = {
+    goods: [
+      'Textbooks', 'Electronics', 'Furniture', 'Clothing', 'Sports Equipment', 
+      'Books', 'Musical Instruments', 'Art Supplies', 'Kitchen Items', 'Garden Tools',
+      'Automotive', 'Baby Items', 'Pet Supplies', 'Collectibles', 'Other'
+    ],
+    services: [
+      'Tutoring', 'Transportation', 'Cleaning', 'Photography', 'Graphic Design',
+      'Web Development', 'Writing & Editing', 'Translation', 'Music Lessons',
+      'Fitness Training', 'Pet Sitting', 'House Sitting', 'Tech Support', 'Event Planning',
+      'Cooking Classes', 'Other'
+    ],
+    events: [
+      'Parties', 'Study Groups', 'Sports Events', 'Cultural Events', 'Academic Seminars',
+      'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
+      'Concert Outings', 'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
+    ],
+    housing: [
+      'Room for Rent', 'Apartment Share', 'House Share', 'Sublet', 'Short-term Rental',
+      'Roommate Search', 'Moving Help', 'Storage Space', 'Parking Space', 'Other'
+    ]
+  };
+
+  // Function to get sub-tags for a specific post type
+  const getSubTagsForPostType = (postType: string): string[] => {
+    return subTags[postType as keyof typeof subTags] || [];
+  };
+
   const postTypes = [
     { value: 'goods', label: 'Good', icon: '🛍️' },
     { value: 'services', label: 'Service', icon: '🔧' },
@@ -285,27 +314,15 @@ const CreatePostTab: React.FC = () => {
                   )}
                 </div>
                 
-                {/* Image Upload Icon */}
-                <div className="text-center">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="image-upload-top"
-                  />
-                  <label htmlFor="image-upload-top" className="cursor-pointer">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
-                      <ImageIcon className="h-6 w-6 text-gray-600" />
-                    </div>
-                  </label>
-                </div>
+
                 
+                                {/* Spacer */}
+                <div className="w-3"></div>
+
                 {/* Offer/Request Buttons */}
                 {areOfferRequestTagsAvailable() && (
-                                              <div className="flex gap-6">
-                                                <button
+                  <div className="flex gap-3">
+                    <button
                               type="button"
                               onClick={() => handleOfferRequestTagSelect('Offer')}
                               className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
@@ -360,7 +377,10 @@ const CreatePostTab: React.FC = () => {
                   </div>
                 )}
 
-                {/* Location Input and Tags Button */}
+                {/* Spacer */}
+                <div className="w-3"></div>
+
+                {/* Location Input and Image Icon */}
                 <div className="flex items-center gap-3">
                   <input
                     type="text"
@@ -371,21 +391,22 @@ const CreatePostTab: React.FC = () => {
                     placeholder="Location (optional)"
                   />
                   
-                  {/* Tags Button */}
-                  <button
-                    type="button"
-                    onClick={() => setShowTagSelector(!showTagSelector)}
-                    className="px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer"
-                    style={{ backgroundColor: '#f0f2f0' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#e8ebe8';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f0f2f0';
-                    }}
-                  >
-                    Tags
-                  </button>
+                  {/* Image Upload Icon */}
+                  <div className="text-center">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="image-upload-top"
+                    />
+                    <label htmlFor="image-upload-top" className="cursor-pointer">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <ImageIcon className="h-6 w-6 text-gray-600" />
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -410,9 +431,89 @@ const CreatePostTab: React.FC = () => {
                           </p>
                         </div>
 
-              {/* Duration row */}
-              <div className="flex items-start justify-between -mt-4">
-                {/* Left side: Duration Selector */}
+              {/* Bottom Section: Category Tags, Duration, and Post Button */}
+              <div className="flex items-start justify-between mt-8">
+                {/* Category Tags Section - Bottom Left */}
+                <div className="w-80 p-4 bg-gray-50 rounded-lg border">
+
+                  
+                  {/* Category Box for selected Post Type */}
+                  {formData.postType && (
+                    <div className="bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" style={{ width: '300px', height: '400px' }}>
+                      {/* Header */}
+                      <div className="flex items-center justify-center p-3 border-b border-gray-200">
+                        <h3 className="text-base font-semibold text-[#708d81]">
+                          {formData.postType.charAt(0).toUpperCase() + formData.postType.slice(1)}
+                        </h3>
+                      </div>
+
+                      {/* Scrollable category buttons for this post type */}
+                      <div className="category-buttons-container p-4">
+                        {getSubTagsForPostType(formData.postType).map((subTag) => (
+                          <button
+                            key={subTag}
+                            onClick={() => handleTagSelect(subTag)}
+                            className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                              formData.tags.includes(subTag)
+                                ? 'text-white shadow-sm'
+                                : 'text-[#708d81] hover:text-[#5a7268]'
+                            }`}
+                            style={{
+                              backgroundColor: formData.tags.includes(subTag) ? '#708d81' : '#f0f2f0'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!formData.tags.includes(subTag)) {
+                                e.currentTarget.style.backgroundColor = '#e8ebe8';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = formData.tags.includes(subTag) ? '#708d81' : '#f0f2f0';
+                            }}
+                          >
+                            {subTag}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Footer with actions for this post type */}
+                      <div className="p-3 border-t border-gray-200 bg-gray-50">
+                        <div className="flex justify-center space-x-2">
+                          {formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length > 0 && (
+                            <>
+
+                              <button
+                                onClick={() => {
+                                  // Clear tags for this specific post type only
+                                  const tagsToRemove = getSubTagsForPostType(formData.postType);
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    tags: prev.tags.filter(tag => !tagsToRemove.includes(tag))
+                                  }));
+                                }}
+                                className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
+                                style={{ backgroundColor: '#f0f2f0' }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#e8ebe8';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                                }}
+                              >
+                                Clear All ({formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length})
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {validationErrors.tags && (
+                    <p className="mt-2 text-sm text-red-600">{validationErrors.tags}</p>
+                  )}
+                </div>
+
+                {/* Duration Section - Bottom Center */}
                 <div className="w-fit">
                   <DurationSelector
                     value={formData.duration}
@@ -420,61 +521,7 @@ const CreatePostTab: React.FC = () => {
                   />
                 </div>
 
-                {/* Center: Duration Details Display */}
-                {formData.duration && (
-                  <div className="bg-[#f8f9f6] border border-[#708d81] rounded-lg p-4 max-w-md">
-                    {formData.duration === 'one-time' && (
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Calendar size={20} className="text-[#708d81]" />
-                          <span className="text-sm font-medium text-[#708d81]">Event Date</span>
-                        </div>
-                        <input
-                          type="date"
-                          className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-                          min={new Date().toISOString().split('T')[0]}
-                        />
-                      </div>
-                    )}
-                    
-                    {formData.duration === 'recurring' && (
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Repeat size={20} className="text-[#708d81]" />
-                          <span className="text-sm font-medium text-[#708d81]">Recurring Pattern</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <select className="px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent">
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                          </select>
-                          <select className="px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent">
-                            <option value="1">Every 1</option>
-                            <option value="2">Every 2</option>
-                            <option value="3">Every 3</option>
-                          </select>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {formData.duration === 'indefinite' && (
-                      <div className="flex items-center space-x-2">
-                        <Calendar size={20} className="text-[#708d81]" />
-                        <span className="text-sm font-medium text-[#708d81]">Ongoing - No end date</span>
-                      </div>
-                    )}
-                    
-                    {formData.duration && !['one-time', 'recurring', 'indefinite'].includes(formData.duration) && (
-                      <div className="flex items-center space-x-2">
-                        <Clock size={20} className="text-[#708d81]" />
-                        <span className="text-sm font-medium text-[#708d81]">Custom: {formData.duration}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Right side: Post Button */}
+                {/* Post Button - Bottom Right */}
                 <div className="w-fit">
                   <button
                     type="submit"
@@ -530,35 +577,7 @@ const CreatePostTab: React.FC = () => {
           </div>
         </div>
 
-        {/* Tag Selector Popup - Completely independent overlay */}
-        {showTagSelector && (
-          <>
-            {/* Dark overlay background */}
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999]" onClick={() => setShowTagSelector(false)} />
-            
-            {/* Popup content */}
-            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] max-h-[80vh] bg-white rounded-lg border shadow-2xl z-[10000] p-6 overflow-y-auto">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-medium text-gray-700">Select Category Tags</h3>
-                <button
-                  type="button"
-                  onClick={() => setShowTagSelector(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-              <TagSelector
-                selectedTags={formData.tags}
-                onTagSelect={handleTagSelect}
-                onClearAll={handleClearAllTags}
-              />
-              {validationErrors.tags && (
-                <p className="mt-2 text-sm text-red-600">{validationErrors.tags}</p>
-              )}
-            </div>
-          </>
-        )}
+        
       </div>
   );
 };

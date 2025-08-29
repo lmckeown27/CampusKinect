@@ -97,21 +97,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
         </div>
       )}
 
-      {/* Quick Add Section */}
-      <div className="pt-3 border-t border-[#708d81]">
-        <span className="text-sm font-medium text-[#708d81] mb-3 block">Quick Add</span>
-        <div className="flex flex-wrap gap-3">
-          {popularTags.slice(0, 3).map((tag) => (
-            <button
-              key={tag}
-              onClick={() => handleTagSelect(tag)}
-              className="px-4 py-2 bg-green-100 text-green-800 text-sm rounded-full hover:bg-green-200 transition-colors cursor-pointer"
-            >
-              + #{tag}
-            </button>
-          ))}
-        </div>
-      </div>
+
     </div>
   );
 };
