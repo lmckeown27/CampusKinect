@@ -102,14 +102,33 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
               </div>
 
               {/* Action Buttons Section */}
-              <div className="p-2 space-y-1">
+              <div className="p-2 space-y-3">
+                <button
+                  onClick={() => {
+                    setShowProfileDropdown(false);
+                    router.push('/profile');
+                  }}
+                  className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
+                  style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    e.currentTarget.style.color = '#708d81';
+                  }}
+                >
+                  <User size={16} />
+                  <span>&nbsp;Profile</span>
+                </button>
                 <button
                   onClick={() => {
                     setShowProfileDropdown(false);
                     router.push('/settings');
                   }}
-                  className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-[#708d81] rounded-md transition-colors cursor-pointer"
-                  style={{ backgroundColor: '#f0f2f0' }}
+                  className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
+                  style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#708d81';
                     e.currentTarget.style.color = 'white';
@@ -120,7 +139,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
                   }}
                 >
                   <Settings size={16} />
-                  <span>Settings</span>
+                  <span>&nbsp;Settings</span>
                 </button>
                 <button
                   onClick={() => {
@@ -128,8 +147,8 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
                     // Simple logout - redirect to login page
                     router.push('/auth/login');
                   }}
-                  className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-[#708d81] rounded-md transition-colors cursor-pointer"
-                  style={{ backgroundColor: '#f0f2f0' }}
+                  className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
+                  style={{ backgroundColor: '#f0f2f0', color: '#708d81' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#708d81';
                     e.currentTarget.style.color = 'white';
@@ -140,7 +159,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
                   }}
                 >
                   <LogOut size={16} />
-                  <span>Sign out</span>
+                  <span>&nbsp;Sign out</span>
                 </button>
               </div>
             </div>

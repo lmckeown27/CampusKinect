@@ -34,22 +34,20 @@ const Header: React.FC = () => {
         <div className="flex items-center">
           <button
             onClick={toggleNavigation}
-            className="p-2 rounded-lg transition-colors cursor-pointer text-[#708d81] w-10 h-10 flex items-center justify-center"
-            style={{ backgroundColor: showNavigation ? 'transparent' : '#f0f2f0' }}
+            className="p-2 rounded-lg transition-colors cursor-pointer text-white w-10 h-10 flex items-center justify-center"
+            style={{ backgroundColor: showNavigation ? 'transparent' : '#708d81' }}
             onMouseEnter={(e) => {
               if (showNavigation) {
-                e.currentTarget.style.backgroundColor = '#f0f2f0';
+                e.currentTarget.style.backgroundColor = 'transparent';
               } else {
-                e.currentTarget.style.backgroundColor = '#708d81';
-                e.currentTarget.style.color = 'white';
+                e.currentTarget.style.backgroundColor = 'transparent';
               }
             }}
             onMouseLeave={(e) => {
               if (showNavigation) {
                 e.currentTarget.style.backgroundColor = 'transparent';
               } else {
-                e.currentTarget.style.backgroundColor = '#f0f2f0';
-                e.currentTarget.style.color = '#708d81';
+                e.currentTarget.style.backgroundColor = '#708d81';
               }
             }}
             title={showNavigation ? "Hide Navigation" : "Show Navigation"}
@@ -72,22 +70,20 @@ const Header: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-              className="p-2 rounded-lg transition-colors cursor-pointer text-[#708d81] w-10 h-10 flex items-center justify-center"
-              style={{ backgroundColor: showProfileDropdown ? 'transparent' : '#f0f2f0' }}
+              className="p-2 rounded-lg transition-colors cursor-pointer text-white w-10 h-10 flex items-center justify-center"
+              style={{ backgroundColor: showProfileDropdown ? 'transparent' : '#708d81' }}
               onMouseEnter={(e) => {
                 if (showProfileDropdown) {
-                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 } else {
-                  e.currentTarget.style.backgroundColor = '#708d81';
-                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
               onMouseLeave={(e) => {
                 if (showProfileDropdown) {
                   e.currentTarget.style.backgroundColor = 'transparent';
                 } else {
-                  e.currentTarget.style.backgroundColor = '#f0f2f0';
-                  e.currentTarget.style.color = '#708d81';
+                  e.currentTarget.style.backgroundColor = '#708d81';
                 }
               }}
             >
