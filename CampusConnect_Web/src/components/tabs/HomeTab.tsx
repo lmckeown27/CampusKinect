@@ -22,7 +22,7 @@ const HomeTab: React.FC = () => {
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [activeFilter, setActiveFilter] = useState<string[]>(['all']);
+  const [activeFilter, setActiveFilter] = useState<string[]>([]);
   const [showNewPostModal, setShowNewPostModal] = useState(false);
   
   // Separate state for Offer/Request tags to ensure complete isolation
@@ -33,7 +33,70 @@ const HomeTab: React.FC = () => {
     housing: [],
     tutoring: []
   });
+
+  // State to track which category boxes are open
+  const [openCategoryBoxes, setOpenCategoryBoxes] = useState<string[]>([]);
   
+  // Load saved state from localStorage on component mount
+  useEffect(() => {
+    // Load selectedTags
+    const savedSelectedTags = localStorage.getItem('campusConnect_selectedTags');
+    if (savedSelectedTags) {
+      try {
+        setSelectedTags(JSON.parse(savedSelectedTags));
+      } catch (error) {
+        console.error('Failed to parse saved selectedTags:', error);
+      }
+    }
+
+    // Load activeFilter
+    const savedActiveFilter = localStorage.getItem('campusConnect_activeFilter');
+    if (savedActiveFilter) {
+      try {
+        const parsedActiveFilter = JSON.parse(savedActiveFilter);
+        setActiveFilter(parsedActiveFilter);
+      } catch (error) {
+        console.error('Failed to parse saved activeFilter:', error);
+        // If parsing fails, default to 'all'
+        setActiveFilter(['all']);
+      }
+    } else {
+      // If no saved activeFilter, default to 'all'
+      setActiveFilter(['all']);
+    }
+
+    // Load offerRequestTags
+    const savedOfferRequestTags = localStorage.getItem('campusConnect_offerRequestTags');
+    if (savedOfferRequestTags) {
+      try {
+        setOfferRequestTags(JSON.parse(savedOfferRequestTags));
+      } catch (error) {
+        console.error('Failed to parse saved offerRequestTags:', error);
+      }
+    }
+  }, []);
+
+  // Save selectedTags to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_selectedTags', JSON.stringify(selectedTags));
+  }, [selectedTags]);
+
+  // Save activeFilter to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_activeFilter', JSON.stringify(activeFilter));
+  }, [activeFilter]);
+
+  // Save offerRequestTags to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
+  }, [offerRequestTags]);
+  
+  // Ensure openCategoryBoxes stays in sync with activeFilter
+  useEffect(() => {
+    const categories = activeFilter.filter(f => f !== 'all');
+    setOpenCategoryBoxes(categories);
+  }, [activeFilter]);
+
   // Track previous activeFilter to detect changes
   const prevActiveFilterRef = useRef<string[]>(['all']);
 
@@ -199,6 +262,9 @@ const HomeTab: React.FC = () => {
     // Update active filter
     setActiveFilter(newActiveFilter);
     
+    // Update open category boxes to match active filter
+    setOpenCategoryBoxes(newCategories);
+    
     // Apply filters without affecting tags
     if (newCategories.length > 0) {
       setFilters({ postType: newCategories[0] });
@@ -310,79 +376,88 @@ const HomeTab: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#f8f9f6' }}>
+      {/* Clear All button - positioned above Search bar */}
+      {selectedTags.length > 0 && (
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={() => {
+              // Clear all selected categories but keep subtags selected
+              setSelectedTags([]);
+            }}
+            className="py-1 px-4 rounded-lg text-xs font-medium transition-colors cursor-pointer text-[#708d81] hover:text-[#5a7268]"
+            style={{ backgroundColor: '#f0f2f0' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#e8ebe8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#f0f2f0';
+            }}
+          >
+            Clear All ({selectedTags.length})
+          </button>
+        </div>
+      )}
+
       {/* Search and Filter Header */}
       <div className="sticky top-16 bg-white border-b border-[#708d81] px-4 py-4 z-30">
         <div className="flex items-center justify-center space-x-3 relative">
           {/* Search Bar - Centered */}
           <div className="relative" style={{ width: '400px' }}>
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#708d81] opacity-60" size={20} />
             <input
               type="text"
               placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+              className="w-full px-4 py-3 border border-[#708d81] rounded-full focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-lg"
             />
           </div>
-
-          {/* Filter Button - Positioned absolutely on the right */}
-          <button
-            onClick={() => setShowLeftPanel(!showLeftPanel)}
-            className="absolute right-0 p-2 text-[#708d81] hover:text-[#5a7268] rounded-lg transition-colors"
-            style={{ backgroundColor: 'transparent' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f0f2f0';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            <Filter size={20} />
-          </button>
         </div>
 
         {/* All Tag - Top Row */}
         <div className="flex justify-center" style={{ marginTop: '16px' }}>
-          {/* Offer Tag - Only visible when Goods or Services is selected */}
-          {areOfferRequestTagsAvailable() && (
-            <button
-              onClick={() => handleTagSelect('Offer')}
-              className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')
-                  ? 'text-white shadow-sm'
-                  : 'text-[#708d81] hover:text-[#5a7268]'
-              }`}
-              style={{
-                backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')) ? '#708d81' : '#f0f2f0',
-                width: '100px'
-              }}
-              onMouseEnter={(e) => {
-                if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
-                  e.currentTarget.style.backgroundColor = '#e8ebe8';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
-                  e.currentTarget.style.backgroundColor = '#f0f2f0';
-                }
-              }}
-            >
-              Offer
-            </button>
-          )}
+          {/* Offer Tag - Always reserve space, conditionally show content */}
+          <div className="w-[100px] flex justify-center">
+            {areOfferRequestTagsAvailable() && (
+              <button
+                onClick={() => handleTagSelect('Offer')}
+                className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')
+                    ? 'text-white'
+                    : 'text-[#708d81] hover:text-[#5a7268]'
+                }`}
+                style={{
+                  backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')) ? '#708d81' : '#f0f2f0',
+                  width: '100px'
+                }}
+                onMouseEnter={(e) => {
+                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
+                    e.currentTarget.style.backgroundColor = '#e8ebe8';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
+                    e.currentTarget.style.backgroundColor = '#f0f2f0';
+                  }
+                }}
+              >
+                Offer
+              </button>
+            )}
+          </div>
 
-          {/* All Tag - Always visible */}
+          {/* All Tag - Always visible in fixed position */}
           <button
             onClick={() => handleCategoryChange(['all'])}
             className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
               activeFilter.length === 1 && activeFilter[0] === 'all'
-                ? 'text-white shadow-sm'
+                ? 'text-white'
                 : 'text-[#708d81] hover:text-[#5a7268]'
             }`}
             style={{
               backgroundColor: activeFilter.length === 1 && activeFilter[0] === 'all' ? '#708d81' : '#f0f2f0',
               width: '100px',
-              marginLeft: '24px'
+              marginLeft: '24px',
+              boxShadow: activeFilter.length === 1 && activeFilter[0] === 'all' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none'
             }}
             onMouseEnter={(e) => {
               if (activeFilter.length > 1) {
@@ -395,154 +470,263 @@ const HomeTab: React.FC = () => {
               }
             }}
           >
-            All ({getFilteredPostsBySubtags().length})
+            All
           </button>
 
-          {/* Request Tag - Only visible when Goods or Services is selected */}
-          {areOfferRequestTagsAvailable() && (
-            <button
-              onClick={() => handleTagSelect('Request')}
-              className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')
-                  ? 'text-white shadow-sm'
-                  : 'text-[#708d81] hover:text-[#5a7268]'
-              }`}
-              style={{
-                backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')) ? '#708d81' : '#f0f2f0',
-                width: '100px',
-                marginLeft: '24px'
-              }}
-              onMouseEnter={(e) => {
-                if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
-                  e.currentTarget.style.backgroundColor = '#e8ebe8';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
-                  e.currentTarget.style.backgroundColor = '#f0f2f0';
-                }
-              }}
-            >
-              Request
-            </button>
-          )}
-        </div>
-
-        {/* Offer/Request Status Indicator */}
-        {areOfferRequestTagsAvailable() && (
-          <div className="text-center mt-2">
-            <span className="text-xs text-[#708d81] opacity-70">
-              {(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer') || offerRequestTags.tutoring.includes('Offer')) &&
-               (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request') || offerRequestTags.tutoring.includes('Request'))
-                ? 'Showing both Offers and Requests'
-                : offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer') || offerRequestTags.tutoring.includes('Offer')
-                  ? 'Showing Offers only'
-                  : offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request') || offerRequestTags.tutoring.includes('Request')
-                    ? 'Showing Requests only'
-                    : 'Showing both Offers and Requests'
-              }
-            </span>
-          </div>
-        )}
-
-        {/* Events Warning - Show when only Events is selected */}
-        {activeFilter.includes('events') && !areOfferRequestTagsAvailable() && (
-          <div className="text-center mt-2">
-            <span className="text-xs text-[#708d81] opacity-70">
-              Note: Offer/Request tags are not available for Events only
-            </span>
-          </div>
-        )}
-
-        {/* Main Category Tags - Second Row */}
-        <div className="flex justify-center" style={{ marginTop: '16px' }}>
-          {mainTags.filter(tag => tag.id !== 'all').map((tag, index) => {
-            const selectedSubtagsCount = getSelectedSubtagsByCategory()[tag.id] || 0;
-            return (
+          {/* Request Tag - Always reserve space, conditionally show content */}
+          <div className="w-[100px] flex justify-center" style={{ marginLeft: '24px' }}>
+            {areOfferRequestTagsAvailable() && (
               <button
-                key={tag.id}
-                onClick={() => {
-                  const newFilter = activeFilter.includes(tag.id) 
-                    ? activeFilter.filter(f => f !== tag.id) 
-                    : [...activeFilter, tag.id];
-                  handleCategoryChange(newFilter);
-                }}
+                onClick={() => handleTagSelect('Request')}
                 className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  activeFilter.includes(tag.id)
-                    ? 'text-white shadow-sm'
+                  offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')
+                    ? 'text-white'
                     : 'text-[#708d81] hover:text-[#5a7268]'
                 }`}
                 style={{
-                  backgroundColor: activeFilter.includes(tag.id) ? '#708d81' : '#f0f2f0',
-                  width: '120px',
-                  marginLeft: index > 0 ? '24px' : '0'
+                  backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')) ? '#708d81' : '#f0f2f0',
+                  width: '100px'
                 }}
                 onMouseEnter={(e) => {
-                  if (!activeFilter.includes(tag.id)) {
+                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
                     e.currentTarget.style.backgroundColor = '#e8ebe8';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!activeFilter.includes(tag.id)) {
+                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
                     e.currentTarget.style.backgroundColor = '#f0f2f0';
                   }
                 }}
               >
-                <div className="flex flex-col items-center">
-                  <span>{tag.label} ({tag.count})</span>
-                  {selectedSubtagsCount > 0 && (
-                    <span className="text-xs opacity-80 mt-1">
-                      {selectedSubtagsCount} subtag{selectedSubtagsCount !== 1 ? 's' : ''} selected
-                    </span>
-                  )}
-                </div>
+                Request
               </button>
-            );
-          })}
+            )}
+          </div>
+        </div>
+
+        {/* Main Category Tags - Second Row */}
+        <div className="flex flex-col items-center relative" style={{ marginTop: '16px' }}>
+          {/* Subtag buttons row */}
+          <div className="flex justify-center">
+            {mainTags.filter(tag => tag.id !== 'all').map((tag, index) => {
+              return (
+                <button
+                  key={tag.id}
+                  onClick={() => {
+                    const newFilter = activeFilter.includes(tag.id) 
+                      ? activeFilter.filter(f => f !== tag.id) 
+                      : [...activeFilter, tag.id];
+                    
+                    // If deselecting a subtag, also deselect all its associated categories
+                    if (activeFilter.includes(tag.id)) {
+                      const categoriesToRemove = subTags[tag.id as keyof typeof subTags] || [];
+                      setSelectedTags(prev => prev.filter(category => !categoriesToRemove.includes(category)));
+                    }
+                    
+                    handleCategoryChange(newFilter);
+                  }}
+                  className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    activeFilter.includes(tag.id)
+                      ? 'text-white shadow-sm'
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: activeFilter.includes(tag.id) ? '#708d81' : '#f0f2f0',
+                    width: '120px',
+                    marginLeft: index > 0 ? '24px' : '0'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!activeFilter.includes(tag.id)) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!activeFilter.includes(tag.id)) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  {tag.label}
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Categories buttons row - stacked vertically under subtags */}
+          <div className="flex justify-center" style={{ marginTop: '16px' }}>
+            {mainTags.filter(tag => tag.id !== 'all').map((tag, index) => {
+              // Count categories for this specific subtag from selectedTags
+              const selectedSubtagsCount = selectedTags.filter(tagName => 
+                subTags[tag.id as keyof typeof subTags]?.includes(tagName)
+              ).length;
+              const isCategoryBoxOpen = openCategoryBoxes.includes(tag.id);
+              
+              return (
+                <button
+                  key={tag.id}
+                  onClick={() => {
+                    // Open the category box for this specific subtag
+                    if (!openCategoryBoxes.includes(tag.id)) {
+                      setOpenCategoryBoxes(prev => [...prev, tag.id]);
+                    }
+                  }}
+                  className={`py-1 px-3 rounded-lg text-xs font-medium transition-colors cursor-pointer shadow-sm ${
+                    isCategoryBoxOpen 
+                      ? 'text-white' 
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: isCategoryBoxOpen ? '#708d81' : '#f0f2f0',
+                    marginLeft: index > 0 ? '24px' : '0',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isCategoryBoxOpen) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isCategoryBoxOpen) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  Categories ({selectedSubtagsCount})
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Clear All button - positioned underneath Categories buttons and above Category boxes */}
+          {/* This button is now moved above the Search bar */}
         </div>
 
         {/* Individual Sub-Tag Popups for each selected tag - Horizontal Layout */}
-        {getAvailableSubtags().length > 0 && (
+        {openCategoryBoxes.length > 0 && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-            {activeFilter.filter(f => f !== 'all').map((category, index) => {
-              // Simple fixed positioning with clear spacing
-              let leftPosition;
-              if (index === 0) leftPosition = '20%';
-              else if (index === 1) leftPosition = '45%';
-              else if (index === 2) leftPosition = '70%';
-              else leftPosition = '50%'; // fallback
-              
-              return (
+            {/* Container for horizontal layout */}
+            <div className="flex justify-center items-start pt-88 px-4" style={{ marginTop: '50px' }}>
+              {openCategoryBoxes.map((category) => (
                 <div 
                   key={category} 
-                  className="absolute top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" 
+                  className="bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden mx-4" 
                   style={{ 
-                    width: '280px', 
+                    width: '200px', 
                     height: '400px',
-                    left: leftPosition
+                    zIndex: 1000
                   }}
                 >
                 {/* Header */}
-                <div className="flex items-center justify-between p-3 border-b border-gray-200">
-                  <h3 className="text-base font-semibold text-[#708d81]">
-                    {category.charAt(0).toUpperCase() + category.slice(1)} Categories
+                <div className="flex items-center justify-between p-3 border-b border-gray-200 relative">
+                  <div className="flex-1"></div> {/* Left spacer */}
+                  <h3 className="text-base font-semibold text-[#708d81] absolute left-1/2 transform -translate-x-1/2">
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
                   </h3>
-                  <button
-                    onClick={() => setShowLeftPanel(false)}
-                    className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                {/* Selected tags summary for this category */}
-                {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length > 0 && (
-                  <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
-                    <div className="text-xs text-[#708d81] opacity-70">
-                      Selected: {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length} subtag{selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length !== 1 ? 's' : ''}
+                  <div className="flex-1 flex justify-end"> {/* Right side for X button */}
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        // Check if categories are selected for this subtag
+                        const hasSelectedCategories = selectedTags.some(tag => 
+                          subTags[category as keyof typeof subTags]?.includes(tag)
+                        );
+                        
+                        // If categories are selected, ensure the subtag is selected
+                        if (hasSelectedCategories && !activeFilter.includes(category)) {
+                          setActiveFilter(prev => [...prev, category]);
+                        }
+                        
+                        // Close this specific category box
+                        const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
+                        setOpenCategoryBoxes(newOpenBoxes);
+                        
+                        // Only deselect the subtag if no categories are selected
+                        if (!hasSelectedCategories) {
+                          const newActiveFilter = activeFilter.filter(f => f !== category);
+                          setActiveFilter(newActiveFilter);
+                        }
+                      }}
+                      onMouseDown={() => {
+                        // Check if categories are selected for this subtag
+                        const hasSelectedCategories = selectedTags.some(tag => 
+                          subTags[category as keyof typeof subTags]?.includes(tag)
+                        );
+                        
+                        // If categories are selected, ensure the subtag is selected
+                        if (hasSelectedCategories && !activeFilter.includes(category)) {
+                          setActiveFilter(prev => [...prev, category]);
+                        }
+                        
+                        // Close this specific category box
+                        const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
+                        setOpenCategoryBoxes(newOpenBoxes);
+                        
+                        // Only deselect the subtag if no categories are selected
+                        if (!hasSelectedCategories) {
+                          const newActiveFilter = activeFilter.filter(f => f !== category);
+                          setActiveFilter(newActiveFilter);
+                        }
+                      }}
+                      onTouchStart={() => {
+                        // Check if categories are selected for this subtag
+                        const hasSelectedCategories = selectedTags.some(tag => 
+                          subTags[category as keyof typeof subTags]?.includes(tag)
+                        );
+                        
+                        // If categories are selected, ensure the subtag is selected
+                        if (hasSelectedCategories && !activeFilter.includes(category)) {
+                          setActiveFilter(prev => [...prev, category]);
+                        }
+                        
+                        // Close this specific category box
+                        const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
+                        setOpenCategoryBoxes(newOpenBoxes);
+                        
+                        // Only deselect the subtag if no categories are selected
+                        if (!hasSelectedCategories) {
+                          const newActiveFilter = activeFilter.filter(f => f !== category);
+                          setActiveFilter(newActiveFilter);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          // Check if categories are selected for this subtag
+                          const hasSelectedCategories = selectedTags.some(tag => 
+                            subTags[category as keyof typeof subTags]?.includes(tag)
+                          );
+                          
+                          // If categories are selected, ensure the subtag is selected
+                          if (hasSelectedCategories && !activeFilter.includes(category)) {
+                            setActiveFilter(prev => [...prev, category]);
+                          }
+                          
+                          // Close this specific category box
+                          const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
+                          setOpenCategoryBoxes(newOpenBoxes);
+                          
+                          // Only deselect the subtag if no categories are selected
+                          if (!hasSelectedCategories) {
+                            const newActiveFilter = activeFilter.filter(f => f !== category);
+                            setActiveFilter(newActiveFilter);
+                          }
+                        }
+                      }}
+                      className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer border border-gray-300 bg-white"
+                      style={{ 
+                        minWidth: '32px', 
+                        minHeight: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 1000,
+                        userSelect: 'none'
+                      }}
+                    >
+                      <X size={18} />
                     </div>
                   </div>
-                )}
+                </div>
 
                 {/* Scrollable category buttons for this category */}
                 <div className="category-buttons-container p-4">
@@ -550,7 +734,14 @@ const HomeTab: React.FC = () => {
                     <button
                       key={subTag}
                       onClick={() => handleTagSelect(subTag)}
-                      className={`category-button cursor-pointer ${selectedTags.includes(subTag) ? 'selected' : ''}`}
+                      className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                        selectedTags.includes(subTag)
+                          ? 'text-white shadow-sm'
+                          : 'text-[#708d81] hover:text-[#5a7268]'
+                      }`}
+                      style={{
+                        backgroundColor: selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0'
+                      }}
                       onMouseEnter={(e) => {
                         if (!selectedTags.includes(subTag)) {
                           e.currentTarget.style.backgroundColor = '#e8ebe8';
@@ -569,28 +760,33 @@ const HomeTab: React.FC = () => {
 
                 {/* Footer with actions for this category */}
                 <div className="p-3 border-t border-gray-200 bg-gray-50">
-                  <div className="flex justify-between items-center gap-3">
+                  <div className="flex justify-center">
                     {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length > 0 && (
                       <button
-                        onClick={handleTagClear}
-                        className="px-3 py-2 text-sm text-[#708d81] bg-[#f0f2f0] rounded-lg hover:bg-[#e8ebe8] transition-colors cursor-pointer"
+                        onClick={() => {
+                          // Clear tags for this specific category only
+                          const tagsToRemove = subTags[category as keyof typeof subTags] || [];
+                          setSelectedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
+                        }}
+                        className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
+                        style={{ backgroundColor: '#f0f2f0' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#e8ebe8';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#f0f2f0';
+                        }}
                       >
                         Clear All ({selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length})
                       </button>
                     )}
-                    <button
-                      onClick={() => setShowLeftPanel(false)}
-                      className="px-4 py-2 text-sm text-white bg-[#708d81] rounded-lg hover:bg-[#5a7268] transition-colors cursor-pointer"
-                    >
-                      Done
-                    </button>
                   </div>
                 </div>
               </div>
-            );
-          })}
+            ))}
           </div>
-        )}
+        </div>
+      )}
 
         {/* Main Content */}
         <div className="flex">

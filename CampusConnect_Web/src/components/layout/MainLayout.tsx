@@ -78,87 +78,70 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
         {/* Right Sidebar - Profile Dropdown (when open) */}
         {showProfileDropdown && (
           <div className="mr-2">
-            <div className="w-64 lg:w-72 xl:w-80 border-l border-[#708d81] flex flex-col py-6 transition-all duration-300 ease-in-out transform rounded-l-lg" style={{ backgroundColor: '#708d81' }}>
-              {/* Profile Header */}
-              <div className="px-6 mb-8">
-                {/* Header removed for cleaner interface */}
-              </div>
-
-              {/* Profile Info */}
-              <div className="flex-1 px-4">
-                <div className="bg-white rounded-lg p-4 mb-4">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-                        <User size={24} className="text-white" />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-semibold text-[#708d81]">
-                        {user?.firstName} {user?.lastName}
-                      </p>
-                      <p className="text-sm text-[#708d81] opacity-70">@{user?.username || 'username'}</p>
+            <div className="w-80 bg-white rounded-lg shadow-lg border border-gray-200 transition-all duration-300 ease-in-out transform">
+              {/* User Info Section */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center space-x-3">
+                  {/* Profile Image */}
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                      <User size={24} className="text-white" />
                     </div>
                   </div>
-                </div>
-
-                {/* Profile Actions */}
-                <div>
-                  <button
-                    onClick={() => {
-                      // Navigate to profile
-                      setShowProfileDropdown(false);
-                      router.push('/profile');
-                    }}
-                    className="flex items-center space-x-4 w-full px-4 py-3 rounded-xl transition-colors cursor-pointer text-white"
-                    style={{ backgroundColor: '#ff6b6b', marginBottom: '16px' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#e8ebe8';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ff6b6b';
-                    }}
-                  >
-                    <User size={24} />
-                    <span className="text-base font-medium">View Profile</span>
-                  </button>
                   
-                  <button
-                    onClick={() => {
-                      // Handle logout
-                      setShowProfileDropdown(false);
-                    }}
-                    className="flex items-center space-x-4 w-full px-4 py-3 rounded-xl transition-colors cursor-pointer text-white"
-                    style={{ backgroundColor: '#ff6b6b', marginBottom: '16px' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#e8ebe8';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ff6b6b';
-                    }}
-                  >
-                    <LogOut size={24} />
-                    <span className="text-base font-medium">Logout</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      // Handle settings
-                      setShowProfileDropdown(false);
-                    }}
-                    className="flex items-center space-x-4 w-full px-4 py-3 rounded-xl transition-colors cursor-pointer text-white"
-                    style={{ backgroundColor: '#ff6b6b' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#e8ebe8';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ff6b6b';
-                    }}
-                  >
-                    <Settings size={24} />
-                    <span className="text-base font-medium">Settings</span>
-                  </button>
+                  {/* User Details */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500 truncate">
+                      @{user?.username || 'username'}
+                    </p>
+                  </div>
                 </div>
+              </div>
+
+              {/* Action Buttons Section */}
+              <div className="p-2 space-y-1">
+                <button
+                  onClick={() => {
+                    setShowProfileDropdown(false);
+                    router.push('/settings');
+                  }}
+                  className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-[#708d81] rounded-md transition-colors cursor-pointer"
+                  style={{ backgroundColor: '#f0f2f0' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    e.currentTarget.style.color = '#708d81';
+                  }}
+                >
+                  <Settings size={16} />
+                  <span>Settings</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowProfileDropdown(false);
+                    // Simple logout - redirect to login page
+                    router.push('/auth/login');
+                  }}
+                  className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-[#708d81] rounded-md transition-colors cursor-pointer"
+                  style={{ backgroundColor: '#f0f2f0' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    e.currentTarget.style.color = '#708d81';
+                  }}
+                >
+                  <LogOut size={16} />
+                  <span>Sign out</span>
+                </button>
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings } from 'lucide-react';
 import { useNavigation } from './NavigationContext';
 
 const Header: React.FC = () => {
@@ -34,11 +34,24 @@ const Header: React.FC = () => {
         <div className="flex items-center">
           <button
             onClick={toggleNavigation}
-            className={`p-2 rounded-lg transition-all duration-200 ${
-              showNavigation 
-                ? 'text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0]' 
-                : 'text-white bg-[#708d81] hover:bg-[#5a7268]'
-            }`}
+            className="p-2 rounded-lg transition-colors cursor-pointer text-[#708d81] w-10 h-10 flex items-center justify-center"
+            style={{ backgroundColor: showNavigation ? 'transparent' : '#f0f2f0' }}
+            onMouseEnter={(e) => {
+              if (showNavigation) {
+                e.currentTarget.style.backgroundColor = '#f0f2f0';
+              } else {
+                e.currentTarget.style.backgroundColor = '#708d81';
+                e.currentTarget.style.color = 'white';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (showNavigation) {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              } else {
+                e.currentTarget.style.backgroundColor = '#f0f2f0';
+                e.currentTarget.style.color = '#708d81';
+              }
+            }}
             title={showNavigation ? "Hide Navigation" : "Show Navigation"}
           >
             {showNavigation ? <X size={20} /> : <Menu size={20} />}
@@ -59,13 +72,25 @@ const Header: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-              className={`flex items-center space-x-2 p-2 rounded-lg transition-colors ${
-                showProfileDropdown 
-                  ? 'bg-[#f0f2f0] text-[#708d81]' 
-                  : 'hover:bg-[#f0f2f0] text-[#708d81]'
-              }`}
+              className="p-2 rounded-lg transition-colors cursor-pointer text-[#708d81] w-10 h-10 flex items-center justify-center"
+              style={{ backgroundColor: showProfileDropdown ? 'transparent' : '#f0f2f0' }}
+              onMouseEnter={(e) => {
+                if (showProfileDropdown) {
+                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                } else {
+                  e.currentTarget.style.backgroundColor = '#708d81';
+                  e.currentTarget.style.color = 'white';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (showProfileDropdown) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                } else {
+                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                  e.currentTarget.style.color = '#708d81';
+                }
+              }}
             >
-              {/* Profile icon always stays in place */}
               {user?.profileImage ? (
                 <img
                   src={user.profileImage}
@@ -77,10 +102,9 @@ const Header: React.FC = () => {
                   <User size={20} className="text-white" />
                 </div>
               )}
-              <span className="text-sm font-medium text-[#708d81] hidden sm:block">
-                {user?.firstName} {user?.lastName}
-              </span>
             </button>
+
+
           </div>
         </div>
       </div>
