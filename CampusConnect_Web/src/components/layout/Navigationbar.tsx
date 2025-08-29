@@ -46,8 +46,9 @@ const Navigationbar: React.FC = () => {
         {navigationItems.map((item) => {
           const Icon = item.icon;
           return (
-            <div // Wrapped Link in a div for mouse events
+            <Link
               key={item.name}
+              href={item.href}
               className={`flex items-center space-x-4 w-full px-4 py-3 rounded-lg transition-all duration-200 ease-in-out cursor-pointer transform hover:scale-[1.02] hover:shadow-md ${
                 item.current
                   ? 'text-white font-semibold'
@@ -79,36 +80,26 @@ const Navigationbar: React.FC = () => {
                 }
               }}
             >
-              <Link // Simplified Link styling
-                href={item.href}
-                className={`flex items-center space-x-4 w-full ${
-                  item.current ? 'text-white' : 'text-[#708d81]'
-                }`}
-                style={{
-                  color: item.current ? 'white' : '#708d81'
-                }}
-              >
-                <div className="relative">
-                  <Icon 
-                    size={24} 
-                    className={`transition-transform duration-200 group-hover:scale-110 ${
-                      item.current ? 'text-white' : 'text-[#708d81]'
-                    }`}
-                    style={{
-                      color: item.current ? 'white' : '#708d81'
-                    }}
-                  />
-                </div>
-                <span className={`text-base font-medium transition-colors duration-200 ${
-                  item.current ? 'text-white' : 'text-[#708d81]'
-                }`}
-                style={{
-                  color: item.current ? 'white' : '#708d81'
-                }}>
-                  {item.name}
-                </span>
-              </Link>
-            </div>
+              <div className="relative">
+                <Icon 
+                  size={24} 
+                  className={`transition-transform duration-200 group-hover:scale-110 ${
+                    item.current ? 'text-white' : 'text-[#708d81]'
+                  }`}
+                  style={{
+                    color: item.current ? 'white' : '#708d81'
+                  }}
+                />
+              </div>
+              <span className={`text-base font-medium transition-colors duration-200 ${
+                item.current ? 'text-white' : 'text-[#708d81]'
+              }`}
+              style={{
+                color: item.current ? 'white' : '#708d81'
+              }}>
+                {item.name}
+              </span>
+            </Link>
           );
         })}
       </div>
