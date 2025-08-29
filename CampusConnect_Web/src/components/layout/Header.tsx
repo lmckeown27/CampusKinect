@@ -34,13 +34,16 @@ const Header: React.FC = () => {
         <div className="flex items-center">
           <button
             onClick={toggleNavigation}
-            className="p-2 rounded-lg transition-colors cursor-pointer text-white w-10 h-10 flex items-center justify-center"
-            style={{ backgroundColor: showNavigation ? 'transparent' : '#708d81' }}
+            className="p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-10 h-10 flex items-center justify-center transform hover:scale-105 hover:shadow-md"
+            style={{ 
+              backgroundColor: showNavigation ? 'transparent' : '#708d81',
+              transition: 'background-color 300ms ease-in-out'
+            }}
             onMouseEnter={(e) => {
               if (showNavigation) {
                 e.currentTarget.style.backgroundColor = 'transparent';
               } else {
-                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.backgroundColor = '#5a7268';
               }
             }}
             onMouseLeave={(e) => {
@@ -52,16 +55,27 @@ const Header: React.FC = () => {
             }}
             title={showNavigation ? "Hide Navigation" : "Show Navigation"}
           >
-            {showNavigation ? <X size={20} /> : <Menu size={20} />}
+            <div className="transition-all duration-300 ease-in-out transform">
+              {showNavigation ? (
+                <X size={20} className="animate-in fade-in-0 zoom-in-95 duration-200" />
+              ) : (
+                <Menu size={20} className="animate-in fade-in-0 zoom-in-95 duration-200" />
+              )}
+            </div>
           </button>
         </div>
 
         {/* Center - App Logo & Title */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-3">
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
           <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-600 rounded-md flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">K</span>
           </div>
-          <h1 className="text-xl font-bold text-neutral-900">CampusKinect</h1>
+          <h1 
+            className="text-xl font-bold text-neutral-900"
+            style={{ marginLeft: '16px' }}
+          >
+            CampusKinect
+          </h1>
         </div>
 
         {/* Right Side - User Profile & Actions */}
@@ -70,13 +84,16 @@ const Header: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-              className="p-2 rounded-lg transition-colors cursor-pointer text-white w-10 h-10 flex items-center justify-center"
-              style={{ backgroundColor: showProfileDropdown ? 'transparent' : '#708d81' }}
+              className="p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-10 h-10 flex items-center justify-center transform hover:scale-105 hover:shadow-md"
+              style={{ 
+                backgroundColor: showProfileDropdown ? 'transparent' : '#708d81',
+                transition: 'background-color 300ms ease-in-out'
+              }}
               onMouseEnter={(e) => {
                 if (showProfileDropdown) {
                   e.currentTarget.style.backgroundColor = 'transparent';
                 } else {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = '#5a7268';
                 }
               }}
               onMouseLeave={(e) => {
@@ -87,17 +104,19 @@ const Header: React.FC = () => {
                 }
               }}
             >
-              {user?.profileImage ? (
-                <img
-                  src={user.profileImage}
-                  alt={user.firstName}
-                  className="w-5 h-5 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                  <User size={20} className="text-white" />
-                </div>
-              )}
+              <div className={`transition-all duration-300 ease-in-out transform ${showProfileDropdown ? 'rotate-12 scale-110' : 'rotate-0 scale-100'}`}>
+                {user?.profileImage ? (
+                  <img
+                    src={user.profileImage}
+                    alt={user.firstName}
+                    className="w-5 h-5 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                    <User size={20} className="text-white" />
+                  </div>
+                )}
+              </div>
             </button>
 
 

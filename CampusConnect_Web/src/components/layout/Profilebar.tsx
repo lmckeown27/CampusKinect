@@ -27,7 +27,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
 
   return (
     <div className="mr-2">
-      <div className="w-80 bg-white rounded-lg shadow-lg border border-gray-200 transition-all duration-300 ease-in-out transform">
+      <div className="w-80 bg-white rounded-lg shadow-2xl border border-gray-200 transition-all duration-300 ease-in-out transform hover:shadow-3xl">
         {/* User Info Section */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -57,7 +57,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
               setShowProfileDropdown(false);
               router.push('/profile');
             }}
-            className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer shadow-md hover:shadow-lg"
             style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
@@ -76,7 +76,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
               setShowProfileDropdown(false);
               router.push('/settings');
             }}
-            className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer shadow-md hover:shadow-lg"
             style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
@@ -96,7 +96,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
               // Simple logout - redirect to login page
               router.push('/auth/login');
             }}
-            className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer shadow-md hover:shadow-lg"
             style={{ backgroundColor: '#f0f2f0', color: '#708d81' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';

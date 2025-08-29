@@ -460,12 +460,12 @@ const HomeTab: React.FC = () => {
               boxShadow: activeFilter.length === 1 && activeFilter[0] === 'all' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none'
             }}
             onMouseEnter={(e) => {
-              if (activeFilter.length > 1) {
+              if (!(activeFilter.length === 1 && activeFilter[0] === 'all')) {
                 e.currentTarget.style.backgroundColor = '#e8ebe8';
               }
             }}
             onMouseLeave={(e) => {
-              if (activeFilter.length > 1) {
+              if (!(activeFilter.length === 1 && activeFilter[0] === 'all')) {
                 e.currentTarget.style.backgroundColor = '#f0f2f0';
               }
             }}
