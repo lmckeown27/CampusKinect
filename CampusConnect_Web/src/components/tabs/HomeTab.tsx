@@ -97,6 +97,25 @@ const HomeTab: React.FC = () => {
     setOpenCategoryBoxes(categories);
   }, [activeFilter]);
 
+  // Track when category boxes are closed and unselect unconfirmed categories
+  useEffect(() => {
+    // When a category box is closed, unselect any categories that weren't confirmed
+    const closedCategories = prevActiveFilterRef.current.filter(f => f !== 'all').filter(cat => 
+      !openCategoryBoxes.includes(cat)
+    );
+    
+    if (closedCategories.length > 0) {
+      // Unselect categories for closed boxes
+      closedCategories.forEach(category => {
+        const categorySubtags = subTags[category as keyof typeof subTags] || [];
+        setSelectedTags(prev => prev.filter(tag => !categorySubtags.includes(tag)));
+      });
+    }
+    
+    // Update the ref to track current state
+    prevActiveFilterRef.current = activeFilter;
+  }, [openCategoryBoxes, activeFilter]);
+
   // Track previous activeFilter to detect changes
   const prevActiveFilterRef = useRef<string[]>(['all']);
 
@@ -279,6 +298,7 @@ const HomeTab: React.FC = () => {
     { id: 'all', label: 'All', count: getFilteredPostsBySubtags().length },
     { id: 'goods', label: 'Goods', count: getFilteredPostsBySubtags().filter(p => p.postType === 'goods').length },
     { id: 'services', label: 'Services', count: getFilteredPostsBySubtags().filter(p => p.postType === 'services').length },
+    { id: 'housing', label: 'Housing', count: getFilteredPostsBySubtags().filter(p => p.postType === 'housing').length },
     { id: 'events', label: 'Events', count: getFilteredPostsBySubtags().filter(p => p.postType === 'events').length },
   ];
 
@@ -421,21 +441,21 @@ const HomeTab: React.FC = () => {
               <button
                 onClick={() => handleTagSelect('Offer')}
                 className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')
+                  offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')
                     ? 'text-white'
                     : 'text-[#708d81] hover:text-[#5a7268]'
                 }`}
                 style={{
-                  backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer')) ? '#708d81' : '#f0f2f0',
+                  backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')) ? '#708d81' : '#f0f2f0',
                   width: '100px'
                 }}
                 onMouseEnter={(e) => {
-                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
+                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer'))) {
                     e.currentTarget.style.backgroundColor = '#e8ebe8';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer'))) {
+                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer'))) {
                     e.currentTarget.style.backgroundColor = '#f0f2f0';
                   }
                 }}
@@ -479,21 +499,21 @@ const HomeTab: React.FC = () => {
               <button
                 onClick={() => handleTagSelect('Request')}
                 className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')
+                  offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')
                     ? 'text-white'
                     : 'text-[#708d81] hover:text-[#5a7268]'
                 }`}
                 style={{
-                  backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request')) ? '#708d81' : '#f0f2f0',
+                  backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')) ? '#708d81' : '#f0f2f0',
                   width: '100px'
                 }}
                 onMouseEnter={(e) => {
-                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
+                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request'))) {
                     e.currentTarget.style.backgroundColor = '#e8ebe8';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request'))) {
+                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request'))) {
                     e.currentTarget.style.backgroundColor = '#f0f2f0';
                   }
                 }}
@@ -623,93 +643,21 @@ const HomeTab: React.FC = () => {
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </h3>
                   <div className="flex-1 flex justify-end"> {/* Right side for X button */}
-                    <div
+                                        <div
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        // Check if categories are selected for this subtag
-                        const hasSelectedCategories = selectedTags.some(tag => 
-                          subTags[category as keyof typeof subTags]?.includes(tag)
-                        );
-                        
-                        // If categories are selected, ensure the subtag is selected
-                        if (hasSelectedCategories && !activeFilter.includes(category)) {
-                          setActiveFilter(prev => [...prev, category]);
-                        }
-                        
-                        // Close this specific category box
+                        // X button only closes the category box
+                        // If categories are selected but not confirmed, they will be unselected
                         const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
                         setOpenCategoryBoxes(newOpenBoxes);
-                        
-                        // Only deselect the subtag if no categories are selected
-                        if (!hasSelectedCategories) {
-                          const newActiveFilter = activeFilter.filter(f => f !== category);
-                          setActiveFilter(newActiveFilter);
-                        }
-                      }}
-                      onMouseDown={() => {
-                        // Check if categories are selected for this subtag
-                        const hasSelectedCategories = selectedTags.some(tag => 
-                          subTags[category as keyof typeof subTags]?.includes(tag)
-                        );
-                        
-                        // If categories are selected, ensure the subtag is selected
-                        if (hasSelectedCategories && !activeFilter.includes(category)) {
-                          setActiveFilter(prev => [...prev, category]);
-                        }
-                        
-                        // Close this specific category box
-                        const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
-                        setOpenCategoryBoxes(newOpenBoxes);
-                        
-                        // Only deselect the subtag if no categories are selected
-                        if (!hasSelectedCategories) {
-                          const newActiveFilter = activeFilter.filter(f => f !== category);
-                          setActiveFilter(newActiveFilter);
-                        }
-                      }}
-                      onTouchStart={() => {
-                        // Check if categories are selected for this subtag
-                        const hasSelectedCategories = selectedTags.some(tag => 
-                          subTags[category as keyof typeof subTags]?.includes(tag)
-                        );
-                        
-                        // If categories are selected, ensure the subtag is selected
-                        if (hasSelectedCategories && !activeFilter.includes(category)) {
-                          setActiveFilter(prev => [...prev, category]);
-                        }
-                        
-                        // Close this specific category box
-                        const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
-                        setOpenCategoryBoxes(newOpenBoxes);
-                        
-                        // Only deselect the subtag if no categories are selected
-                        if (!hasSelectedCategories) {
-                          const newActiveFilter = activeFilter.filter(f => f !== category);
-                          setActiveFilter(newActiveFilter);
-                        }
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
-                          // Check if categories are selected for this subtag
-                          const hasSelectedCategories = selectedTags.some(tag => 
-                            subTags[category as keyof typeof subTags]?.includes(tag)
-                          );
-                          
-                          // If categories are selected, ensure the subtag is selected
-                          if (hasSelectedCategories && !activeFilter.includes(category)) {
-                            setActiveFilter(prev => [...prev, category]);
-                          }
-                          
-                          // Close this specific category box
+                          // X button only closes the category box
+                          // If categories are selected but not confirmed, they will be unselected
                           const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
                           setOpenCategoryBoxes(newOpenBoxes);
-                          
-                          // Only deselect the subtag if no categories are selected
-                          if (!hasSelectedCategories) {
-                            const newActiveFilter = activeFilter.filter(f => f !== category);
-                            setActiveFilter(newActiveFilter);
-                          }
                         }
                       }}
                       className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer border border-gray-300 bg-white"
@@ -760,25 +708,48 @@ const HomeTab: React.FC = () => {
 
                 {/* Footer with actions for this category */}
                 <div className="p-3 border-t border-gray-200 bg-gray-50">
-                  <div className="flex justify-center">
+                  <div className="flex justify-center space-x-2">
                     {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length > 0 && (
-                      <button
-                        onClick={() => {
-                          // Clear tags for this specific category only
-                          const tagsToRemove = subTags[category as keyof typeof subTags] || [];
-                          setSelectedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
-                        }}
-                        className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
-                        style={{ backgroundColor: '#f0f2f0' }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#e8ebe8';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f0f2f0';
-                        }}
-                      >
-                        Clear All ({selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length})
-                      </button>
+                      <>
+                        <button
+                          onClick={() => {
+                            // Confirm button: select the subtag and close the box
+                            if (!activeFilter.includes(category)) {
+                              setActiveFilter(prev => [...prev, category]);
+                            }
+                            // Close the category box
+                            const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
+                            setOpenCategoryBoxes(newOpenBoxes);
+                          }}
+                          className="px-3 py-2 text-sm text-white rounded-lg transition-colors cursor-pointer"
+                          style={{ backgroundColor: '#708d81' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#5a7268';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#708d81';
+                          }}
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => {
+                            // Clear tags for this specific category only
+                            const tagsToRemove = subTags[category as keyof typeof subTags] || [];
+                            setSelectedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
+                          }}
+                          className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
+                          style={{ backgroundColor: '#f0f2f0' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#e8ebe8';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#f0f2f0';
+                          }}
+                        >
+                          Clear All ({selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length})
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

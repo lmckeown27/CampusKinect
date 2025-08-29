@@ -87,54 +87,54 @@ const ProfileTab: React.FC = () => {
     });
   }, [user]);
 
-  // Mock data for posts and bookmarks
-  const mockPosts: Post[] = [
-    {
-      id: '1',
-      title: 'Calculus Textbook for Sale',
-      description: 'Excellent condition, barely used. Includes all practice problems.',
-      postType: 'goods',
-      duration: 'one-time',
-      tags: ['textbooks', 'math', 'calculus'],
-      userId: 'user1',
-      universityId: 'uni1',
-      grade: 95,
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z',
-      updatedAt: '2024-01-15T10:00:00Z',
-    },
-    {
-      id: '2',
-      title: 'Math Tutoring Available',
-      description: 'Experienced tutor offering help with calculus, linear algebra, and statistics.',
-      postType: 'tutoring',
-      duration: 'recurring',
-      tags: ['tutoring', 'math', 'calculus', 'statistics'],
-      userId: 'user1',
-      universityId: 'uni1',
-      grade: 92,
-      isActive: true,
-      createdAt: '2024-01-10T14:30:00Z',
-      updatedAt: '2024-01-10T14:30:00Z',
-    },
-  ];
+  // Mock data for posts and bookmarks - REMOVED
+  // const mockPosts: Post[] = [
+  //   {
+  //     id: '1',
+  //     title: 'Calculus Textbook for Sale',
+  //     description: 'Excellent condition, barely used. Includes all practice problems.',
+  //     postType: 'goods',
+  //     duration: 'one-time',
+  //     tags: ['textbooks', 'math', 'calculus'],
+  //     userId: 'user1',
+  //     universityId: 'uni1',
+  //     grade: 95,
+  //     isActive: true,
+  //     createdAt: '2024-01-15T10:00:00Z',
+  //     updatedAt: '2024-01-15T10:00:00Z',
+  //   },
+  //   {
+  //     id: '2',
+  //     title: 'Math Tutoring Available',
+  //     description: 'Experienced tutor offering help with calculus, linear algebra, and statistics.',
+  //     postType: 'tutoring',
+  //     duration: 'recurring',
+  //     tags: ['tutoring', 'math', 'calculus', 'statistics'],
+  //     userId: 'user1',
+  //     universityId: 'uni1',
+  //     grade: 92,
+  //     isActive: true,
+  //     createdAt: '2024-01-10T14:30:00Z',
+  //     updatedAt: '2024-01-10T14:30:00Z',
+  //   },
+  // ];
 
-  const mockBookmarks: Post[] = [
-    {
-      id: '3',
-      title: 'Roommate Needed for Fall Semester',
-      description: 'Looking for a roommate for a 2-bedroom apartment near campus.',
-      postType: 'housing',
-      duration: 'indefinite',
-      tags: ['housing', 'roommate', 'apartment'],
-      userId: 'user2',
-      universityId: 'uni1',
-      grade: 88,
-      isActive: true,
-      createdAt: '2024-01-12T09:15:00Z',
-      updatedAt: '2024-01-12T09:15:00Z',
-    },
-  ];
+  // const mockBookmarks: Post[] = [
+  //   {
+  //     id: '3',
+  //     title: 'Roommate Needed for Fall Semester',
+  //     description: 'Looking for a roommate for a 2-bedroom apartment near campus.',
+  //     postType: 'housing',
+  //     duration: 'indefinite',
+  //     tags: ['housing', 'roommate', 'apartment'],
+  //     userId: 'user2',
+  //     universityId: 'uni1',
+  //     grade: 88,
+  //     isActive: true,
+  //     createdAt: '2024-01-12T09:15:00Z',
+  //     updatedAt: '2024-01-12T09:15:00Z',
+  //   },
+  // ];
 
   const years = [
     { value: 1, label: 'Freshman' },
@@ -378,18 +378,14 @@ const ProfileTab: React.FC = () => {
       {/* Profile Stats */}
       <div className="bg-white border-b border-[#708d81]">
         <div className="max-w-xl mx-auto px-4 py-4">
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-[#708d81]">{mockPosts.length}</div>
+              <div className="text-2xl font-bold text-[#708d81]">0</div>
               <div className="text-sm text-[#708d81] opacity-70">Posts</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#708d81]">{mockBookmarks.length}</div>
+              <div className="text-2xl font-bold text-[#708d81]">0</div>
               <div className="text-sm text-[#708d81] opacity-70">Bookmarks</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-[#708d81]">95%</div>
-              <div className="text-sm text-[#708d81] opacity-70">Avg. Grade</div>
             </div>
           </div>
         </div>
@@ -407,7 +403,7 @@ const ProfileTab: React.FC = () => {
                 : 'text-[#708d81] hover:text-[#5a7268]'
             }`}
           >
-            My Posts ({mockPosts.length})
+            My Posts (0)
           </button>
           <button
             onClick={() => setActiveTab('bookmarks')}
@@ -417,30 +413,22 @@ const ProfileTab: React.FC = () => {
                 : 'text-[#708d81] hover:text-[#5a7268]'
             }`}
           >
-            Bookmarks ({mockBookmarks.length})
+            Bookmarks (0)
           </button>
         </div>
 
         {/* Tab Content */}
         <div className="space-y-4">
           {activeTab === 'posts' ? (
-            mockPosts.length > 0 ? (
-              mockPosts.map(post => renderPostCard(post, true))
-            ) : (
-              <div className="text-center py-12 text-[#708d81] opacity-70">
-                <p className="text-lg mb-2">No posts yet</p>
-                <p className="text-sm">Create your first post to get started</p>
-              </div>
-            )
+            <div className="text-center py-12 text-[#708d81] opacity-70">
+              <p className="text-lg mb-2">No posts yet</p>
+              <p className="text-sm">Create your first post to get started</p>
+            </div>
           ) : (
-            mockBookmarks.length > 0 ? (
-              mockBookmarks.map(post => renderPostCard(post))
-            ) : (
-              <div className="text-center py-12 text-[#708d81] opacity-70">
-                <p className="text-lg mb-2">No bookmarks yet</p>
-                <p className="text-sm">Bookmark posts you're interested in</p>
-              </div>
-            )
+            <div className="text-center py-12 text-[#708d81] opacity-70">
+              <p className="text-lg mb-2">No bookmarks yet</p>
+              <p className="text-sm">Bookmark posts you're interested in</p>
+            </div>
           )}
         </div>
       </div>

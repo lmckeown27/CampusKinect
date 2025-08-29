@@ -45,7 +45,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
           placeholder="Search or create tags..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 text-sm border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+          className="w-1/2 pl-9 pr-4 py-2 text-sm border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
         />
       </div>
 

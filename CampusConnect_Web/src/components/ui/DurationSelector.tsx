@@ -32,16 +32,12 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
     }
   };
 
-  const handleClear = () => {
-    onChange('');
-    setShowCustomInput(false);
-    setCustomDuration('');
-  };
+
 
   return (
     <div className="space-y-3">
       {/* Quick Options */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="flex gap-3">
         {quickOptions.map((option) => {
           const Icon = option.icon;
           return (
@@ -49,11 +45,24 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
               key={option.value}
               type="button"
               onClick={() => handleQuickOption(option.value)}
-              className={`p-3 rounded-lg border-2 transition-colors ${
+              className={`w-1/2 p-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 value === option.value
-                  ? 'border-[#708d81] bg-[#f0f2f0] text-[#708d81]'
-                  : 'border-[#708d81] hover:border-[#5a7268]'
+                  ? 'text-white'
+                  : 'text-[#708d81] hover:text-[#5a7268]'
               }`}
+              style={{
+                backgroundColor: value === option.value ? '#708d81' : '#f0f2f0',
+              }}
+              onMouseEnter={(e) => {
+                if (value !== option.value) {
+                  e.currentTarget.style.backgroundColor = '#e8ebe8';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (value !== option.value) {
+                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                }
+              }}
             >
               <Icon size={20} className="mx-auto mb-2" />
               <div className="text-sm font-medium">{option.label}</div>
@@ -76,14 +85,28 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
             <button
               type="button"
               onClick={handleCustomSubmit}
-              className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] transition-colors"
+              className="px-4 py-2 text-white rounded-lg transition-colors cursor-pointer"
+              style={{ backgroundColor: '#708d81' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#5a7268';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#708d81';
+              }}
             >
               Set
             </button>
             <button
               type="button"
               onClick={() => setShowCustomInput(false)}
-              className="px-3 py-2 text-[#708d81] hover:text-[#5a7268] transition-colors"
+              className="px-3 py-2 text-[#708d81] transition-colors cursor-pointer"
+              style={{ backgroundColor: '#f0f2f0' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#e8ebe8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0f2f0';
+              }}
             >
               Cancel
             </button>
@@ -93,7 +116,14 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
         <button
           type="button"
           onClick={() => setShowCustomInput(true)}
-          className="w-full p-3 border-2 border-dashed border-[#708d81] rounded-lg text-[#708d81] hover:border-[#5a7268] hover:text-[#5a7268] transition-colors"
+          className="w-1/2 p-3 rounded-lg text-[#708d81] transition-colors cursor-pointer"
+          style={{ backgroundColor: '#f0f2f0', border: '2px dashed #708d81' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#e8ebe8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#f0f2f0';
+          }}
         >
           + Add Custom Duration
         </button>
@@ -101,61 +131,20 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
 
       {/* Selected Duration Display */}
       {value && (
-        <div className="flex items-center justify-between p-3 bg-[#f0f2f0] border border-[#708d81] rounded-lg">
+        <div className="flex items-center p-3 bg-[#f0f2f0] border border-[#708d81] rounded-lg">
           <div className="flex items-center space-x-2">
             <Clock size={16} className="text-[#708d81]" />
             <span className="text-sm font-medium text-[#708d81]">
-              Duration: {value === 'one-time' ? 'One-time' : 
-                         value === 'recurring' ? 'Recurring' : 
-                         value === 'indefinite' ? 'Ongoing' : value}
+              {value === 'one-time' ? 'This is a single event or transaction that happens once.' : 
+               value === 'recurring' ? 'This repeats on a regular schedule (daily, weekly, or monthly).' : 
+               value === 'indefinite' ? 'This is an ongoing service or item with no set end date.' : 
+               `Custom duration: ${value}`}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={handleClear}
-            className="p-1 text-[#708d81] hover:text-[#5a7268] transition-colors"
-          >
-            <X size={16} />
-          </button>
         </div>
       )}
 
-      {/* Event Date Picker (for events) */}
-      {value === 'one-time' && (
-        <div className="p-3 bg-[#f8f9f6] border border-[#708d81] rounded-lg">
-          <div className="flex items-center space-x-2 mb-2">
-            <Calendar size={16} className="text-[#708d81]" />
-            <span className="text-sm font-medium text-[#708d81]">Event Date</span>
-          </div>
-          <input
-            type="date"
-            className="w-full px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-            min={new Date().toISOString().split('T')[0]}
-          />
-        </div>
-      )}
 
-      {/* Recurring Options */}
-      {value === 'recurring' && (
-        <div className="p-3 bg-[#f8f9f6] border border-[#708d81] rounded-lg">
-          <div className="flex items-center space-x-2 mb-2">
-            <Repeat size={16} className="text-[#708d81]" />
-            <span className="text-sm font-medium text-[#708d81]">Recurring Pattern</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <select className="px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent">
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-            </select>
-            <select className="px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent">
-              <option value="1">Every 1</option>
-              <option value="2">Every 2</option>
-              <option value="3">Every 3</option>
-            </select>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

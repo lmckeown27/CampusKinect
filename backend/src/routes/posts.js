@@ -20,7 +20,7 @@ const router = express.Router();
 router.get('/organized', [
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  queryValidator('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Invalid post type'),
+  queryValidator('postType').optional().isIn(['goods', 'services', 'events', 'housing', 'tutoring', 'all']).withMessage('Invalid post type'),
   queryValidator('tags').optional().isArray().withMessage('Tags must be an array'),
   validate
 ], async (req, res) => {
@@ -91,8 +91,24 @@ router.get('/organized', [
     // Add post type filter
     if (postType && postType !== 'all') {
       paramCount++;
+      // Map frontend postType values to backend database values
+      let dbPostType;
+      switch (postType) {
+        case 'goods':
+        case 'services':
+        case 'housing':
+        case 'tutoring':
+          // These are all considered "goods-services" in the database
+          dbPostType = 'goods-services';
+          break;
+        case 'events':
+          dbPostType = 'events';
+          break;
+        default:
+          dbPostType = postType;
+      }
       organizedQuery += ` AND p.post_type = $${paramCount}`;
-      queryParams.push(postType);
+      queryParams.push(dbPostType);
     }
 
     // Add tags filter
@@ -137,8 +153,24 @@ router.get('/organized', [
 
     if (postType && postType !== 'all') {
       paramCount++;
+      // Map frontend postType values to backend database values
+      let dbPostType;
+      switch (postType) {
+        case 'goods':
+        case 'services':
+        case 'housing':
+        case 'tutoring':
+          // These are all considered "goods-services" in the database
+          dbPostType = 'goods-services';
+          break;
+        case 'events':
+          dbPostType = 'events';
+          break;
+        default:
+          dbPostType = postType;
+      }
       countQuery += ` AND p.post_type = $${paramCount}`;
-      countParams.push(postType);
+      countParams.push(dbPostType);
     }
 
     if (tags && tags.length > 0) {
@@ -1009,7 +1041,7 @@ router.get('/', [
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   queryValidator('universityId').optional().isInt().withMessage('University ID must be an integer'),
-  queryValidator('postType').optional().isIn(['offer', 'request', 'event', 'all']).withMessage('Invalid post type'),
+  queryValidator('postType').optional().isIn(['goods', 'services', 'events', 'housing', 'tutoring', 'all']).withMessage('Invalid post type'),
   queryValidator('tags').optional().isArray().withMessage('Tags must be an array'),
   queryValidator('sortBy').optional().isIn(['recent', 'expiring', 'recurring', 'organized']).withMessage('Invalid sort option'),
   queryValidator('expandCluster').optional().isBoolean().withMessage('Expand cluster must be boolean'),
@@ -1080,8 +1112,24 @@ router.get('/', [
     // Add post type filter
     if (postType && postType !== 'all') {
       paramCount++;
+      // Map frontend postType values to backend database values
+      let dbPostType;
+      switch (postType) {
+        case 'goods':
+        case 'services':
+        case 'housing':
+        case 'tutoring':
+          // These are all considered "goods-services" in the database
+          dbPostType = 'goods-services';
+          break;
+        case 'events':
+          dbPostType = 'events';
+          break;
+        default:
+          dbPostType = postType;
+      }
       baseQuery += ` AND p.post_type = $${paramCount}`;
-      queryParams.push(postType);
+      queryParams.push(dbPostType);
     }
 
     // Add tags filter
@@ -1141,8 +1189,24 @@ router.get('/', [
 
     if (postType && postType !== 'all') {
       paramCount++;
+      // Map frontend postType values to backend database values
+      let dbPostType;
+      switch (postType) {
+        case 'goods':
+        case 'services':
+        case 'housing':
+        case 'tutoring':
+          // These are all considered "goods-services" in the database
+          dbPostType = 'goods-services';
+          break;
+        case 'events':
+          dbPostType = 'events';
+          break;
+        default:
+          dbPostType = postType;
+      }
       countQuery += ` AND p.post_type = $${paramCount}`;
-      countParams.push(postType);
+      countParams.push(dbPostType);
     }
 
     if (tags && tags.length > 0) {
