@@ -76,16 +76,20 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
         </main>
 
         {/* Right Sidebar - Profile Dropdown (when open) */}
-        <Profilebar 
-          showProfileDropdown={showProfileDropdown}
-          setShowProfileDropdown={setShowProfileDropdown}
-          user={user}
-        />
+        {showProfileDropdown && (
+          <div className="relative">
+            <Profilebar 
+              showProfileDropdown={showProfileDropdown}
+              setShowProfileDropdown={setShowProfileDropdown}
+              user={user}
+            />
+          </div>
+        )}
 
         {/* Click outside to close profile dropdown */}
         {showProfileDropdown && (
           <div
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-30"
             onClick={() => setShowProfileDropdown(false)}
           />
         )}

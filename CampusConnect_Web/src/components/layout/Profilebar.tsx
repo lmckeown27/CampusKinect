@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { User, LogOut, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -20,13 +20,31 @@ const Profilebar: React.FC<ProfilebarProps> = ({
   user 
 }) => {
   const router = useRouter();
+  const profileRef = useRef<HTMLDivElement>(null);
+  
+  // Click outside to close profile dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    if (showProfileDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileDropdown, setShowProfileDropdown]);
 
   if (!showProfileDropdown) {
     return null;
   }
 
   return (
-    <div className="mr-2">
+    <div className="absolute right-0 top-0 z-50" ref={profileRef}>
       <div className="w-80 bg-white rounded-lg shadow-2xl border border-gray-200 transition-all duration-300 ease-in-out transform hover:shadow-3xl">
         {/* User Info Section */}
         <div className="p-4 border-b border-gray-200">
