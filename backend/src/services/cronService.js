@@ -156,13 +156,14 @@ const scheduleHourlyProcessing = () => {
 // Initialize all cron jobs
 const initializeCronJobs = () => {
   try {
-    performInitialCleanup(); // Call the new function here
-    scheduleRecurringPostProcessing();
-    scheduleMarketSizeUpdates();
-    scheduleGradeUpdates();
-    scheduleHourlyProcessing();
+    // TEMPORARILY DISABLED: These services are creating phantom posts
+    // performInitialCleanup(); // Call the new function here
+    // scheduleRecurringPostProcessing();
+    // scheduleMarketSizeUpdates();
+    // scheduleGradeUpdates();
+    // scheduleHourlyProcessing();
     
-    console.log('🎯 All cron jobs initialized successfully');
+    console.log('🎯 Cron jobs initialized (phantom post services DISABLED)');
     
   } catch (error) {
     console.error('❌ Failed to initialize cron jobs:', error);

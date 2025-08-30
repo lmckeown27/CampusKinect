@@ -8,7 +8,7 @@ import { ArrowLeft, Mail, AlertCircle } from 'lucide-react';
 
 const VerifyPage: React.FC = () => {
   const router = useRouter();
-  const { verifyEmail, isLoading, error, clearError } = useAuthStore();
+  const { verifyEmail, resendVerificationCode, isLoading, error, clearError } = useAuthStore();
   const [verificationCode, setVerificationCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -34,89 +34,123 @@ const VerifyPage: React.FC = () => {
     }
   };
 
-  const handleResendCode = () => {
-    router.push('/auth/resend-code');
+  const handleResendCode = async () => {
+    try {
+      // Get the email from the auth store or localStorage
+      const storedEmail = localStorage.getItem('registrationEmail') || 'user@university.edu';
+      
+      // Call the resend verification code function
+      await resendVerificationCode(storedEmail);
+      
+      // Show success message (you can add a toast or alert here)
+      alert('Verification code resent successfully! Please check your email.');
+      
+    } catch (error) {
+      console.error('Failed to resend code:', error);
+      alert('Failed to resend verification code. Please try again.');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pb-24">
-      <div className="max-w-md w-full">
+      <div className="max-w-sm">
         {/* Header */}
-        <div className="flex flex-col items-center justify-center mb-8 w-full">
+        <div className="flex flex-col items-center justify-center mb-8">
           <div className="h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-lg flex items-center justify-center mb-6 shadow-xl">
             <Mail className="h-8 w-8 text-white" />
           </div>
           <h1 
-            className="text-3xl font-bold text-neutral-900 mb-2 w-full"
-            style={{ textAlign: 'center' }}
+            className="text-3xl font-bold text-neutral-900 mb-2 text-center"
           >
             <span className="text-primary">CampusKinect</span>
           </h1>
           <p 
-            className="text-neutral-600 w-full"
-            style={{ textAlign: 'center' }}
+            className="text-neutral-600 text-center"
           >
             Verify Your Email Address
           </p>
           <p 
-            className="text-neutral-500 w-full text-sm"
-            style={{ textAlign: 'center' }}
+            className="text-neutral-500 text-sm text-center"
           >
             We've sent a 6-digit verification code to your email
           </p>
         </div>
 
         {/* Verification Form */}
-        <div className="bg-white rounded-lg shadow-box-xl p-6 border border-neutral-100">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-lg shadow-box-xl p-6 border border-neutral-100 mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-16">
             {/* Verification Code Input */}
-            <div>
-              <label htmlFor="verificationCode" className="block text-sm font-medium text-neutral-700 mb-2">
-                Verification Code
-              </label>
+            <div className="flex flex-col items-center" style={{ marginBottom: '0px' }}>
               <input
                 id="verificationCode"
                 type="text"
+                inputMode="numeric"
                 value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Only allow numbers
+                  if (/^\d*$/.test(value)) {
+                    setVerificationCode(value);
+                  }
+                }}
                 placeholder="Enter 6-digit code"
                 maxLength={6}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                className="w-48 px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-center text-lg font-mono"
+                style={{ 
+                  letterSpacing: verificationCode ? '0.5em' : 'normal',
+                  fontFamily: verificationCode ? 'monospace' : 'inherit',
+                  textAlign: 'center',
+                  paddingLeft: verificationCode ? '0.5em' : '1rem',
+                  paddingRight: verificationCode ? '0.5em' : '1rem'
+                }}
                 required
               />
             </div>
 
             {/* Error Display */}
             {error && (
-              <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg" style={{ marginBottom: '40px' }}>
                 <AlertCircle className="h-5 w-5 text-red-500" />
                 <p className="text-red-700 text-sm">{error}</p>
               </div>
             )}
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isSubmitting || !verificationCode.trim()}
-              className="w-full bg-primary text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSubmitting ? 'Verifying...' : 'Verify Email'}
-            </button>
-
             {/* Resend Code Link */}
-            <div className="text-center">
+            <div className="text-center" style={{ marginBottom: '40px' }}>
+              <span className="text-neutral-900 text-sm">
+                Didn't receive the code?{' '}
+                <button
+                  type="button"
+                  onClick={handleResendCode}
+                  className="text-primary hover:text-primary-600 font-medium text-sm transition-colors bg-transparent border-none p-0 cursor-pointer"
+                  style={{ 
+                    backgroundColor: 'transparent',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Resend
+                </button>
+              </span>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-center" style={{ marginBottom: '40px' }}>
               <button
-                type="button"
-                onClick={handleResendCode}
-                className="text-primary hover:text-primary-600 font-medium text-sm transition-colors"
+                type="submit"
+                disabled={isSubmitting || !verificationCode.trim()}
+                className="w-48 bg-primary text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-600 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-lg"
+                style={{ 
+                  color: 'white',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer'
+                }}
               >
-                Didn't receive the code? Resend
+                {isSubmitting ? 'Verifying...' : 'Verify Email'}
               </button>
             </div>
           </form>
 
           {/* Back to Registration */}
-          <div className="mt-6 pt-6 border-t border-neutral-200">
+          <div className="mt-8 pt-6 border-t border-neutral-200">
             <Link 
               href="/auth/register" 
               className="flex items-center justify-center space-x-2 text-neutral-600 hover:text-neutral-800 transition-colors"

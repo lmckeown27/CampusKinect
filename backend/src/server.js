@@ -146,7 +146,7 @@ server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API Version: ${process.env.API_VERSION || 'v1'}`);
-  console.log(`🏛️ Currently restricted to: ${UNIVERSITY_CONFIG.displayName}`);
+  console.log(`🏛️ Currently accepting: All valid .edu domains (Cal Poly SLO restriction removed)`);
   console.log(`🔧 Multi-university architecture ready for future expansion`);
   
   // Signal PM2 that the app is ready

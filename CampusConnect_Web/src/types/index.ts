@@ -115,6 +115,17 @@ export interface RegisterForm {
   hometown?: string;
 }
 
+export interface RegisterApiData {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  year?: number;
+  major?: string;
+  hometown?: string;
+}
+
 // UI state types
 export interface UIState {
   isLoading: boolean;

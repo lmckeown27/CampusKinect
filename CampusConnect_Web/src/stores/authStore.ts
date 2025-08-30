@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, LoginForm, RegisterForm } from '../types';
+import { User, LoginForm, RegisterForm, RegisterApiData } from '../types';
 import apiService from '../services/api';
 
 interface AuthState {
@@ -12,7 +12,7 @@ interface AuthState {
 
 interface AuthActions {
   login: (credentials: LoginForm) => Promise<void>;
-  register: (userData: RegisterForm) => Promise<void>;
+  register: (userData: RegisterApiData) => Promise<void>;
   logout: (redirectCallback?: () => void) => void;
   checkAuth: () => Promise<void>;
   clearError: () => void;
@@ -79,11 +79,15 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      register: async (userData: RegisterForm) => {
+      register: async (userData: RegisterApiData) => {
+        alert('🔍 DEBUG: Auth store register method called');
         set({ isLoading: true, error: null });
         
         try {
+          alert('📡 DEBUG: Calling API service register...');
           const { user, tokens } = await apiService.register(userData);
+          alert('✅ DEBUG: API service returned successfully');
+          
           // Don't set isAuthenticated to true until email is verified
           set({ 
             user, 
@@ -91,7 +95,10 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
             error: null 
           });
+          alert('✅ DEBUG: User state updated successfully');
         } catch (error: any) {
+          alert(`❌ DEBUG: Auth store caught error!\n\nError: ${error.message}\nStatus: ${error.response?.status}\nData: ${JSON.stringify(error.response?.data, null, 2)}`);
+          
           let errorMessage = 'Registration failed';
           
           // Handle specific error scenarios

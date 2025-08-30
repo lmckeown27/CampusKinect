@@ -288,13 +288,12 @@ class EducationalDomainService {
   async addNewUniversity(domain, validationData) {
     try {
       await query(`
-        INSERT INTO universities (name, domain, country, is_active, created_at)
-        VALUES ($1, $2, $3, true, CURRENT_TIMESTAMP)
+        INSERT INTO universities (name, domain, city, state, country, is_active, created_at)
+        VALUES ($1, $2, $3, $4, $5, true, CURRENT_TIMESTAMP)
         ON CONFLICT (domain) DO UPDATE SET
           country = EXCLUDED.country,
-          is_active = true,
-          updated_at = CURRENT_TIMESTAMP
-      `, [validationData.university || domain, domain, validationData.country]);
+          is_active = true
+      `, [validationData.university || domain, domain, 'Unknown', 'Unknown', validationData.country]);
       
       console.log(`✅ Added new university: ${domain} (${validationData.country})`);
     } catch (error) {

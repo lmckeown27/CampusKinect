@@ -7,6 +7,7 @@ import {
   CreatePostForm, 
   LoginForm, 
   RegisterForm,
+  RegisterApiData,
   ApiResponse,
   PaginatedResponse,
   AuthTokens 
@@ -119,17 +120,29 @@ class ApiService {
     throw new Error(response.data.message || 'Login failed');
   }
 
-  public async register(userData: RegisterForm): Promise<{ user: User; tokens: AuthTokens }> {
-    const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
-      await this.api.post('/auth/register', userData);
+  public async register(userData: RegisterApiData): Promise<{ user: User; tokens: AuthTokens }> {
+    alert(`🔍 DEBUG: API service register called\n\nData: ${JSON.stringify(userData, null, 2)}`);
     
-    if (response.data.success && response.data.data) {
-      this.setTokens(response.data.data.tokens);
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
-      return response.data.data;
+    try {
+      alert('📡 DEBUG: Making POST request to /auth/register...');
+      const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
+        await this.api.post('/auth/register', userData);
+      
+      alert(`📥 DEBUG: Response received!\n\nStatus: ${response.status}\nData: ${JSON.stringify(response.data, null, 2)}`);
+      
+      if (response.data.success && response.data.data) {
+        alert('✅ DEBUG: Response successful, setting tokens and user data...');
+        this.setTokens(response.data.data.tokens);
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        return response.data.data;
+      }
+      
+      alert(`❌ DEBUG: Response not successful\n\nData: ${JSON.stringify(response.data, null, 2)}`);
+      throw new Error(response.data.message || 'Registration failed');
+    } catch (error: any) {
+      alert(`❌ DEBUG: API service error!\n\nError: ${error.message}\nResponse: ${JSON.stringify(error.response?.data, null, 2)}`);
+      throw error;
     }
-    
-    throw new Error(response.data.message || 'Registration failed');
   }
 
   public async checkAuth(): Promise<User> {

@@ -43,27 +43,46 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Debug popup 1: Form submission started
+    alert('🔍 DEBUG: Form submission started');
+    
     if (!validateForm()) {
+      alert('❌ DEBUG: Form validation failed');
       console.log('Form validation failed, not submitting');
       return;
     }
     
+    alert('✅ DEBUG: Form validation passed');
+    
     // Check if email is valid before proceeding
     if (!isEmailValidForRegistration(formData.email)) {
+      alert('❌ DEBUG: Invalid email format or not educational email');
       console.log('Invalid email format or not educational email - not redirecting');
       return;
     }
     
+    alert('✅ DEBUG: Email validation passed');
+    
     try {
+      alert('🚀 DEBUG: Starting registration process...');
       console.log('=== REGISTRATION START ===');
       console.log('Starting registration...');
       console.log('Form data:', formData);
       console.log('Backend URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1');
       
+      alert('📤 DEBUG: Preparing data for backend...');
       console.log('Calling register function from auth store...');
-      const result = await register(formData);
+      // Remove confirmPassword from the data sent to backend
+      const { confirmPassword, ...registrationData } = formData;
+      
+      alert(`📋 DEBUG: Data being sent to backend:\n${JSON.stringify(registrationData, null, 2)}`);
+      console.log('Registration data being sent:', registrationData);
+      
+      const result = await register(registrationData);
+      alert('✅ DEBUG: Registration successful!');
       console.log('Register function completed successfully:', result);
       
+      alert('🔄 DEBUG: Setting success state and redirecting...');
       console.log('Setting registration success state to true...');
       setRegistrationSuccess(true);
       console.log('Success state set, useEffect should trigger redirect...');
@@ -73,6 +92,7 @@ const RegisterForm: React.FC = () => {
       router.push('/auth/verify');
       
     } catch (error: any) {
+      alert(`❌ DEBUG: Registration failed!\n\nError: ${error.message}\nStatus: ${error.response?.status}\nDetails: ${JSON.stringify(error.response?.data, null, 2)}`);
       console.error('=== REGISTRATION FAILED ===');
       console.error('Registration failed in form:', error);
       console.error('Error details:', {
@@ -216,6 +236,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   required
+                  autoCapitalize="off"
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder="liam_mckeown38"
                 />
@@ -237,6 +258,13 @@ const RegisterForm: React.FC = () => {
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   required
+                  autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  data-form-type="other"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder="Liam"
                 />
@@ -256,7 +284,14 @@ const RegisterForm: React.FC = () => {
                   value={formData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
                   required
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                  autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  data-form-type="other"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder="McKeown"
                 />
                 {validationErrors.lastName && (
