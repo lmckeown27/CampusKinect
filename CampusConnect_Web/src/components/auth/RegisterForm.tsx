@@ -439,7 +439,8 @@ const RegisterForm: React.FC = () => {
                   className="w-full flex justify-center py-4 px-6 border border-transparent rounded-md text-lg font-semibold text-white focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   style={{ 
                     backgroundColor: '#708d81',
-                    backgroundImage: 'none'
+                    backgroundImage: 'none',
+                    color: 'white'
                   }}
                   onMouseEnter={(e) => {
                     if (!isLoading) {

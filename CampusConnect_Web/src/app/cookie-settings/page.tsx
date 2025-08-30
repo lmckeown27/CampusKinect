@@ -82,7 +82,7 @@ export default function CookieSettingsPage() {
           
           {/* Centered Title */}
           <div className="flex items-center justify-center">
-            <h1 className="text-3xl font-bold text-neutral-900">Cookies</h1>
+            <h1 className="text-3xl font-bold text-neutral-900 text-center">Cookies</h1>
           </div>
         </div>
       </div>
@@ -90,11 +90,11 @@ export default function CookieSettingsPage() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-neutral-100">
-          <div className="prose prose-lg max-w-none">
+          <div className="prose prose-lg max-w-none text-center">
             <div className="space-y-8">
               {/* Introduction */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Introduction</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">Introduction</h3>
                 <p className="text-gray-700 leading-relaxed">
                   This page explains how we use cookies and similar technologies on CampusKinect to enhance your experience, 
                   provide personalized content, and analyze our traffic. Cookies are small text files that are stored on 
@@ -104,7 +104,7 @@ export default function CookieSettingsPage() {
 
               {/* Essential Cookies */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Essential Cookies</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">Essential Cookies</h3>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
                     <p className="text-gray-700 leading-relaxed mb-4">
@@ -130,7 +130,7 @@ export default function CookieSettingsPage() {
 
               {/* Analytics Cookies */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Analytics Cookies</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">Analytics Cookies</h3>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
                     <p className="text-gray-700 leading-relaxed mb-4">
@@ -157,7 +157,7 @@ export default function CookieSettingsPage() {
 
               {/* Functional Cookies */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Functional Cookies</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">Functional Cookies</h3>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
                     <p className="text-gray-700 leading-relaxed mb-4">
@@ -183,22 +183,22 @@ export default function CookieSettingsPage() {
 
               {/* How to Manage Cookies */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">How to Manage Cookies</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">How to Manage Cookies</h3>
                 
-                <h4 className="text-lg font-medium text-gray-900 mb-3">Browser Settings</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-3 text-center">Browser Settings</h4>
                 <p className="text-gray-700 leading-relaxed mb-4">
                   Most web browsers allow you to control cookies through their settings preferences. 
                   You can usually find these settings in the "Options" or "Preferences" menu of your browser. 
                   Look for sections related to "Privacy," "Security," or "Cookies."
                 </p>
 
-                <h4 className="text-lg font-medium text-gray-900 mb-3">Mobile Devices</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-3 text-center">Mobile Devices</h4>
                 <p className="text-gray-700 leading-relaxed mb-4">
                   On mobile devices, cookie settings are typically found in your device's settings app 
                   under the browser settings. You can usually control cookies for all browsers on your device.
                 </p>
 
-                <h4 className="text-lg font-medium text-gray-900 mb-3">Third-Party Tools</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-3 text-center">Third-Party Tools</h4>
                 <p className="text-gray-700 leading-relaxed mb-4">
                   There are also browser extensions and third-party tools available that can help you 
                   manage cookies more granularly, allowing you to block specific types of cookies 
@@ -208,7 +208,7 @@ export default function CookieSettingsPage() {
 
               {/* Cookie Preferences */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Your Cookie Preferences</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">Your Cookie Preferences</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
                   You can control your cookie preferences using the checkboxes above. However, please note that:
                 </p>
@@ -222,7 +222,7 @@ export default function CookieSettingsPage() {
 
               {/* Action Buttons */}
               <section>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Save Your Preferences</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">Save Your Preferences</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
                   Use the buttons below to save your cookie preferences or reset to default settings.
                 </p>
@@ -238,24 +238,61 @@ export default function CookieSettingsPage() {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex flex-row items-center gap-4 justify-end flex-wrap">
+                <div className="flex flex-row items-center gap-4 justify-center flex-wrap">
                   <button
                     onClick={handleReset}
-                    className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+                    className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    style={{ 
+                      backgroundColor: '#708d81',
+                      backgroundImage: 'none',
+                      color: 'white'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#5a7268';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#708d81';
+                    }}
                   >
                     <RefreshCw size={16} />
                     Reset to Default
                   </button>
                   <button
                     onClick={handleClearAll}
-                    className="px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-lg hover:bg-red-50 transition-colors whitespace-nowrap"
+                    className="px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    style={{ 
+                      backgroundColor: '#708d81',
+                      backgroundImage: 'none',
+                      color: 'white'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#5a7268';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#708d81';
+                    }}
                   >
                     Clear All Preferences
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex items-center justify-center gap-2 px-6 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                    className="flex items-center justify-center gap-2 px-6 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ 
+                      backgroundColor: '#708d81',
+                      backgroundImage: 'none',
+                      color: 'white'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSaving) {
+                        e.currentTarget.style.backgroundColor = '#5a7268';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSaving) {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                      }
+                    }}
                   >
                     {isSaving ? (
                       <>
