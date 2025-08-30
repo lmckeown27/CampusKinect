@@ -241,11 +241,12 @@ export default function CookieSettingsPage() {
                 <div className="flex flex-row items-center gap-4 justify-center flex-wrap">
                   <button
                     onClick={handleReset}
-                    className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    className="px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     style={{ 
                       backgroundColor: '#708d81',
                       backgroundImage: 'none',
-                      color: 'white'
+                      color: 'white',
+                      marginRight: '16px'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#5a7268';
@@ -254,7 +255,6 @@ export default function CookieSettingsPage() {
                       e.currentTarget.style.backgroundColor = '#708d81';
                     }}
                   >
-                    <RefreshCw size={16} />
                     Reset to Default
                   </button>
                   <button
@@ -263,7 +263,8 @@ export default function CookieSettingsPage() {
                     style={{ 
                       backgroundColor: '#708d81',
                       backgroundImage: 'none',
-                      color: 'white'
+                      color: 'white',
+                      marginRight: '16px'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#5a7268';
@@ -277,7 +278,7 @@ export default function CookieSettingsPage() {
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex items-center justify-center gap-2 px-6 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ 
                       backgroundColor: '#708d81',
                       backgroundImage: 'none',
@@ -300,10 +301,7 @@ export default function CookieSettingsPage() {
                         Saving...
                       </>
                     ) : (
-                      <>
-                        <Save size={16} />
-                        Save Preferences
-                      </>
+                      'Save Preferences'
                     )}
                   </button>
                 </div>
