@@ -291,7 +291,7 @@ const CreatePostTab: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
+          </div>
 
         <div className="px-4 -mt-2">
           <form onSubmit={handleSubmit} className="space-y-1">
@@ -301,19 +301,19 @@ const CreatePostTab: React.FC = () => {
               <div className="flex items-start gap-6 mb-6">
                 {/* Title Section */}
                 <div className="flex-1">
-                  <input
-                    type="text"
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
+            <input
+              type="text"
+              id="title"
+              value={formData.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
                     className="w-full px-4 py-3 text-xl font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                     placeholder="Give your post a clear title"
-                  />
-                  {validationErrors.title && (
+            />
+            {validationErrors.title && (
                     <p className="mt-2 text-sm text-red-600">{validationErrors.title}</p>
-                  )}
-                </div>
-                
+            )}
+          </div>
+
 
                 
                                 {/* Spacer */}
@@ -405,7 +405,7 @@ const CreatePostTab: React.FC = () => {
                       <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
                         <ImageIcon className="h-6 w-6 text-gray-600" />
                       </div>
-                    </label>
+            </label>
                   </div>
                 </div>
               </div>
@@ -415,21 +415,21 @@ const CreatePostTab: React.FC = () => {
 
               {/* Main Description Area */}
               <div className="mb-2">
-                          <textarea
-                            id="description"
-                            value={formData.description}
-                            onChange={(e) => handleInputChange('description', e.target.value)}
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
                             rows={8}
                             className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none"
                             placeholder="Describe what you're offering or looking for..."
-                          />
-                          {validationErrors.description && (
+            />
+            {validationErrors.description && (
                             <p className="mt-2 text-sm text-red-600">{validationErrors.description}</p>
-                          )}
+            )}
                           <p className="mt-2 text-xs text-gray-500 text-right">
-                            {formData.description.length}/500 characters
-                          </p>
-                        </div>
+              {formData.description.length}/500 characters
+            </p>
+          </div>
 
               {/* Bottom Section: Category Tags, Duration, and Post Button */}
               <div className="flex items-start justify-between mt-8">
@@ -443,7 +443,7 @@ const CreatePostTab: React.FC = () => {
                       {/* Header */}
                       <div className="flex items-center justify-center p-3 border-b border-gray-200">
                         <h3 className="text-base font-semibold text-[#708d81]">
-                          {formData.postType.charAt(0).toUpperCase() + formData.postType.slice(1)}
+                          {formData.postType.charAt(0).toUpperCase() + formData.postType.slice(1)} Tags
                         </h3>
                       </div>
 
@@ -515,11 +515,11 @@ const CreatePostTab: React.FC = () => {
 
                 {/* Duration Section - Bottom Center */}
                 <div className="w-fit">
-                  <DurationSelector
-                    value={formData.duration}
-                    onChange={(duration: string) => handleInputChange('duration', duration)}
-                  />
-                </div>
+            <DurationSelector
+              value={formData.duration}
+              onChange={(duration: string) => handleInputChange('duration', duration)}
+            />
+          </div>
 
                 {/* Post Button - Bottom Right */}
                 <div className="w-fit">
@@ -544,33 +544,33 @@ const CreatePostTab: React.FC = () => {
                 </div>
               </div>
 
-              </div>
+          </div>
 
 
-
-              {/* Image Preview Grid */}
-              {imagePreview.length > 0 && (
+            
+            {/* Image Preview Grid */}
+            {imagePreview.length > 0 && (
                 <div className="mt-6">
                   <div className="grid grid-cols-4 gap-3">
-                    {imagePreview.map((preview, index) => (
-                      <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                        <img
-                          src={preview}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
+                {imagePreview.map((preview, index) => (
+                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={preview}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
                   </div>
+                ))}
+              </div>
                 </div>
-              )}
+            )}
 
 
             </form>
@@ -578,7 +578,7 @@ const CreatePostTab: React.FC = () => {
         </div>
 
         
-      </div>
+    </div>
   );
 };
 

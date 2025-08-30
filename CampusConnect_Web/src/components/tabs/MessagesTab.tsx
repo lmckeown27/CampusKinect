@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Send, User, MoreHorizontal, Plus, Search, Check, X, MessageCircle, MoreVertical } from 'lucide-react';
+import { Send, User, MoreHorizontal, Plus, Search, Check, X, MoreVertical, MessageCircle } from 'lucide-react';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { Conversation } from '../../types';
 
@@ -12,6 +12,7 @@ const MessagesTab: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
+  const [activeTab, setActiveTab] = useState<'unread' | 'primary' | 'requests'>('primary');
 
   useEffect(() => {
     // fetchConversations(); // This line was removed as per the edit hint
@@ -32,12 +33,17 @@ const MessagesTab: React.FC = () => {
     setCurrentConversation(conversation);
   };
 
-  const filteredConversations = conversations.filter(conv => 
-    conv.participants?.some(user => 
+  const filteredConversations = conversations.filter(conv => {
+    const matchesSearch = conv.participants?.some(user => 
       user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+    );
+    
+    if (activeTab === 'unread') {
+      return matchesSearch && conv.unreadCount > 0;
+    }
+    return matchesSearch;
+  });
 
   const filteredRequests = messageRequests.filter(req => 
     req.participants?.some(user => 
@@ -53,58 +59,76 @@ const MessagesTab: React.FC = () => {
         <div className="w-full sm:w-64 bg-white border-r border-[#708d81] flex flex-col">
           {/* Header */}
           <div className="p-4 border-b border-[#708d81]">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[#708d81]">Messages</h2>
-              <button
-                onClick={() => setShowNewMessageModal(true)}
-                className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-lg transition-colors"
-              >
-                <Plus size={20} />
-              </button>
+            {/* Search and Plus Button */}
+            <div className="mt-4 flex justify-center">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  placeholder={
+                    activeTab === 'unread' ? 'Search unread messages' :
+                    activeTab === 'primary' ? 'Search general messages' :
+                    activeTab === 'requests' ? 'Search message requests' :
+                    'Search conversations...'
+                  }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="px-4 py-2 text-sm border border-[#708d81] rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+                  style={{ width: '768px' }}
+                />
+                <button
+                  onClick={() => setShowNewMessageModal(true)}
+                  className="px-4 py-2 text-[#708d81] border border-[#708d81] rounded-md transition-colors"
+                  style={{ backgroundColor: '#f8f9f6' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f8f9f6'}
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
             </div>
 
-            {/* Search */}
-            <div className="mt-4 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#708d81] opacity-60" size={16} />
-              <input
-                type="text"
-                placeholder="Search conversations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-sm border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-              />
+            {/* Tab Navigation */}
+            <div className="flex justify-center" style={{ marginTop: '32px' }}>
+              <div className="relative bg-[#708d81] rounded-lg p-0 w-80" style={{ backgroundColor: '#708d81' }}>
+                <div className="flex relative w-full">
+                  <button
+                    onClick={() => setActiveTab('unread')}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md`}
+                    style={{
+                      backgroundColor: activeTab === 'unread' ? 'white' : '#708d81',
+                      color: activeTab === 'unread' ? '#708d81' : 'white'
+                    }}
+                  >
+                    Unread
+                  </button>
+                  
+                  <button
+                    onClick={() => setActiveTab('primary')}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md`}
+                    style={{
+                      backgroundColor: activeTab === 'primary' ? 'white' : '#708d81',
+                      color: activeTab === 'primary' ? '#708d81' : 'white'
+                    }}
+                  >
+                    General
+                  </button>
+                  
+                  <button
+                    onClick={() => setActiveTab('requests')}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md`}
+                    style={{
+                      backgroundColor: activeTab === 'requests' ? 'white' : '#708d81',
+                      color: activeTab === 'requests' ? '#708d81' : 'white'
+                    }}
+                  >
+                    Requests
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Message Requests */}
-          {messageRequests.length > 0 && (
-            <div className="p-4 border-b border-[#708d81]">
-              <h3 className="text-sm font-medium text-[#708d81] mb-3">Message Requests</h3>
-              {messageRequests.map((request) => (
-                <div key={request.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-[#f0f2f0] transition-colors">
-                  <div className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center">
-                    <User size={20} className="text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-[#708d81]">
-                      {request.participants?.map(p => `${p.firstName} ${p.lastName}`).join(', ') || 'Unknown User'}
-                    </p>
-                    <p className="text-xs text-[#708d81] opacity-70">
-                      {request.lastMessage?.content || 'No message content'}
-                    </p>
-                  </div>
-                  <div className="flex space-x-1">
-                    <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors">
-                      <Check size={16} />
-                    </button>
-                    <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors">
-                      <X size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+
 
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto">
@@ -112,13 +136,55 @@ const MessagesTab: React.FC = () => {
               <div className="p-4 text-center">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
               </div>
+            ) : activeTab === 'requests' ? (
+              // Requests Tab
+              filteredRequests.length === 0 ? (
+                <div className="p-4 text-center text-[#708d81]">
+                  <p className="text-lg font-medium">No message requests</p>
+                  <p className="text-sm mt-2">You're all caught up!</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {filteredRequests.map((request) => (
+                    <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg hover:bg-[#f8f9f6] transition-colors">
+                      <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center">
+                        <User size={24} className="text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[#708d81] truncate">
+                          {request.participants?.map(p => `${p.firstName} ${p.lastName}`).join(', ') || 'Unknown User'}
+                        </p>
+                        <p className="text-xs text-[#708d81] opacity-70 truncate">
+                          {request.lastMessage?.content || 'No message content'}
+                        </p>
+                      </div>
+                      <div className="flex space-x-1">
+                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors">
+                          <Check size={16} />
+                        </button>
+                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors">
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
             ) : filteredConversations.length === 0 ? (
+              // Primary/Unread Tabs - No conversations
               <div className="p-4 text-center text-[#708d81]">
-                <MessageCircle size={48} className="mx-auto mb-4 opacity-40" />
-                <p className="text-lg font-medium">No conversations yet</p>
-                <p className="text-sm mt-2">Start a conversation to connect with other students</p>
+                <p className="text-lg font-medium">
+                  {activeTab === 'unread' ? 'No unread messages' : 'No conversations yet'}
+                </p>
+                <p className="text-sm mt-2">
+                  {activeTab === 'unread' 
+                    ? 'You\'re all caught up with your messages!' 
+                    : 'Start a conversation to connect with other students'
+                  }
+                </p>
               </div>
             ) : (
+              // Primary/Unread Tabs - Show conversations
               <div className="space-y-1">
                 {filteredConversations.map((conversation) => (
                   <div
@@ -233,65 +299,46 @@ const MessagesTab: React.FC = () => {
                 </div>
               </div>
             </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-center text-[#708d81]">
-                  <User size={48} className="mx-auto mb-4 text-[#708d81] opacity-30" />
-                  <h3 className="text-lg font-medium text-[#708d81] mb-4">Select a Conversation</h3>
-                  <p className="text-sm text-[#708d81] mb-4">
-                    Choose a conversation from the list to start messaging
-                  </p>
+          ) : showNewMessageModal ? (
+            <div className="flex-1 relative">
+              <div className="absolute top-4 right-4 bg-white rounded-lg p-8 w-96 border border-[#708d81] shadow-lg">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-base font-medium text-[#708d81]">New Message</h3>
                   <button
-                    onClick={() => setShowNewMessageModal(true)}
-                    className="px-4 py-2 text-[#708d81] hover:text-[#5a7268] transition-colors"
+                    onClick={() => setShowNewMessageModal(false)}
+                    className="px-2 py-1 text-[#708d81] rounded transition-colors"
+                    style={{ backgroundColor: '#f0f2f0' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                   >
-                    Start New Conversation
+                    <X size={16} />
                   </button>
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Users"
+                    className="w-full px-4 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-sm"
+                  />
+                  <div className="flex justify-end" style={{ marginTop: '10px' }}>
+                    <button 
+                      className="w-full px-4 py-2 text-white rounded-lg transition-colors text-sm"
+                      style={{ backgroundColor: '#708d81' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
+                    >
+                      Start Chat
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
-      {/* New Message Modal */}
-      {showNewMessageModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-[#708d81] mb-4">New Message</h3>
-              <button
-                onClick={() => setShowNewMessageModal(false)}
-                className="text-[#708d81] hover:text-[#5a7268] transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <p className="text-sm text-[#708d81] mb-4">
-              Start a conversation with another student
-            </p>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Search for users..."
-                className="w-full px-4 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-              />
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setShowNewMessageModal(false)}
-                  className="flex-1 px-4 py-2 text-[#708d81] hover:text-[#5a7268] transition-colors"
-                >
-                  Cancel
-                </button>
-                <button className="flex-1 px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] transition-colors">
-                  Start Chat
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };
