@@ -9,10 +9,36 @@ const MessagesTab: React.FC = () => {
   const { messages, isLoading, conversations, messageRequests, sendMessage } = useMessagesStore();
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Load saved search query from localStorage on component mount
+  useEffect(() => {
+    const savedSearchQuery = localStorage.getItem('campusConnect_messagesSearchQuery');
+    if (savedSearchQuery) {
+      setSearchQuery(savedSearchQuery);
+    }
+  }, []);
+
+  // Save search query to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_messagesSearchQuery', searchQuery);
+  }, [searchQuery]);
   const [newMessage, setNewMessage] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [activeTab, setActiveTab] = useState<'unread' | 'primary' | 'requests'>('primary');
+
+  // Load saved active tab from localStorage on component mount
+  useEffect(() => {
+    const savedActiveTab = localStorage.getItem('campusConnect_messagesActiveTab');
+    if (savedActiveTab && ['unread', 'primary', 'requests'].includes(savedActiveTab)) {
+      setActiveTab(savedActiveTab as 'unread' | 'primary' | 'requests');
+    }
+  }, []);
+
+  // Save active tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_messagesActiveTab', activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     // fetchConversations(); // This line was removed as per the edit hint

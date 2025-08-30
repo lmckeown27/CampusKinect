@@ -19,9 +19,23 @@ const HomeTab: React.FC = () => {
   } = usePostsStore();
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Load saved search query from localStorage on component mount
+  useEffect(() => {
+    const savedSearchQuery = localStorage.getItem('campusConnect_homeSearchQuery');
+    if (savedSearchQuery) {
+      setSearchQuery(savedSearchQuery);
+    }
+  }, []);
+
+  // Save search query to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_homeSearchQuery', searchQuery);
+  }, [searchQuery]);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [confirmedTags, setConfirmedTags] = useState<string[]>([]); // Track confirmed tags separately
   const [activeFilter, setActiveFilter] = useState<string[]>([]);
   const [showNewPostModal, setShowNewPostModal] = useState(false);
   
@@ -49,12 +63,27 @@ const HomeTab: React.FC = () => {
       }
     }
 
-    // Load activeFilter
+    // Load confirmedTags
+    const savedConfirmedTags = localStorage.getItem('campusConnect_confirmedTags');
+    if (savedConfirmedTags) {
+      try {
+        setConfirmedTags(JSON.parse(savedConfirmedTags));
+      } catch (error) {
+        console.error('Failed to parse saved confirmedTags:', error);
+      }
+    }
+
+    // Load activeFilter - ensure 'all' is always selected by default
     const savedActiveFilter = localStorage.getItem('campusConnect_activeFilter');
     if (savedActiveFilter) {
       try {
         const parsedActiveFilter = JSON.parse(savedActiveFilter);
-        setActiveFilter(parsedActiveFilter);
+        // Ensure 'all' is always included if no specific categories are selected
+        if (parsedActiveFilter.length === 0 || (parsedActiveFilter.length === 1 && parsedActiveFilter[0] === 'all')) {
+          setActiveFilter(['all']);
+        } else {
+          setActiveFilter(parsedActiveFilter);
+        }
       } catch (error) {
         console.error('Failed to parse saved activeFilter:', error);
         // If parsing fails, default to 'all'
@@ -81,6 +110,11 @@ const HomeTab: React.FC = () => {
     localStorage.setItem('campusConnect_selectedTags', JSON.stringify(selectedTags));
   }, [selectedTags]);
 
+  // Save confirmedTags to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_confirmedTags', JSON.stringify(confirmedTags));
+  }, [confirmedTags]);
+
   // Save activeFilter to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('campusConnect_activeFilter', JSON.stringify(activeFilter));
@@ -91,33 +125,46 @@ const HomeTab: React.FC = () => {
     localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
   }, [offerRequestTags]);
   
-  // Ensure openCategoryBoxes stays in sync with activeFilter
-  useEffect(() => {
-    const categories = activeFilter.filter(f => f !== 'all');
-    setOpenCategoryBoxes(categories);
-  }, [activeFilter]);
+  // Category boxes are now only controlled by direct user interaction
+  // No automatic synchronization with activeFilter
 
   // Track when category boxes are closed and unselect unconfirmed categories
   useEffect(() => {
-    // When a category box is closed, unselect any categories that weren't confirmed
-    const closedCategories = prevActiveFilterRef.current.filter(f => f !== 'all').filter(cat => 
-      !openCategoryBoxes.includes(cat)
-    );
-    
-    if (closedCategories.length > 0) {
-      // Unselect categories for closed boxes
-      closedCategories.forEach(category => {
-        const categorySubtags = subTags[category as keyof typeof subTags] || [];
-        setSelectedTags(prev => prev.filter(tag => !categorySubtags.includes(tag)));
-      });
+    // Only run this effect if we have a previous state to compare against
+    // This prevents the effect from running on initial mount when prevActiveFilterRef.current is ['all']
+    if (prevActiveFilterRef.current.length > 1 || (prevActiveFilterRef.current.length === 1 && prevActiveFilterRef.current[0] !== 'all')) {
+      // When a category box is closed, unselect any tags that weren't confirmed
+      const closedCategories = prevActiveFilterRef.current.filter(f => f !== 'all').filter(cat => 
+        !openCategoryBoxes.includes(cat)
+      );
+      
+      if (closedCategories.length > 0) {
+        // Unselect only unconfirmed tags for closed boxes
+        closedCategories.forEach(category => {
+          const categorySubtags = subTags[category as keyof typeof subTags] || [];
+          setSelectedTags(prev => prev.filter(tag => 
+            // Keep tags that are confirmed OR not from this category
+            confirmedTags.includes(tag) || !categorySubtags.includes(tag)
+          ));
+        });
+      }
     }
     
     // Update the ref to track current state
     prevActiveFilterRef.current = activeFilter;
-  }, [openCategoryBoxes, activeFilter]);
+  }, [openCategoryBoxes, activeFilter, confirmedTags]);
 
   // Track previous activeFilter to detect changes
   const prevActiveFilterRef = useRef<string[]>(['all']);
+
+  // Initialize the prevActiveFilterRef after activeFilter is loaded
+  useEffect(() => {
+    if (activeFilter.length > 0) {
+      prevActiveFilterRef.current = activeFilter;
+    }
+  }, [activeFilter]);
+
+
 
   // Get available subtags based on selected main categories
   const getAvailableSubtags = () => {
@@ -281,8 +328,8 @@ const HomeTab: React.FC = () => {
     // Update active filter
     setActiveFilter(newActiveFilter);
     
-    // Update open category boxes to match active filter
-    setOpenCategoryBoxes(newCategories);
+    // Category boxes are now only controlled by direct user interaction
+    // No automatic opening/closing based on filter changes
     
     // Apply filters without affecting tags
     if (newCategories.length > 0) {
@@ -375,16 +422,24 @@ const HomeTab: React.FC = () => {
       }
     } else {
       // Handle other tags normally
-      setSelectedTags(prev => 
-        prev.includes(tag) 
-          ? prev.filter(t => t !== tag)
-          : [...prev, tag]
-      );
+      setSelectedTags(prev => {
+        if (prev.includes(tag)) {
+          // Remove tag
+          const newTags = prev.filter(t => t !== tag);
+          // Also remove from confirmed tags if it was confirmed
+          setConfirmedTags(confirmed => confirmed.filter(t => t !== tag));
+          return newTags;
+        } else {
+          // Add tag
+          return [...prev, tag];
+        }
+      });
     }
   };
 
   const handleTagClear = () => {
     setSelectedTags([]);
+    setConfirmedTags([]); // Also clear confirmed tags
     setOfferRequestTags({
       goods: [],
       services: [],
@@ -403,6 +458,7 @@ const HomeTab: React.FC = () => {
             onClick={() => {
               // Clear all selected categories but keep subtags selected
               setSelectedTags([]);
+              setConfirmedTags([]); // Also clear confirmed tags
             }}
             className="py-1 px-4 rounded-lg text-xs font-medium transition-colors cursor-pointer text-[#708d81] hover:text-[#5a7268]"
             style={{ backgroundColor: '#f0f2f0' }}
@@ -447,6 +503,7 @@ const HomeTab: React.FC = () => {
                 }`}
                 style={{
                   backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')) ? '#708d81' : '#f0f2f0',
+                  color: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')) ? 'white' : '#708d81',
                   width: '100px'
                 }}
                 onMouseEnter={(e) => {
@@ -475,6 +532,7 @@ const HomeTab: React.FC = () => {
             }`}
             style={{
               backgroundColor: activeFilter.length === 1 && activeFilter[0] === 'all' ? '#708d81' : '#f0f2f0',
+              color: activeFilter.length === 1 && activeFilter[0] === 'all' ? 'white' : '#708d81',
               width: '100px',
               marginLeft: '24px',
               boxShadow: activeFilter.length === 1 && activeFilter[0] === 'all' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none'
@@ -505,6 +563,7 @@ const HomeTab: React.FC = () => {
                 }`}
                 style={{
                   backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')) ? '#708d81' : '#f0f2f0',
+                  color: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')) ? 'white' : '#708d81',
                   width: '100px'
                 }}
                 onMouseEnter={(e) => {
@@ -552,6 +611,7 @@ const HomeTab: React.FC = () => {
                   }`}
                   style={{
                     backgroundColor: activeFilter.includes(tag.id) ? '#708d81' : '#f0f2f0',
+                    color: activeFilter.includes(tag.id) ? 'white' : '#708d81',
                     width: '120px',
                     marginLeft: index > 0 ? '24px' : '0'
                   }}
@@ -573,6 +633,7 @@ const HomeTab: React.FC = () => {
           </div>
           
           {/* Categories buttons row - stacked vertically under subtags */}
+          {/* Clicking an open category button closes it (same effect as X button) */}
           <div className="flex justify-center" style={{ marginTop: '16px' }}>
             {mainTags.filter(tag => tag.id !== 'all').map((tag, index) => {
               // Count categories for this specific subtag from selectedTags
@@ -585,8 +646,11 @@ const HomeTab: React.FC = () => {
                 <button
                   key={tag.id}
                   onClick={() => {
-                    // Open the category box for this specific subtag
-                    if (!openCategoryBoxes.includes(tag.id)) {
+                    if (openCategoryBoxes.includes(tag.id)) {
+                      // If category box is already open, close it (same effect as X button)
+                      setOpenCategoryBoxes(prev => prev.filter(cat => cat !== tag.id));
+                    } else {
+                      // If category box is not open, open it
                       setOpenCategoryBoxes(prev => [...prev, tag.id]);
                     }
                   }}
@@ -597,6 +661,7 @@ const HomeTab: React.FC = () => {
                   }`}
                   style={{
                     backgroundColor: isCategoryBoxOpen ? '#708d81' : '#f0f2f0',
+                    color: isCategoryBoxOpen ? 'white' : '#708d81',
                     marginLeft: index > 0 ? '24px' : '0',
                     whiteSpace: 'nowrap'
                   }}
@@ -648,14 +713,14 @@ const HomeTab: React.FC = () => {
                       tabIndex={0}
                       onClick={() => {
                         // X button only closes the category box
-                        // If categories are selected but not confirmed, they will be unselected
+                        // Unconfirmed tags will be automatically unselected when the box closes
                         const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
                         setOpenCategoryBoxes(newOpenBoxes);
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           // X button only closes the category box
-                          // If categories are selected but not confirmed, they will be unselected
+                          // Unconfirmed tags will be automatically unselected when the box closes
                           const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
                           setOpenCategoryBoxes(newOpenBoxes);
                         }
@@ -688,7 +753,8 @@ const HomeTab: React.FC = () => {
                           : 'text-[#708d81] hover:text-[#5a7268]'
                       }`}
                       style={{
-                        backgroundColor: selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0'
+                        backgroundColor: selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0',
+                        color: selectedTags.includes(subTag) ? 'white' : '#708d81'
                       }}
                       onMouseEnter={(e) => {
                         if (!selectedTags.includes(subTag)) {
@@ -713,10 +779,18 @@ const HomeTab: React.FC = () => {
                       <>
                         <button
                           onClick={() => {
-                            // Confirm button: select the subtag and close the box
+                            // Confirm button: confirm the selected tags and close the box
+                            const categorySubtags = subTags[category as keyof typeof subTags] || [];
+                            const tagsToConfirm = selectedTags.filter(tag => categorySubtags.includes(tag));
+                            
+                            // Add these tags to confirmed tags
+                            setConfirmedTags(prev => [...new Set([...prev, ...tagsToConfirm])]);
+                            
+                            // Add category to active filter if not already there
                             if (!activeFilter.includes(category)) {
                               setActiveFilter(prev => [...prev, category]);
                             }
+                            
                             // Close the category box
                             const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
                             setOpenCategoryBoxes(newOpenBoxes);
@@ -737,6 +811,8 @@ const HomeTab: React.FC = () => {
                             // Clear tags for this specific category only
                             const tagsToRemove = subTags[category as keyof typeof subTags] || [];
                             setSelectedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
+                            // Also remove from confirmed tags
+                            setConfirmedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
                           }}
                           className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
                           style={{ backgroundColor: '#f0f2f0' }}

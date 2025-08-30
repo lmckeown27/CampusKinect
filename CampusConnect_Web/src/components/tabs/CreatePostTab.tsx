@@ -36,6 +36,19 @@ const CreatePostTab: React.FC = () => {
     duration: '',
   });
 
+  // Load saved post type from localStorage on component mount
+  useEffect(() => {
+    const savedPostType = localStorage.getItem('campusConnect_createPostType');
+    if (savedPostType && ['goods', 'services', 'events', 'housing'].includes(savedPostType)) {
+      setFormData(prev => ({ ...prev, postType: savedPostType as 'goods' | 'services' | 'events' | 'housing' }));
+    }
+  }, []);
+
+  // Save post type to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_createPostType', formData.postType);
+  }, [formData.postType]);
+
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string[]>([]);
@@ -104,15 +117,32 @@ const CreatePostTab: React.FC = () => {
   ];
 
   useEffect(() => {
-    const savedTags = localStorage.getItem('offerRequestTags');
+    const savedTags = localStorage.getItem('campusConnect_offerRequestTags');
     if (savedTags) {
       setOfferRequestTags(JSON.parse(savedTags));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('offerRequestTags', JSON.stringify(offerRequestTags));
+    localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
   }, [offerRequestTags]);
+
+  // Load saved tags from localStorage on component mount
+  useEffect(() => {
+    const savedTags = localStorage.getItem('campusConnect_createPostTags');
+    if (savedTags) {
+      try {
+        setFormData(prev => ({ ...prev, tags: JSON.parse(savedTags) }));
+      } catch (error) {
+        console.error('Failed to parse saved tags:', error);
+      }
+    }
+  }, []);
+
+  // Save tags to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('campusConnect_createPostTags', JSON.stringify(formData.tags));
+  }, [formData.tags]);
 
   useEffect(() => {
     if (formData.postType) {
@@ -271,6 +301,7 @@ const CreatePostTab: React.FC = () => {
                   } ${index > 0 ? 'ml-12' : ''} mx-3`}
                   style={{
                     backgroundColor: formData.postType === type.value ? '#708d81' : '#f0f2f0',
+                    color: formData.postType === type.value ? 'white' : '#708d81',
                   }}
                   onMouseEnter={(e) => {
                     if (formData.postType !== type.value) {
@@ -332,6 +363,7 @@ const CreatePostTab: React.FC = () => {
                               }`}
                               style={{
                                 backgroundColor: offerRequestTags[formData.postType].includes('Offer') ? '#708d81' : '#f0f2f0',
+                                color: offerRequestTags[formData.postType].includes('Offer') ? 'white' : '#708d81',
                               }}
                               onMouseEnter={(e) => {
                                 if (!offerRequestTags[formData.postType].includes('Offer')) {
@@ -360,6 +392,7 @@ const CreatePostTab: React.FC = () => {
                               }`}
                               style={{
                                 backgroundColor: offerRequestTags[formData.postType].includes('Request') ? '#708d81' : '#f0f2f0',
+                                color: offerRequestTags[formData.postType].includes('Request') ? 'white' : '#708d81',
                               }}
                               onMouseEnter={(e) => {
                                 if (!offerRequestTags[formData.postType].includes('Request')) {
@@ -459,7 +492,8 @@ const CreatePostTab: React.FC = () => {
                                 : 'text-[#708d81] hover:text-[#5a7268]'
                             }`}
                             style={{
-                              backgroundColor: formData.tags.includes(subTag) ? '#708d81' : '#f0f2f0'
+                              backgroundColor: formData.tags.includes(subTag) ? '#708d81' : '#f0f2f0',
+                              color: formData.tags.includes(subTag) ? 'white' : '#708d81'
                             }}
                             onMouseEnter={(e) => {
                               if (!formData.tags.includes(subTag)) {
@@ -490,8 +524,8 @@ const CreatePostTab: React.FC = () => {
                                     tags: prev.tags.filter(tag => !tagsToRemove.includes(tag))
                                   }));
                                 }}
-                                className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
-                                style={{ backgroundColor: '#f0f2f0' }}
+                                className="px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer"
+                                style={{ backgroundColor: '#f0f2f0', color: '#708d81' }}
                                 onMouseEnter={(e) => {
                                   e.currentTarget.style.backgroundColor = '#e8ebe8';
                                 }}
@@ -527,7 +561,7 @@ const CreatePostTab: React.FC = () => {
                     type="submit"
                     disabled={isLoading}
                     className="py-4 px-8 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer text-lg"
-                    style={{ backgroundColor: '#708d81' }}
+                    style={{ backgroundColor: '#708d81', color: 'white' }}
                     onMouseEnter={(e) => {
                       if (!isLoading) {
                         e.currentTarget.style.backgroundColor = '#5a7268';

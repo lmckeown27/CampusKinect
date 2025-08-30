@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
 import { Menu, X, User, LogOut, Settings } from 'lucide-react';
@@ -10,6 +10,7 @@ const Header: React.FC = () => {
   const { user, logout } = useAuthStore();
   const router = useRouter();
   const { showNavigation, setShowNavigation, showProfileDropdown, setShowProfileDropdown } = useNavigation();
+  const profileIconRef = useRef<HTMLButtonElement>(null);
   // Remove local state for profile menu since it's now in context
   // const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -83,6 +84,8 @@ const Header: React.FC = () => {
           {/* User Profile */}
           <div className="relative">
             <button
+              ref={profileIconRef}
+              data-profile-icon="true"
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
               className="p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-10 h-10 flex items-center justify-center transform hover:scale-105 hover:shadow-md"
               style={{ 

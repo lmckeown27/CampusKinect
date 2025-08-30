@@ -20,6 +20,19 @@ const getYearLabel = (year: number): string => {
 const ProfileTab: React.FC = () => {
   const { user: authUser, updateUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'posts' | 'reposts' | 'bookmarks'>('posts');
+
+  // Load saved active tab from localStorage on component mount
+  useEffect(() => {
+    const savedActiveTab = localStorage.getItem('campusConnect_profileActiveTab');
+    if (savedActiveTab && ['posts', 'reposts', 'bookmarks'].includes(savedActiveTab)) {
+      setActiveTab(savedActiveTab as 'posts' | 'reposts' | 'bookmarks');
+    }
+  }, []);
+
+  // Save active tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campusConnect_profileActiveTab', activeTab);
+  }, [activeTab]);
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -391,8 +404,8 @@ const ProfileTab: React.FC = () => {
                       <div className="flex space-x-2">
                         <button
                           onClick={handleCancelEdit}
-                          className="px-3 py-1 text-[#708d81] rounded transition-colors text-sm"
-                          style={{ backgroundColor: '#f0f2f0' }}
+                          className="px-3 py-1 rounded transition-colors text-sm"
+                          style={{ backgroundColor: '#f0f2f0', color: '#708d81' }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                         >
@@ -400,8 +413,8 @@ const ProfileTab: React.FC = () => {
                         </button>
                         <button
                           onClick={handleSaveProfile}
-                          className="px-3 py-1 text-white rounded transition-colors text-sm"
-                          style={{ backgroundColor: '#708d81' }}
+                          className="px-3 py-1 rounded transition-colors text-sm"
+                          style={{ backgroundColor: '#708d81', color: 'white' }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
                         >
@@ -414,8 +427,8 @@ const ProfileTab: React.FC = () => {
                 
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="px-4 py-2 text-white rounded-lg transition-colors"
-                  style={{ backgroundColor: '#708d81' }}
+                  className="px-4 py-2 rounded-lg transition-colors"
+                  style={{ backgroundColor: '#708d81', color: 'white' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
                 >
@@ -468,10 +481,11 @@ const ProfileTab: React.FC = () => {
                 activeTab === 'posts' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
               }`}
               style={{
-                backgroundColor: activeTab === 'posts' ? 'white' : '#708d81'
+                backgroundColor: activeTab === 'posts' ? 'white' : '#708d81',
+                color: activeTab === 'posts' ? '#708d81' : 'white'
               }}
             >
-              Posts (0)
+              Posts
             </button>
             
             <button
@@ -480,10 +494,11 @@ const ProfileTab: React.FC = () => {
                 activeTab === 'reposts' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
               }`}
               style={{
-                backgroundColor: activeTab === 'reposts' ? 'white' : '#708d81'
+                backgroundColor: activeTab === 'reposts' ? 'white' : '#708d81',
+                color: activeTab === 'reposts' ? '#708d81' : 'white'
               }}
             >
-              Reposts (0)
+              Reposts
             </button>
             
             <button
@@ -492,10 +507,11 @@ const ProfileTab: React.FC = () => {
                 activeTab === 'bookmarks' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
               }`}
               style={{
-                backgroundColor: activeTab === 'bookmarks' ? 'white' : '#708d81'
+                backgroundColor: activeTab === 'bookmarks' ? 'white' : '#708d81',
+                color: activeTab === 'bookmarks' ? '#708d81' : 'white'
               }}
             >
-              Bookmarks (0)
+              Bookmarks
             </button>
           </div>
         </div>

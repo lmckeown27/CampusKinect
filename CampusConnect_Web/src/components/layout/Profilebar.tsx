@@ -17,7 +17,7 @@ interface ProfilebarProps {
 const Profilebar: React.FC<ProfilebarProps> = ({ 
   showProfileDropdown, 
   setShowProfileDropdown, 
-  user 
+  user
 }) => {
   const router = useRouter();
   const profileRef = useRef<HTMLDivElement>(null);
@@ -25,6 +25,12 @@ const Profilebar: React.FC<ProfilebarProps> = ({
   // Click outside to close profile dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Don't close if clicking on the profile icon button (check by class name)
+      const target = event.target as Element;
+      if (target && target.closest('button[data-profile-icon]')) {
+        return;
+      }
+      
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setShowProfileDropdown(false);
       }
