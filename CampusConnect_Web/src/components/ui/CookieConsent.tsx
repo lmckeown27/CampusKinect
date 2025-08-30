@@ -83,10 +83,12 @@ export default function CookieConsent() {
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#708d81';
                   e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.cursor = 'pointer';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'white';
                   e.currentTarget.style.color = '#708d81';
+                  e.currentTarget.style.cursor = 'default';
                 }}
               >
                 Accept All
@@ -102,10 +104,14 @@ export default function CookieConsent() {
                   marginRight: '16px'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                  e.currentTarget.style.backgroundColor = '#708d81';
+                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.cursor = 'pointer';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.color = '#708d81';
+                  e.currentTarget.style.cursor = 'default';
                 }}
               >
                 Customize
@@ -120,10 +126,14 @@ export default function CookieConsent() {
                   color: '#708d81'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f0f2f0';
+                  e.currentTarget.style.backgroundColor = '#708d81';
+                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.cursor = 'pointer';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.color = '#708d81';
+                  e.currentTarget.style.cursor = 'default';
                 }}
               >
                 Reject All

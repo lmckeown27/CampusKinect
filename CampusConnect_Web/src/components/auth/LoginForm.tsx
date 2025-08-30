@@ -214,9 +214,11 @@ const LoginForm: React.FC = () => {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#5a7268';
+                    e.currentTarget.style.cursor = 'pointer';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.cursor = 'default';
                   }}
                 >
                   {isLoading ? 'Signing in...' : 'Sign In'}

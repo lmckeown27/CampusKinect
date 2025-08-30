@@ -445,11 +445,13 @@ const RegisterForm: React.FC = () => {
                   onMouseEnter={(e) => {
                     if (!isLoading) {
                       e.currentTarget.style.backgroundColor = '#5a7268';
+                      e.currentTarget.style.cursor = 'pointer';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isLoading) {
                       e.currentTarget.style.backgroundColor = '#708d81';
+                      e.currentTarget.style.cursor = 'default';
                     }
                   }}
                 >
