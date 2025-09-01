@@ -43,6 +43,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
                             }`}
                             style={{
                               backgroundColor: value === option.value ? '#708d81' : '#f0f2f0',
+                              cursor: 'pointer'
                             }}
                             onMouseEnter={(e) => {
                               if (value !== option.value) {

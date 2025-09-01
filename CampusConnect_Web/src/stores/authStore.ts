@@ -80,13 +80,10 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       register: async (userData: RegisterApiData) => {
-        alert('🔍 DEBUG: Auth store register method called');
         set({ isLoading: true, error: null });
         
         try {
-          alert('📡 DEBUG: Calling API service register...');
           const response = await apiService.register(userData);
-          alert('✅ DEBUG: API service returned successfully');
           
           // Handle new registration flow (no user/tokens until verification)
           if (response.data && response.data.registrationId) {
@@ -97,7 +94,6 @@ export const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: null 
             });
-            alert('✅ DEBUG: Registration pending verification - no user created yet');
           } else if (response.data && response.data.user) {
             // Legacy flow: user created immediately (auto-verify)
             const { user } = response.data;
@@ -107,25 +103,26 @@ export const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: null 
             });
-            alert('✅ DEBUG: User created and auto-verified');
+            console.log('User created and auto-verified');
           } else {
             throw new Error('Unexpected response format from registration');
           }
         } catch (error: any) {
-          alert(`❌ DEBUG: Auth store caught error!\n\nError: ${error.message}\nStatus: ${error.response?.status}\nData: ${JSON.stringify(error.response?.data, null, 2)}`);
+          console.error('Registration error:', error);
           
           let errorMessage = 'Registration failed';
           
           // Handle specific error scenarios
           if (error.response?.status === 409) {
-            if (error.response?.data?.message?.toLowerCase().includes('email') && 
-                error.response?.data?.message?.toLowerCase().includes('already exists')) {
-              errorMessage = 'An account with this email already exists. Please sign in instead.';
-            } else if (error.response?.data?.message?.toLowerCase().includes('username') && 
-                       error.response?.data?.message?.toLowerCase().includes('already exists')) {
-              errorMessage = 'This username is already taken. Please choose a different one.';
+            const message = error.response?.data?.message?.toLowerCase() || '';
+            if (message.includes('email') && message.includes('already exists')) {
+              errorMessage = 'This email address has already been used to create an account. Please sign in instead.';
+            } else if (message.includes('username') && message.includes('already exists')) {
+              errorMessage = 'This username has already been taken. Please choose a different username.';
+            } else if (message.includes('already exists')) {
+              errorMessage = 'This username and/or email has already been used to create an account. Please sign in instead.';
             } else {
-              errorMessage = 'Account already exists. Please sign in instead.';
+              errorMessage = 'This username and/or email has already been used to create an account. Please sign in instead.';
             }
           } else if (error.response?.status === 422) {
             errorMessage = 'Please check your information and try again.';

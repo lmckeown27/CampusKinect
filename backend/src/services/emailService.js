@@ -326,7 +326,7 @@ const sendVerificationCode = async (email, firstName, code) => {
             <h2 style="color: #333; margin-bottom: 20px;">Hi ${firstName}!</h2>
             
             <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">
-              Thanks for joining CampusKinect! To complete your registration and start connecting with fellow students, please enter the verification code below.
+              Thanks for joining CampusKinect! To complete your registration, please enter the verification code below.
             </p>
             
             <div style="text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px dashed #6B8E23;">

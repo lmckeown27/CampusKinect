@@ -99,14 +99,15 @@ const SettingsTab: React.FC = () => {
                     <h3 className="text-sm font-medium text-gray-900">Email Notifications</h3>
                     <p className="text-sm text-gray-500">Receive notifications via email</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
                     <input
                       type="checkbox"
                       checked={notifications.email}
                       onChange={(e) => setNotifications(prev => ({ ...prev, email: e.target.checked }))}
                       className="sr-only peer"
+                      style={{ cursor: 'pointer !important' }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between">
@@ -114,14 +115,15 @@ const SettingsTab: React.FC = () => {
                     <h3 className="text-sm font-medium text-gray-900">Push Notifications</h3>
                     <p className="text-sm text-gray-500">Receive push notifications</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
                     <input
                       type="checkbox"
                       checked={notifications.push}
                       onChange={(e) => setNotifications(prev => ({ ...prev, push: e.target.checked }))}
                       className="sr-only peer"
+                      style={{ cursor: 'pointer !important' }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between">
@@ -129,14 +131,15 @@ const SettingsTab: React.FC = () => {
                     <h3 className="text-sm font-medium text-gray-900">Marketing Emails</h3>
                     <p className="text-sm text-gray-500">Receive promotional content</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
                     <input
                       type="checkbox"
                       checked={notifications.marketing}
                       onChange={(e) => setNotifications(prev => ({ ...prev, marketing: e.target.checked }))}
                       className="sr-only peer"
+                      style={{ cursor: 'pointer !important' }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
                   </label>
                 </div>
               </div>
@@ -171,14 +174,15 @@ const SettingsTab: React.FC = () => {
                     <h3 className="text-sm font-medium text-gray-900">Show Email</h3>
                     <p className="text-sm text-gray-500">Display email on profile</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
                     <input
                       type="checkbox"
                       checked={privacy.showEmail}
                       onChange={(e) => setPrivacy(prev => ({ ...prev, showEmail: e.target.checked }))}
                       className="sr-only peer"
+                      style={{ cursor: 'pointer !important' }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between">
@@ -186,14 +190,15 @@ const SettingsTab: React.FC = () => {
                     <h3 className="text-sm font-medium text-gray-900">Show Location</h3>
                     <p className="text-sm text-gray-500">Display location on profile</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
                     <input
                       type="checkbox"
                       checked={privacy.showLocation}
                       onChange={(e) => setPrivacy(prev => ({ ...prev, showLocation: e.target.checked }))}
                       className="sr-only peer"
+                      style={{ cursor: 'pointer !important' }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
                   </label>
                 </div>
               </div>
@@ -216,8 +221,8 @@ const SettingsTab: React.FC = () => {
                   <div className="flex space-x-3">
                     <button
                       onClick={() => setTheme('light')}
-                      className="px-4 py-2 text-white rounded-lg transition-colors"
-                      style={{ backgroundColor: theme === 'light' ? '#708d81' : '#f0f2f0' }}
+                      className="px-4 py-2 text-white rounded-lg transition-colors cursor-pointer"
+                      style={{ backgroundColor: theme === 'light' ? '#708d81' : '#f0f2f0', cursor: 'pointer' }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme === 'light' ? '#5a7268' : '#e8ebe8'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme === 'light' ? '#708d81' : '#f0f2f0'}
                     >
@@ -225,8 +230,8 @@ const SettingsTab: React.FC = () => {
                     </button>
                     <button
                       onClick={() => alert('Dark mode coming soon :)')}
-                      className="px-4 py-2 text-white rounded-lg transition-colors"
-                      style={{ backgroundColor: '#f0f2f0' }}
+                      className="px-4 py-2 text-white rounded-lg transition-colors cursor-pointer"
+                      style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                     >
@@ -242,8 +247,8 @@ const SettingsTab: React.FC = () => {
           <div className="flex justify-end">
             <button
               onClick={handleSave}
-              className="px-6 py-3 text-white rounded-lg transition-colors"
-              style={{ backgroundColor: '#708d81' }}
+              className="px-6 py-3 text-white rounded-lg transition-colors cursor-pointer"
+              style={{ backgroundColor: '#708d81', cursor: 'pointer' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
             >

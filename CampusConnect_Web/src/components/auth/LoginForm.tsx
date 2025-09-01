@@ -20,48 +20,16 @@ const LoginForm: React.FC = () => {
     
     // Check for empty fields
     if (!formData.usernameOrEmail.trim() || !formData.password.trim()) {
-      alert(`⚠️ VALIDATION ERROR!
-      
-❌ Missing required fields:
-• Username/Email: ${formData.usernameOrEmail.trim() ? '✅ Filled' : '❌ EMPTY'}
-• Password: ${formData.password.trim() ? '✅ Filled' : '❌ EMPTY'}
-
-💡 Please fill in all required fields before submitting.`);
       return;
     }
     
-    // Show form data in alert
-    alert(`🔍 LOGIN ATTEMPT DEBUG INFO:
-    
-📝 Form Data:
-• Username/Email: ${formData.usernameOrEmail}
-• Password: ${formData.password ? '***' : 'EMPTY'}
-
-🔗 Backend URL: ${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}
-
-⏳ Starting login process...`);
-    
     try {
       await login(formData);
-      
-      // Show success alert
-      alert(`✅ LOGIN SUCCESS!
-      
-🎯 User authenticated successfully
-🔑 Access token generated
-📱 Redirecting to home page...`);
       
       // Redirect to home page after successful login
       router.push('/home');
       
     } catch (error) {
-      // Show error alert
-      alert(`❌ LOGIN FAILED!
-      
-🚨 Error: ${error instanceof Error ? error.message : 'Unknown error'}
-📊 Response: ${error instanceof Error && 'response' in error ? JSON.stringify((error as any).response?.data) : 'No response data'}
-💡 Check browser console for more details`);
-      
       // Error is handled by the store
       console.error('Login failed:', error);
     }

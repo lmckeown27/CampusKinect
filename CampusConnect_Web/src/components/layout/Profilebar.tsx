@@ -82,7 +82,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
               router.push('/profile');
             }}
             className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer shadow-md hover:shadow-lg"
-            style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px' }}
+            style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px', cursor: 'pointer' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
               e.currentTarget.style.color = 'white';
@@ -101,7 +101,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
               router.push('/settings');
             }}
             className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer shadow-md hover:shadow-lg"
-            style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px' }}
+            style={{ backgroundColor: '#f0f2f0', color: '#708d81', marginBottom: '16px', cursor: 'pointer' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
               e.currentTarget.style.color = 'white';
@@ -121,7 +121,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
               router.push('/auth/login');
             }}
             className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer shadow-md hover:shadow-lg"
-            style={{ backgroundColor: '#f0f2f0', color: '#708d81' }}
+            style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
               e.currentTarget.style.color = 'white';

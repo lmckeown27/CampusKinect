@@ -38,7 +38,8 @@ const Header: React.FC = () => {
             className="p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-10 h-10 flex items-center justify-center transform hover:scale-105 hover:shadow-md"
             style={{ 
               backgroundColor: showNavigation ? 'transparent' : '#708d81',
-              transition: 'background-color 300ms ease-in-out'
+              transition: 'background-color 300ms ease-in-out',
+              cursor: 'pointer'
             }}
             onMouseEnter={(e) => {
               if (showNavigation) {
@@ -90,7 +91,8 @@ const Header: React.FC = () => {
               className="p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-10 h-10 flex items-center justify-center transform hover:scale-105 hover:shadow-md"
               style={{ 
                 backgroundColor: showProfileDropdown ? 'transparent' : '#708d81',
-                transition: 'background-color 300ms ease-in-out'
+                transition: 'background-color 300ms ease-in-out',
+                cursor: 'pointer'
               }}
               onMouseEnter={(e) => {
                 if (showProfileDropdown) {

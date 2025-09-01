@@ -302,6 +302,7 @@ const CreatePostTab: React.FC = () => {
                   style={{
                     backgroundColor: formData.postType === type.value ? '#708d81' : '#f0f2f0',
                     color: formData.postType === type.value ? 'white' : '#708d81',
+                    cursor: 'pointer'
                   }}
                   onMouseEnter={(e) => {
                     if (formData.postType !== type.value) {
@@ -364,6 +365,7 @@ const CreatePostTab: React.FC = () => {
                               style={{
                                 backgroundColor: offerRequestTags[formData.postType].includes('Offer') ? '#708d81' : '#f0f2f0',
                                 color: offerRequestTags[formData.postType].includes('Offer') ? 'white' : '#708d81',
+                                cursor: 'pointer'
                               }}
                               onMouseEnter={(e) => {
                                 if (!offerRequestTags[formData.postType].includes('Offer')) {
@@ -393,6 +395,7 @@ const CreatePostTab: React.FC = () => {
                               style={{
                                 backgroundColor: offerRequestTags[formData.postType].includes('Request') ? '#708d81' : '#f0f2f0',
                                 color: offerRequestTags[formData.postType].includes('Request') ? 'white' : '#708d81',
+                                cursor: 'pointer'
                               }}
                               onMouseEnter={(e) => {
                                 if (!offerRequestTags[formData.postType].includes('Request')) {
@@ -434,8 +437,8 @@ const CreatePostTab: React.FC = () => {
                       className="hidden"
                       id="image-upload-top"
                     />
-                    <label htmlFor="image-upload-top" className="cursor-pointer">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <label htmlFor="image-upload-top" className="cursor-pointer" style={{ cursor: 'pointer' }}>
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors" style={{ cursor: 'pointer' }}>
                         <ImageIcon className="h-6 w-6 text-gray-600" />
                       </div>
             </label>
@@ -493,7 +496,8 @@ const CreatePostTab: React.FC = () => {
                             }`}
                             style={{
                               backgroundColor: formData.tags.includes(subTag) ? '#708d81' : '#f0f2f0',
-                              color: formData.tags.includes(subTag) ? 'white' : '#708d81'
+                              color: formData.tags.includes(subTag) ? 'white' : '#708d81',
+                              cursor: 'pointer'
                             }}
                             onMouseEnter={(e) => {
                               if (!formData.tags.includes(subTag)) {
@@ -525,7 +529,7 @@ const CreatePostTab: React.FC = () => {
                                   }));
                                 }}
                                 className="px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer"
-                                style={{ backgroundColor: '#f0f2f0', color: '#708d81' }}
+                                style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
                                 onMouseEnter={(e) => {
                                   e.currentTarget.style.backgroundColor = '#e8ebe8';
                                 }}
@@ -561,7 +565,7 @@ const CreatePostTab: React.FC = () => {
                     type="submit"
                     disabled={isLoading}
                     className="py-4 px-8 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer text-lg"
-                    style={{ backgroundColor: '#708d81', color: 'white' }}
+                    style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
                     onMouseEnter={(e) => {
                       if (!isLoading) {
                         e.currentTarget.style.backgroundColor = '#5a7268';
@@ -596,7 +600,8 @@ const CreatePostTab: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors cursor-pointer"
+                      style={{ cursor: 'pointer' }}
                     >
                       <X size={14} />
                     </button>

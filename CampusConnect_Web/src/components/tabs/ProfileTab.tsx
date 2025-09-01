@@ -334,7 +334,8 @@ const ProfileTab: React.FC = () => {
               )}
                                       <button 
                           onClick={handleProfileImageClick}
-                          className="absolute bottom-0 right-0 w-8 h-8 bg-[#708d81] text-white rounded-full flex items-center justify-center hover:bg-[#5a7268] transition-colors shadow-sm"
+                          className="absolute bottom-0 right-0 w-8 h-8 bg-[#708d81] text-white rounded-full flex items-center justify-center hover:bg-[#5a7268] transition-colors shadow-sm cursor-pointer"
+                          style={{ cursor: 'pointer' }}
                           title="Change profile picture"
                         >
                           <Edit size={16} />
@@ -404,8 +405,8 @@ const ProfileTab: React.FC = () => {
                       <div className="flex space-x-2">
                         <button
                           onClick={handleCancelEdit}
-                          className="px-3 py-1 rounded transition-colors text-sm"
-                          style={{ backgroundColor: '#f0f2f0', color: '#708d81' }}
+                          className="px-3 py-1 rounded transition-colors text-sm cursor-pointer"
+                          style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                         >
@@ -413,8 +414,8 @@ const ProfileTab: React.FC = () => {
                         </button>
                         <button
                           onClick={handleSaveProfile}
-                          className="px-3 py-1 rounded transition-colors text-sm"
-                          style={{ backgroundColor: '#708d81', color: 'white' }}
+                          className="px-3 py-1 rounded transition-colors text-sm cursor-pointer"
+                          style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
                         >
@@ -427,8 +428,8 @@ const ProfileTab: React.FC = () => {
                 
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="px-4 py-2 rounded-lg transition-colors"
-                  style={{ backgroundColor: '#708d81', color: 'white' }}
+                  className="px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
                 >
@@ -477,12 +478,13 @@ const ProfileTab: React.FC = () => {
             {/* Tab Buttons - Unified Navigation Bar */}
             <button
               onClick={() => setActiveTab('posts')}
-              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md ${
+              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer ${
                 activeTab === 'posts' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
               }`}
               style={{
                 backgroundColor: activeTab === 'posts' ? 'white' : '#708d81',
-                color: activeTab === 'posts' ? '#708d81' : 'white'
+                color: activeTab === 'posts' ? '#708d81' : 'white',
+                cursor: 'pointer'
               }}
             >
               Posts
@@ -490,12 +492,13 @@ const ProfileTab: React.FC = () => {
             
             <button
               onClick={() => setActiveTab('reposts')}
-              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md ${
+              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer ${
                 activeTab === 'reposts' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
               }`}
               style={{
                 backgroundColor: activeTab === 'reposts' ? 'white' : '#708d81',
-                color: activeTab === 'reposts' ? '#708d81' : 'white'
+                color: activeTab === 'reposts' ? '#708d81' : 'white',
+                cursor: 'pointer'
               }}
             >
               Reposts
@@ -503,12 +506,13 @@ const ProfileTab: React.FC = () => {
             
             <button
               onClick={() => setActiveTab('bookmarks')}
-              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md ${
+              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer ${
                 activeTab === 'bookmarks' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
               }`}
               style={{
                 backgroundColor: activeTab === 'bookmarks' ? 'white' : '#708d81',
-                color: activeTab === 'bookmarks' ? '#708d81' : 'white'
+                color: activeTab === 'bookmarks' ? '#708d81' : 'white',
+                cursor: 'pointer'
               }}
             >
               Bookmarks

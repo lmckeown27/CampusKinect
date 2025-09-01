@@ -91,7 +91,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               
               {post.user?.major && (
                 <p className="text-xs text-gray-500 truncate">
-                  {post.user.major} • {getYearLabel(post.user.year)}
+                  {post.user.major} • {post.user.year ? getYearLabel(post.user.year) : 'Not specified'}
                 </p>
               )}
             </div>
@@ -181,7 +181,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <div className="flex items-center space-x-4">
             <button
               onClick={handleMessage}
-              className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <MessageCircle size={18} />
               <span className="text-sm font-medium">Message</span>
@@ -189,7 +189,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
             <button
               onClick={handleShare}
-              className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors"
+              className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors cursor-pointer"
             >
               <Share2 size={18} />
               <span className="text-sm font-medium">Share</span>
@@ -199,7 +199,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <div className="flex items-center space-x-2">
             <button
               onClick={handleBookmark}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg transition-colors cursor-pointer ${
                 isBookmarked
                   ? 'text-blue-600 bg-blue-50'
                   : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
@@ -211,7 +211,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             <div className="relative">
               <button
                 onClick={() => setShowOptions(!showOptions)}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
               >
                 <MoreHorizontal size={18} />
               </button>
@@ -219,10 +219,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               {/* Options Dropdown */}
               {showOptions && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
                     Report Post
                   </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
                     Block User
                   </button>
                 </div>

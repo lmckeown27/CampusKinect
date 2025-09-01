@@ -234,6 +234,8 @@ const HomeTab: React.FC = () => {
     return counts;
   };
 
+
+
   // Check if Offer/Request tags should be visible
   const shouldShowOfferRequestTags = () => {
     const selectedCategories = activeFilter.filter(f => f !== 'all');
@@ -461,7 +463,7 @@ const HomeTab: React.FC = () => {
               setConfirmedTags([]); // Also clear confirmed tags
             }}
             className="py-1 px-4 rounded-lg text-xs font-medium transition-colors cursor-pointer text-[#708d81] hover:text-[#5a7268]"
-            style={{ backgroundColor: '#f0f2f0' }}
+            style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#e8ebe8';
             }}
@@ -504,7 +506,8 @@ const HomeTab: React.FC = () => {
                 style={{
                   backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')) ? '#708d81' : '#f0f2f0',
                   color: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')) ? 'white' : '#708d81',
-                  width: '100px'
+                  width: '100px',
+                  cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
                   if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer'))) {
@@ -535,7 +538,8 @@ const HomeTab: React.FC = () => {
               color: activeFilter.length === 1 && activeFilter[0] === 'all' ? 'white' : '#708d81',
               width: '100px',
               marginLeft: '24px',
-              boxShadow: activeFilter.length === 1 && activeFilter[0] === 'all' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none'
+              boxShadow: activeFilter.length === 1 && activeFilter[0] === 'all' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none',
+              cursor: 'pointer'
             }}
             onMouseEnter={(e) => {
               if (!(activeFilter.length === 1 && activeFilter[0] === 'all')) {
@@ -564,7 +568,8 @@ const HomeTab: React.FC = () => {
                 style={{
                   backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')) ? '#708d81' : '#f0f2f0',
                   color: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')) ? 'white' : '#708d81',
-                  width: '100px'
+                  width: '100px',
+                  cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
                   if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request'))) {
@@ -613,7 +618,8 @@ const HomeTab: React.FC = () => {
                     backgroundColor: activeFilter.includes(tag.id) ? '#708d81' : '#f0f2f0',
                     color: activeFilter.includes(tag.id) ? 'white' : '#708d81',
                     width: '120px',
-                    marginLeft: index > 0 ? '24px' : '0'
+                    marginLeft: index > 0 ? '24px' : '0',
+                    cursor: 'pointer'
                   }}
                   onMouseEnter={(e) => {
                     if (!activeFilter.includes(tag.id)) {
@@ -663,7 +669,8 @@ const HomeTab: React.FC = () => {
                     backgroundColor: isCategoryBoxOpen ? '#708d81' : '#f0f2f0',
                     color: isCategoryBoxOpen ? 'white' : '#708d81',
                     marginLeft: index > 0 ? '24px' : '0',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer'
                   }}
                   onMouseEnter={(e) => {
                     if (!isCategoryBoxOpen) {
@@ -733,7 +740,8 @@ const HomeTab: React.FC = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 1000,
-                        userSelect: 'none'
+                        userSelect: 'none',
+                        cursor: 'pointer'
                       }}
                     >
                       <X size={18} />
@@ -754,7 +762,8 @@ const HomeTab: React.FC = () => {
                       }`}
                       style={{
                         backgroundColor: selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0',
-                        color: selectedTags.includes(subTag) ? 'white' : '#708d81'
+                        color: selectedTags.includes(subTag) ? 'white' : '#708d81',
+                        cursor: 'pointer'
                       }}
                       onMouseEnter={(e) => {
                         if (!selectedTags.includes(subTag)) {
@@ -796,7 +805,7 @@ const HomeTab: React.FC = () => {
                             setOpenCategoryBoxes(newOpenBoxes);
                           }}
                           className="px-3 py-2 text-sm text-white rounded-lg transition-colors cursor-pointer"
-                          style={{ backgroundColor: '#708d81' }}
+                          style={{ backgroundColor: '#708d81', cursor: 'pointer' }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor = '#5a7268';
                           }}
@@ -815,7 +824,7 @@ const HomeTab: React.FC = () => {
                             setConfirmedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
                           }}
                           className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
-                          style={{ backgroundColor: '#f0f2f0' }}
+                          style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor = '#e8ebe8';
                           }}

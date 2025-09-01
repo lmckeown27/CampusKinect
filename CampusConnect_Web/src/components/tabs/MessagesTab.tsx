@@ -103,8 +103,8 @@ const MessagesTab: React.FC = () => {
                 />
                 <button
                   onClick={() => setShowNewMessageModal(true)}
-                  className="px-4 py-2 text-[#708d81] border border-[#708d81] rounded-md transition-colors"
-                  style={{ backgroundColor: '#f8f9f6' }}
+                  className="px-4 py-2 text-[#708d81] border border-[#708d81] rounded-md transition-colors cursor-pointer"
+                  style={{ backgroundColor: '#f8f9f6', cursor: 'pointer' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f8f9f6'}
                 >
@@ -119,10 +119,11 @@ const MessagesTab: React.FC = () => {
                 <div className="flex relative w-full">
                   <button
                     onClick={() => setActiveTab('unread')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md`}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
                     style={{
                       backgroundColor: activeTab === 'unread' ? 'white' : '#708d81',
-                      color: activeTab === 'unread' ? '#708d81' : 'white'
+                      color: activeTab === 'unread' ? '#708d81' : 'white',
+                      cursor: 'pointer'
                     }}
                   >
                     Unread
@@ -130,10 +131,11 @@ const MessagesTab: React.FC = () => {
                   
                   <button
                     onClick={() => setActiveTab('primary')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md`}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
                     style={{
                       backgroundColor: activeTab === 'primary' ? 'white' : '#708d81',
-                      color: activeTab === 'primary' ? '#708d81' : 'white'
+                      color: activeTab === 'primary' ? '#708d81' : 'white',
+                      cursor: 'pointer'
                     }}
                   >
                     General
@@ -141,10 +143,11 @@ const MessagesTab: React.FC = () => {
                   
                   <button
                     onClick={() => setActiveTab('requests')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md`}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
                     style={{
                       backgroundColor: activeTab === 'requests' ? 'white' : '#708d81',
-                      color: activeTab === 'requests' ? '#708d81' : 'white'
+                      color: activeTab === 'requests' ? '#708d81' : 'white',
+                      cursor: 'pointer'
                     }}
                   >
                     Requests
@@ -172,7 +175,7 @@ const MessagesTab: React.FC = () => {
               ) : (
                 <div className="space-y-1">
                   {filteredRequests.map((request) => (
-                    <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg hover:bg-[#f8f9f6] transition-colors">
+                    <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg hover:bg-[#f8f9f6] transition-colors" style={{ cursor: 'pointer' }}>
                       <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center">
                         <User size={24} className="text-white" />
                       </div>
@@ -185,10 +188,10 @@ const MessagesTab: React.FC = () => {
                         </p>
                       </div>
                       <div className="flex space-x-1">
-                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors">
+                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors cursor-pointer" style={{ cursor: 'pointer' }}>
                           <Check size={16} />
                         </button>
-                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors">
+                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors cursor-pointer" style={{ cursor: 'pointer' }}>
                           <X size={16} />
                         </button>
                       </div>
@@ -221,6 +224,7 @@ const MessagesTab: React.FC = () => {
                         ? 'bg-[#f0f2f0]'
                         : 'hover:bg-[#f8f9f6]'
                     }`}
+                    style={{ cursor: 'pointer' }}
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center">
@@ -264,7 +268,7 @@ const MessagesTab: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-lg transition-colors">
+                  <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-lg transition-colors cursor-pointer">
                     <MoreHorizontal size={20} />
                   </button>
                 </div>
@@ -318,7 +322,7 @@ const MessagesTab: React.FC = () => {
                   <button
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim()}
-                    className="p-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                   >
                     <Send size={18} />
                   </button>
@@ -332,8 +336,8 @@ const MessagesTab: React.FC = () => {
                   <h3 className="text-base font-medium text-[#708d81]">New Message</h3>
                   <button
                     onClick={() => setShowNewMessageModal(false)}
-                    className="px-2 py-1 text-[#708d81] rounded transition-colors"
-                    style={{ backgroundColor: '#f0f2f0' }}
+                    className="px-2 py-1 text-[#708d81] rounded transition-colors cursor-pointer"
+                    style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                   >
@@ -349,8 +353,8 @@ const MessagesTab: React.FC = () => {
                   />
                   <div className="flex justify-end" style={{ marginTop: '10px' }}>
                     <button 
-                      className="w-full px-4 py-2 text-white rounded-lg transition-colors text-sm"
-                      style={{ backgroundColor: '#708d81' }}
+                      className="w-full px-4 py-2 text-white rounded-lg transition-colors text-sm cursor-pointer"
+                      style={{ backgroundColor: '#708d81', cursor: 'pointer' }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
                     >
