@@ -326,28 +326,18 @@ const sendVerificationCode = async (email, firstName, code) => {
             <h2 style="color: #333; margin-bottom: 20px;">Hi ${firstName}!</h2>
             
             <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">
-              Thanks for joining CampusKinect! We're excited to have you as part of our university community. To complete your registration and start connecting with fellow students, please enter the verification code below.
+              Thanks for joining CampusKinect! To complete your registration and start connecting with fellow students, please enter the verification code below.
             </p>
             
-            <div style="text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px dashed #667eea;">
-              <h3 style="color: #667eea; margin: 0 0 10px 0; font-size: 24px;">Your Verification Code</h3>
-              <div style="font-size: 36px; font-weight: bold; color: #333; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+            <div style="text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px dashed #6B8E23;">
+              <h3 style="color: #6B8E23; margin: 0 0 10px 0; font-size: 24px;">Your Verification Code</h3>
+              <div style="font-size: 36px; font-weight: bold; color: #6B8E23; letter-spacing: 8px; font-family: 'Courier New', monospace;">
                 ${code}
               </div>
               <p style="color: #888; margin: 10px 0 0 0; font-size: 14px;">
                 This code expires in 10 minutes
               </p>
             </div>
-            
-            <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">
-              <strong>How to verify:</strong>
-            </p>
-            <ol style="color: #555; line-height: 1.6; margin-bottom: 25px; padding-left: 20px;">
-              <li>Open the CampusKinect app</li>
-              <li>Go to the verification screen</li>
-              <li>Enter the code above</li>
-              <li>Tap "Verify Account"</li>
-            </ol>
             
             <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
             
@@ -366,12 +356,6 @@ const sendVerificationCode = async (email, firstName, code) => {
         
         Your Verification Code: ${code}
         (This code expires in 10 minutes)
-        
-        How to verify:
-        1. Open the CampusKinect app
-        2. Go to the verification screen  
-        3. Enter the code above
-        4. Tap "Verify Account"
         
         If you didn't create a CampusKinect account, please ignore this email.
       `
