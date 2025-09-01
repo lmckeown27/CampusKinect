@@ -8,8 +8,8 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config();
 
-const { initDatabase } = require('./config/database');
-const { connectRedis } = require('./config/redis');
+const { initDatabase, pool } = require('./config/database');
+const { connectRedis, redis } = require('./config/redis');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/notFound');
 

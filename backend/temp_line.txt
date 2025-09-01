@@ -1,0 +1,1 @@
+    if (isTestBypass || isHardcodedTest || (process.env.NODE_ENV === 'development' && process.env.AUTO_VERIFY_EMAILS === 'true')) {

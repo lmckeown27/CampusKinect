@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { body } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const { query } = require('../config/database');
 const { redisSet, generateCacheKey, CACHE_TTL, redisDel } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
@@ -11,6 +11,8 @@ const { UNIVERSITY_CONFIG } = require('../config/university');
 const educationalDomainService = require('../services/educationalDomainService');
 
 const router = express.Router();
+
+const pendingRegistrations = new Map(); // Temporary storage for pending registrations
 
 // Special testing route for admin access (development only)
 if (process.env.NODE_ENV === 'development') {
@@ -175,47 +177,26 @@ router.post('/register', [
   validate
 ], async (req, res) => {
   try {
-    const {
-      username,
-      email,
-      password,
-      firstName,
-      lastName,
-      year,
-      major,
-      hometown
-    } = req.body;
-
-    // Hash password
-    const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS) || 12);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    // Get or create university for the user's email domain
-    const domain = email.split('@')[1];
-    let universityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly SLO
-    
-    // Try to find existing university
-    const universityResult = await query('SELECT id FROM universities WHERE domain = $1', [domain]);
-    if (universityResult.rows.length > 0) {
-      universityId = universityResult.rows[0].id;
-    } else {
-      // Create new university entry
-      const newUniversityResult = await query(`
-        INSERT INTO universities (name, domain, city, state, country, is_active)
-        VALUES ($1, $2, $3, $4, $5, true)
-        RETURNING id
-      `, [domain, domain, 'Unknown', 'Unknown', 'US']); // Default values for required fields
-      universityId = newUniversityResult.rows[0].id;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Validation failed',
+          details: errors.array()
+        }
+      });
     }
-    
+
+    const { username, email, password, firstName, lastName, year, major, hometown } = req.body;
+
     // Check if this is a test bypass account (password-based bypass)
     const isTestBypass = process.env.NODE_ENV === 'development' && 
-                         password === 'Test12345';
-    
+                        password === 'Test12345';
+
     // Check if this is a hardcoded test account (lmckeown@calpoly.edu)
-    const isHardcodedTest = process.env.NODE_ENV === 'development' && 
-                            email === 'lmckeown@calpoly.edu';
-    
+    const isHardcodedTest = false; // Disabled for testing verification flow
+
     // For test bypass accounts, check if they already exist and return them
     if (isTestBypass) {
       // Look for any existing test user (we'll use the first one found)
@@ -282,137 +263,241 @@ router.post('/register', [
       }
     }
 
-    // Create user with detected university
-    let result;
-    try {
-      result = await query(`
-        INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id, is_verified, is_active)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        RETURNING id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, created_at
-      `, [
-        username, 
-        email, 
-        passwordHash, 
-        firstName, 
-        lastName, 
-        year || null, 
-        major || null, 
-        hometown || null, 
-        universityId,
-        isTestBypass ? true : false, // Auto-verify test bypass accounts
-        true // Always active
-      ]);
-    } catch (dbError) {
-      // Handle duplicate key errors specifically
-      if (dbError.code === '23505') {
-        if (dbError.constraint === 'users_username_key') {
-          return res.status(409).json({
-            success: false,
-            error: {
-              message: 'Username already exists. Please choose a different username.'
-            }
-          });
-        } else if (dbError.constraint === 'users_email_key') {
-          return res.status(409).json({
-            success: false,
-            error: {
-              message: 'Email already registered. Please sign in instead.'
-            }
-          });
-        }
+    // Check if user already exists (for non-test accounts)
+    const existingUser = await query('SELECT * FROM users WHERE email = $1 OR username = $2', [email, username]);
+    if (existingUser.rows.length > 0) {
+      const existing = existingUser.rows[0];
+      if (existing.email === email) {
+        return res.status(409).json({
+          success: false,
+          error: {
+            message: 'Email already registered. Please sign in instead.'
+          }
+        });
+      } else if (existing.username === username) {
+        return res.status(409).json({
+          success: false,
+          error: {
+            message: 'Username already exists. Please choose a different username.'
+          }
+        });
       }
-      
-      // Re-throw other database errors
-      throw dbError;
     }
 
-    const user = result.rows[0];
+    // Check if there's a pending registration for this email/username
+    for (const [key, pendingReg] of pendingRegistrations.entries()) {
+      if (pendingReg.email === email || pendingReg.username === username) {
+        // Remove old pending registration
+        pendingRegistrations.delete(key);
+        break;
+      }
+    }
 
-    // Generate verification token
-    const verificationToken = jwt.sign(
-      { userId: user.id, type: 'verification' },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+    // Validate educational domain and get university info
+    const domainValidation = await educationalDomainService.validateEducationalDomain(email);
+    if (!domainValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)'
+        }
+      });
+    }
 
-    // Send verification email (or auto-verify in development)
-    if (isTestBypass || isHardcodedTest || (process.env.NODE_ENV === 'development' && process.env.AUTO_VERIFY_EMAILS === 'true')) {
-      console.log('🔧 Development mode: Auto-verifying email for testing');
-      // Auto-verify the user in development or if it's a test bypass/hardcoded test
-      await query('UPDATE users SET is_verified = true WHERE id = $1', [user.id]);
-      user.is_verified = true;
+    // Get or create university
+    let universityId;
+    const domain = email.split('@')[1];
+    const existingUniversity = await query('SELECT id FROM universities WHERE domain = $1', [domain]);
+    
+    if (existingUniversity.rows.length > 0) {
+      universityId = existingUniversity.rows[0].id;
     } else {
+      // Create new university entry
+      const newUniversityResult = await query(`
+        INSERT INTO universities (name, domain, city, state, country, is_active)
+        VALUES ($1, $2, $3, $4, $5, true)
+        RETURNING id
+      `, [domain, domain, 'Unknown', 'Unknown', 'US']); // Default values for required fields
+      universityId = newUniversityResult.rows[0].id;
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // For auto-verify accounts, create user immediately
+    if (isTestBypass || isHardcodedTest || (process.env.NODE_ENV === 'development' && process.env.AUTO_VERIFY_EMAILS === 'true')) {
+      // Create user immediately for test/auto-verify accounts
+      let result;
+      try {
+        result = await query(`
+          INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id, is_verified, is_active)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+          RETURNING id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, created_at
+        `, [
+          username, 
+          email, 
+          passwordHash, 
+          firstName, 
+          lastName, 
+          year || null, 
+          major || null, 
+          hometown || null, 
+          universityId,
+          true, // Auto-verify
+          true // Always active
+        ]);
+      } catch (dbError) {
+        // Handle duplicate key errors specifically
+        if (dbError.code === '23505') {
+          if (dbError.constraint === 'users_username_key') {
+            return res.status(409).json({
+              success: false,
+              error: {
+                message: 'Username already exists. Please choose a different username.'
+              }
+            });
+          } else if (dbError.constraint === 'users_email_key') {
+            return res.status(409).json({
+              success: false,
+              error: {
+                message: 'Email already registered. Please sign in instead.'
+              }
+            });
+          }
+        }
+        throw dbError;
+      }
+
+      const user = result.rows[0];
+
+      // Generate verification token
+      const verificationToken = jwt.sign(
+        { userId: user.id, type: 'verification' },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      // Send verification email (or auto-verify in development)
+      if (isTestBypass || isHardcodedTest || (process.env.NODE_ENV === 'development' && process.env.AUTO_VERIFY_EMAILS === 'true')) {
+        console.log('🔧 Development mode: Auto-verifying email for testing');
+        // Auto-verify the user in development or if it's a test bypass/hardcoded test
+        await query('UPDATE users SET is_verified = true WHERE id = $1', [user.id]);
+        user.is_verified = true;
+      } else {
+        console.log('📧 Production mode: Sending verification code email');
+        // Generate 6-digit verification code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        
+        // Store verification code in database
+        await query('UPDATE users SET verification_code = $1, verification_code_expires = $2 WHERE id = $3', 
+          [verificationCode, expiresAt, user.id]);
+        
+        // Send verification code email
+        await sendVerificationCode(user.email, user.first_name, verificationCode);
+      }
+
+      // Generate access token
+      const accessToken = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      );
+
+      // Generate refresh token
+      const refreshToken = jwt.sign(
+        { userId: user.id, type: 'refresh' },
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+      );
+
+      // Store refresh token in database
+      await query(`
+        INSERT INTO user_sessions (user_id, refresh_token, expires_at)
+        VALUES ($1, $2, $3)
+      `, [user.id, refreshToken, new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)]);
+
+      // Cache user data
+      const cacheKey = generateCacheKey('session', user.id);
+      await redisSet(cacheKey, user, CACHE_TTL.SESSION);
+
+      res.status(201).json({
+        success: true,
+        message: isTestBypass ? 'Test bypass account created successfully! No email verification needed.' : 
+          isHardcodedTest ? 'Hardcoded test account created successfully! No email verification needed.' :
+          'User registered and auto-verified successfully.',
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            displayName: user.display_name,
+            profilePicture: user.profile_picture,
+            year: user.year,
+            major: user.major,
+            hometown: user.hometown,
+            universityId: user.university_id,
+            isVerified: user.is_verified,
+            isActive: user.is_active,
+            createdAt: user.created_at
+          }
+        }
+      });
+    } else {
+      // For normal registration, store data temporarily and send verification code
+      console.log('📧 Production mode: Sending verification code email');
+      
       // Generate 6-digit verification code
       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
       
-      // Store verification code in database
-      await query('UPDATE users SET verification_code = $1, verification_code_expires = $2 WHERE id = $3', 
-        [verificationCode, expiresAt, user.id]);
+      // Store registration data temporarily
+      const registrationId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      pendingRegistrations.set(registrationId, {
+        username,
+        email,
+        passwordHash,
+        firstName,
+        lastName,
+        year: year || null,
+        major: major || null,
+        hometown: hometown || null,
+        universityId,
+        verificationCode,
+        expiresAt,
+        createdAt: new Date()
+      });
       
-      // Send verification code email
-      await sendVerificationCode(user.email, user.first_name, verificationCode);
-    }
-
-    // Generate access token
-    const accessToken = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
-
-    // Generate refresh token
-    const refreshToken = jwt.sign(
-      { userId: user.id, type: 'refresh' },
-      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
-    );
-
-    // Store refresh token in database
-    await query(`
-      INSERT INTO user_sessions (user_id, refresh_token, expires_at)
-      VALUES ($1, $2, $3)
-    `, [user.id, refreshToken, new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)]);
-
-    // Cache user data
-    const cacheKey = generateCacheKey('session', user.id);
-    await redisSet(cacheKey, user, CACHE_TTL.SESSION);
-
-    res.status(201).json({
-      success: true,
-              message: isTestBypass ? 'Test bypass account created successfully! No email verification needed.' : 
-                isHardcodedTest ? 'Hardcoded test account created successfully! No email verification needed.' :
-                'User registered successfully. Please check your email for verification.',
-      data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          displayName: user.display_name,
-          profilePicture: user.profile_picture,
-          year: user.year,
-          major: user.major,
-          hometown: user.hometown,
-          universityId: user.university_id,
-          isVerified: user.is_verified,
-          isActive: user.is_active,
-          createdAt: user.created_at
-        },
-        tokens: {
-          accessToken,
-          refreshToken
+      // Clean up expired registrations (older than 15 minutes)
+      const now = new Date();
+      for (const [key, reg] of pendingRegistrations.entries()) {
+        if (now - reg.createdAt > 15 * 60 * 1000) {
+          pendingRegistrations.delete(key);
         }
       }
-    });
+      
+      // Send verification code email
+      await sendVerificationCode(email, firstName, verificationCode);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Registration data received. Please check your email for verification code.',
+        data: {
+          registrationId,
+          email,
+          expiresAt
+        }
+      });
+    }
 
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({
       success: false,
       error: {
-        message: 'Registration failed. Please try again.'
+        message: 'Internal server error during registration'
       }
     });
   }
@@ -788,65 +873,28 @@ router.post('/resend-verification', [
 // @desc    Verify user account with verification code
 // @access  Public
 router.post('/verify-code', [
-  body('email')
-    .isEmail().withMessage('Please provide a valid email address')
-    .custom((value) => {
-      // Check if it's a .edu email
-      if (!value.endsWith('.edu')) {
-        throw new Error('Email must be a valid .edu address');
-      }
-      
-      // Allow any valid .edu domain for now
-      // Removed Cal Poly SLO restriction for development
-      
-      return true;
-    }),
   body('code').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),
   validate
 ], async (req, res) => {
   try {
-    const { email, code } = req.body;
+    const { code } = req.body;
 
-    // Find user with this email and verification code
-    const result = await query(`
-      SELECT id, verification_code, verification_code_expires, is_verified
-      FROM users 
-      WHERE email = $1 AND is_active = true
-    `, [email]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          message: 'User not found'
-        }
-      });
+    // Find pending registration by verification code
+    let pendingRegistration = null;
+    console.log('🔍 DEBUG: Looking for pending registration with code:', code);
+    console.log('🔍 DEBUG: Number of pending registrations:', pendingRegistrations.size);
+    
+    for (const [key, reg] of pendingRegistrations.entries()) {
+      console.log('🔍 DEBUG: Checking pending registration:', reg.email, 'with code:', reg.verificationCode);
+      if (reg.verificationCode === code) {
+        pendingRegistration = reg;
+        console.log('🔍 DEBUG: Found pending registration!');
+        break;
+      }
     }
-
-    const user = result.rows[0];
-
-    // Check if already verified
-    if (user.is_verified) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'Account is already verified'
-        }
-      });
-    }
-
-    // Check if verification code exists
-    if (!user.verification_code) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'No verification code found. Please request a new one.'
-        }
-      });
-    }
-
-    // Check if verification code matches
-    if (user.verification_code !== code) {
+    
+    if (!pendingRegistration) {
+      console.log('🔍 DEBUG: No pending registration found with code:', code);
       return res.status(400).json({
         success: false,
         error: {
@@ -855,39 +903,134 @@ router.post('/verify-code', [
       });
     }
 
-    // Check if verification code has expired
-    if (new Date() > new Date(user.verification_code_expires)) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'Verification code has expired. Please request a new one.'
+    if (pendingRegistration) {
+      // Handle pending registration verification
+      console.log('🔍 DEBUG: Verifying pending registration');
+      console.log('🔍 DEBUG: Expected code:', pendingRegistration.verificationCode);
+      console.log('🔍 DEBUG: Received code:', code);
+      console.log('🔍 DEBUG: Codes match:', pendingRegistration.verificationCode === code);
+      
+      if (pendingRegistration.verificationCode !== code) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Invalid verification code'
+          }
+        });
+      }
+
+      if (new Date() > new Date(pendingRegistration.expiresAt)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Verification code has expired. Please request a new one.'
+          }
+        });
+      }
+
+      // Create the user account now that verification is successful
+      let result;
+      try {
+        result = await query(`
+          INSERT INTO users (username, email, password_hash, first_name, last_name, year, major, hometown, university_id, is_verified, is_active)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+          RETURNING id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, created_at
+        `, [
+          pendingRegistration.username,
+          pendingRegistration.email,
+          pendingRegistration.passwordHash,
+          pendingRegistration.firstName,
+          pendingRegistration.lastName,
+          pendingRegistration.year,
+          pendingRegistration.major,
+          pendingRegistration.hometown,
+          pendingRegistration.universityId,
+          true, // Verified
+          true // Active
+        ]);
+      } catch (dbError) {
+        // Handle duplicate key errors (in case user was created between registration and verification)
+        if (dbError.code === '23505') {
+          if (dbError.constraint === 'users_username_key') {
+            return res.status(409).json({
+              success: false,
+              error: {
+                message: 'Username already exists. Please choose a different username.'
+              }
+            });
+          } else if (dbError.constraint === 'users_email_key') {
+            return res.status(409).json({
+              success: false,
+              error: {
+                message: 'Email already registered. Please sign in instead.'
+              }
+            });
+          }
+        }
+        throw dbError;
+      }
+
+      const user = result.rows[0];
+
+      // Remove the pending registration
+      for (const [key, reg] of pendingRegistrations.entries()) {
+        if (reg.verificationCode === code) {
+          pendingRegistrations.delete(key);
+          break;
+        }
+      }
+
+      // Generate access token
+      const accessToken = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      );
+
+      // Generate refresh token
+      const refreshToken = jwt.sign(
+        { userId: user.id, type: 'refresh' },
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+      );
+
+      // Store refresh token in database
+      await query(`
+        INSERT INTO user_sessions (user_id, refresh_token, expires_at)
+        VALUES ($1, $2, $3)
+      `, [user.id, refreshToken, new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)]);
+
+      // Cache user data
+      const cacheKey = generateCacheKey('session', user.id);
+      await redisSet(cacheKey, user, CACHE_TTL.SESSION);
+
+      res.json({
+        success: true,
+        message: 'Account verified and created successfully! You are now logged in.',
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            displayName: user.display_name,
+            profilePicture: user.profile_picture,
+            year: user.year,
+            major: user.major,
+            hometown: user.hometown,
+            universityId: user.university_id,
+            isVerified: user.is_verified,
+            isActive: user.is_active,
+            createdAt: user.created_at
+          },
+          tokens: {
+            accessToken,
+            refreshToken
+          }
         }
       });
     }
-
-    // Verify the user account
-    await query(`
-      UPDATE users 
-      SET is_verified = true, 
-          verification_code = NULL, 
-          verification_code_expires = NULL,
-          updated_at = CURRENT_TIMESTAMP
-      WHERE id = $1
-    `, [user.id]);
-
-    // Clear any cached user data
-    const cacheKey = generateCacheKey('user', user.id);
-    await redisDel(cacheKey);
-
-    res.json({
-      success: true,
-      message: 'Account verified successfully! You can now log in.',
-      data: {
-        userId: user.id,
-        email: email,
-        isVerified: true
-      }
-    });
 
   } catch (error) {
     console.error('Verification error:', error);
@@ -905,69 +1048,88 @@ router.post('/verify-code', [
 // @access  Public
 router.post('/resend-code', [
   body('email')
-    .isEmail().withMessage('Please provide a valid email address')
-    .custom((value) => {
-      // Check if it's a .edu email
-      if (!value.endsWith('.edu')) {
-        throw new Error('Email must be a valid .edu address');
-      }
-      
-      // Allow any valid .edu domain for now
-      // Removed Cal Poly SLO restriction for development
-      
-      return true;
-    }),
+    .isEmail().withMessage('Please provide a valid email address'),
   validate
 ], async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Find user with this email
-    const result = await query(`
-      SELECT id, first_name, is_verified
-      FROM users 
-      WHERE email = $1 AND is_active = true
-    `, [email]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          message: 'User not found'
-        }
-      });
-    }
-
-    const user = result.rows[0];
-
-    // Check if already verified
-    if (user.is_verified) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'Account is already verified'
-        }
-      });
-    }
-
-    // Generate new 6-digit verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    
-    // Store new verification code in database
-    await query('UPDATE users SET verification_code = $1, verification_code_expires = $2 WHERE id = $3', 
-      [verificationCode, expiresAt, user.id]);
-    
-    // Send new verification code email
-    await sendVerificationCode(user.email, user.first_name, verificationCode);
-
-    res.json({
-      success: true,
-      message: 'New verification code sent successfully. Please check your email.',
-      data: {
-        email: email
+    // First, check if there's a pending registration for this email
+    let pendingRegistration = null;
+    for (const [key, reg] of pendingRegistrations.entries()) {
+      if (reg.email === email) {
+        pendingRegistration = reg;
+        break;
       }
-    });
+    }
+
+    if (pendingRegistration) {
+      // Generate new 6-digit verification code for pending registration
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      
+      // Update the pending registration with new code
+      pendingRegistration.verificationCode = verificationCode;
+      pendingRegistration.expiresAt = expiresAt;
+      
+      // Send new verification code email
+      await sendVerificationCode(pendingRegistration.email, pendingRegistration.firstName, verificationCode);
+
+      res.json({
+        success: true,
+        message: 'New verification code sent successfully. Please check your email.',
+        data: {
+          email: email
+        }
+      });
+    } else {
+      // Check for existing user with verification code (legacy flow)
+      const result = await query(`
+        SELECT id, first_name, is_verified
+        FROM users 
+        WHERE email = $1 AND is_active = true
+      `, [email]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            message: 'User not found'
+          }
+        });
+      }
+
+      const user = result.rows[0];
+
+      // Check if already verified
+      if (user.is_verified) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Account is already verified'
+          }
+        });
+      }
+
+      // Generate new 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      
+      // Store new verification code in database
+      await query('UPDATE users SET verification_code = $1, verification_code_expires = $2 WHERE id = $3', 
+        [verificationCode, expiresAt, user.id]);
+      
+      // Send new verification code email
+      await sendVerificationCode(user.email, user.first_name, verificationCode);
+
+      res.json({
+        success: true,
+        message: 'New verification code sent successfully. Please check your email.',
+        data: {
+          email: email
+        }
+      });
+    }
 
   } catch (error) {
     console.error('Resend code error:', error);

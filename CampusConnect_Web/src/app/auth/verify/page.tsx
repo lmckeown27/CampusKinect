@@ -19,35 +19,69 @@ const VerifyPage: React.FC = () => {
       return;
     }
 
+    alert('🔍 DEBUG: Starting verification process...');
+    console.log('🔍 DEBUG: Verification code entered:', verificationCode);
+    
     setIsSubmitting(true);
     clearError();
 
     try {
+      alert('📡 DEBUG: Calling verifyEmail function...');
+      console.log('📡 DEBUG: Calling verifyEmail with code:', verificationCode);
+      
       await verifyEmail(verificationCode);
+      
+      alert('✅ DEBUG: Verification successful! Redirecting to home...');
+      console.log('✅ DEBUG: Verification completed successfully');
+      
       // If verification succeeds, user will be authenticated and can be redirected
       router.push('/home');
-    } catch (error) {
-      console.error('Verification failed:', error);
-      // Error will be displayed by the auth store
+    } catch (error: any) {
+      alert(`❌ DEBUG: Verification failed!\n\nError: ${error.message}\nStatus: ${error.response?.status}\nDetails: ${JSON.stringify(error.response?.data, null, 2)}`);
+      console.error('=== VERIFICATION FAILED ===');
+      console.error('Verification failed in form:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleResendCode = async () => {
+    alert('🔍 DEBUG: Starting resend process...');
+    
     try {
-      // Get the email from the auth store or localStorage
-      const storedEmail = localStorage.getItem('registrationEmail') || 'user@university.edu';
+      // Get the email from localStorage
+      const storedEmail = localStorage.getItem('registrationEmail');
+      
+      if (!storedEmail) {
+        alert('❌ DEBUG: No email found in localStorage. Please go back to registration and try again.');
+        return;
+      }
+      
+      alert(`📡 DEBUG: Resending verification code to: ${storedEmail}`);
+      console.log('📡 DEBUG: Resending verification code to:', storedEmail);
       
       // Call the resend verification code function
       await resendVerificationCode(storedEmail);
       
-      // Show success message (you can add a toast or alert here)
-      alert('Verification code resent successfully! Please check your email.');
+      // Show success message
+      alert(`✅ DEBUG: Verification code resent successfully to ${storedEmail}! Please check your email.`);
       
-    } catch (error) {
+    } catch (error: any) {
+      alert(`❌ DEBUG: Failed to resend code!\n\nError: ${error.message}\nStatus: ${error.response?.status}\nDetails: ${JSON.stringify(error.response?.data, null, 2)}`);
+      console.error('=== RESEND FAILED ===');
       console.error('Failed to resend code:', error);
-      alert('Failed to resend verification code. Please try again.');
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
     }
   };
 

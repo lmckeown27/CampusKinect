@@ -87,6 +87,10 @@ const RegisterForm: React.FC = () => {
       setRegistrationSuccess(true);
       console.log('Success state set, useEffect should trigger redirect...');
       
+      // Store email in localStorage for verification page
+      localStorage.setItem('registrationEmail', formData.email);
+      console.log('Email stored in localStorage:', formData.email);
+      
       // Force redirect as backup - only if we have a valid email
       console.log('Forcing immediate redirect to verification page...');
       router.push('/auth/verify');
@@ -237,6 +241,12 @@ const RegisterForm: React.FC = () => {
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   required
                   autoCapitalize="off"
+                  autoCorrect="off"
+                  autoComplete="new-password"
+                  spellCheck="false"
+                  data-form-type="other"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder="liam_mckeown38"
                 />

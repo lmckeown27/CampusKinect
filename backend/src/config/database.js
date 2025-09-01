@@ -38,10 +38,24 @@ const createTables = async () => {
         university_id INTEGER NOT NULL,
         is_verified BOOLEAN DEFAULT FALSE,
         is_active BOOLEAN DEFAULT TRUE,
+        verification_code VARCHAR(10),
+        verification_code_expires TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+
+    // Add verification code columns to existing users table if they don't exist
+    try {
+      await pool.query(`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS verification_code VARCHAR(10),
+        ADD COLUMN IF NOT EXISTS verification_code_expires TIMESTAMP
+      `);
+      console.log('✅ Verification code columns added to users table');
+    } catch (error) {
+      console.log('ℹ️ Verification code columns already exist or could not be added:', error.message);
+    }
 
     // Universities table
     await pool.query(`

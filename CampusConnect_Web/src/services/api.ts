@@ -6,7 +6,6 @@ import {
   Conversation, 
   CreatePostForm, 
   LoginForm, 
-  RegisterForm,
   RegisterApiData,
   ApiResponse,
   PaginatedResponse,
@@ -120,21 +119,35 @@ class ApiService {
     throw new Error(response.data.message || 'Login failed');
   }
 
-  public async register(userData: RegisterApiData): Promise<{ user: User; tokens: AuthTokens }> {
+  public async register(userData: RegisterApiData): Promise<any> {
     alert(`🔍 DEBUG: API service register called\n\nData: ${JSON.stringify(userData, null, 2)}`);
     
     try {
       alert('📡 DEBUG: Making POST request to /auth/register...');
-      const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
+      const response: AxiosResponse<ApiResponse<any>> = 
         await this.api.post('/auth/register', userData);
       
       alert(`📥 DEBUG: Response received!\n\nStatus: ${response.status}\nData: ${JSON.stringify(response.data, null, 2)}`);
       
-      if (response.data.success && response.data.data) {
-        alert('✅ DEBUG: Response successful, setting tokens and user data...');
-        this.setTokens(response.data.data.tokens);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
-        return response.data.data;
+      if (response.data.success) {
+        alert('✅ DEBUG: Response successful');
+        
+        // Handle new registration flow (pending verification)
+        if (response.data.data && response.data.data.registrationId) {
+          alert('✅ DEBUG: Registration pending verification - no tokens/user yet');
+          return response.data; // Return full response for new flow
+        }
+        
+        // Handle legacy flow (auto-verify with tokens)
+        if (response.data.data && response.data.data.user && response.data.data.tokens) {
+          alert('✅ DEBUG: Legacy flow - setting tokens and user data...');
+          this.setTokens(response.data.data.tokens);
+          localStorage.setItem('user', JSON.stringify(response.data.data.user));
+          return response.data.data;
+        }
+        
+        alert(`❌ DEBUG: Unexpected response format\n\nData: ${JSON.stringify(response.data, null, 2)}`);
+        throw new Error('Unexpected response format from registration');
       }
       
       alert(`❌ DEBUG: Response not successful\n\nData: ${JSON.stringify(response.data, null, 2)}`);

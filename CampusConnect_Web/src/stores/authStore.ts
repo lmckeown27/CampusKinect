@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, LoginForm, RegisterForm, RegisterApiData } from '../types';
+import { User, LoginForm, RegisterApiData } from '../types';
 import apiService from '../services/api';
 
 interface AuthState {
@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
         
         try {
-          const { user, tokens } = await apiService.login(credentials);
+          const { user } = await apiService.login(credentials);
           set({ 
             user, 
             isAuthenticated: true, 
@@ -85,17 +85,32 @@ export const useAuthStore = create<AuthStore>()(
         
         try {
           alert('📡 DEBUG: Calling API service register...');
-          const { user, tokens } = await apiService.register(userData);
+          const response = await apiService.register(userData);
           alert('✅ DEBUG: API service returned successfully');
           
-          // Don't set isAuthenticated to true until email is verified
-          set({ 
-            user, 
-            isAuthenticated: false, // Keep false until email verified
-            isLoading: false,
-            error: null 
-          });
-          alert('✅ DEBUG: User state updated successfully');
+          // Handle new registration flow (no user/tokens until verification)
+          if (response.data && response.data.registrationId) {
+            // New flow: registration pending verification
+            set({ 
+              user: null, 
+              isAuthenticated: false,
+              isLoading: false,
+              error: null 
+            });
+            alert('✅ DEBUG: Registration pending verification - no user created yet');
+          } else if (response.data && response.data.user) {
+            // Legacy flow: user created immediately (auto-verify)
+            const { user } = response.data;
+            set({ 
+              user, 
+              isAuthenticated: false, // Keep false until email verified
+              isLoading: false,
+              error: null 
+            });
+            alert('✅ DEBUG: User created and auto-verified');
+          } else {
+            throw new Error('Unexpected response format from registration');
+          }
         } catch (error: any) {
           alert(`❌ DEBUG: Auth store caught error!\n\nError: ${error.message}\nStatus: ${error.response?.status}\nData: ${JSON.stringify(error.response?.data, null, 2)}`);
           

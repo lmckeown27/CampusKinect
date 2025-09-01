@@ -307,13 +307,18 @@ const sendVerificationCode = async (email, firstName, code) => {
     const transporter = createTransporter();
     
     const mailOptions = {
-      from: `"CampusConnect" <${process.env.SMTP_USER}>`,
+      from: `"CampusKinect Team" <${process.env.SMTP_USER}>`,
       to: email,
-      subject: 'Verify your CampusConnect account',
+      subject: 'Complete your CampusKinect registration - Verification code inside',
+              headers: {
+          'List-Unsubscribe': '<mailto:campuskinect01@gmail.com?subject=unsubscribe>',
+          'X-Mailer': 'CampusKinect/1.0',
+          'X-Priority': '3'
+        },
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">CampusConnect</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">CampusKinect</h1>
             <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Account Verification</p>
           </div>
           
@@ -321,7 +326,7 @@ const sendVerificationCode = async (email, firstName, code) => {
             <h2 style="color: #333; margin-bottom: 20px;">Hi ${firstName}!</h2>
             
             <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">
-              Welcome to CampusConnect! To complete your registration, please enter the verification code below in the app.
+              Thanks for joining CampusKinect! We're excited to have you as part of our university community. To complete your registration and start connecting with fellow students, please enter the verification code below.
             </p>
             
             <div style="text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px dashed #667eea;">
@@ -338,7 +343,7 @@ const sendVerificationCode = async (email, firstName, code) => {
               <strong>How to verify:</strong>
             </p>
             <ol style="color: #555; line-height: 1.6; margin-bottom: 25px; padding-left: 20px;">
-              <li>Open the CampusConnect app</li>
+              <li>Open the CampusKinect app</li>
               <li>Go to the verification screen</li>
               <li>Enter the code above</li>
               <li>Tap "Verify Account"</li>
@@ -347,28 +352,28 @@ const sendVerificationCode = async (email, firstName, code) => {
             <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
             
             <p style="color: #888; font-size: 12px; text-align: center; margin: 0;">
-              If you didn't create a CampusConnect account, please ignore this email.
+              If you didn't create a CampusKinect account, please ignore this email.
             </p>
           </div>
         </div>
       `,
       text: `
-        CampusConnect - Account Verification
+        CampusKinect - Account Verification
         
         Hi ${firstName},
         
-        Welcome to CampusConnect! To complete your registration, please enter the verification code below in the app.
+        Welcome to CampusKinect! To complete your registration, please enter the verification code below in the app.
         
         Your Verification Code: ${code}
         (This code expires in 10 minutes)
         
         How to verify:
-        1. Open the CampusConnect app
+        1. Open the CampusKinect app
         2. Go to the verification screen  
         3. Enter the code above
         4. Tap "Verify Account"
         
-        If you didn't create a CampusConnect account, please ignore this email.
+        If you didn't create a CampusKinect account, please ignore this email.
       `
     };
 

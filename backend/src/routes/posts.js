@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, query: queryValidator, param } = require('express-validator');
-const { query, pool } = require('../config/database');
+const { query: dbQuery, pool } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
 const { auth, checkOwnership, requireVerification } = require('../middleware/auth');
@@ -183,7 +183,7 @@ router.get('/organized', [
       countParams.push(tags);
     }
 
-    const countResult = await query(countQuery, countParams);
+    const countResult = await dbQuery(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
 
     // Format posts with organization info
@@ -1219,7 +1219,7 @@ router.get('/', [
       countParams.push(tags);
     }
 
-    const countResult = await query(countQuery, countParams);
+    const countResult = await dbQuery(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
 
     // Format posts
