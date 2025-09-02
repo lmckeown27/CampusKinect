@@ -18,10 +18,10 @@ const ResendCodePage: React.FC = () => {
     try {
       await resendVerificationCode(email);
       setIsSuccess(true);
-      // Redirect to login after 3 seconds
+      // Redirect to login after 10 seconds
       setTimeout(() => {
         router.push('/auth/login');
-      }, 3000);
+      }, 10000);
       
     } catch (error: any) {
       // Error is handled by the store
@@ -45,11 +45,41 @@ const ResendCodePage: React.FC = () => {
             <div className="text-center">
               <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
               <h1 className="text-2xl font-bold text-neutral-900 mb-2">Code Sent!</h1>
-              <p className="text-neutral-600 mb-6">
-                A new verification code has been sent to your university email address. Please check your inbox and spam folder.
+              <p className="text-neutral-600 mb-4">
+                A new verification code has been sent to your university email address.
               </p>
-              <div className="text-sm text-neutral-500">
-                Redirecting to login page...
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div className="flex items-start space-x-2">
+                  <Mail className="text-blue-500 mt-0.5" size={16} />
+                  <div className="text-sm text-blue-700">
+                    <p className="font-medium mb-1">Can't find the email?</p>
+                    <p>• Check your <strong>spam/junk mail folder</strong></p>
+                    <p>• Make sure you entered the correct email address</p>
+                    <p>• If you still don't see it, you can request another code</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setIsSuccess(false);
+                    setEmail('');
+                  }}
+                  className="flex-1 py-2 px-4 border border-primary text-primary rounded-md text-sm font-medium hover:bg-primary hover:text-white transition-colors duration-200"
+                  style={{ cursor: 'pointer' }}
+                >
+                  Send Another Code
+                </button>
+                <Link
+                  href="/auth/verify"
+                  className="flex-1 py-2 px-4 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary-600 transition-colors duration-200 text-center"
+                  style={{ backgroundColor: '#708d81', cursor: 'pointer' }}
+                >
+                  Verify Code
+                </Link>
+              </div>
+              <div className="text-sm text-neutral-500 mt-4">
+                Auto-redirecting to login in 10 seconds...
               </div>
             </div>
           </div>
@@ -159,4 +189,4 @@ const ResendCodePage: React.FC = () => {
   );
 };
 
-export default ResendCodePage; 
+export default ResendCodePage;

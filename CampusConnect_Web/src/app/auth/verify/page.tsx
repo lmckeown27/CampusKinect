@@ -116,10 +116,13 @@ const VerifyPage: React.FC = () => {
               </div>
             )}
 
-            {/* Resend Code Link */}
-            <div className="text-center" style={{ marginBottom: '40px' }}>
-              <span className="text-neutral-900 text-sm">
-                Didn't receive the code?{' '}
+            {/* Spam/Junk Mail Instructions and Resend Link */}
+            <div className="text-center" style={{ marginTop: '20px', marginBottom: '40px' }}>
+              <div className="text-neutral-900 text-sm mb-2">
+                Check your spam/junkmail if you don't see a Verification Code
+              </div>
+              <div className="text-neutral-900 text-sm text-center" style={{ textAlign: 'center' }}>
+                Still don't see the Verification Code?{' '}
                 <button
                   type="button"
                   onClick={handleResendCode}
@@ -131,7 +134,7 @@ const VerifyPage: React.FC = () => {
                 >
                   Resend
                 </button>
-              </span>
+              </div>
             </div>
 
             {/* Submit Button */}
@@ -166,4 +169,4 @@ const VerifyPage: React.FC = () => {
   );
 };
 
-export default VerifyPage; 
+export default VerifyPage;

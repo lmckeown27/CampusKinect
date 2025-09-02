@@ -44,8 +44,7 @@ const HomeTab: React.FC = () => {
   const [offerRequestTags, setOfferRequestTags] = useState<{[key: string]: string[]}>({
     goods: [],
     services: [],
-    housing: [],
-    tutoring: []
+    housing: []
   });
 
   // State to track which category boxes are open
@@ -240,12 +239,11 @@ const HomeTab: React.FC = () => {
   const shouldShowOfferRequestTags = () => {
     const selectedCategories = activeFilter.filter(f => f !== 'all');
     // Show Offer/Request tags when any category that supports them is selected
-    // This includes goods, services, housing, tutoring - anything except events
+    // This includes goods, services, housing - anything except events
     return selectedCategories.some(category => 
       category === 'goods' || 
       category === 'services' || 
-      category === 'housing' || 
-      category === 'tutoring'
+      category === 'housing'
     );
   };
 
@@ -258,8 +256,7 @@ const HomeTab: React.FC = () => {
     const hasNonEventsCategories = selectedCategories.some(category => 
       category === 'goods' || 
       category === 'services' || 
-      category === 'housing' || 
-      category === 'tutoring'
+      category === 'housing'
     );
     
     // Show tags if there are non-events categories (regardless of whether events is also selected)
@@ -279,7 +276,7 @@ const HomeTab: React.FC = () => {
       // Events was added - only clear Offer/Request tags if Events is the only category selected
       // If other categories are also selected, preserve the tags for those categories
       const hasOtherCategories = newCategories.some(cat => 
-        cat === 'goods' || cat === 'services' || cat === 'housing' || cat === 'tutoring'
+        cat === 'goods' || cat === 'services' || cat === 'housing'
       );
       
       if (!hasOtherCategories) {
@@ -287,8 +284,7 @@ const HomeTab: React.FC = () => {
         setOfferRequestTags({
           goods: [],
           services: [],
-          housing: [],
-          tutoring: []
+          housing: []
         });
       }
       // If Events + other categories are selected, preserve existing tags for non-events categories
@@ -354,28 +350,21 @@ const HomeTab: React.FC = () => {
   // Define sub-tags for each main category
   const subTags = {
     goods: [
-      'Textbooks', 'Electronics', 'Furniture', 'Clothing', 'Sports Equipment', 
-      'Books', 'Musical Instruments', 'Art Supplies', 'Kitchen Items', 'Garden Tools',
-      'Automotive', 'Baby Items', 'Pet Supplies', 'Collectibles', 'Other'
+      'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+      'Automotive', 'Pets', 'Pet Supplies', 'Other'
     ],
     services: [
-      'Tutoring', 'Transportation', 'Cleaning', 'Photography', 'Graphic Design',
-      'Web Development', 'Writing & Editing', 'Translation', 'Music Lessons',
-      'Fitness Training', 'Pet Sitting', 'House Sitting', 'Tech Support', 'Event Planning',
-      'Cooking Classes', 'Other'
+      'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',
+      'Tech Support', 'Web Development', 'Writing & Editing', 'Translation', 'Towing',
+      'Other'
     ],
     events: [
-      'Parties', 'Study Groups', 'Sports Events', 'Cultural Events', 'Academic Seminars',
+      'Sports Events', 'Study Groups', 'Rush', 'Philanthropy', 'Cultural Events',
       'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
-      'Concert Outings', 'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
+      'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
     ],
     housing: [
-      'Room for Rent', 'Apartment Share', 'House Share', 'Sublet', 'Short-term Rental',
-      'Roommate Search', 'Moving Help', 'Storage Space', 'Parking Space', 'Other'
-    ],
-    tutoring: [
-      'Math', 'Science', 'Language', 'Computer Science', 'History', 'Literature',
-      'Test Prep', 'Music', 'Art', 'Writing', 'Public Speaking', 'Study Skills', 'Other'
+      'Leasing', 'Subleasing', 'Roommate Search', 'Storage Space', 'Other'
     ]
   };
 
@@ -445,8 +434,7 @@ const HomeTab: React.FC = () => {
     setOfferRequestTags({
       goods: [],
       services: [],
-      housing: [],
-      tutoring: []
+      housing: []
     });
     clearFilters();
   };

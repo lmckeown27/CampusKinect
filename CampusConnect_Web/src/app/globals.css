@@ -1014,6 +1014,41 @@ select.border-olive-green:focus {
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100% - 40px); /* Account for category header */
+  
+  /* Hide scrollbar by default */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari) by default */
+.category-buttons-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Show scrollbar on hover */
+.category-buttons-container:hover {
+  scrollbar-width: thin; /* Firefox */
+  -ms-overflow-style: auto; /* Internet Explorer and Edge */
+}
+
+/* Show scrollbar for WebKit browsers on hover */
+.category-buttons-container:hover::-webkit-scrollbar {
+  width: 8px;
+}
+
+.category-buttons-container:hover::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.category-buttons-container:hover::-webkit-scrollbar-thumb {
+  background: #708d81;
+  border-radius: 4px;
+}
+
+.category-buttons-container:hover::-webkit-scrollbar-thumb:hover {
+  background: #5a7268;
 }
 
 .category-button {

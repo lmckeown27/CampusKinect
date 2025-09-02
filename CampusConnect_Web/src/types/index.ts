@@ -91,7 +91,7 @@ export interface PaginatedResponse<T> {
 export interface CreatePostForm {
   title: string;
   description: string;
-  postType: 'goods' | 'services' | 'events' | 'housing' | 'tutoring';
+  postType: 'goods' | 'services' | 'events' | 'housing';
   duration: string;
   location?: string;
   tags: string[];

@@ -68,24 +68,21 @@ const CreatePostTab: React.FC = () => {
   // Define sub-tags for each post type (same as Home tab)
   const subTags = {
     goods: [
-      'Textbooks', 'Electronics', 'Furniture', 'Clothing', 'Sports Equipment', 
-      'Books', 'Musical Instruments', 'Art Supplies', 'Kitchen Items', 'Garden Tools',
-      'Automotive', 'Baby Items', 'Pet Supplies', 'Collectibles', 'Other'
+      'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+      'Automotive', 'Pets', 'Pet Supplies', 'Other'
     ],
     services: [
-      'Tutoring', 'Transportation', 'Cleaning', 'Photography', 'Graphic Design',
-      'Web Development', 'Writing & Editing', 'Translation', 'Music Lessons',
-      'Fitness Training', 'Pet Sitting', 'House Sitting', 'Tech Support', 'Event Planning',
-      'Cooking Classes', 'Other'
+      'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',
+      'Tech Support', 'Web Development', 'Writing & Editing', 'Translation', 'Towing',
+      'Other'
     ],
     events: [
-      'Parties', 'Study Groups', 'Sports Events', 'Cultural Events', 'Academic Seminars',
+      'Sports Events', 'Study Groups', 'Rush', 'Philanthropy', 'Cultural Events',
       'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
-      'Concert Outings', 'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
+      'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
     ],
     housing: [
-      'Room for Rent', 'Apartment Share', 'House Share', 'Sublet', 'Short-term Rental',
-      'Roommate Search', 'Moving Help', 'Storage Space', 'Parking Space', 'Other'
+      'Leasing', 'Subleasing', 'Roommate Search', 'Storage Space', 'Other'
     ]
   };
 
@@ -97,24 +94,11 @@ const CreatePostTab: React.FC = () => {
   const postTypes = [
     { value: 'goods', label: 'Good', icon: '🛍️' },
     { value: 'services', label: 'Service', icon: '🔧' },
-    { value: 'events', label: 'Event', icon: '📅' },
     { value: 'housing', label: 'Housing', icon: '🏠' },
+    { value: 'events', label: 'Event', icon: '📅' },
   ];
 
-  const mainTags = [
-    { id: 'books', label: 'Books', category: 'goods' },
-    { id: 'electronics', label: 'Electronics', category: 'goods' },
-    { id: 'clothing', label: 'Clothing', category: 'goods' },
-    { id: 'furniture', label: 'Furniture', category: 'goods' },
-    { id: 'housing', label: 'Housing', category: 'goods' },
-    { id: 'tutoring', label: 'Tutoring', category: 'services' },
-    { id: 'transportation', label: 'Transportation', category: 'services' },
-    { id: 'cleaning', label: 'Cleaning', category: 'services' },
-    { id: 'catering', label: 'Catering', category: 'services' },
-    { id: 'parties', label: 'Parties', category: 'events' },
-    { id: 'meetups', label: 'Meetups', category: 'events' },
-    { id: 'workshops', label: 'Workshops', category: 'events' },
-  ];
+
 
   useEffect(() => {
     const savedTags = localStorage.getItem('campusConnect_offerRequestTags');
