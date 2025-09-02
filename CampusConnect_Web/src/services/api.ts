@@ -167,12 +167,17 @@ class ApiService {
     const response: AxiosResponse<ApiResponse<{posts: Post[], pagination: any}>> = 
       await this.api.get(`/posts?${params}`);
     
-    console.log('getPosts raw response:', response.data);
+
     
     if (response.data.success && response.data.data) {
       // Transform backend structure to frontend structure
+      const transformedPosts = response.data.data.posts.map((post: any) => ({
+        ...post,
+        user: post.poster, // Map 'poster' to 'user' for frontend compatibility
+      }));
+      
       return {
-        data: response.data.data.posts,
+        data: transformedPosts,
         pagination: response.data.data.pagination
       };
     }
@@ -181,10 +186,14 @@ class ApiService {
   }
 
   public async getPost(id: string): Promise<Post> {
-    const response: AxiosResponse<ApiResponse<Post>> = await this.api.get(`/posts/${id}`);
+    const response: AxiosResponse<ApiResponse<any>> = await this.api.get(`/posts/${id}`);
     
     if (response.data.success && response.data.data) {
-      return response.data.data;
+      // Transform backend structure to frontend structure
+      return {
+        ...response.data.data,
+        user: response.data.data.poster, // Map 'poster' to 'user' for frontend compatibility
+      };
     }
     
     throw new Error(response.data.message || 'Failed to fetch post');
@@ -222,14 +231,18 @@ class ApiService {
     console.log('Sending transformed data:', transformedData);
 
     try {
-      const response: AxiosResponse<ApiResponse<Post>> = await this.api.post('/posts', transformedData, {
+      const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/posts', transformedData, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
       
       if (response.data.success && response.data.data) {
-        return response.data.data;
+        // Transform backend structure to frontend structure
+        return {
+          ...response.data.data,
+          user: response.data.data.poster, // Map 'poster' to 'user' for frontend compatibility
+        };
       }
       
       throw new Error(response.data.message || 'Failed to create post');

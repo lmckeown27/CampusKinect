@@ -5,14 +5,13 @@ import { Post } from '../../types';
 import { 
   formatDate, 
   getPostTypeColor, 
-  getPostTypeIcon, 
-  getGradeColor, 
-  getGradeLabel 
+  getPostTypeIcon
 } from '../../utils';
 import { 
   MessageCircle, 
   Share2, 
   Bookmark, 
+  Repeat,
   MoreHorizontal,
   MapPin,
   Clock,
@@ -62,45 +61,123 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     }
   };
 
+  const handleRepost = () => {
+    // Implement repost functionality
+    console.log('Repost:', post.id);
+    // This would typically create a new post that references the original
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-6">
       {/* Post Header */}
       <div className="p-4 border-b border-gray-100">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            {post.user?.profileImage ? (
-              <img
-                src={post.user.profileImage}
-                alt={post.user.firstName}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                <User size={20} className="text-white" />
-              </div>
-            )}
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {post.user?.firstName} {post.user?.lastName}
-                </p>
-                <span className="text-xs text-gray-500">•</span>
-                <span className="text-xs text-gray-500">{formatDate(post.createdAt)}</span>
-              </div>
-              
-              {post.user?.major && (
-                <p className="text-xs text-gray-500 truncate">
-                  {post.user.major} • {post.user.year ? getYearLabel(post.user.year) : 'Not specified'}
-                </p>
+        {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
+        <div className="flex items-center justify-between mb-3">
+          {/* Post Type Badge - Top Left */}
+          <div className={`px-3 py-1 rounded-full text-sm font-medium ${getPostTypeColor(post.postType)}`}>
+            <span className="mr-1">{getPostTypeIcon(post.postType)}</span>
+            {post.postType ? post.postType.charAt(0).toUpperCase() + post.postType.slice(1) : 'Unknown'}
+          </div>
+
+          {/* Action Icons - Top Right */}
+          <div className="flex items-center" style={{ gap: '16px' }}>
+            <button
+              onClick={handleShare}
+              className="p-2 rounded-lg transition-all duration-200"
+              style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+            >
+              <Share2 size={18} />
+            </button>
+
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowOptions(!showOptions);
+                }}
+                className="p-2 rounded-lg transition-all duration-200"
+                style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+              >
+                <MoreHorizontal size={18} />
+              </button>
+
+              {/* Dropdown menu positioned relative to the three dots button */}
+              {showOptions && (
+                <div 
+                  className="absolute w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2"
+                  style={{ 
+                    top: '100%',
+                    right: '0',
+                    marginTop: '4px',
+                    zIndex: 1000
+                  }}
+                >
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
+                    Report Post
+                  </button>
+                  <button 
+                    onClick={handleShare}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                  >
+                    Copy Link
+                  </button>
+                </div>
               )}
             </div>
           </div>
+        </div>
 
-          {/* Post Type Badge */}
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPostTypeColor(post.postType)}`}>
-            <span className="mr-1">{getPostTypeIcon(post.postType)}</span>
-            {post.postType ? post.postType.charAt(0).toUpperCase() + post.postType.slice(1) : 'Unknown'}
+        {/* Bottom Row: User Info */}
+        <div className="flex items-center space-x-3">
+          {post.user?.profileImage ? (
+            <img
+              src={post.user.profileImage}
+              alt={post.user.firstName}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <User size={20} className="text-white" />
+            </div>
+          )}
+          
+          <div className="flex-1 min-w-0">
+            {/* Display Name - Large and Bold */}
+            <div className="flex items-center space-x-2 mb-0">
+              <p 
+                className="font-bold text-gray-900 truncate"
+                style={{ fontSize: '18px', lineHeight: '20px' }}
+              >
+                {post.user?.firstName && post.user?.lastName 
+                  ? `${post.user.firstName} ${post.user.lastName}`
+                  : post.user?.displayName || post.user?.username || 'Unknown User'
+                }
+              </p>
+              <span className="text-xs text-gray-500">•</span>
+              <span className="text-xs text-gray-500">{formatDate(post.createdAt)}</span>
+            </div>
+            
+            {/* Username - Small and Separate */}
+            {post.user?.username && post.user?.firstName && (
+              <p 
+                className="text-gray-400 truncate"
+                style={{ fontSize: '10px', lineHeight: '12px', marginTop: '-2px' }}
+              >
+                @{post.user.username}
+              </p>
+            )}
+            
+            {/* Major and Year */}
+            {post.user?.major && (
+              <p className="text-xs text-gray-500 truncate">
+                {post.user.major} • {post.user.year ? getYearLabel(post.user.year) : 'Not specified'}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -160,19 +237,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             <span>{post.duration}</span>
           </div>
         </div>
-
-        {/* Grade Display */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Grade:</span>
-            <span className={`text-lg font-bold ${getGradeColor(post.grade)}`}>
-              {getGradeLabel(post.grade)}
-            </span>
-            <span className={`text-sm ${getGradeColor(post.grade)}`}>
-              ({post.grade}%)
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* Post Actions */}
@@ -181,53 +245,50 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <div className="flex items-center space-x-4">
             <button
               onClick={handleMessage}
-              className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200"
+              style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
             >
               <MessageCircle size={18} />
               <span className="text-sm font-medium">Message</span>
             </button>
-
-            <button
-              onClick={handleShare}
-              className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors cursor-pointer"
-            >
-              <Share2 size={18} />
-              <span className="text-sm font-medium">Share</span>
-            </button>
           </div>
 
-          <div className="flex items-center space-x-2">
+          {/* Repost and Bookmark - Bottom Right */}
+          <div className="flex items-center" style={{ gap: '16px' }}>
+            <button
+              onClick={handleRepost}
+              className="p-2 rounded-lg transition-all duration-200"
+              style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+            >
+              <Repeat size={18} />
+            </button>
+            
             <button
               onClick={handleBookmark}
-              className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                isBookmarked
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-              }`}
+              className="p-2 rounded-lg transition-all duration-200"
+              style={{ 
+                backgroundColor: isBookmarked ? '#a8c4a2' : '#708d81', 
+                color: 'white', 
+                border: isBookmarked ? '2px solid #a8c4a2' : '2px solid #708d81', 
+                cursor: 'pointer' 
+              }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.backgroundColor = '#a8c4a2'; 
+                e.currentTarget.style.border = '2px solid #a8c4a2'; 
+                e.currentTarget.style.cursor = 'pointer'; 
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.backgroundColor = isBookmarked ? '#a8c4a2' : '#708d81'; 
+                e.currentTarget.style.border = isBookmarked ? '2px solid #a8c4a2' : '2px solid #708d81'; 
+                e.currentTarget.style.cursor = 'pointer'; 
+              }}
             >
               <Bookmark size={18} fill={isBookmarked ? 'currentColor' : 'none'} />
             </button>
-
-            <div className="relative">
-              <button
-                onClick={() => setShowOptions(!showOptions)}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-              >
-                <MoreHorizontal size={18} />
-              </button>
-
-              {/* Options Dropdown */}
-              {showOptions && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
-                    Report Post
-                  </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
-                    Block User
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
@@ -239,6 +300,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           onClick={() => setShowOptions(false)}
         />
       )}
+
+
     </div>
   );
 };

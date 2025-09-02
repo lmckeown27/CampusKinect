@@ -35,14 +35,8 @@ const HomeTab: React.FC = () => {
 
   // Fetch posts when component mounts
   useEffect(() => {
-    console.log('HomeTab mounting, fetching posts...');
     fetchPosts(1, true); // Fetch first page, reset the list
   }, [fetchPosts]);
-
-  // Debug: Log when posts change
-  useEffect(() => {
-    console.log('HomeTab posts updated:', filteredPosts);
-  }, [filteredPosts]);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
