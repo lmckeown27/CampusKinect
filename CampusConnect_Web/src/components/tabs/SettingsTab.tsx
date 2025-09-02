@@ -7,21 +7,8 @@ import { useAuthStore } from '../../stores/authStore';
 const SettingsTab: React.FC = () => {
   const { user: authUser } = useAuthStore();
   
-  // Mock user data for testing (same as ProfileTab)
-  const mockUser = {
-    firstName: "Liam",
-    lastName: "McKeown",
-    email: "lmckeown@calpoly.edu",
-    username: "liam_mckeown38",
-    major: "Computer Science",
-    year: 3,
-    hometown: "San Jose, CA",
-    biography: "Passionate computer science student with a love for problem-solving and innovation.",
-    profileImage: null
-  };
-  
-  // Use auth user if available, otherwise fall back to mock data
-  const user = authUser || mockUser;
+  // Use real user data from auth store
+  const user = authUser;
   
   const [notifications, setNotifications] = useState({
     email: true,

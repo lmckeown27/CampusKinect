@@ -43,6 +43,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
                             }`}
                             style={{
                               backgroundColor: value === option.value ? '#708d81' : '#f0f2f0',
+                              color: value === option.value ? 'white' : '#708d81',
                               cursor: 'pointer'
                             }}
                             onMouseEnter={(e) => {
@@ -56,8 +57,17 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
                               }
                             }}
                           >
-                            <Icon size={20} className="mx-auto mb-2" />
-                            <div className="text-sm font-medium">{option.label}</div>
+                            <Icon 
+                              size={20} 
+                              className="mx-auto mb-2" 
+                              style={{ color: 'inherit' }}
+                            />
+                            <div 
+                              className="text-sm font-medium" 
+                              style={{ color: 'inherit' }}
+                            >
+                              {option.label}
+                            </div>
                           </button>
                           
                           {/* Duration Details Display - Always Visible */}

@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../layout/Header';
 import { NavigationProvider, useNavigation } from './NavigationContext';
 import Navigationbar from '../layout/Navigationbar';
 import Profilebar from '../layout/Profilebar';
 import { useRouter } from 'next/navigation';
-// import { useAuthStore } from '../../stores/authStore';
+import { useAuthStore } from '../../stores/authStore';
 // import { useNavigation } from './NavigationContext';
 // import { Users, Calendar, DollarSign, BookOpen, TrendingUp, UserPlus, Menu } from 'lucide-react';
 
@@ -15,26 +15,15 @@ interface MainLayoutProps {
 }
 
 const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
-  // Temporarily bypass auth check for testing
-  const isAuthenticated = true; // Force authenticated state
-  const isLoading = false; // Force not loading state
-  
-  // const { isAuthenticated, checkAuth, isLoading } = useAuthStore();
+  // Real authentication (no longer bypassed)
+  const { isAuthenticated, checkAuth, isLoading, user } = useAuthStore();
   const { showNavigation, setShowNavigation, showProfileDropdown, setShowProfileDropdown } = useNavigation();
   const router = useRouter();
-  
-  // Mock user data for testing
-  const user = {
-    firstName: "Liam",
-    lastName: "McKeown",
-    email: "liam.mckeown38415@gmail.com",
-    username: "liam_mckeown38"
-  };
 
-  // useEffect(() => {
-  //   // Check authentication status on mount
-  //   checkAuth();
-  // }, [checkAuth]);
+  useEffect(() => {
+    // Check authentication status on mount
+    checkAuth();
+  }, [checkAuth]);
 
   if (isLoading) {
     return (

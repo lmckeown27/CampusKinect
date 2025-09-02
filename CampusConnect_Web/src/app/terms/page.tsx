@@ -156,7 +156,7 @@ export default function TermsOfServicePage() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                   <p className="text-blue-800 font-medium">CampusKinect Support</p>
                   <p className="text-blue-700 text-sm mt-1">
-                    Email: liam.mckeown38415@gmail.com<br />
+                    Email: support@campuskinect.com<br />
                     Response time: Whenever I get around to it
                   </p>
                 </div>

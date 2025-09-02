@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Edit, Save, X, User, Mail, Calendar, MapPin, GraduationCap, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
-import { Post } from '../../types';
+import { Edit2, Camera, X } from 'lucide-react';
 
-// Helper function to convert year number to descriptive name
+// Helper function to get year label
 const getYearLabel = (year: number): string => {
   const yearLabels: { [key: number]: string } = {
     1: 'Freshman',
@@ -14,6 +13,7 @@ const getYearLabel = (year: number): string => {
     4: 'Senior',
     5: 'Super Senior'
   };
+
   return yearLabels[year] || `Year ${year}`;
 };
 
@@ -33,80 +33,72 @@ const ProfileTab: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('campusConnect_profileActiveTab', activeTab);
   }, [activeTab]);
+
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Mock user data for testing (same as MainLayout)
-  const mockUser = {
-    firstName: "Liam",
-    lastName: "McKeown",
-    email: "liam.mckeown38415@gmail.com",
-    username: "liam_mckeown38",
-    major: "Computer Science",
-    year: 3,
-    hometown: "San Jose, CA",
-    biography: "Passionate computer science student with a love for problem-solving and innovation.",
-    profileImage: null
-  };
-  
-  // Use mock user if authStore doesn't have user data
-  const [user, setUser] = useState(() => {
-    // Try to load from localStorage first, then fall back to mock data
-    const savedProfile = localStorage.getItem('campusConnect_profile');
-    if (savedProfile) {
-      try {
-        const parsedProfile = JSON.parse(savedProfile);
-        return { ...mockUser, ...parsedProfile };
-      } catch (error) {
-        console.error('Failed to parse saved profile:', error);
-        return mockUser;
-      }
+  // Use real user data from auth store
+  const [user, setUser] = useState<any>(() => {
+    if (authUser) {
+      return authUser;
     }
-    return mockUser;
+    return null;
   });
   
-  // Load saved profile data from localStorage on component mount
+  // Load saved profile data and sync with auth user
   useEffect(() => {
-    const savedProfile = localStorage.getItem('campusConnect_profile');
-    if (savedProfile) {
-      try {
-        const parsedProfile = JSON.parse(savedProfile);
-        const updatedUser = { ...mockUser, ...parsedProfile };
-        setUser(updatedUser);
-        
-        // Also update editForm with the loaded data
+    if (authUser) {
+      const savedProfile = localStorage.getItem('campusConnect_profile');
+      if (savedProfile) {
+        try {
+          const parsedProfile = JSON.parse(savedProfile);
+          // Merge saved profile data but preserve core user fields from authUser
+          const updatedUser = { 
+            ...authUser, 
+            ...parsedProfile,
+            // Always preserve these core fields from authUser
+            id: authUser.id,
+            username: authUser.username,
+            email: authUser.email,
+            createdAt: authUser.createdAt
+          };
+          setUser(updatedUser);
+          
+          // Also update editForm with the loaded data
+          setEditForm({
+            firstName: updatedUser.firstName || '',
+            lastName: updatedUser.lastName || '',
+            major: updatedUser.major || '',
+            year: updatedUser.year || 1,
+            hometown: updatedUser.hometown || '',
+            biography: updatedUser.bio || '',
+          });
+        } catch (error) {
+          console.error('Failed to parse saved profile:', error);
+          // Set editForm with real user data if parsing fails
+          setEditForm({
+            firstName: authUser.firstName || '',
+            lastName: authUser.lastName || '',
+            major: authUser.major || '',
+            year: authUser.year || 1,
+            hometown: authUser.hometown || '',
+            biography: authUser.bio || '',
+          });
+        }
+      } else {
+        // No saved profile, use real user data
+        setUser(authUser);
         setEditForm({
-          firstName: updatedUser.firstName || '',
-          lastName: updatedUser.lastName || '',
-          major: updatedUser.major || '',
-          year: updatedUser.year || 1,
-          hometown: updatedUser.hometown || '',
-          biography: updatedUser.biography || '',
-        });
-      } catch (error) {
-        console.error('Failed to parse saved profile:', error);
-        // Set editForm with mock data if parsing fails
-        setEditForm({
-          firstName: mockUser.firstName || '',
-          lastName: mockUser.lastName || '',
-          major: mockUser.major || '',
-          year: mockUser.year || 1,
-          hometown: mockUser.hometown || '',
-          biography: mockUser.biography || '',
+          firstName: authUser.firstName || '',
+          lastName: authUser.lastName || '',
+          major: authUser.major || '',
+          year: authUser.year || 1,
+          hometown: authUser.hometown || '',
+          biography: authUser.bio || '',
         });
       }
-    } else {
-      // No saved profile, use mock data
-      setEditForm({
-        firstName: mockUser.firstName || '',
-        lastName: mockUser.lastName || '',
-        major: mockUser.major || '',
-        year: mockUser.year || 1,
-        hometown: mockUser.hometown || '',
-        biography: mockUser.biography || '',
-      });
     }
-  }, []);
+  }, [authUser]);
   
   const [editForm, setEditForm] = useState({
     firstName: '',
@@ -117,59 +109,6 @@ const ProfileTab: React.FC = () => {
     biography: '',
   });
   
-
-
-
-
-  // Mock data for posts and bookmarks - REMOVED
-  // const mockPosts: Post[] = [
-  //   {
-  //     id: '1',
-  //     title: 'Calculus Textbook for Sale',
-  //     description: 'Excellent condition, barely used. Includes all practice problems.',
-  //     postType: 'goods',
-  //     duration: 'one-time',
-  //     tags: ['textbooks', 'math', 'calculus'],
-  //     userId: 'user1',
-  //     universityId: 'uni1',
-  //     grade: 95,
-  //     isActive: true,
-  //     createdAt: '2024-01-15T10:00:00Z',
-  //     updatedAt: '2024-01-15T10:00:00Z',
-  //   },
-  //   {
-  //     id: '2',
-  //     title: 'Math Tutoring Available',
-  //     description: 'Experienced tutor offering help with calculus, linear algebra, and statistics.',
-  //     postType: 'tutoring',
-  //     duration: 'recurring',
-  //     tags: ['tutoring', 'math', 'calculus', 'statistics'],
-  //     userId: 'user1',
-  //     universityId: 'uni1',
-  //     grade: 92,
-  //     isActive: true,
-  //     createdAt: '2024-01-10T14:30:00Z',
-  //     updatedAt: '2024-01-10T14:30:00Z',
-  //   },
-  // ];
-
-  // const mockBookmarks: Post[] = [
-  //   {
-  //     id: '3',
-  //     title: 'Roommate Needed for Fall Semester',
-  //     description: 'Looking for a roommate for a 2-bedroom apartment near campus.',
-  //     postType: 'housing',
-  //     duration: 'indefinite',
-  //     tags: ['housing', 'roommate', 'apartment'],
-  //     userId: 'user2',
-  //     universityId: 'uni1',
-  //     grade: 88,
-  //     isActive: true,
-  //     createdAt: '2024-01-12T09:15:00Z',
-  //     updatedAt: '2024-01-12T09:15:00Z',
-  //   },
-  // ];
-
   const years = [
     { value: 1, label: 'Freshman' },
     { value: 2, label: 'Sophomore' },
@@ -185,364 +124,345 @@ const ProfileTab: React.FC = () => {
       ...editForm
     }));
     
-    // Save to localStorage - merge with existing profile data
-    const currentProfile = localStorage.getItem('campusConnect_profile');
-    const existingProfile = currentProfile ? JSON.parse(currentProfile) : {};
-    const updatedProfile = { ...existingProfile, ...editForm };
-    localStorage.setItem('campusConnect_profile', JSON.stringify(updatedProfile));
-
+    // Save to localStorage
+    localStorage.setItem('campusConnect_profile', JSON.stringify(editForm));
+    
+    // Exit edit mode
     setIsEditing(false);
   };
 
-  const handleCancelEdit = () => {
-    // Load fresh data from localStorage instead of using potentially stale user state
-    const savedProfile = localStorage.getItem('campusConnect_profile');
-    if (savedProfile) {
-      try {
-        const parsedProfile = JSON.parse(savedProfile);
-        const currentUser = { ...mockUser, ...parsedProfile };
-        setEditForm({
-          firstName: currentUser.firstName || '',
-          lastName: currentUser.lastName || '',
-          major: currentUser.major || '',
-          year: currentUser.year || 1,
-          hometown: currentUser.hometown || '',
-          biography: currentUser.biography || '',
-        });
-      } catch (error) {
-        console.error('Failed to parse saved profile in cancel:', error);
-      }
-    } else {
-      // Fall back to mock data if no saved profile
-      setEditForm({
-        firstName: mockUser.firstName || '',
-        lastName: mockUser.lastName || '',
-        major: mockUser.major || '',
-        year: mockUser.year || 1,
-        hometown: mockUser.hometown || '',
-        biography: mockUser.biography || '',
-      });
-    }
-    setIsEditing(false);
-  };
-
-  const handleProfileImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
-        return;
-      }
-
       const reader = new FileReader();
       reader.onload = (e) => {
-        const imageData = e.target?.result as string;
-        
-        // Update user state with new image
+        const imageUrl = e.target?.result as string;
         setUser((prevUser: any) => ({
           ...prevUser,
-          profileImage: imageData
+          profileImage: imageUrl
         }));
         
-        // Save to localStorage - merge with existing profile data
-        const currentProfile = localStorage.getItem('campusConnect_profile');
-        const profileData = currentProfile ? JSON.parse(currentProfile) : {};
-        profileData.profileImage = imageData;
-        localStorage.setItem('campusConnect_profile', JSON.stringify(profileData));
-        
-        // Also update the user state to include the new image
-        setUser((prevUser: any) => ({
-          ...prevUser,
-          profileImage: imageData
+        // Save image to localStorage
+        const currentProfile = JSON.parse(localStorage.getItem('campusConnect_profile') || '{}');
+        localStorage.setItem('campusConnect_profile', JSON.stringify({
+          ...currentProfile,
+          profileImage: imageUrl
         }));
       };
-      
       reader.readAsDataURL(file);
     }
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    setEditForm(prev => ({ ...prev, [field]: value }));
-  };
-
-  const renderPostCard = (post: Post, showActions: boolean = false) => (
-    <div key={post.id} className="bg-white rounded-lg border border-gray-200 p-4">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h4 className="font-medium text-gray-900 mb-1">{post.title}</h4>
-          <p className="text-sm text-gray-600 line-clamp-2">{post.description}</p>
-        </div>
-        {showActions && (
-          <div className="flex items-center space-x-2 ml-4">
-            <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-              <Edit size={16} />
-            </button>
-            <button className="p-1 text-gray-400 hover:text-red-600 transition-colors">
-              <Trash2 size={16} />
-            </button>
-          </div>
-        )}
-      </div>
-      
-      <div className="flex items-center justify-between text-sm text-gray-500">
-        <span className="capitalize">{post.postType}</span>
-        <span>Grade: {post.grade}%</span>
-      </div>
-    </div>
-  );
-
+  // Show loading state if no user data
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8f9f6' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#708d81] mx-auto mb-4"></div>
+          <p className="text-[#708d81]">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ backgroundColor: '#f8f9f6' }}>
-      {/* Profile Header */}
-      <div className="bg-white border-b border-[#708d81]">
-        <div className="max-w-xl mx-auto px-4 py-6">
+    <div className="min-h-screen" style={{ backgroundColor: '#f8f9f6', paddingTop: '20px', paddingBottom: '100px' }}>
+      <div className="max-w-4xl mx-auto p-6">
+        {/* Profile Header */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-start space-x-6">
-            {/* Profile Image */}
+            {/* Profile Picture */}
             <div className="relative">
-              {user.profileImage ? (
-                <img
-                  src={user.profileImage}
-                  alt={user.firstName}
-                  className="w-24 h-24 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-24 h-24 bg-[#708d81] rounded-full flex items-center justify-center">
-                  <User size={48} className="text-white" />
-                </div>
-              )}
-                                      <button 
-                          onClick={handleProfileImageClick}
-                          className="absolute bottom-0 right-0 w-8 h-8 bg-[#708d81] text-white rounded-full flex items-center justify-center hover:bg-[#5a7268] transition-colors shadow-sm cursor-pointer"
-                          style={{ cursor: 'pointer' }}
-                          title="Change profile picture"
-                        >
-                          <Edit size={16} />
-                        </button>
-              
-              {/* Hidden file input for profile image upload */}
+              <div 
+                className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden transition-all duration-200"
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  backgroundColor: '#e5e7eb', // gray-200
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#d1d5db'; // light grey (gray-300)
+                  e.currentTarget.style.cursor = 'pointer';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#e5e7eb'; // return to gray-200
+                  e.currentTarget.style.cursor = 'pointer';
+                }}
+              >
+                {user?.profileImage ? (
+                  <img 
+                    src={user.profileImage} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover transition-opacity duration-200"
+                    style={{ opacity: 1 }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '0.8'; // Slightly fade image on hover
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1'; // Return to full opacity
+                    }}
+                  />
+                ) : (
+                  <Camera 
+                    size={24} 
+                    className="text-gray-400 transition-colors duration-200"
+                    style={{ color: '#9ca3af' }} // gray-400
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#6b7280'; // darker grey (gray-500) on hover
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#9ca3af'; // return to gray-400
+                    }}
+                  />
+                )}
+              </div>
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                onChange={handleImageChange}
+                onChange={handleImageUpload}
                 className="hidden"
               />
             </div>
 
             {/* Profile Info */}
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h1 className="text-2xl font-bold text-[#708d81]">
-                    {user.firstName} {user.lastName}
-                  </h1>
-                  <p className="text-[#708d81] opacity-70">@{user.username}</p>
-                </div>
-                
-                {/* Edit Profile Form - Inline with button */}
-                {isEditing && (
-                  <div className="flex items-center">
-                    <div className="flex flex-col" style={{ marginRight: '24px' }}>
-                      <input
-                        type="text"
-                        value={editForm.major}
-                        onChange={(e) => handleInputChange('major', e.target.value)}
-                        placeholder="Major"
-                        className="w-48 px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-sm"
-                        style={{ marginBottom: '16px' }}
-                      />
-                      <select
-                        value={editForm.year}
-                        onChange={(e) => handleInputChange('year', parseInt(e.target.value || '0'))}
-                        className="w-48 px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-sm"
-                        style={{ marginBottom: '16px' }}
-                      >
-                        {years.map(year => (
-                          <option key={year.value} value={year.value}>{year.label}</option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        value={editForm.hometown}
-                        onChange={(e) => handleInputChange('hometown', e.target.value)}
-                        placeholder="Hometown"
-                        className="w-48 px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-sm"
-                      />
-                    </div>
-                    
-                    <div className="flex flex-col">
-                      <textarea
-                        value={editForm.biography}
-                        onChange={(e) => handleInputChange('biography', e.target.value)}
-                        placeholder="Biography"
-                        rows={3}
-                        className="w-48 px-3 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none text-sm"
-                        style={{ marginBottom: '16px' }}
-                      />
-                      
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={handleCancelEdit}
-                          className="px-3 py-1 rounded transition-colors text-sm cursor-pointer"
-                          style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={handleSaveProfile}
-                          className="px-3 py-1 rounded transition-colors text-sm cursor-pointer"
-                          style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
+              {isEditing ? (
+                <div className="space-y-4">
+                  <div className="flex space-x-4">
+                    <input
+                      type="text"
+                      value={editForm.firstName}
+                      onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
+                      placeholder="First Name"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                    />
+                    <input
+                      type="text"
+                      value={editForm.lastName}
+                      onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
+                      placeholder="Last Name"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                    />
                   </div>
-                )}
-                
+                  
+                  <input
+                    type="text"
+                    value={editForm.major}
+                    onChange={(e) => setEditForm({ ...editForm, major: e.target.value })}
+                    placeholder="Major"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                  />
+                  
+                  <select
+                    value={editForm.year}
+                    onChange={(e) => setEditForm({ ...editForm, year: parseInt(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                  >
+                    {years.map(year => (
+                      <option key={year.value} value={year.value}>{year.label}</option>
+                    ))}
+                  </select>
+                  
+                  <input
+                    type="text"
+                    value={editForm.hometown}
+                    onChange={(e) => setEditForm({ ...editForm, hometown: e.target.value })}
+                    placeholder="Hometown"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                  />
+                  
+                  <textarea
+                    value={editForm.biography}
+                    onChange={(e) => setEditForm({ ...editForm, biography: e.target.value })}
+                    placeholder="Tell us about yourself..."
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                  />
+                  
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleSaveProfile}
+                      className="py-4 px-6 text-lg font-semibold rounded-lg transition-all duration-200"
+                      style={{
+                        backgroundColor: '#708d81',
+                        color: 'white',
+                        border: '2px solid #708d81',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#a8c4a2';
+                        e.currentTarget.style.border = '2px solid #a8c4a2';
+                        e.currentTarget.style.cursor = 'pointer';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                        e.currentTarget.style.border = '2px solid #708d81';
+                        e.currentTarget.style.cursor = 'pointer';
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className="py-4 px-6 text-lg font-semibold rounded-lg transition-all duration-200"
+                      style={{
+                        backgroundColor: '#708d81',
+                        color: 'white',
+                        border: '2px solid #708d81',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#a8c4a2';
+                        e.currentTarget.style.border = '2px solid #a8c4a2';
+                        e.currentTarget.style.cursor = 'pointer';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                        e.currentTarget.style.border = '2px solid #708d81';
+                        e.currentTarget.style.cursor = 'pointer';
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {user?.firstName} {user?.lastName}
+                    </h1>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="p-2 rounded-lg transition-all duration-200"
+                      style={{
+                        backgroundColor: '#708d81',
+                        color: 'white',
+                        border: '2px solid #708d81',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#a8c4a2';
+                        e.currentTarget.style.border = '2px solid #a8c4a2';
+                        e.currentTarget.style.cursor = 'pointer';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                        e.currentTarget.style.border = '2px solid #708d81';
+                        e.currentTarget.style.cursor = 'pointer';
+                      }}
+                    >
+                      <Edit2 size={20} />
+                    </button>
+                  </div>
+                  
+                  <p className="text-gray-600 mb-1">@{user?.username || 'username'}</p>
+                  <p className="text-gray-600 mb-1">{user?.email}</p>
+                  
+                  {user?.major && (
+                    <p className="text-gray-600 mb-1">
+                      <strong>Major:</strong> {user?.major}
+                    </p>
+                  )}
+                  
+                  {user?.year && (
+                    <p className="text-gray-600 mb-1">
+                      <strong>Year:</strong> {getYearLabel(user.year)}
+                    </p>
+                  )}
+                  
+                  {user?.hometown && (
+                    <p className="text-gray-600 mb-1">
+                      <strong>Hometown:</strong> {user?.hometown}
+                    </p>
+                  )}
+                  
+                  {(user?.bio || user?.biography) && (
+                    <p className="text-gray-700 mt-3">
+                      {user?.bio || user?.biography}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="p-6">
+            <nav className="flex justify-center space-x-4" key="nav-buttons">
+              {['posts', 'reposts', 'bookmarks'].map((tab) => (
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="px-4 py-2 rounded-lg transition-colors cursor-pointer"
-                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
+                  key={tab}
+                  onClick={() => setActiveTab(tab as any)}
+                  className="py-3 px-6 font-semibold text-lg rounded-lg transition-all duration-200"
+                  style={
+                    activeTab === tab
+                      ? {
+                          backgroundColor: 'white',
+                          color: '#708d81',
+                          border: '2px solid #708d81',
+                          cursor: 'pointer'
+                        }
+                      : {
+                          backgroundColor: '#708d81',
+                          color: 'white',
+                          border: '2px solid #708d81',
+                          cursor: 'pointer'
+                        }
+                  }
+                  onMouseEnter={(e) => {
+                    if (activeTab === tab) {
+                      // Selected button: turn complete white on hover
+                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.color = '#708d81';
+                      e.currentTarget.style.border = '2px solid #708d81';
+                    } else {
+                      // Unselected button: turn light green on hover
+                      e.currentTarget.style.backgroundColor = '#a8c4a2'; // Light green
+                      e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.border = '2px solid #a8c4a2';
+                    }
+                    e.currentTarget.style.cursor = 'pointer';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab === tab) {
+                      // Selected button: return to white background
+                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.color = '#708d81';
+                      e.currentTarget.style.border = '2px solid #708d81';
+                    } else {
+                      // Unselected button: return to olive green
+                      e.currentTarget.style.backgroundColor = '#708d81';
+                      e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.border = '2px solid #708d81';
+                    }
+                    e.currentTarget.style.cursor = 'pointer';
+                  }}
                 >
-                  {isEditing ? 'Cancel' : 'Edit Profile'}
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
-              </div>
+              ))}
+            </nav>
+          </div>
 
-              {/* Profile Details */}
-              <div className="grid grid-cols-3 gap-4 w-fit mb-4">
-                <div className="text-[#708d81] opacity-70">
-                  <span>{user.year ? getYearLabel(user.year) : 'Not specified'}</span>
-                </div>
-                <div className="text-[#708d81] opacity-70">
-                  <span>{user.major}</span>
-                </div>
-                <div className="text-[#708d81] opacity-70">
-                  <span>{user.hometown}</span>
-                </div>
-              </div>
-
-              {/* Biography */}
-              <div>
-                <h3 className="text-lg font-semibold text-[#708d81] mb-2">About Me</h3>
-                <p className="text-[#708d81] opacity-70 leading-relaxed">
-                  {user.biography || 'No biography added yet.'}
-                </p>
-              </div>
+          {/* Tab Content */}
+          <div className="p-6">
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg mb-4">
+                {activeTab === 'posts' && "You haven't created any posts yet."}
+                {activeTab === 'reposts' && "You haven't reposted anything yet."}
+                {activeTab === 'bookmarks' && "You haven't bookmarked any posts yet."}
+              </p>
+              <p className="text-gray-400">
+                {activeTab === 'posts' && "Share something with your campus community!"}
+                {activeTab === 'reposts' && "Repost content you find interesting."}
+                {activeTab === 'bookmarks' && "Save posts you want to revisit later."}
+              </p>
             </div>
           </div>
-        </div>
-      </div>
-
-
-
-
-
-
-      {/* Content Tabs */}
-      <div className="max-w-xl mx-auto px-4 py-6">
-        {/* Tab Navigation */}
-        <div className="flex justify-center mb-6">
-                    <div className="relative bg-[#708d81] rounded-lg p-0 w-80" style={{ backgroundColor: '#708d81' }}>
-            <div className="flex relative w-full">
-
-            
-            {/* Tab Buttons - Unified Navigation Bar */}
-            <button
-              onClick={() => setActiveTab('posts')}
-              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer ${
-                activeTab === 'posts' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
-              }`}
-              style={{
-                backgroundColor: activeTab === 'posts' ? 'white' : '#708d81',
-                color: activeTab === 'posts' ? '#708d81' : 'white',
-                cursor: 'pointer'
-              }}
-            >
-              Posts
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('reposts')}
-              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer ${
-                activeTab === 'reposts' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
-              }`}
-              style={{
-                backgroundColor: activeTab === 'reposts' ? 'white' : '#708d81',
-                color: activeTab === 'reposts' ? '#708d81' : 'white',
-                cursor: 'pointer'
-              }}
-            >
-              Reposts
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('bookmarks')}
-              className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer ${
-                activeTab === 'bookmarks' ? 'text-[#708d81]' : 'text-white hover:text-gray-200'
-              }`}
-              style={{
-                backgroundColor: activeTab === 'bookmarks' ? 'white' : '#708d81',
-                color: activeTab === 'bookmarks' ? '#708d81' : 'white',
-                cursor: 'pointer'
-              }}
-            >
-              Bookmarks
-            </button>
-          </div>
-        </div>
-        </div>
-
-        {/* Tab Content */}
-        <div className="space-y-4">
-          {activeTab === 'posts' && (
-            <div className="text-center py-12 text-[#708d81] opacity-70">
-              <p className="text-lg mb-2">No posts yet</p>
-              <p className="text-sm">Create your first post to get started</p>
-            </div>
-          )}
-          
-          {activeTab === 'reposts' && (
-            <div className="text-center py-12 text-[#708d81] opacity-70">
-              <p className="text-lg mb-2">No reposts yet</p>
-              <p className="text-sm">Repost content you want to share with others</p>
-            </div>
-          )}
-          
-          {activeTab === 'bookmarks' && (
-            <div className="text-center py-12 text-[#708d81] opacity-70">
-              <p className="text-lg mb-2">No bookmarks yet</p>
-              <p className="text-sm">Bookmark posts you're interested in</p>
-            </div>
-          )}
         </div>
       </div>
     </div>

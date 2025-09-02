@@ -147,10 +147,10 @@ class ApiService {
   }
 
   public async checkAuth(): Promise<User> {
-    const response: AxiosResponse<ApiResponse<User>> = await this.api.get('/auth/me');
+    const response: AxiosResponse<ApiResponse<{ user: User }>> = await this.api.get('/auth/me');
     
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+    if (response.data.success && response.data.data && response.data.data.user) {
+      return response.data.data.user;
     }
     
     throw new Error('Authentication failed');
@@ -187,7 +187,22 @@ class ApiService {
   public async createPost(postData: CreatePostForm): Promise<Post> {
     const formData = new FormData();
     
-    Object.entries(postData).forEach(([key, value]) => {
+    // Transform postData to match backend expectations
+    const transformedData: any = { ...postData };
+    
+    // Map frontend postType categories to backend action types
+    if (postData.postType === 'goods' || postData.postType === 'services' || postData.postType === 'housing') {
+      // For goods/services/housing, default to 'offer' unless 'request' is in tags
+      const hasRequestTag = postData.tags?.some(tag => tag.toLowerCase().includes('request'));
+      transformedData.postType = hasRequestTag ? 'request' : 'offer';
+    } else if (postData.postType === 'events') {
+      transformedData.postType = 'event';
+    }
+    
+    // Map duration to durationType (backend expects durationType field)
+    transformedData.durationType = postData.duration || 'one-time';
+    
+    Object.entries(transformedData).forEach(([key, value]) => {
       if (key === 'images' && Array.isArray(value)) {
         value.forEach((file, index) => {
           formData.append(`images`, file);

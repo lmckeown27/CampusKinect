@@ -34,6 +34,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 42.3744,
         longitude: -71.1169,
+        timezone: 'America/New_York',
         cluster: 'Northeast'
       },
       {
@@ -44,6 +45,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 37.4275,
         longitude: -122.1697,
+        timezone: 'America/Los_Angeles',
         cluster: 'West Coast'
       },
       {
@@ -54,6 +56,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 42.3601,
         longitude: -71.0942,
+        timezone: 'America/New_York',
         cluster: 'Northeast'
       },
       {
@@ -64,6 +67,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 37.8719,
         longitude: -122.2585,
+        timezone: 'America/Los_Angeles',
         cluster: 'West Coast'
       },
       {
@@ -74,6 +78,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 42.2780,
         longitude: -83.7382,
+        timezone: 'America/Detroit',
         cluster: 'Midwest'
       },
       {
@@ -84,6 +89,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 30.2849,
         longitude: -97.7341,
+        timezone: 'America/Chicago',
         cluster: 'Southwest'
       },
       {
@@ -94,6 +100,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 29.6516,
         longitude: -82.3248,
+        timezone: 'America/New_York',
         cluster: 'Southeast'
       },
       {
@@ -104,6 +111,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 40.0076,
         longitude: -105.2659,
+        timezone: 'America/Denver',
         cluster: 'Mountain West'
       },
       {
@@ -114,6 +122,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 40.7295,
         longitude: -73.9965,
+        timezone: 'America/New_York',
         cluster: 'Northeast'
       },
       {
@@ -124,6 +133,7 @@ const seedDatabase = async () => {
         country: 'USA',
         latitude: 47.6062,
         longitude: -122.3321,
+        timezone: 'America/Los_Angeles',
         cluster: 'West Coast'
       }
     ];
@@ -134,10 +144,12 @@ const seedDatabase = async () => {
       const clusterId = clusterResult.rows[0]?.id;
 
       await query(`
-        INSERT INTO universities (name, domain, city, state, country, latitude, longitude, cluster_id) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-        ON CONFLICT DO NOTHING
-      `, [uni.name, uni.domain, uni.city, uni.state, uni.country, uni.latitude, uni.longitude, clusterId]);
+        INSERT INTO universities (name, domain, city, state, country, latitude, longitude, timezone, cluster_id) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+        ON CONFLICT (domain) DO UPDATE SET
+          timezone = EXCLUDED.timezone,
+          cluster_id = EXCLUDED.cluster_id
+      `, [uni.name, uni.domain, uni.city, uni.state, uni.country, uni.latitude, uni.longitude, uni.timezone, clusterId]);
     }
 
     // Seed tags

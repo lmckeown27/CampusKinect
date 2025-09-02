@@ -1175,7 +1175,7 @@ router.get('/', [
     queryParams.push(limit, offset);
 
     // Execute query
-    const result = await queryValidator(baseQuery, queryParams);
+    const result = await dbQuery(baseQuery, queryParams);
 
     // Get total count for pagination (Cal Poly SLO only for now)
     let countQuery = `

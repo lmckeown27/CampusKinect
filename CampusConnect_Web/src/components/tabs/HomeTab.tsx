@@ -202,6 +202,11 @@ const HomeTab: React.FC = () => {
 
   // Filter posts based on selected subtags
   const getFilteredPostsBySubtags = () => {
+    // Safety check: ensure filteredPosts is an array
+    if (!filteredPosts || !Array.isArray(filteredPosts)) {
+      return [];
+    }
+    
     // Combine both regular tags and offer/request tags
     const allSelectedTags = [...selectedTags, ...Object.values(offerRequestTags).flat()];
     

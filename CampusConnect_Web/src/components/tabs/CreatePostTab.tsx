@@ -472,6 +472,7 @@ const CreatePostTab: React.FC = () => {
                         {getSubTagsForPostType(formData.postType).map((subTag) => (
                           <button
                             key={subTag}
+                            type="button"
                             onClick={() => handleTagSelect(subTag)}
                             className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                               formData.tags.includes(subTag)

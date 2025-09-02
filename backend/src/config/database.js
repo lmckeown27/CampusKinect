@@ -68,12 +68,24 @@ const createTables = async () => {
         country VARCHAR(100) DEFAULT 'US',
         latitude DECIMAL(10, 8),
         longitude DECIMAL(11, 8),
+        timezone VARCHAR(50) DEFAULT 'America/Los_Angeles',
         cluster_id INTEGER,
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+
+    // Add timezone column to existing universities table if it doesn't exist
+    try {
+      await pool.query(`
+        ALTER TABLE universities 
+        ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'America/Los_Angeles'
+      `);
+      console.log('✅ Timezone column added to universities table');
+    } catch (error) {
+      console.log('ℹ️ Timezone column already exists or could not be added:', error.message);
+    }
 
     // Clusters table (geographic clusters)
     await pool.query(`

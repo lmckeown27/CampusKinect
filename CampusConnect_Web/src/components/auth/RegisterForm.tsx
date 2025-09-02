@@ -61,20 +61,11 @@ const RegisterForm: React.FC = () => {
       // Remove confirmPassword from the data sent to backend
       const { confirmPassword, ...registrationData } = formData;
       
-      console.log('Registration data being sent:', registrationData);
-      
       const result = await register(registrationData);
-      console.log('Register function completed successfully:', result);
-      
-      console.log('Setting registration success state to true...');
       setRegistrationSuccess(true);
       
       // Store email in localStorage for verification page
       localStorage.setItem('registrationEmail', formData.email);
-      console.log('Email stored in localStorage:', formData.email);
-      
-      // Force redirect as backup - only if we have a valid email
-      console.log('Forcing immediate redirect to verification page...');
       router.push('/auth/verify');
       
     } catch (error: any) {
@@ -219,7 +210,7 @@ const RegisterForm: React.FC = () => {
                   data-lpignore="true"
                   data-1p-ignore="true"
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder="liam_mckeown38"
+                  placeholder="your_username"
                 />
                 {validationErrors.username && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.username}</p>
@@ -247,7 +238,7 @@ const RegisterForm: React.FC = () => {
                   data-lpignore="true"
                   data-1p-ignore="true"
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder="Liam"
+                  placeholder="First Name"
                 />
                 {validationErrors.firstName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.firstName}</p>
@@ -273,7 +264,7 @@ const RegisterForm: React.FC = () => {
                   data-lpignore="true"
                   data-1p-ignore="true"
                   className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
-                  placeholder="McKeown"
+                  placeholder="Last Name"
                 />
                 {validationErrors.lastName && (
                   <p className="mt-1 text-sm text-red-600">{validationErrors.lastName}</p>
