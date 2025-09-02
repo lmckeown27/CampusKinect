@@ -14,7 +14,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
   const quickOptions = [
     { value: 'one-time', label: 'One-time', icon: Clock },
     { value: 'recurring', label: 'Recurring', icon: Repeat },
-    { value: 'indefinite', label: 'Ongoing', icon: Calendar },
+    { value: 'ongoing', label: 'Ongoing', icon: Calendar },
   ];
 
   const handleQuickOption = (optionValue: string) => {
@@ -146,7 +146,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
                               </div>
                             )}
                             
-                            {option.value === 'indefinite' && (
+                            {option.value === 'ongoing' && (
                               <div className="flex items-center space-x-2">
                                 <span className="text-sm font-medium text-[#708d81]">Ongoing - No end date</span>
                               </div>

@@ -30,7 +30,7 @@ export interface Post {
   id: string;
   title: string;
   description: string;
-  postType: 'goods' | 'services' | 'events' | 'housing' | 'tutoring';
+  postType: 'goods' | 'services' | 'events' | 'housing' | 'tutoring' | 'offer' | 'request' | 'event';
   duration: string;
   location?: string;
   tags: string[];

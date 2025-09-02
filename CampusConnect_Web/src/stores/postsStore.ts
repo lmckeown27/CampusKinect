@@ -63,6 +63,9 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
       const response = await apiService.getPosts(page, 20, filters);
       const { data, pagination } = response;
 
+      console.log('Posts store received data:', data);
+      console.log('Posts store response:', response);
+
       set((state) => ({
         posts: reset ? data : [...state.posts, ...data],
         filteredPosts: reset ? data : [...state.filteredPosts, ...data],

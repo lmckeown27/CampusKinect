@@ -32,6 +32,17 @@ const HomeTab: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('campusConnect_homeSearchQuery', searchQuery);
   }, [searchQuery]);
+
+  // Fetch posts when component mounts
+  useEffect(() => {
+    console.log('HomeTab mounting, fetching posts...');
+    fetchPosts(1, true); // Fetch first page, reset the list
+  }, [fetchPosts]);
+
+  // Debug: Log when posts change
+  useEffect(() => {
+    console.log('HomeTab posts updated:', filteredPosts);
+  }, [filteredPosts]);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -346,10 +357,10 @@ const HomeTab: React.FC = () => {
   // Define main tags and their corresponding sub-tags
   const mainTags = [
     { id: 'all', label: 'All', count: getFilteredPostsBySubtags().length },
-    { id: 'goods', label: 'Goods', count: getFilteredPostsBySubtags().filter(p => p.postType === 'goods').length },
-    { id: 'services', label: 'Services', count: getFilteredPostsBySubtags().filter(p => p.postType === 'services').length },
+    { id: 'goods', label: 'Goods', count: getFilteredPostsBySubtags().filter(p => p.postType === 'goods' || p.postType === 'offer').length },
+    { id: 'services', label: 'Services', count: getFilteredPostsBySubtags().filter(p => p.postType === 'services' || p.postType === 'request').length },
     { id: 'housing', label: 'Housing', count: getFilteredPostsBySubtags().filter(p => p.postType === 'housing').length },
-    { id: 'events', label: 'Events', count: getFilteredPostsBySubtags().filter(p => p.postType === 'events').length },
+    { id: 'events', label: 'Events', count: getFilteredPostsBySubtags().filter(p => p.postType === 'events' || p.postType === 'event').length },
   ];
 
   // Define sub-tags for each main category

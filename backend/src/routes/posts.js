@@ -1423,7 +1423,7 @@ router.post('/', [
     const client = await pool.connect();
     
     try {
-      await client.queryValidator('BEGIN');
+      await client.query('BEGIN');
 
       // Calculate next repost date for recurring posts
       let nextRepostDate = null;
@@ -1432,7 +1432,7 @@ router.post('/', [
       }
 
       // Create post
-      const postResult = await client.queryValidator(`
+      const postResult = await client.query(`
         INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, repost_frequency, next_repost_date, expires_at, event_start, event_end)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         RETURNING id, title, description, post_type, duration_type, repost_frequency, next_repost_date, expires_at, event_start, event_end, created_at
@@ -1444,12 +1444,12 @@ router.post('/', [
       if (tags && tags.length > 0) {
         for (const tagName of tags) {
           // Get or create tag
-          let tagResult = await client.queryValidator('SELECT id FROM tags WHERE name = $1', [tagName]);
+          let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
           
           let tagId;
           if (tagResult.rows.length === 0) {
             // Create new tag
-            const newTagResult = await client.queryValidator(`
+            const newTagResult = await client.query(`
               INSERT INTO tags (name, category) 
               VALUES ($1, 'custom') 
               RETURNING id
@@ -1460,14 +1460,14 @@ router.post('/', [
           }
 
           // Link tag to post
-          await client.queryValidator(`
+          await client.query(`
             INSERT INTO post_tags (post_id, tag_id) 
             VALUES ($1, $2)
           `, [post.id, tagId]);
         }
       }
 
-      await client.queryValidator('COMMIT');
+      await client.query('COMMIT');
 
       // Calculate and update initial scores
       await updatePostScores(post.id);
@@ -1477,7 +1477,7 @@ router.post('/', [
       await redisDel(cacheKey);
 
       // Get full post with tags
-      const fullPostResult = await queryValidator(`
+      const fullPostResult = await dbQuery(`
         SELECT 
           p.*,
           u.username,
@@ -1535,7 +1535,7 @@ router.post('/', [
       });
 
     } catch (error) {
-      await client.queryValidator('ROLLBACK');
+      await client.query('ROLLBACK');
       throw error;
     } finally {
       client.release();

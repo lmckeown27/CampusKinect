@@ -100,7 +100,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           {/* Post Type Badge */}
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPostTypeColor(post.postType)}`}>
             <span className="mr-1">{getPostTypeIcon(post.postType)}</span>
-            {post.postType.charAt(0).toUpperCase() + post.postType.slice(1)}
+            {post.postType ? post.postType.charAt(0).toUpperCase() + post.postType.slice(1) : 'Unknown'}
           </div>
         </div>
       </div>

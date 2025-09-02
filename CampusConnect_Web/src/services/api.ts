@@ -164,11 +164,17 @@ class ApiService {
       ...filters,
     });
 
-    const response: AxiosResponse<ApiResponse<PaginatedResponse<Post>>> = 
+    const response: AxiosResponse<ApiResponse<{posts: Post[], pagination: any}>> = 
       await this.api.get(`/posts?${params}`);
     
+    console.log('getPosts raw response:', response.data);
+    
     if (response.data.success && response.data.data) {
-      return response.data.data;
+      // Transform backend structure to frontend structure
+      return {
+        data: response.data.data.posts,
+        pagination: response.data.data.pagination
+      };
     }
     
     throw new Error(response.data.message || 'Failed to fetch posts');
@@ -185,8 +191,6 @@ class ApiService {
   }
 
   public async createPost(postData: CreatePostForm): Promise<Post> {
-    const formData = new FormData();
-    
     // Transform postData to match backend expectations
     const transformedData: any = { ...postData };
     
@@ -200,31 +204,47 @@ class ApiService {
     }
     
     // Map duration to durationType (backend expects durationType field)
-    transformedData.durationType = postData.duration || 'one-time';
+    let durationType = postData.duration || 'one-time';
     
-    Object.entries(transformedData).forEach(([key, value]) => {
-      if (key === 'images' && Array.isArray(value)) {
-        value.forEach((file, index) => {
-          formData.append(`images`, file);
-        });
-      } else if (Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
-      } else {
-        formData.append(key, value as string);
-      }
-    });
-
-    const response: AxiosResponse<ApiResponse<Post>> = await this.api.post('/posts', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+    // Map frontend duration values to backend expected values
+    if (transformedData.postType === 'event') {
+      // For event posts, always use 'event' durationType
+      durationType = 'event';
+    } else if (durationType === 'ongoing') {
+      // Map "Ongoing" to recurring for non-event posts
+      durationType = 'recurring';
     }
     
-    throw new Error(response.data.message || 'Failed to create post');
+    transformedData.durationType = durationType;
+    // Remove the old duration field to avoid confusion
+    delete transformedData.duration;
+    
+    console.log('Sending transformed data:', transformedData);
+
+    try {
+      const response: AxiosResponse<ApiResponse<Post>> = await this.api.post('/posts', transformedData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+      
+      throw new Error(response.data.message || 'Failed to create post');
+    } catch (axiosError: any) {
+      // Handle axios errors with detailed validation information
+      if (axiosError.response?.data?.error?.details) {
+        const error = new Error(axiosError.response.data.message || 'Validation failed');
+        (error as any).details = axiosError.response.data.error.details;
+        (error as any).isValidationError = true;
+        throw error;
+      }
+      
+      // Re-throw other errors
+      throw new Error(axiosError.response?.data?.message || axiosError.message || 'Failed to create post');
+    }
   }
 
   public async updatePost(id: string, postData: Partial<CreatePostForm>): Promise<Post> {

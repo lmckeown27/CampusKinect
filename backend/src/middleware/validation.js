@@ -11,6 +11,13 @@ const validate = (req, res, next) => {
       value: error.value
     }));
 
+    console.log('Validation errors:', {
+      requestBody: req.body,
+      errors: errorMessages,
+      url: req.url,
+      method: req.method
+    });
+
     return res.status(400).json({
       success: false,
       error: {

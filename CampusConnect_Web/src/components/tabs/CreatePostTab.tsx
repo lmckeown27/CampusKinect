@@ -33,7 +33,7 @@ const CreatePostTab: React.FC = () => {
     postType: 'goods',
     tags: [],
     location: '',
-    duration: '',
+    duration: 'one-time', // Set default duration
   });
 
   // Load saved post type from localStorage on component mount
@@ -235,6 +235,7 @@ const CreatePostTab: React.FC = () => {
         tags: combinedTags,
       };
 
+      console.log('Sending post data:', postData);
       await createPost(postData);
       
       // Reset form
@@ -244,7 +245,7 @@ const CreatePostTab: React.FC = () => {
         postType: 'goods',
         tags: [],
         location: '',
-        duration: '',
+        duration: 'one-time', // Reset to default duration
       });
       setOfferRequestTags({
         goods: [],
@@ -258,9 +259,20 @@ const CreatePostTab: React.FC = () => {
       // Show success message or redirect
       alert('Post created successfully!');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating post:', error);
-      alert('Failed to create post. Please try again.');
+      
+      // Show detailed validation errors if available
+      if (error.isValidationError && error.details) {
+        const errorMessages = error.details.map((detail: any) => 
+          `${detail.field}: ${detail.message}`
+        ).join('\n');
+        
+        alert(`Post Creation Failed - Validation Errors:\n\n${errorMessages}\n\nPlease fix these issues and try again.`);
+      } else {
+        // Show generic error for non-validation issues
+        alert(`Failed to create post: ${error.message || 'Please try again.'}`);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -463,7 +475,7 @@ const CreatePostTab: React.FC = () => {
                       {/* Header */}
                       <div className="flex items-center justify-center p-3 border-b border-gray-200">
                         <h3 className="text-base font-semibold text-[#708d81]">
-                          {formData.postType.charAt(0).toUpperCase() + formData.postType.slice(1)} Tags
+                          {formData.postType ? formData.postType.charAt(0).toUpperCase() + formData.postType.slice(1) : 'Select Category'} Tags
                         </h3>
                       </div>
 

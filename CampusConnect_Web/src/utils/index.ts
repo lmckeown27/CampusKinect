@@ -41,7 +41,7 @@ export function formatDateTime(date: string | Date): string {
 
 // Duration formatting
 export function formatDuration(duration: string): string {
-  if (duration === 'indefinite') return 'Ongoing';
+  if (duration === 'ongoing') return 'Ongoing';
   if (duration === 'one-time') return 'One-time';
   if (duration.includes('recurring')) return 'Recurring';
   return duration;
@@ -50,22 +50,32 @@ export function formatDuration(duration: string): string {
 // Post type utilities - Updated to use custom CSS classes
 export function getPostTypeColor(postType: string): string {
   const colors = {
+    // Frontend categories
     goods: 'badge-goods',
     services: 'badge-services',
     events: 'badge-event',
     housing: 'badge-housing',
     tutoring: 'badge-tutoring',
+    // Backend action types
+    offer: 'badge-goods',
+    request: 'badge-services', 
+    event: 'badge-event',
   };
   return colors[postType as keyof typeof colors] || 'badge';
 }
 
 export function getPostTypeIcon(postType: string): string {
   const icons = {
+    // Frontend categories
     goods: '📦',
     services: '🔧',
     events: '🎉',
     housing: '🏠',
     tutoring: '📚',
+    // Backend action types
+    offer: '📦',
+    request: '🔍', 
+    event: '🎉',
   };
   return icons[postType as keyof typeof icons] || '📝';
 }
