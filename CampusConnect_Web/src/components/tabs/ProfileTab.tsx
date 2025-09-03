@@ -574,8 +574,8 @@ const ProfileTab: React.FC = () => {
                     <p className="text-gray-500">Loading your posts...</p>
                   </div>
                 ) : posts.length > 0 ? (
-                  <div className="space-y-6">
-                    {posts.map((post) => {
+                  <div className="space-y-8" style={{ gap: '2rem' }}>
+                    {posts.map((post, index) => {
                       // Ensure post has poster information
                       const postWithPoster = {
                         ...post,
@@ -594,14 +594,15 @@ const ProfileTab: React.FC = () => {
                         }
                       } as Post;
                       return (
-                        <PostCard 
-                          key={post.id} 
-                          post={postWithPoster} 
-                          showDeleteButton={true}
-                          onDelete={handleDeletePost}
-                          showEditButton={true}
-                          onEdit={handleEditPost}
-                        />
+                        <div key={post.id} style={{ marginBottom: index < posts.length - 1 ? '2rem' : '0' }}>
+                          <PostCard 
+                            post={postWithPoster} 
+                            showDeleteButton={true}
+                            onDelete={handleDeletePost}
+                            showEditButton={true}
+                            onEdit={handleEditPost}
+                          />
+                        </div>
                       );
                     })}
                   </div>

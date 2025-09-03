@@ -109,7 +109,23 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
         <div className="text-gray-500 mb-4">{error}</div>
         <button
           onClick={handleBackClick}
-          className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#a8c4a2] transition-colors"
+          className="px-4 py-2 text-white rounded-lg transition-all duration-200"
+          style={{
+            backgroundColor: '#708d81',
+            color: 'white',
+            border: '2px solid #708d81',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#a8c4a2';
+            e.currentTarget.style.border = '2px solid #a8c4a2';
+            e.currentTarget.style.cursor = 'pointer';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#708d81';
+            e.currentTarget.style.border = '2px solid #708d81';
+            e.currentTarget.style.cursor = 'pointer';
+          }}
         >
           Go Back
         </button>
@@ -123,7 +139,23 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
         <div className="text-gray-500 text-xl mb-4">User not found</div>
         <button
           onClick={handleBackClick}
-          className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#a8c4a2] transition-colors"
+          className="px-4 py-2 text-white rounded-lg transition-all duration-200"
+          style={{
+            backgroundColor: '#708d81',
+            color: 'white',
+            border: '2px solid #708d81',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#a8c4a2';
+            e.currentTarget.style.border = '2px solid #a8c4a2';
+            e.currentTarget.style.cursor = 'pointer';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#708d81';
+            e.currentTarget.style.border = '2px solid #708d81';
+            e.currentTarget.style.cursor = 'pointer';
+          }}
         >
           Go Back
         </button>
@@ -137,7 +169,23 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
       <div className="flex items-center mb-6">
         <button
           onClick={handleBackClick}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors mr-4"
+          className="p-2 rounded-lg transition-all duration-200 mr-4"
+          style={{
+            backgroundColor: 'transparent',
+            color: '#4b5563',
+            border: '2px solid transparent',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#f3f4f6';
+            e.currentTarget.style.border = '2px solid #708d81';
+            e.currentTarget.style.cursor = 'pointer';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.border = '2px solid transparent';
+            e.currentTarget.style.cursor = 'pointer';
+          }}
         >
           <ArrowLeft size={24} className="text-gray-600" />
         </button>
@@ -184,7 +232,23 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
               {!isOwnProfile && (
                 <button
                   onClick={handleSendMessage}
-                  className="flex items-center space-x-2 px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#a8c4a2] transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2 text-white rounded-lg transition-all duration-200"
+                  style={{
+                    backgroundColor: '#708d81',
+                    color: 'white',
+                    border: '2px solid #708d81',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#a8c4a2';
+                    e.currentTarget.style.border = '2px solid #a8c4a2';
+                    e.currentTarget.style.cursor = 'pointer';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.border = '2px solid #708d81';
+                    e.currentTarget.style.cursor = 'pointer';
+                  }}
                 >
                   <MessageCircle size={20} />
                   <span>Message</span>
@@ -236,19 +300,7 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
               </p>
             </div>
 
-            {/* Stats */}
-            <div className="mb-4">
-              <div className="flex space-x-4 text-sm">
-                <div className="text-center">
-                  <p className="font-bold text-lg text-gray-900">{user.stats?.postCount || 0}</p>
-                  <p className="text-gray-500">Posts</p>
-                </div>
-                <div className="text-center">
-                  <p className="font-bold text-lg text-gray-900">{user.stats?.fulfilledPosts || 0}</p>
-                  <p className="text-gray-500">Fulfilled</p>
-                </div>
-              </div>
-            </div>
+
 
             {/* Bio */}
             {user.bio && (
@@ -271,14 +323,15 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
           </div>
         ) : posts.length > 0 ? (
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard 
-                key={post.id} 
-                post={post}
-                showDeleteButton={isOwnProfile}
-                showEditButton={isOwnProfile}
-              />
+          <div className="space-y-8" style={{ gap: '2rem' }}>
+            {posts.map((post, index) => (
+              <div key={post.id} style={{ marginBottom: index < posts.length - 1 ? '2rem' : '0' }}>
+                <PostCard 
+                  post={post}
+                  showDeleteButton={isOwnProfile}
+                  showEditButton={isOwnProfile}
+                />
+              </div>
             ))}
           </div>
         ) : (

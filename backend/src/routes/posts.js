@@ -137,7 +137,7 @@ router.get('/organized', [
           queryParams.push('events');
           break;
         default:
-          organizedQuery += ` AND p.post_type = $${paramCount}`;
+      organizedQuery += ` AND p.post_type = $${paramCount}`;
           queryParams.push(postType);
       }
     }
@@ -1198,7 +1198,7 @@ router.get('/', [
           queryParams.push('events');
           break;
         default:
-          baseQuery += ` AND p.post_type = $${paramCount}`;
+      baseQuery += ` AND p.post_type = $${paramCount}`;
           queryParams.push(postType);
       }
     }
@@ -1287,7 +1287,7 @@ router.get('/', [
           countParams.push('events');
           break;
         default:
-          countQuery += ` AND p.post_type = $${paramCount}`;
+      countQuery += ` AND p.post_type = $${paramCount}`;
           countParams.push(postType);
       }
     }
@@ -1701,11 +1701,11 @@ router.put('/:id', [
       if (postType && primaryCategories.includes(postType)) {
         // Update primary category
         updateQuery = `
-          UPDATE posts 
-          SET title = $1, description = $2, post_type = $3, duration_type = $4, 
-              location = $5, expires_at = $6, event_start = $7, event_end = $8, updated_at = CURRENT_TIMESTAMP
-          WHERE id = $9
-          RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, updated_at
+        UPDATE posts 
+        SET title = $1, description = $2, post_type = $3, duration_type = $4, 
+            location = $5, expires_at = $6, event_start = $7, event_end = $8, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $9
+        RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, updated_at
         `;
         updateParams = [title, description, postType, durationType, location, expiresAt, eventStart, eventEnd, id];
       } else {

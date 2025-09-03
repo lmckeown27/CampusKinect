@@ -102,7 +102,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-6">
+    <div className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem' }}>
       {/* Post Header */}
       <div className="p-4 border-b border-gray-100">
         {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
@@ -236,7 +236,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
               backgroundColor: '#f9fafb',
               boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
               width: '280px',
-              flexShrink: 0
+              flexShrink: 0,
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.cursor = 'pointer';
+              e.currentTarget.style.backgroundColor = '#f3f4f6';
+              e.currentTarget.style.borderColor = '#708d81';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.cursor = 'pointer';
+              e.currentTarget.style.backgroundColor = '#f9fafb';
+              e.currentTarget.style.borderColor = '#d1d5db';
             }}
           >
             {/* Profile Picture */}
@@ -244,25 +255,25 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
               <img
                 src={post.poster.profilePicture}
                 alt={post.poster?.firstName || 'User'}
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                style={{ border: '2px solid #708d81' }}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer"
+                style={{ border: '2px solid #708d81', cursor: 'pointer' }}
               />
             ) : (
               <div 
-                className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ border: '2px solid #708d81' }}
+                className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
+                style={{ border: '2px solid #708d81', cursor: 'pointer' }}
               >
                 <User size={20} className="text-white" />
               </div>
             )}
 
             {/* User Text Info */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 cursor-pointer" style={{ cursor: 'pointer' }}>
             {/* Display Name - Large and Bold */}
             <div className="flex items-center space-x-2 mb-0">
               <p 
-                className="font-bold text-gray-900 truncate"
-                style={{ fontSize: '18px', lineHeight: '20px' }}
+                className="font-bold text-gray-900 truncate cursor-pointer"
+                style={{ fontSize: '18px', lineHeight: '20px', cursor: 'pointer' }}
               >
                 {post.poster?.firstName && post.poster?.lastName 
                   ? `${post.poster.firstName} ${post.poster.lastName}`
@@ -274,8 +285,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             {/* Username - Small and Separate */}
             {post.poster?.username && post.poster?.firstName && (
               <p 
-                className="text-gray-400 truncate"
-                style={{ fontSize: '10px', lineHeight: '12px', marginTop: '-2px' }}
+                className="text-gray-400 truncate cursor-pointer"
+                style={{ fontSize: '10px', lineHeight: '12px', marginTop: '-2px', cursor: 'pointer' }}
               >
                 @{post.poster.username}
               </p>
@@ -283,7 +294,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             
             {/* Major and Year */}
             {post.poster?.major && (
-                              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-gray-500 truncate">
                   {post.poster?.major} • {post.poster?.year ? getYearLabel(post.poster.year) : 'Not specified'}
               </p>
             )}

@@ -174,8 +174,8 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
       
       return {
         filters: newFilters,
-        currentPage: 1,
-        hasMore: true,
+      currentPage: 1,
+      hasMore: true,
       };
     });
     
