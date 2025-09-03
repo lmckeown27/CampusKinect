@@ -44,6 +44,8 @@ const HomeTab: React.FC = () => {
   const [confirmedTags, setConfirmedTags] = useState<string[]>([]); // Track confirmed tags separately
   const [activeFilter, setActiveFilter] = useState<string[]>([]);
   const [showNewPostModal, setShowNewPostModal] = useState(false);
+  const [forceRefresh, setForceRefresh] = useState(0);
+  const [isClearing, setIsClearing] = useState(false);
   
   // Separate state for Offer/Request tags to ensure complete isolation
   // Each category has its own Offer/Request state
@@ -112,33 +114,69 @@ const HomeTab: React.FC = () => {
 
   // Save selectedTags to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_selectedTags', JSON.stringify(selectedTags));
-  }, [selectedTags]);
+    if (!isClearing) {
+      localStorage.setItem('campusConnect_selectedTags', JSON.stringify(selectedTags));
+    }
+  }, [selectedTags, isClearing]);
 
   // Save confirmedTags to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_confirmedTags', JSON.stringify(confirmedTags));
-  }, [confirmedTags]);
+    if (!isClearing) {
+      localStorage.setItem('campusConnect_confirmedTags', JSON.stringify(confirmedTags));
+    }
+  }, [confirmedTags, isClearing]);
 
   // Save activeFilter to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_activeFilter', JSON.stringify(activeFilter));
-  }, [activeFilter]);
+    if (!isClearing) {
+      localStorage.setItem('campusConnect_activeFilter', JSON.stringify(activeFilter));
+    }
+  }, [activeFilter, isClearing]);
 
   // Save offerRequestTags to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
-  }, [offerRequestTags]);
+    if (!isClearing) {
+      localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
+    }
+  }, [offerRequestTags, isClearing]);
+
+  // Validation effect: Clear tags if activeFilter is 'all' to ensure consistency
+  useEffect(() => {
+    // Don't interfere if we're in the middle of clearing
+    if (isClearing) return;
+    
+    if (activeFilter.length === 1 && activeFilter[0] === 'all') {
+      // If we're showing "All" posts but have selected tags, clear them
+      const hasSelectedTags = selectedTags.length > 0;
+      const hasConfirmedTags = confirmedTags.length > 0;
+      const hasOfferRequestTags = Object.values(offerRequestTags).some(tags => tags.length > 0);
+      
+      if (hasSelectedTags || hasConfirmedTags || hasOfferRequestTags) {
+        setSelectedTags([]);
+        setConfirmedTags([]);
+        setOfferRequestTags({
+          goods: [],
+          services: [],
+          housing: []
+        });
+        // Also clear any backend tag filters
+        clearFilters();
+      }
+    }
+  }, [activeFilter, selectedTags, confirmedTags, offerRequestTags, clearFilters, isClearing]);
 
   // Refetch posts when returning to "All" filter or when clearing tags
   useEffect(() => {
+    // Don't interfere if we're in the middle of clearing
+    if (isClearing) return;
+    
     if (activeFilter.includes('all') && selectedTags.length === 0) {
       // Only refetch if we don't already have posts loaded
       if (filteredPosts.length === 0) {
         fetchPosts(1, true);
       }
     }
-  }, [activeFilter, selectedTags, filteredPosts.length, fetchPosts]);
+  }, [activeFilter, selectedTags, filteredPosts.length, fetchPosts, isClearing]);
   
   // Category boxes are now only controlled by direct user interaction
   // No automatic synchronization with activeFilter
@@ -223,16 +261,29 @@ const HomeTab: React.FC = () => {
       return [];
     }
     
-    // Combine both regular tags and offer/request tags
-    const allSelectedTags = [...selectedTags, ...Object.values(offerRequestTags).flat()];
+    // If we're in the middle of clearing, don't apply tag filtering
+    if (isClearing) {
+      return filteredPosts;
+    }
     
-    if (allSelectedTags.length === 0) {
+    // If "All" is selected, don't apply any tag filtering
+    if (activeFilter.length === 1 && activeFilter[0] === 'all') {
+      return filteredPosts;
+    }
+    
+    // Combine regular tags, confirmed tags, and offer/request tags
+    const allSelectedTags = [...selectedTags, ...confirmedTags, ...Object.values(offerRequestTags).flat()];
+    
+    // Remove duplicates and empty strings
+    const uniqueTags = [...new Set(allSelectedTags.filter(tag => tag && tag.trim() !== ''))];
+    
+    if (uniqueTags.length === 0) {
       return filteredPosts;
     }
     
     return filteredPosts.filter(post => {
       // Check if post has any of the selected subtags
-      return allSelectedTags.some(tag => 
+      return uniqueTags.some(tag => 
         post.tags?.includes(tag) || 
         post.title?.toLowerCase().includes(tag.toLowerCase()) ||
         post.description?.toLowerCase().includes(tag.toLowerCase())
@@ -364,9 +415,24 @@ const HomeTab: React.FC = () => {
         delete currentFilters.postType; // Clear single selection
         setFilters({ ...currentFilters, postTypes: newCategories });
       }
-    } else if (newActiveFilter.includes('all')) {
-      // When "All" is selected, clear filters to get all posts
+    } else if (newActiveFilter.includes('all') || newActiveFilter.length === 0) {
+      // When "All" is selected OR when no categories are selected, clear filters to get all posts
       clearFilters();
+      
+      // Clear all local tag states as well
+      setSelectedTags([]);
+      setConfirmedTags([]);
+      setOfferRequestTags({
+        goods: [],
+        services: [],
+        housing: []
+      });
+      
+      // If no categories are selected, automatically select "All"
+      if (newActiveFilter.length === 0) {
+        setActiveFilter(['all']);
+        return; // Exit early to prevent updating the ref with empty array
+      }
     }
     
     // Update ref
@@ -401,6 +467,16 @@ const HomeTab: React.FC = () => {
     housing: [
       'Leasing', 'Subleasing', 'Roommate Search', 'Storage Space', 'Other'
     ]
+  };
+
+  // Helper function to find the main category for a given subcategory tag
+  const findMainCategoryForTag = (tag: string): string | null => {
+    for (const [mainCategory, tags] of Object.entries(subTags)) {
+      if (tags.includes(tag)) {
+        return mainCategory;
+      }
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -445,7 +521,7 @@ const HomeTab: React.FC = () => {
           });
           
           // Send updated tags to backend for filtering
-          const allSelectedTags = [...selectedTags, ...Object.values(newState).flat()];
+          const allSelectedTags = [...selectedTags, ...confirmedTags, ...Object.values(newState).flat()];
           if (allSelectedTags.length > 0) {
             // Clean up conflicting category parameters
             const cleanFilters = { ...filters };
@@ -474,25 +550,58 @@ const HomeTab: React.FC = () => {
           ? prev.filter(t => t !== tag) 
           : [...prev, tag];
         
-                 // Send updated tags to backend for filtering
-         const allSelectedTags = [...newTags, ...Object.values(offerRequestTags).flat()];
-         if (allSelectedTags.length > 0) {
-           // Clean up conflicting category parameters
-           const cleanFilters = { ...filters };
-           if (cleanFilters.postType && cleanFilters.postTypes) {
-             delete cleanFilters.postTypes; // Prefer single postType
-           }
-           setFilters({ ...cleanFilters, tags: allSelectedTags });
-         } else {
-           // If no tags selected, clear tag filters but keep category filters
-           const currentFilters = { ...filters };
-           delete currentFilters.tags;
-           // Clean up conflicting category parameters
-           if (currentFilters.postType && currentFilters.postTypes) {
-             delete currentFilters.postTypes; // Prefer single postType
-           }
-           setFilters(currentFilters);
-         }
+        // When selecting subcategory tags, automatically ensure appropriate main categories are selected
+        const mainCategoriesToSelect = new Set<string>();
+        newTags.forEach(selectedTag => {
+          const mainCategory = findMainCategoryForTag(selectedTag);
+          if (mainCategory) {
+            mainCategoriesToSelect.add(mainCategory);
+          }
+        });
+        
+        // Update active filter to include necessary main categories
+        const currentActiveFilter = activeFilter.filter(f => f !== 'all');
+        let needsFilterUpdate = false;
+        mainCategoriesToSelect.forEach(mainCategory => {
+          if (!currentActiveFilter.includes(mainCategory)) {
+            currentActiveFilter.push(mainCategory);
+            needsFilterUpdate = true;
+          }
+        });
+        
+        if (needsFilterUpdate && currentActiveFilter.length > 0) {
+          // Update activeFilter without calling handleCategoryChange to avoid conflicts
+          setActiveFilter(currentActiveFilter);
+        }
+        
+        // Send updated tags to backend for filtering
+        const allSelectedTags = [...newTags, ...confirmedTags, ...Object.values(offerRequestTags).flat()];
+        if (allSelectedTags.length > 0) {
+          // Clean up conflicting category parameters
+          const cleanFilters = { ...filters };
+          if (cleanFilters.postType && cleanFilters.postTypes) {
+            delete cleanFilters.postTypes; // Prefer single postType
+          }
+          
+          // Ensure we have the right category filters
+          if (currentActiveFilter.length === 1) {
+            setFilters({ ...cleanFilters, postType: currentActiveFilter[0], tags: allSelectedTags });
+          } else if (currentActiveFilter.length > 1) {
+            delete cleanFilters.postType;
+            setFilters({ ...cleanFilters, postTypes: currentActiveFilter, tags: allSelectedTags });
+          } else {
+            setFilters({ ...cleanFilters, tags: allSelectedTags });
+          }
+        } else {
+          // If no tags selected, clear tag filters but keep category filters
+          const currentFilters = { ...filters };
+          delete currentFilters.tags;
+          // Clean up conflicting category parameters
+          if (currentFilters.postType && currentFilters.postTypes) {
+            delete currentFilters.postTypes; // Prefer single postType
+          }
+          setFilters(currentFilters);
+        }
         
         if (prev.includes(tag)) {
           // Also remove from confirmed tags if it was confirmed
@@ -504,49 +613,89 @@ const HomeTab: React.FC = () => {
     }
   };
 
-  const handleTagClear = () => {
-    setSelectedTags([]);
-    setConfirmedTags([]); // Also clear confirmed tags
-    setOfferRequestTags({
-      goods: [],
-      services: [],
-      housing: []
-    });
+  const handleTagClear = async () => {
+    // Set clearing flag to prevent useEffect interference
+    setIsClearing(true);
     
-    // Clear tag filters but preserve category filters
-    const currentFilters = { ...filters };
-    delete currentFilters.tags;
-    // Clean up conflicting category parameters
-    if (currentFilters.postType && currentFilters.postTypes) {
-      delete currentFilters.postTypes; // Prefer single postType
+    try {
+      // Clear all tag states immediately and force synchronous updates
+      setSelectedTags([]);
+      setConfirmedTags([]);
+      setOfferRequestTags({
+        goods: [],
+        services: [],
+        housing: []
+      });
+      
+      // Also clear localStorage to prevent tags from being reloaded
+      localStorage.setItem('campusConnect_selectedTags', JSON.stringify([]));
+      localStorage.setItem('campusConnect_confirmedTags', JSON.stringify([]));
+      localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify({
+        goods: [],
+        services: [],
+        housing: []
+      }));
+      
+      // Clear tag filters but preserve ALL selected main category filters
+      const currentFilters = { ...filters };
+      
+      // CRITICAL FIX: Explicitly set tags to undefined to remove them from the store
+      currentFilters.tags = undefined;
+      
+      // Handle conflicting category parameters - preserve the multiple selection if it exists
+      if (currentFilters.postType && currentFilters.postTypes) {
+        // If both exist, prefer postTypes (multiple selection) to preserve all selected categories
+        delete currentFilters.postType;
+      }
+      
+      // Apply the updated filters immediately (this will refetch posts with all selected main categories)
+      setFilters(currentFilters);
+      
+      // Force a posts refetch to ensure fresh data with a longer delay
+      setTimeout(() => {
+        fetchPosts(1, true);
+        setForceRefresh(prev => prev + 1);
+        // Reset clearing flag after everything is done
+        setIsClearing(false);
+      }, 200);
+      
+      // If no category filters remain, clear all filters
+      if (!currentFilters.postType && !currentFilters.postTypes) {
+        clearFilters();
+      }
+    } catch (error) {
+      console.error('Error in handleTagClear:', error);
+      // Make sure to reset the clearing flag even if there's an error
+      setIsClearing(false);
     }
-    setFilters(currentFilters);
   };
 
   return (
     <div style={{ backgroundColor: '#f8f9f6' }}>
       {/* Clear All button - positioned above Search bar */}
-      {selectedTags.length > 0 && (
-        <div className="flex justify-center pt-4">
-          <button
-            onClick={() => {
-              // Clear all selected categories but keep subtags selected
-              setSelectedTags([]);
-              setConfirmedTags([]); // Also clear confirmed tags
-            }}
-            className="py-1 px-4 rounded-lg text-xs font-medium transition-colors cursor-pointer text-[#708d81] hover:text-[#5a7268]"
-            style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#e8ebe8';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#f0f2f0';
-            }}
-          >
-            Clear All ({selectedTags.length})
-          </button>
-        </div>
-      )}
+      {(() => {
+        const hasSelectedTags = selectedTags.length > 0;
+        const hasOfferRequestTags = Object.values(offerRequestTags).some(tags => tags.length > 0);
+        const totalTagsCount = selectedTags.length + Object.values(offerRequestTags).flat().length;
+        
+        return (hasSelectedTags || hasOfferRequestTags) && (
+          <div className="flex justify-center pt-4">
+            <button
+              onClick={handleTagClear}
+              className="py-1 px-4 rounded-lg text-xs font-medium transition-colors cursor-pointer text-[#708d81] hover:text-[#5a7268]"
+              style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#e8ebe8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0f2f0';
+              }}
+            >
+              Clear All Tags ({totalTagsCount})
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Search and Filter Header */}
       <div className="sticky top-16 bg-white border-b border-[#708d81] px-4 py-4 z-30">
@@ -669,14 +818,20 @@ const HomeTab: React.FC = () => {
                 <button
                   key={tag.id}
                   onClick={() => {
-                    const newFilter = activeFilter.includes(tag.id) 
-                      ? activeFilter.filter(f => f !== tag.id) 
-                      : [...activeFilter, tag.id];
+                    let newFilter: string[];
                     
-                    // If deselecting a subtag, also deselect all its associated categories
                     if (activeFilter.includes(tag.id)) {
+                      // Deselecting this category
+                      newFilter = activeFilter.filter(f => f !== tag.id);
+                      
+                      // If deselecting a subtag, also deselect all its associated categories
                       const categoriesToRemove = subTags[tag.id as keyof typeof subTags] || [];
                       setSelectedTags(prev => prev.filter(category => !categoriesToRemove.includes(category)));
+                    } else {
+                      // Selecting this category
+                      // Remove "all" if it's currently selected and add the new category
+                      const filteredActiveFilter = activeFilter.filter(f => f !== 'all');
+                      newFilter = [...filteredActiveFilter, tag.id];
                     }
                     
                     handleCategoryChange(newFilter);
@@ -867,9 +1022,26 @@ const HomeTab: React.FC = () => {
                             // Add these tags to confirmed tags
                             setConfirmedTags(prev => [...new Set([...prev, ...tagsToConfirm])]);
                             
-                            // Add category to active filter if not already there
-                            if (!activeFilter.includes(category)) {
-                              setActiveFilter(prev => [...prev, category]);
+                            // Find all main categories that need to be selected based on the confirmed tags
+                            const mainCategoriesToSelect = new Set<string>();
+                            tagsToConfirm.forEach(tag => {
+                              const mainCategory = findMainCategoryForTag(tag);
+                              if (mainCategory) {
+                                mainCategoriesToSelect.add(mainCategory);
+                              }
+                            });
+                            
+                            // Add main categories to active filter and remove 'all' if present
+                            const newActiveFilter = activeFilter.filter(f => f !== 'all');
+                            mainCategoriesToSelect.forEach(mainCategory => {
+                              if (!newActiveFilter.includes(mainCategory)) {
+                                newActiveFilter.push(mainCategory);
+                              }
+                            });
+                            
+                            // Update active filter
+                            if (newActiveFilter.length > 0) {
+                              handleCategoryChange(newActiveFilter);
                             }
                             
                             // Close the category box

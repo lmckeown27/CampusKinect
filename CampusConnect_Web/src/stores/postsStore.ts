@@ -162,6 +162,13 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
     set((state) => {
       const newFilters = { ...state.filters, ...filters };
       
+      // Handle property removal: if a property is explicitly set to undefined, remove it
+      Object.keys(filters).forEach(key => {
+        if (filters[key as keyof PostFilters] === undefined) {
+          delete newFilters[key as keyof PostFilters];
+        }
+      });
+      
       // Clean up conflicting category parameters
       if (newFilters.postType && newFilters.postTypes) {
         // If both exist, prefer the newer one based on what was just set

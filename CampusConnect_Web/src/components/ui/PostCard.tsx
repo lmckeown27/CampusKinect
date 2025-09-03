@@ -47,9 +47,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Check if post has been edited (updatedAt is different from createdAt - only happens when user saves changes)
-  const isEdited = post.updatedAt && post.createdAt && 
-    new Date(post.updatedAt).getTime() !== new Date(post.createdAt).getTime();
+
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -141,9 +139,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             <div className="flex items-center space-x-1">
               <span className="text-xs text-gray-500">•</span>
               <span className="text-xs text-gray-500">{formatDate(post.createdAt)}</span>
-              {isEdited && (
-                <span className="text-xs text-gray-400 italic ml-1">(edited)</span>
-              )}
             </div>
           </div>
 
