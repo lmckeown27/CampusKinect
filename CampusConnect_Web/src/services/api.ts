@@ -161,8 +161,23 @@ class ApiService {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
-      ...filters,
     });
+
+    // Add other filters
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key] !== undefined && filters[key] !== null) {
+          if (Array.isArray(filters[key])) {
+            // For arrays (like tags), append each item with array notation
+            filters[key].forEach((item: string) => {
+              params.append(`${key}[]`, item);
+            });
+          } else {
+            params.append(key, filters[key].toString());
+          }
+        }
+      });
+    }
 
     const response: AxiosResponse<ApiResponse<{posts: Post[], pagination: any}>> = 
       await this.api.get(`/posts?${params}`);
@@ -261,10 +276,40 @@ class ApiService {
   }
 
   public async updatePost(id: string, postData: Partial<CreatePostForm>): Promise<Post> {
-    const response: AxiosResponse<ApiResponse<Post>> = await this.api.put(`/posts/${id}`, postData);
+    // Transform postData to match backend expectations (similar to createPost)
+    const transformedData: any = { ...postData };
+    
+    // Map frontend postType categories to backend action types
+    if (postData.postType === 'goods' || postData.postType === 'services' || postData.postType === 'housing') {
+      // For goods/services/housing, default to 'offer' unless 'request' is in tags
+      const hasRequestTag = postData.tags?.some(tag => tag.toLowerCase().includes('request'));
+      transformedData.postType = hasRequestTag ? 'request' : 'offer';
+    } else if (postData.postType === 'events') {
+      transformedData.postType = 'event';
+    }
+    
+    // Map duration to durationType (backend expects durationType field)
+    if (postData.duration) {
+      let durationType = postData.duration;
+      
+      // Map frontend duration values to backend expected values
+      if (transformedData.postType === 'event') {
+        // For event posts, always use 'event' durationType
+        durationType = 'event';
+      } else if (durationType === 'ongoing') {
+        // Map "Ongoing" to recurring for non-event posts
+        durationType = 'recurring';
+      }
+      
+      transformedData.durationType = durationType;
+      // Remove the old duration field to avoid confusion
+      delete transformedData.duration;
+    }
+
+    const response: AxiosResponse<ApiResponse<{ post: Post }>> = await this.api.put(`/posts/${id}`, transformedData);
     
     if (response.data.success && response.data.data) {
-      return response.data.data;
+      return response.data.data.post;
     }
     
     throw new Error(response.data.message || 'Failed to update post');
@@ -276,6 +321,47 @@ class ApiService {
     if (!response.data.success) {
       throw new Error(response.data.message || 'Failed to delete post');
     }
+  }
+
+  public async getUserPosts(userId: string, page: number = 1, limit: number = 20): Promise<PaginatedResponse<Post>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    const response: AxiosResponse<ApiResponse<{posts: Post[], pagination: any}>> = 
+      await this.api.get(`/users/${userId}/posts?${params}`);
+    
+    if (response.data.success && response.data.data) {
+      // Get current user info from localStorage
+      let currentUser = null;
+      try {
+        const userStr = localStorage.getItem('user');
+        currentUser = userStr ? JSON.parse(userStr) : null;
+      } catch (error) {
+        console.warn('Failed to parse user from localStorage:', error);
+      }
+      
+      // Transform backend structure to frontend structure
+      const transformedPosts = response.data.data.posts.map((post: any) => ({
+        ...post,
+        userId: userId,
+        createdAt: post.createdAt,
+        user: currentUser || {
+          id: userId,
+          firstName: 'User',
+          lastName: '',
+          username: `user_${userId}`
+        }
+      }));
+      
+      return {
+        data: transformedPosts,
+        pagination: response.data.data.pagination
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch user posts');
   }
 
   // Verification

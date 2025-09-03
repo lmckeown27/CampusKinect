@@ -15,7 +15,8 @@ const HomeTab: React.FC = () => {
     fetchPosts, 
     searchPosts, 
     setFilters,
-    clearFilters 
+    clearFilters,
+    filters 
   } = usePostsStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,6 +129,16 @@ const HomeTab: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
   }, [offerRequestTags]);
+
+  // Refetch posts when returning to "All" filter or when clearing tags
+  useEffect(() => {
+    if (activeFilter.includes('all') && selectedTags.length === 0) {
+      // Only refetch if we don't already have posts loaded
+      if (filteredPosts.length === 0) {
+        fetchPosts(1, true);
+      }
+    }
+  }, [activeFilter, selectedTags, filteredPosts.length, fetchPosts]);
   
   // Category boxes are now only controlled by direct user interaction
   // No automatic synchronization with activeFilter
@@ -340,8 +351,22 @@ const HomeTab: React.FC = () => {
     // No automatic opening/closing based on filter changes
     
     // Apply filters without affecting tags
-    if (newCategories.length > 0) {
-      setFilters({ postType: newCategories[0] });
+    if (newCategories.length > 0 && newCategories[0] !== 'all') {
+      // Send all selected categories to backend
+      if (newCategories.length === 1) {
+        // Single category - clear postTypes and set postType
+        const currentFilters = { ...filters };
+        delete currentFilters.postTypes; // Clear multiple selection
+        setFilters({ ...currentFilters, postType: newCategories[0] });
+      } else {
+        // Multiple categories selected - clear postType and set postTypes
+        const currentFilters = { ...filters };
+        delete currentFilters.postType; // Clear single selection
+        setFilters({ ...currentFilters, postTypes: newCategories });
+      }
+    } else if (newActiveFilter.includes('all')) {
+      // When "All" is selected, clear filters to get all posts
+      clearFilters();
     }
     
     // Update ref
@@ -369,7 +394,7 @@ const HomeTab: React.FC = () => {
       'Other'
     ],
     events: [
-      'Sports Events', 'Study Groups', 'Rush', 'Philanthropy', 'Cultural Events',
+      'Sports Events', 'Study Groups', 'Rush', 'Pickup Basketball', 'Philanthropy', 'Cultural Events',
       'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
       'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
     ],
@@ -398,7 +423,7 @@ const HomeTab: React.FC = () => {
   };
 
   const handleTagSelect = (tag: string) => {
-    if (tag === 'Offer' || tag === 'Request') {
+    if (tag === 'offer' || tag === 'request') {
       // Handle Offer/Request tags separately - they are context-specific
       const selectedCategories = activeFilter.filter(f => f !== 'all');
       
@@ -418,22 +443,63 @@ const HomeTab: React.FC = () => {
               }
             }
           });
+          
+          // Send updated tags to backend for filtering
+          const allSelectedTags = [...selectedTags, ...Object.values(newState).flat()];
+          if (allSelectedTags.length > 0) {
+            // Clean up conflicting category parameters
+            const cleanFilters = { ...filters };
+            if (cleanFilters.postType && cleanFilters.postTypes) {
+              delete cleanFilters.postTypes; // Prefer single postType
+            }
+            setFilters({ ...cleanFilters, tags: allSelectedTags });
+          } else {
+            // If no tags selected, clear tag filters but keep category filters
+            const currentFilters = { ...filters };
+            delete currentFilters.tags;
+            // Clean up conflicting category parameters
+            if (currentFilters.postType && currentFilters.postTypes) {
+              delete currentFilters.postTypes; // Prefer single postType
+            }
+            setFilters(currentFilters);
+          }
+          
           return newState;
         });
       }
     } else {
       // Handle other tags normally
       setSelectedTags(prev => {
+        const newTags = prev.includes(tag) 
+          ? prev.filter(t => t !== tag) 
+          : [...prev, tag];
+        
+                 // Send updated tags to backend for filtering
+         const allSelectedTags = [...newTags, ...Object.values(offerRequestTags).flat()];
+         if (allSelectedTags.length > 0) {
+           // Clean up conflicting category parameters
+           const cleanFilters = { ...filters };
+           if (cleanFilters.postType && cleanFilters.postTypes) {
+             delete cleanFilters.postTypes; // Prefer single postType
+           }
+           setFilters({ ...cleanFilters, tags: allSelectedTags });
+         } else {
+           // If no tags selected, clear tag filters but keep category filters
+           const currentFilters = { ...filters };
+           delete currentFilters.tags;
+           // Clean up conflicting category parameters
+           if (currentFilters.postType && currentFilters.postTypes) {
+             delete currentFilters.postTypes; // Prefer single postType
+           }
+           setFilters(currentFilters);
+         }
+        
         if (prev.includes(tag)) {
-          // Remove tag
-          const newTags = prev.filter(t => t !== tag);
           // Also remove from confirmed tags if it was confirmed
           setConfirmedTags(confirmed => confirmed.filter(t => t !== tag));
-          return newTags;
-        } else {
-          // Add tag
-          return [...prev, tag];
         }
+        
+        return newTags;
       });
     }
   };
@@ -446,7 +512,15 @@ const HomeTab: React.FC = () => {
       services: [],
       housing: []
     });
-    clearFilters();
+    
+    // Clear tag filters but preserve category filters
+    const currentFilters = { ...filters };
+    delete currentFilters.tags;
+    // Clean up conflicting category parameters
+    if (currentFilters.postType && currentFilters.postTypes) {
+      delete currentFilters.postTypes; // Prefer single postType
+    }
+    setFilters(currentFilters);
   };
 
   return (
@@ -495,25 +569,25 @@ const HomeTab: React.FC = () => {
           <div className="w-[100px] flex justify-center">
             {areOfferRequestTagsAvailable() && (
               <button
-                onClick={() => handleTagSelect('Offer')}
+                onClick={() => handleTagSelect('offer')}
                 className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')
+                                      offerRequestTags.goods.includes('offer') || offerRequestTags.services.includes('offer') || offerRequestTags.housing.includes('offer')
                     ? 'text-white'
                     : 'text-[#708d81] hover:text-[#5a7268]'
                 }`}
                 style={{
-                  backgroundColor: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')) ? '#708d81' : '#f0f2f0',
-                  color: (offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer')) ? 'white' : '#708d81',
+                                      backgroundColor: (offerRequestTags.goods.includes('offer') || offerRequestTags.services.includes('offer') || offerRequestTags.housing.includes('offer')) ? '#708d81' : '#f0f2f0',
+                    color: (offerRequestTags.goods.includes('offer') || offerRequestTags.services.includes('offer') || offerRequestTags.housing.includes('offer')) ? 'white' : '#708d81',
                   width: '100px',
                   cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
-                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer'))) {
+                  if (!(offerRequestTags.goods.includes('offer') || offerRequestTags.services.includes('offer') || offerRequestTags.housing.includes('offer'))) {
                     e.currentTarget.style.backgroundColor = '#e8ebe8';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!(offerRequestTags.goods.includes('Offer') || offerRequestTags.services.includes('Offer') || offerRequestTags.housing.includes('Offer'))) {
+                  if (!(offerRequestTags.goods.includes('offer') || offerRequestTags.services.includes('offer') || offerRequestTags.housing.includes('offer'))) {
                     e.currentTarget.style.backgroundColor = '#f0f2f0';
                   }
                 }}
@@ -557,25 +631,25 @@ const HomeTab: React.FC = () => {
           <div className="w-[100px] flex justify-center" style={{ marginLeft: '24px' }}>
             {areOfferRequestTagsAvailable() && (
               <button
-                onClick={() => handleTagSelect('Request')}
+                onClick={() => handleTagSelect('request')}
                 className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')
+                  offerRequestTags.goods.includes('request') || offerRequestTags.services.includes('request') || offerRequestTags.housing.includes('request')
                     ? 'text-white'
                     : 'text-[#708d81] hover:text-[#5a7268]'
                 }`}
                 style={{
-                  backgroundColor: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')) ? '#708d81' : '#f0f2f0',
-                  color: (offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request')) ? 'white' : '#708d81',
+                  backgroundColor: (offerRequestTags.goods.includes('request') || offerRequestTags.services.includes('request') || offerRequestTags.housing.includes('request')) ? '#708d81' : '#f0f2f0',
+                  color: (offerRequestTags.goods.includes('request') || offerRequestTags.services.includes('request') || offerRequestTags.housing.includes('request')) ? 'white' : '#708d81',
                   width: '100px',
                   cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
-                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request'))) {
+                  if (!(offerRequestTags.goods.includes('request') || offerRequestTags.services.includes('request') || offerRequestTags.housing.includes('request'))) {
                     e.currentTarget.style.backgroundColor = '#e8ebe8';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!(offerRequestTags.goods.includes('Request') || offerRequestTags.services.includes('Request') || offerRequestTags.housing.includes('Request'))) {
+                  if (!(offerRequestTags.goods.includes('request') || offerRequestTags.services.includes('request') || offerRequestTags.housing.includes('request'))) {
                     e.currentTarget.style.backgroundColor = '#f0f2f0';
                   }
                 }}

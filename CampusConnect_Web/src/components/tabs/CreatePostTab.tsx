@@ -77,7 +77,7 @@ const CreatePostTab: React.FC = () => {
       'Other'
     ],
     events: [
-      'Sports Events', 'Study Groups', 'Rush', 'Philanthropy', 'Cultural Events',
+      'Sports Events', 'Study Groups', 'Rush', 'Pickup Basketball', 'Philanthropy', 'Cultural Events',
       'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
       'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
     ],
@@ -259,6 +259,11 @@ const CreatePostTab: React.FC = () => {
       // Show success message or redirect
       alert('Post created successfully!');
       
+      // Refresh user posts in profile if the function is available
+      if (typeof (window as any).refreshUserPosts === 'function') {
+        (window as any).refreshUserPosts();
+      }
+      
     } catch (error: any) {
       console.error('Error creating post:', error);
       
@@ -352,24 +357,24 @@ const CreatePostTab: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                               type="button"
-                              onClick={() => handleOfferRequestTagSelect('Offer')}
+                              onClick={() => handleOfferRequestTagSelect('offer')}
                               className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                                offerRequestTags[formData.postType].includes('Offer')
+                                                                  offerRequestTags[formData.postType].includes('offer')
                                   ? 'text-white'
                                   : 'text-[#708d81] hover:text-[#5a7268]'
                               }`}
                               style={{
-                                backgroundColor: offerRequestTags[formData.postType].includes('Offer') ? '#708d81' : '#f0f2f0',
-                                color: offerRequestTags[formData.postType].includes('Offer') ? 'white' : '#708d81',
+                                                  backgroundColor: offerRequestTags[formData.postType].includes('offer') ? '#708d81' : '#f0f2f0',
+                  color: offerRequestTags[formData.postType].includes('offer') ? 'white' : '#708d81',
                                 cursor: 'pointer'
                               }}
                               onMouseEnter={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('Offer')) {
+                                if (!offerRequestTags[formData.postType].includes('offer')) {
                                   e.currentTarget.style.backgroundColor = '#e8ebe8';
                                 }
                               }}
                               onMouseLeave={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('Offer')) {
+                                if (!offerRequestTags[formData.postType].includes('offer')) {
                                   e.currentTarget.style.backgroundColor = '#f0f2f0';
                                 }
                               }}
@@ -382,24 +387,24 @@ const CreatePostTab: React.FC = () => {
                             
                             <button
                               type="button"
-                              onClick={() => handleOfferRequestTagSelect('Request')}
+                              onClick={() => handleOfferRequestTagSelect('request')}
                               className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                                offerRequestTags[formData.postType].includes('Request')
+                                                                  offerRequestTags[formData.postType].includes('request')
                                   ? 'text-white'
                                   : 'text-[#708d81] hover:text-[#5a7268]'
                               }`}
                               style={{
-                                backgroundColor: offerRequestTags[formData.postType].includes('Request') ? '#708d81' : '#f0f2f0',
-                                color: offerRequestTags[formData.postType].includes('Request') ? 'white' : '#708d81',
+                                                  backgroundColor: offerRequestTags[formData.postType].includes('request') ? '#708d81' : '#f0f2f0',
+                  color: offerRequestTags[formData.postType].includes('request') ? 'white' : '#708d81',
                                 cursor: 'pointer'
                               }}
                               onMouseEnter={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('Request')) {
+                                if (!offerRequestTags[formData.postType].includes('request')) {
                                   e.currentTarget.style.backgroundColor = '#e8ebe8';
                                 }
                               }}
                               onMouseLeave={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('Request')) {
+                                if (!offerRequestTags[formData.postType].includes('request')) {
                                   e.currentTarget.style.backgroundColor = '#f0f2f0';
                                 }
                               }}

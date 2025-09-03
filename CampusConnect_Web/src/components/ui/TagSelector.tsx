@@ -51,18 +51,22 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 
       {/* Selected Tags */}
       {selectedTags.length > 0 && (
-        <div className="mt-4">
+        <div style={{ marginTop: '32px' }}>
           <span className="text-sm font-medium text-[#708d81]">Selected Tags</span>
-          <div className="flex flex-wrap mt-3">
+          <div className="flex flex-wrap mt-3" style={{ gap: '12px' }}>
             {selectedTags.map((tag, index) => (
               <span
                 key={tag}
-                className={`px-4 py-2 bg-[#708d81] text-white text-sm rounded-full flex items-center space-x-2 ${index > 0 ? 'ml-4' : ''}`}
+                className="px-4 py-2 bg-[#708d81] text-white text-sm rounded-full flex items-center"
+                style={{ gap: '10px' }}
               >
                 <span>{tag}</span>
                 <button
                   onClick={() => onTagSelect(tag)}
-                  className="ml-2 hover:text-[#f0f2f0] transition-colors cursor-pointer"
+                  className="p-1 rounded transition-all duration-200"
+                  style={{ backgroundColor: '#a8c4a2', color: 'white', border: '1px solid #a8c4a2', cursor: 'pointer' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '1px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '1px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
                 >
                   <X size={14} />
                 </button>
@@ -72,30 +76,35 @@ const TagSelector: React.FC<TagSelectorProps> = ({
         </div>
       )}
 
-      {/* Search Results */}
-      {searchQuery && (
-        <div className="mt-4">
-          <span className="text-sm font-medium text-[#708d81]">Popular Tags</span>
-          <div className="flex flex-wrap mt-3">
-            {filteredTags.map((tag, index) => (
-              <button
-                key={tag}
-                onClick={() => handleTagSelect(tag)}
-                className={`px-4 py-2 bg-[#f0f2f0] text-[#708d81] text-sm rounded-full hover:bg-[#e8ebe8] transition-colors cursor-pointer ${index > 0 ? 'ml-4' : ''}`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-          
-          {filteredTags.length === 0 && (
-            <div className="mt-3">
-              <p className="text-sm text-[#708d81] opacity-70">No tags found matching "{searchQuery}"</p>
-              <p className="text-sm text-[#708d81] opacity-70">Type "tag" to add a new tag</p>
-            </div>
-          )}
+      {/* Popular Tags - Always shown */}
+      <div className="mt-4">
+        <span className="text-sm font-medium text-[#708d81]">
+          {searchQuery ? 'Search Results' : 'Popular Tags'}
+        </span>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {filteredTags.map((tag, index) => (
+            <button
+              key={tag}
+              onClick={() => handleTagSelect(tag)}
+              className="px-4 py-2 bg-[#f0f2f0] text-[#708d81] text-sm rounded-full hover:bg-[#e8ebe8] transition-colors cursor-pointer"
+            >
+              {tag}
+            </button>
+          ))}
         </div>
-      )}
+        
+        {searchQuery && filteredTags.length === 0 && (
+          <div className="mt-3">
+            <p className="text-sm text-[#708d81] opacity-70">No tags found matching "{searchQuery}"</p>
+            <button
+              onClick={() => handleTagSelect(searchQuery)}
+              className="mt-2 px-4 py-2 bg-[#708d81] text-white text-sm rounded-full hover:bg-[#5a7268] transition-colors cursor-pointer"
+            >
+              Add "{searchQuery}" as tag
+            </button>
+          </div>
+        )}
+      </div>
 
 
     </div>

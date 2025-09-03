@@ -14,8 +14,11 @@ import {
   Repeat,
   MoreHorizontal,
   MapPin,
-  User
+  User,
+  Trash2,
+  Edit2
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
@@ -31,13 +34,22 @@ const getYearLabel = (year: number): string => {
 
 interface PostCardProps {
   post: Post;
+  showDeleteButton?: boolean;
+  onDelete?: (postId: string) => void;
+  showEditButton?: boolean;
+  onEdit?: (postId: string, currentData: Post) => void;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onDelete, showEditButton = false, onEdit }) => {
+  const router = useRouter();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Check if post has been edited (updatedAt is different from createdAt - only happens when user saves changes)
+  const isEdited = post.updatedAt && post.createdAt && 
+    new Date(post.updatedAt).getTime() !== new Date(post.createdAt).getTime();
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -68,6 +80,27 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     // This would typically create a new post that references the original
   };
 
+  const handleDelete = () => {
+    if (onDelete && confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+      onDelete(post.id);
+    }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(post.id, post);
+    }
+  };
+
+  const handleProfileClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (post.userId) {
+      router.push(`/user/${post.userId}`);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-6">
       {/* Post Header */}
@@ -86,11 +119,31 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                 {post.postType ? post.postType.charAt(0).toUpperCase() + post.postType.slice(1) : 'Unknown'}
               </div>
             )}
+
+            {/* Offer/Request Badge */}
+            {post.tags && (post.tags.includes('offer') || post.tags.includes('request')) && (
+              <div 
+                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  post.tags.includes('offer') 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-blue-100 text-blue-800'
+                }`}
+                style={{ border: '2px solid #374151', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+              >
+                <span className="mr-1">
+                  {post.tags.includes('offer') ? '💰' : '🔍'}
+                </span>
+                {post.tags.includes('offer') ? 'Offer' : 'Request'}
+              </div>
+            )}
             
             {/* Timestamp */}
             <div className="flex items-center space-x-1">
               <span className="text-xs text-gray-500">•</span>
               <span className="text-xs text-gray-500">{formatDate(post.createdAt)}</span>
+              {isEdited && (
+                <span className="text-xs text-gray-400 italic ml-1">(edited)</span>
+              )}
             </div>
           </div>
 
@@ -171,7 +224,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <div className="flex items-start" style={{ gap: '20px' }}>
           {/* User Info with Profile Picture Inside - Reduced Width */}
           <div 
-            className="min-w-0 flex items-start space-x-3"
+            className="min-w-0 flex items-start space-x-3 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+            onClick={handleProfileClick}
             style={{ 
               border: '2px solid #d1d5db', 
               borderRadius: '12px', 
@@ -186,10 +240,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             }}
           >
             {/* Profile Picture */}
-            {post.user?.profileImage ? (
+            {post.poster?.profilePicture ? (
               <img
-                src={post.user.profileImage}
-                alt={post.user.firstName}
+                src={post.poster.profilePicture}
+                alt={post.poster?.firstName || 'User'}
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                 style={{ border: '2px solid #708d81' }}
               />
@@ -210,27 +264,27 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                 className="font-bold text-gray-900 truncate"
                 style={{ fontSize: '18px', lineHeight: '20px' }}
               >
-                {post.user?.firstName && post.user?.lastName 
-                  ? `${post.user.firstName} ${post.user.lastName}`
-                  : post.user?.displayName || post.user?.username || 'Unknown User'
+                {post.poster?.firstName && post.poster?.lastName 
+                  ? `${post.poster.firstName} ${post.poster.lastName}`
+                  : post.poster?.displayName || post.poster?.username || 'Unknown User'
                 }
               </p>
             </div>
             
             {/* Username - Small and Separate */}
-            {post.user?.username && post.user?.firstName && (
+            {post.poster?.username && post.poster?.firstName && (
               <p 
                 className="text-gray-400 truncate"
                 style={{ fontSize: '10px', lineHeight: '12px', marginTop: '-2px' }}
               >
-                @{post.user.username}
+                @{post.poster.username}
               </p>
             )}
             
             {/* Major and Year */}
-            {post.user?.major && (
-              <p className="text-xs text-gray-500 truncate">
-                {post.user.major} • {post.user.year ? getYearLabel(post.user.year) : 'Not specified'}
+            {post.poster?.major && (
+                              <p className="text-xs text-gray-500 truncate">
+                  {post.poster?.major} • {post.poster?.year ? getYearLabel(post.poster.year) : 'Not specified'}
               </p>
             )}
             </div>
@@ -240,10 +294,18 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <div className="flex-1 min-w-0">
             <h3 
               className="text-xl font-bold text-gray-900 line-clamp-2"
-              style={{ fontSize: '26px', lineHeight: '32px' }}
+              style={{ fontSize: '26px', lineHeight: '28px', marginBottom: '0' }}
             >
               {post.title}
             </h3>
+            
+            {/* Location - Underneath the title */}
+            {post.location && (
+              <div className="flex items-center space-x-1" style={{ marginTop: '4px' }}>
+                <MapPin size={16} className="text-gray-500" />
+                <span className="text-sm text-gray-600">{post.location}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -287,12 +349,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
         {/* Post Details */}
         <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-          {post.location && (
-            <div className="flex items-center space-x-1">
-              <MapPin size={16} />
-              <span>{post.location}</span>
-            </div>
-          )}
 
         </div>
       </div>
@@ -313,7 +369,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </button>
           </div>
 
-          {/* Repost and Bookmark - Bottom Right */}
+          {/* Repost, Bookmark, and Delete (conditional) - Bottom Right */}
           <div className="flex items-center" style={{ gap: '16px' }}>
             <button
               onClick={handleRepost}
@@ -347,6 +403,34 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             >
               <Bookmark size={18} fill={isBookmarked ? 'currentColor' : 'none'} />
             </button>
+
+            {/* Edit button - only show if showEditButton is true */}
+            {showEditButton && (
+              <button
+                onClick={handleEdit}
+                className="p-2 rounded-lg transition-all duration-200"
+                style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                title="Edit post"
+              >
+                <Edit2 size={18} />
+              </button>
+            )}
+
+            {/* Delete button - only show if showDeleteButton is true */}
+            {showDeleteButton && (
+              <button
+                onClick={handleDelete}
+                className="p-2 rounded-lg transition-all duration-200"
+                style={{ backgroundColor: '#dc2626', color: 'white', border: '2px solid #dc2626', cursor: 'pointer' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#ef4444'; e.currentTarget.style.border = '2px solid #ef4444'; e.currentTarget.style.cursor = 'pointer'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#dc2626'; e.currentTarget.style.border = '2px solid #dc2626'; e.currentTarget.style.cursor = 'pointer'; }}
+                title="Delete post"
+              >
+                <Trash2 size={18} />
+              </button>
+            )}
           </div>
         </div>
       </div>

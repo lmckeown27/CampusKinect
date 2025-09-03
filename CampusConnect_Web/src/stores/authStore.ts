@@ -187,11 +187,12 @@ export const useAuthStore = create<AuthStore>()(
         
         try {
           const updatedUser = await apiService.updateProfile(userData);
-          set({ 
-            user: updatedUser, 
+          // Merge updated data with existing user data instead of replacing
+          set((state) => ({ 
+            user: state.user ? { ...state.user, ...updatedUser } : updatedUser,
             isLoading: false,
             error: null 
-          });
+          }));
         } catch (error: any) {
           set({ 
             error: error.message || 'Profile update failed', 

@@ -21,16 +21,34 @@ router.get('/organized', [
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   queryValidator('postType').optional().isIn(['goods', 'services', 'events', 'housing', 'tutoring', 'all']).withMessage('Invalid post type'),
-  queryValidator('tags').optional().isArray().withMessage('Tags must be an array'),
+  queryValidator('tags').optional().custom((value, { req }) => {
+    // Handle both 'tags' and 'tags[]' parameter formats
+    const tags = req.query.tags || req.query['tags[]'];
+    if (tags && !Array.isArray(tags) && typeof tags !== 'string') {
+      throw new Error('Tags must be an array or string');
+    }
+    return true;
+  }).withMessage('Tags must be an array'),
   validate
 ], async (req, res) => {
   try {
     const {
       page = 1,
       limit = 20,
-      postType,
-      tags
+      postType
     } = req.query;
+
+    // Handle tags parameter (support both 'tags' and 'tags[]' formats)
+    let tags = req.query.tags || req.query['tags[]'];
+    if (tags && typeof tags === 'string') {
+      tags = [tags]; // Convert single string to array
+    }
+
+    // Handle postTypes parameter (support both 'postTypes' and 'postTypes[]' formats)
+    let postTypes = req.query.postTypes || req.query['postTypes[]'];
+    if (postTypes && typeof postTypes === 'string') {
+      postTypes = [postTypes]; // Convert single string to array
+    }
 
     const offset = (page - 1) * limit;
 
@@ -44,6 +62,7 @@ router.get('/organized', [
           p.description,
           p.post_type,
           p.duration_type,
+          p.location,
           p.repost_frequency,
           p.original_post_id,
                   p.message_count,
@@ -88,27 +107,39 @@ router.get('/organized', [
     const queryParams = [UNIVERSITY_CONFIG.primaryUniversityId];
     let paramCount = 1;
 
-    // Add post type filter
-    if (postType && postType !== 'all') {
+    // Add post type filter - New system: Primary tag is the main category
+    if (postTypes && postTypes.length > 0) {
+      // Multiple post types selected
       paramCount++;
-      // Map frontend postType values to backend database values
-      let dbPostType;
+      const validPostTypes = postTypes.filter(pt => ['goods', 'services', 'housing', 'events'].includes(pt));
+      if (validPostTypes.length > 0) {
+        organizedQuery += ` AND p.post_type = ANY($${paramCount})`;
+        queryParams.push(validPostTypes);
+      }
+    } else if (postType && postType !== 'all') {
+      // Single post type selected (legacy/fallback)
+      paramCount++;
       switch (postType) {
         case 'goods':
+          organizedQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('goods');
+          break;
         case 'services':
+          organizedQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('services');
+          break;
         case 'housing':
-        case 'tutoring':
-          // These are all considered "goods-services" in the database
-          dbPostType = 'goods-services';
+          organizedQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('housing');
           break;
         case 'events':
-          dbPostType = 'events';
+          organizedQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('events');
           break;
         default:
-          dbPostType = postType;
+          organizedQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push(postType);
       }
-      organizedQuery += ` AND p.post_type = $${paramCount}`;
-      queryParams.push(dbPostType);
     }
 
     // Add tags filter
@@ -139,7 +170,7 @@ router.get('/organized', [
     queryParams.push(limit, offset);
 
     // Execute organized query
-    const result = await queryValidator(organizedQuery, queryParams);
+    const result = await dbQuery(organizedQuery, queryParams);
 
     // Get total count
     let countQuery = `
@@ -193,6 +224,7 @@ router.get('/organized', [
       description: post.description,
       postType: post.post_type,
       durationType: post.duration_type,
+      location: post.location,
       repostFrequency: post.repost_frequency,
       isRecurring: post.duration_type === 'recurring',
       originalPostId: post.original_post_id,
@@ -584,7 +616,7 @@ router.get('/tabbed', [
     let baseQuery = `
       SELECT 
         p.id, p.user_id, p.university_id, p.title, p.description, p.post_type, 
-        p.duration_type, p.repost_frequency, p.original_post_id, p.message_count,
+        p.duration_type, p.location, p.repost_frequency, p.original_post_id, p.message_count,
         p.share_count, p.bookmark_count, p.repost_count, p.engagement_score,
         p.base_score, p.time_urgency_bonus, p.final_score, p.expires_at, 
         p.event_start, p.event_end, p.is_fulfilled, p.is_active, p.view_count,
@@ -1042,7 +1074,22 @@ router.get('/', [
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   queryValidator('universityId').optional().isInt().withMessage('University ID must be an integer'),
   queryValidator('postType').optional().isIn(['goods', 'services', 'events', 'housing', 'tutoring', 'all']).withMessage('Invalid post type'),
-  queryValidator('tags').optional().isArray().withMessage('Tags must be an array'),
+  queryValidator('postTypes').optional().custom((value, { req }) => {
+    // Handle both 'postTypes' and 'postTypes[]' parameter formats for multiple categories
+    const postTypes = req.query.postTypes || req.query['postTypes[]'];
+    if (postTypes && !Array.isArray(postTypes) && typeof postTypes !== 'string') {
+      throw new Error('PostTypes must be an array or string');
+    }
+    return true;
+  }).withMessage('PostTypes must be an array'),
+  queryValidator('tags').optional().custom((value, { req }) => {
+    // Handle both 'tags' and 'tags[]' parameter formats
+    const tags = req.query.tags || req.query['tags[]'];
+    if (tags && !Array.isArray(tags) && typeof tags !== 'string') {
+      throw new Error('Tags must be an array or string');
+    }
+    return true;
+  }).withMessage('Tags must be an array'),
   queryValidator('sortBy').optional().isIn(['recent', 'expiring', 'recurring', 'organized']).withMessage('Invalid sort option'),
   queryValidator('expandCluster').optional().isBoolean().withMessage('Expand cluster must be boolean'),
   validate
@@ -1053,11 +1100,22 @@ router.get('/', [
       limit = 20,
       universityId,
       postType,
-      tags,
       sortBy = 'recent',
       expandCluster = false,
       userId
     } = req.query;
+
+    // Handle tags parameter (support both 'tags' and 'tags[]' formats)
+    let tags = req.query.tags || req.query['tags[]'];
+    if (tags && typeof tags === 'string') {
+      tags = [tags]; // Convert single string to array
+    }
+
+    // Handle postTypes parameter (support both 'postTypes' and 'postTypes[]' formats)
+    let postTypes = req.query.postTypes || req.query['postTypes[]'];
+    if (postTypes && typeof postTypes === 'string') {
+      postTypes = [postTypes]; // Convert single string to array
+    }
 
     const offset = (page - 1) * limit;
     const user = req.user;
@@ -1072,6 +1130,7 @@ router.get('/', [
         p.description,
         p.post_type,
         p.duration_type,
+        p.location,
         p.repost_frequency,
         p.original_post_id,
         p.expires_at,
@@ -1109,27 +1168,39 @@ router.get('/', [
     baseQuery += ` AND p.university_id = $${paramCount}`;
     queryParams.push(UNIVERSITY_CONFIG.primaryUniversityId);
 
-    // Add post type filter
-    if (postType && postType !== 'all') {
+    // Add post type filter - New system: Primary tag is the main category
+    if (postTypes && postTypes.length > 0) {
+      // Multiple post types selected
       paramCount++;
-      // Map frontend postType values to backend database values
-      let dbPostType;
+      const validPostTypes = postTypes.filter(pt => ['goods', 'services', 'housing', 'events'].includes(pt));
+      if (validPostTypes.length > 0) {
+        baseQuery += ` AND p.post_type = ANY($${paramCount})`;
+        queryParams.push(validPostTypes);
+      }
+    } else if (postType && postType !== 'all') {
+      // Single post type selected (legacy/fallback)
+      paramCount++;
       switch (postType) {
         case 'goods':
+          baseQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('goods');
+          break;
         case 'services':
+          baseQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('services');
+          break;
         case 'housing':
-        case 'tutoring':
-          // These are all considered "goods-services" in the database
-          dbPostType = 'goods-services';
+          baseQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('housing');
           break;
         case 'events':
-          dbPostType = 'events';
+          baseQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push('events');
           break;
         default:
-          dbPostType = postType;
+          baseQuery += ` AND p.post_type = $${paramCount}`;
+          queryParams.push(postType);
       }
-      baseQuery += ` AND p.post_type = $${paramCount}`;
-      queryParams.push(dbPostType);
     }
 
     // Add tags filter
@@ -1187,26 +1258,38 @@ router.get('/', [
     const countParams = [UNIVERSITY_CONFIG.primaryUniversityId];
     paramCount = 1;
 
-    if (postType && postType !== 'all') {
+    if (postTypes && postTypes.length > 0) {
+      // Multiple post types selected
       paramCount++;
-      // Map frontend postType values to backend database values
-      let dbPostType;
+      const validPostTypes = postTypes.filter(pt => ['goods', 'services', 'housing', 'events'].includes(pt));
+      if (validPostTypes.length > 0) {
+        countQuery += ` AND p.post_type = ANY($${paramCount})`;
+        countParams.push(validPostTypes);
+      }
+    } else if (postType && postType !== 'all') {
+      // Single post type selected (legacy/fallback)
+      paramCount++;
       switch (postType) {
         case 'goods':
+          countQuery += ` AND p.post_type = $${paramCount}`;
+          countParams.push('goods');
+          break;
         case 'services':
+          countQuery += ` AND p.post_type = $${paramCount}`;
+          countParams.push('services');
+          break;
         case 'housing':
-        case 'tutoring':
-          // These are all considered "goods-services" in the database
-          dbPostType = 'goods-services';
+          countQuery += ` AND p.post_type = $${paramCount}`;
+          countParams.push('housing');
           break;
         case 'events':
-          dbPostType = 'events';
+          countQuery += ` AND p.post_type = $${paramCount}`;
+          countParams.push('events');
           break;
         default:
-          dbPostType = postType;
+          countQuery += ` AND p.post_type = $${paramCount}`;
+          countParams.push(postType);
       }
-      countQuery += ` AND p.post_type = $${paramCount}`;
-      countParams.push(dbPostType);
     }
 
     if (tags && tags.length > 0) {
@@ -1225,10 +1308,12 @@ router.get('/', [
     // Format posts
     const posts = result.rows.map(post => ({
       id: post.id,
+      userId: post.user_id,
       title: post.title,
       description: post.description,
       postType: post.post_type,
       durationType: post.duration_type,
+      location: post.location,
       repostFrequency: post.repost_frequency,
       isRecurring: post.duration_type === 'recurring',
       originalPostId: post.original_post_id,
@@ -1292,14 +1377,14 @@ router.get('/:id', [
     const { id } = req.params;
 
     // Increment view count
-    await queryValidator(`
+    await dbQuery(`
       UPDATE posts 
       SET view_count = view_count + 1 
       WHERE id = $1
     `, [id]);
 
     // Get post with details
-    const result = await queryValidator(`
+    const result = await dbQuery(`
       SELECT 
         p.*,
         u.username,
@@ -1342,6 +1427,7 @@ router.get('/:id', [
       description: post.description,
       postType: post.post_type,
       durationType: post.duration_type,
+      location: post.location,
       expiresAt: post.expires_at,
       eventStart: post.event_start,
       eventEnd: post.event_end,
@@ -1394,8 +1480,9 @@ router.post('/', [
   requireVerification,
   body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
   body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
-  body('postType').isIn(['offer', 'request', 'event']).withMessage('Post type must be offer, request, or event'),
+  body('postType').isIn(['goods', 'services', 'housing', 'events']).withMessage('Post type must be goods, services, housing, or events'),
         body('durationType').isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
+      body('location').optional().isLength({ max: 255 }).withMessage('Location must be less than 255 characters').trim(),
       body('repostFrequency').optional().isIn(['daily', 'weekly', 'monthly']).withMessage('Repost frequency must be daily, weekly, or monthly'),
       body('expiresAt').optional().isISO8601().withMessage('Expiration date must be a valid ISO 8601 date'),
       body('eventStart').optional().isISO8601().withMessage('Event start date must be a valid ISO 8601 date'),
@@ -1409,6 +1496,7 @@ router.post('/', [
       description,
       postType,
       durationType,
+      location,
       repostFrequency,
       expiresAt,
       eventStart,
@@ -1433,10 +1521,10 @@ router.post('/', [
 
       // Create post
       const postResult = await client.query(`
-        INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, repost_frequency, next_repost_date, expires_at, event_start, event_end)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        RETURNING id, title, description, post_type, duration_type, repost_frequency, next_repost_date, expires_at, event_start, event_end, created_at
-      `, [userId, universityId, title, description, postType, durationType, repostFrequency, nextRepostDate, expiresAt, eventStart, eventEnd]);
+        INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end, created_at
+      `, [userId, universityId, title, description, postType, durationType, location, repostFrequency, nextRepostDate, expiresAt, eventStart, eventEnd]);
 
       const post = postResult.rows[0];
 
@@ -1561,8 +1649,9 @@ router.put('/:id', [
   checkOwnership('post'),
   body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
   body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
-  body('postType').isIn(['offer', 'request', 'event']).withMessage('Post type must be offer, request, or event'),
+  body('postType').optional().isIn(['goods', 'services', 'housing', 'events', 'offer', 'request']).withMessage('Post type must be a valid category'),
   body('durationType').isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
+  body('location').optional().isLength({ max: 255 }).withMessage('Location must be less than 255 characters').trim(),
   body('expiresAt').optional().isISO8601().withMessage('Expiration date must be a valid ISO 8601 date'),
   body('eventStart').optional().isISO8601().withMessage('Event start date must be a valid ISO 8601 date'),
   body('eventEnd').optional().isISO8601().withMessage('Event end date must be a valid ISO 8601 date'),
@@ -1576,26 +1665,73 @@ router.put('/:id', [
       description,
       postType,
       durationType,
+      location,
       expiresAt,
       eventStart,
       eventEnd,
       tags
     } = req.body;
 
+    console.log('PUT /posts/:id received data:', {
+      id,
+      title,
+      description,
+      postType,
+      durationType,
+      location,
+      expiresAt,
+      eventStart,
+      eventEnd,
+      tags
+    });
+
     // Start transaction
     const client = await pool.connect();
     
     try {
-      await client.queryValidator('BEGIN');
+      await client.query('BEGIN');
 
-      // Update post
-      const updateResult = await client.queryValidator(`
-        UPDATE posts 
-        SET title = $1, description = $2, post_type = $3, duration_type = $4, 
-            expires_at = $5, event_start = $6, event_end = $7, updated_at = CURRENT_TIMESTAMP
-        WHERE id = $8
-        RETURNING id, title, description, post_type, duration_type, expires_at, event_start, event_end, updated_at
-      `, [title, description, postType, durationType, expiresAt, eventStart, eventEnd, id]);
+      // Determine if postType should update the primary category or be added as a tag
+      const primaryCategories = ['goods', 'services', 'housing', 'events'];
+      const secondaryTags = ['offer', 'request'];
+      
+      let updateQuery;
+      let updateParams;
+      
+      if (postType && primaryCategories.includes(postType)) {
+        // Update primary category
+        updateQuery = `
+          UPDATE posts 
+          SET title = $1, description = $2, post_type = $3, duration_type = $4, 
+              location = $5, expires_at = $6, event_start = $7, event_end = $8, updated_at = CURRENT_TIMESTAMP
+          WHERE id = $9
+          RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, updated_at
+        `;
+        updateParams = [title, description, postType, durationType, location, expiresAt, eventStart, eventEnd, id];
+      } else {
+        // Don't update primary category, only update other fields
+        updateQuery = `
+          UPDATE posts 
+          SET title = $1, description = $2, duration_type = $3, 
+              location = $4, expires_at = $5, event_start = $6, event_end = $7, updated_at = CURRENT_TIMESTAMP
+          WHERE id = $8
+          RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, updated_at
+        `;
+        updateParams = [title, description, durationType, location, expiresAt, eventStart, eventEnd, id];
+        
+        // Add postType to tags if it's a secondary tag
+        if (postType && secondaryTags.includes(postType)) {
+          if (!tags || !Array.isArray(tags)) {
+            tags = [postType];
+          } else if (!tags.includes(postType)) {
+            tags.push(postType);
+          }
+        }
+      }
+
+      const updateResult = await client.query(updateQuery, updateParams);
+
+      console.log('UPDATE result:', updateResult.rows[0]);
 
       if (updateResult.rows.length === 0) {
         return res.status(404).json({
@@ -1611,15 +1747,15 @@ router.put('/:id', [
       // Update tags if provided
       if (tags) {
         // Remove existing tags
-        await client.queryValidator('DELETE FROM post_tags WHERE post_id = $1', [id]);
+        await client.query('DELETE FROM post_tags WHERE post_id = $1', [id]);
 
         // Add new tags
         for (const tagName of tags) {
-          let tagResult = await client.queryValidator('SELECT id FROM tags WHERE name = $1', [tagName]);
+          let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
           
           let tagId;
           if (tagResult.rows.length === 0) {
-            const newTagResult = await client.queryValidator(`
+            const newTagResult = await client.query(`
               INSERT INTO tags (name, category) 
               VALUES ($1, 'custom') 
               RETURNING id
@@ -1629,14 +1765,14 @@ router.put('/:id', [
             tagId = tagResult.rows[0].id;
           }
 
-          await client.queryValidator(`
+          await client.query(`
             INSERT INTO post_tags (post_id, tag_id) 
             VALUES ($1, $2)
           `, [id, tagId]);
         }
       }
 
-      await client.queryValidator('COMMIT');
+      await client.query('COMMIT');
 
       // Clear cache
       const cacheKey = generateCacheKey('post', id);
@@ -1661,7 +1797,7 @@ router.put('/:id', [
       });
 
     } catch (error) {
-      await client.queryValidator('ROLLBACK');
+      await client.query('ROLLBACK');
       throw error;
     } finally {
       client.release();
@@ -1691,7 +1827,7 @@ router.delete('/:id', [
     const { id } = req.params;
 
     // Mark post as fulfilled (soft delete)
-    const result = await queryValidator(`
+    const result = await dbQuery(`
       UPDATE posts 
       SET is_active = false, updated_at = CURRENT_TIMESTAMP
       WHERE id = $1
@@ -2591,16 +2727,21 @@ router.post('/create', [
       });
     }
 
-    // Determine the actual post type for database storage
+    // Determine the actual post type for database storage - New system
     let dbPostType;
     let durationType = 'one-time';
     
     if (postType === 'goods-services') {
-      dbPostType = primaryTags[0]; // 'offer' or 'request'
+      // Map old frontend system to new system
+      dbPostType = 'goods'; // Default to goods for backwards compatibility
       durationType = 'one-time';
     } else if (postType === 'events') {
-      dbPostType = 'event';
+      dbPostType = 'events';
       durationType = 'event';
+    } else {
+      // Direct mapping for new system
+      dbPostType = postType; // goods, services, housing, events
+      durationType = postType === 'events' ? 'event' : 'one-time';
     }
 
     // Calculate expiry date

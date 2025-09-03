@@ -108,11 +108,12 @@ router.put('/profile', [
   body('year').optional().isInt({ min: 1, max: 10 }).withMessage('Year must be 1-10'),
   body('major').optional().isLength({ max: 200 }).withMessage('Major cannot exceed 200 characters'),
   body('hometown').optional().isLength({ max: 200 }).withMessage('Hometown cannot exceed 200 characters'),
+  body('bio').optional().isLength({ max: 500 }).withMessage('Bio cannot exceed 500 characters'),
   validate
 ], async (req, res) => {
   try {
     const userId = req.user.id;
-    const { firstName, lastName, year, major, hometown } = req.body;
+    const { firstName, lastName, year, major, hometown, bio } = req.body;
 
     // Build update query dynamically
     const updateFields = [];
@@ -149,6 +150,12 @@ router.put('/profile', [
       queryParams.push(hometown);
     }
 
+    if (bio !== undefined) {
+      paramCount++;
+      updateFields.push(`bio = $${paramCount}`);
+      queryParams.push(bio);
+    }
+
     if (updateFields.length === 0) {
       return res.status(400).json({
         success: false,
@@ -167,7 +174,7 @@ router.put('/profile', [
       UPDATE users 
       SET ${updateFields.join(', ')}
       WHERE id = $${paramCount}
-      RETURNING id, first_name, last_name, display_name, year, major, hometown, updated_at
+      RETURNING id, first_name, last_name, display_name, year, major, hometown, bio, updated_at
     `, queryParams);
 
     if (result.rows.length === 0) {
@@ -197,6 +204,7 @@ router.put('/profile', [
           year: updatedUser.year,
           major: updatedUser.major,
           hometown: updatedUser.hometown,
+          bio: updatedUser.bio,
           updatedAt: updatedUser.updated_at
         }
       }
@@ -241,6 +249,7 @@ router.get('/:id', [
           u.major,
           u.hometown,
           u.university_id,
+          u.is_verified,
           u.created_at,
           un.name as university_name,
           un.city as university_city,
@@ -279,6 +288,7 @@ router.get('/:id', [
       year: user.year,
       major: user.major,
       hometown: user.hometown,
+      isVerified: user.is_verified,
       university: {
         id: user.university_id,
         name: user.university_name,
@@ -294,9 +304,7 @@ router.get('/:id', [
 
     res.json({
       success: true,
-      data: {
-        user: formattedUser
-      }
+      data: formattedUser
     });
 
   } catch (error) {
@@ -316,7 +324,7 @@ router.get('/:id', [
 router.get('/:id/posts', [
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  body('id').isInt().withMessage('User ID must be an integer'),
+  param('id').isInt().withMessage('User ID must be an integer'),
   validate
 ], async (req, res) => {
   try {
@@ -328,16 +336,18 @@ router.get('/:id/posts', [
     const result = await query(`
       SELECT 
         p.*,
+        u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name,
         ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
         COUNT(pi.id) as image_count
       FROM posts p
+      JOIN users u ON p.user_id = u.id
       JOIN universities un ON p.university_id = un.id
       LEFT JOIN post_tags pt ON p.id = pt.post_id
       LEFT JOIN tags t ON pt.tag_id = t.id
       LEFT JOIN post_images pi ON p.id = pi.post_id
       WHERE p.user_id = $1 AND p.is_active = true
-      GROUP BY p.id, un.name
+      GROUP BY p.id, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture, un.name
       ORDER BY p.created_at DESC
       LIMIT $2 OFFSET $3
     `, [id, limit, offset]);
@@ -354,10 +364,12 @@ router.get('/:id/posts', [
     // Format posts
     const posts = result.rows.map(post => ({
       id: post.id,
+      userId: post.user_id,
       title: post.title,
       description: post.description,
       postType: post.post_type,
       durationType: post.duration_type,
+      location: post.location,
       expiresAt: post.expires_at,
       eventStart: post.event_start,
       eventEnd: post.event_end,
@@ -365,6 +377,14 @@ router.get('/:id/posts', [
       viewCount: post.view_count,
       createdAt: post.created_at,
       updatedAt: post.updated_at,
+      poster: {
+        id: post.user_id,
+        username: post.username,
+        firstName: post.first_name,
+        lastName: post.last_name,
+        displayName: post.display_name,
+        profilePicture: post.profile_picture
+      },
       university: {
         name: post.university_name
       },

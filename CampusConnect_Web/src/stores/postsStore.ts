@@ -159,11 +159,25 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
   },
 
   setFilters: (filters: Partial<PostFilters>) => {
-    set((state) => ({
-      filters: { ...state.filters, ...filters },
-      currentPage: 1,
-      hasMore: true,
-    }));
+    set((state) => {
+      const newFilters = { ...state.filters, ...filters };
+      
+      // Clean up conflicting category parameters
+      if (newFilters.postType && newFilters.postTypes) {
+        // If both exist, prefer the newer one based on what was just set
+        if (filters.postType !== undefined) {
+          delete newFilters.postTypes; // New single selection, clear multiple
+        } else if (filters.postTypes !== undefined) {
+          delete newFilters.postType; // New multiple selection, clear single
+        }
+      }
+      
+      return {
+        filters: newFilters,
+        currentPage: 1,
+        hasMore: true,
+      };
+    });
     
     // Refetch posts with new filters
     get().fetchPosts(1, true);

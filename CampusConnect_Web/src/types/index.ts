@@ -11,7 +11,14 @@ export interface User {
   hometown?: string;
   universityId: string;
   profileImage?: string;
+  profilePicture?: string;
   bio?: string;
+  isVerified?: boolean;
+  university?: University;
+  stats?: {
+    postCount: number;
+    fulfilledPosts: number;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +28,8 @@ export interface University {
   name: string;
   domain: string;
   country: string;
+  city?: string;
+  state?: string;
   marketSize: number;
   isActive: boolean;
   createdAt: string;
@@ -42,7 +51,7 @@ export interface Post {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  user?: User;
+  poster?: User;
   university?: University;
 }
 
@@ -152,6 +161,7 @@ export interface HomeTab {
 
 export interface PostFilters {
   postType?: string;
+  postTypes?: string[]; // For multiple category selection
   tags?: string[];
   location?: string;
   duration?: string;

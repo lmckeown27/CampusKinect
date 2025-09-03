@@ -3,6 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../../stores/authStore';
 import { Edit2, Camera, X } from 'lucide-react';
+import { apiService } from '../../services/api';
+import { Post, CreatePostForm, User } from '../../types';
+import PostCard from '../ui/PostCard';
+import EditPostModal from '../ui/EditPostModal';
 
 // Helper function to get year label
 const getYearLabel = (year: number): string => {
@@ -20,6 +24,11 @@ const getYearLabel = (year: number): string => {
 const ProfileTab: React.FC = () => {
   const { user: authUser, updateUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'posts' | 'reposts' | 'bookmarks'>('posts');
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [postsLoaded, setPostsLoaded] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
 
   // Load saved active tab from localStorage on component mount
   useEffect(() => {
@@ -38,7 +47,7 @@ const ProfileTab: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Use real user data from auth store
-  const [user, setUser] = useState<any>(() => {
+  const [user, setUser] = useState<User | null>(() => {
     if (authUser) {
       return authUser;
     }
@@ -117,18 +126,122 @@ const ProfileTab: React.FC = () => {
     { value: 5, label: 'Super Senior' }
   ];
 
-  const handleSaveProfile = () => {
-    // Update local state immediately
-    setUser((prevUser: any) => ({
-      ...prevUser,
-      ...editForm
-    }));
+  // Function to fetch user's posts
+  const fetchUserPosts = async () => {
+    if (!authUser?.id || postsLoaded) return;
     
-    // Save to localStorage
-    localStorage.setItem('campusConnect_profile', JSON.stringify(editForm));
+    setLoading(true);
+    try {
+      const response = await apiService.getUserPosts(authUser.id.toString());
+      setPosts(response.data);
+      setPostsLoaded(true);
+    } catch (error) {
+      console.error('Failed to fetch user posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch posts when user is available and activeTab is 'posts'
+  useEffect(() => {
+    if (authUser && activeTab === 'posts' && !postsLoaded) {
+      fetchUserPosts();
+    }
+  }, [authUser, activeTab, postsLoaded]);
+
+  // Refresh posts function to be called when new post is created
+  const refreshPosts = () => {
+    setPostsLoaded(false);
+    setPosts([]);
+  };
+
+  // Expose refresh function globally for other components to use
+  useEffect(() => {
+    (window as any).refreshUserPosts = refreshPosts;
     
-    // Exit edit mode
-    setIsEditing(false);
+    return () => {
+      delete (window as any).refreshUserPosts;
+    };
+  }, []);
+
+  // Handle post deletion
+  const handleDeletePost = async (postId: string) => {
+    try {
+      await apiService.deletePost(postId);
+      // Remove the deleted post from the posts state
+      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+      // Show success message
+      alert('Post deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('Failed to delete post. Please try again.');
+    }
+  };
+
+  // Handle post editing
+  const handleEditPost = (postId: string, currentData: Post) => {
+    setEditingPost(currentData);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveEdit = async (postId: string, formData: Partial<CreatePostForm>) => {
+    try {
+      await apiService.updatePost(postId, formData);
+      // Refresh posts to show updated data
+      setPostsLoaded(false);
+      setPosts([]);
+      alert('Post updated successfully');
+    } catch (error) {
+      console.error('Failed to update post:', error);
+      alert('Failed to update post. Please try again.');
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setEditingPost(null);
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      // Transform editForm to match API expectations
+      const updateData = {
+        firstName: editForm.firstName,
+        lastName: editForm.lastName,
+        year: editForm.year,
+        major: editForm.major,
+        hometown: editForm.hometown,
+        bio: editForm.biography // Map biography to bio
+      };
+      
+      // Update profile via API
+      await updateUser(updateData);
+      
+      // Update local state immediately
+      setUser((prevUser: User | null) => {
+        if (!prevUser) return null;
+        return {
+          ...prevUser,
+          firstName: editForm.firstName,
+          lastName: editForm.lastName,
+          major: editForm.major,
+          year: editForm.year,
+          hometown: editForm.hometown,
+          bio: editForm.biography
+        };
+      });
+      
+      // Save to localStorage as backup
+      localStorage.setItem('campusConnect_profile', JSON.stringify(editForm));
+      
+      // Exit edit mode
+      setIsEditing(false);
+      
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      alert('Failed to update profile. Please try again.');
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,10 +250,13 @@ const ProfileTab: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
-        setUser((prevUser: any) => ({
-          ...prevUser,
-          profileImage: imageUrl
-        }));
+        setUser((prevUser: User | null) => {
+          if (!prevUser) return null;
+          return {
+            ...prevUser,
+            profileImage: imageUrl
+          };
+        });
         
         // Save image to localStorage
         const currentProfile = JSON.parse(localStorage.getItem('campusConnect_profile') || '{}');
@@ -378,9 +494,9 @@ const ProfileTab: React.FC = () => {
                     </p>
                   )}
                   
-                  {(user?.bio || user?.biography) && (
+                  {user?.bio && (
                     <p className="text-gray-700 mt-3">
-                      {user?.bio || user?.biography}
+                      {user.bio}
                     </p>
                   )}
                 </div>
@@ -450,21 +566,80 @@ const ProfileTab: React.FC = () => {
 
           {/* Tab Content */}
           <div className="p-6">
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg mb-4">
-                {activeTab === 'posts' && "You haven't created any posts yet."}
-                {activeTab === 'reposts' && "You haven't reposted anything yet."}
-                {activeTab === 'bookmarks' && "You haven't bookmarked any posts yet."}
-              </p>
-              <p className="text-gray-400">
-                {activeTab === 'posts' && "Share something with your campus community!"}
-                {activeTab === 'reposts' && "Repost content you find interesting."}
-                {activeTab === 'bookmarks' && "Save posts you want to revisit later."}
-              </p>
-            </div>
+            {activeTab === 'posts' && (
+              <div>
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81] mx-auto mb-4"></div>
+                    <p className="text-gray-500">Loading your posts...</p>
+                  </div>
+                ) : posts.length > 0 ? (
+                  <div className="space-y-6">
+                    {posts.map((post) => {
+                      // Ensure post has poster information
+                      const postWithPoster = {
+                        ...post,
+                        poster: post.poster || {
+                          id: authUser?.id || 'unknown',
+                          firstName: authUser?.firstName || user?.firstName || 'User',
+                          lastName: authUser?.lastName || user?.lastName || '',
+                          username: authUser?.username || user?.username || 'username',
+                          email: authUser?.email || user?.email || '',
+                          profileImage: authUser?.profileImage || user?.profileImage,
+                          major: authUser?.major || user?.major,
+                          year: authUser?.year || user?.year,
+                          universityId: authUser?.universityId || 1,
+                          createdAt: authUser?.createdAt || new Date().toISOString(),
+                          updatedAt: authUser?.updatedAt || new Date().toISOString()
+                        }
+                      } as Post;
+                      return (
+                        <PostCard 
+                          key={post.id} 
+                          post={postWithPoster} 
+                          showDeleteButton={true}
+                          onDelete={handleDeletePost}
+                          showEditButton={true}
+                          onEdit={handleEditPost}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg mb-4">You haven't created any posts yet.</p>
+                    <p className="text-gray-400">Share something with your campus community!</p>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {activeTab === 'reposts' && (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg mb-4">You haven't reposted anything yet.</p>
+                <p className="text-gray-400">Repost content you find interesting.</p>
+              </div>
+            )}
+            
+            {activeTab === 'bookmarks' && (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg mb-4">You haven't bookmarked any posts yet.</p>
+                <p className="text-gray-400">Save posts you want to revisit later.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Edit Post Modal */}
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          isOpen={editModalOpen}
+          onClose={handleCloseEditModal}
+          onSave={handleSaveEdit}
+        />
+      )}
     </div>
   );
 };
