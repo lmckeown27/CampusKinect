@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Post } from '../../types';
 import { 
   formatDate, 
@@ -14,7 +14,6 @@ import {
   Repeat,
   MoreHorizontal,
   MapPin,
-  Clock,
   User
 } from 'lucide-react';
 
@@ -37,6 +36,8 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -73,10 +74,24 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       <div className="p-4 border-b border-gray-100">
         {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
         <div className="flex items-center justify-between mb-3">
-          {/* Post Type Badge - Top Left */}
-          <div className={`px-3 py-1 rounded-full text-sm font-medium ${getPostTypeColor(post.postType)}`}>
-            <span className="mr-1">{getPostTypeIcon(post.postType)}</span>
-            {post.postType ? post.postType.charAt(0).toUpperCase() + post.postType.slice(1) : 'Unknown'}
+          {/* Left side: Post Type Badge + Timestamp */}
+          <div className="flex items-center space-x-3">
+            {/* Show Post Type Badge only for non-event posts */}
+            {post.postType && post.postType !== 'event' && (
+              <div 
+                className={`px-3 py-1 rounded-full text-sm font-medium ${getPostTypeColor(post.postType)}`}
+                style={{ border: '2px solid #374151', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+              >
+                <span className="mr-1">{getPostTypeIcon(post.postType)}</span>
+                {post.postType ? post.postType.charAt(0).toUpperCase() + post.postType.slice(1) : 'Unknown'}
+              </div>
+            )}
+            
+            {/* Timestamp */}
+            <div className="flex items-center space-x-1">
+              <span className="text-xs text-gray-500">•</span>
+              <span className="text-xs text-gray-500">{formatDate(post.createdAt)}</span>
+            </div>
           </div>
 
           {/* Action Icons - Top Right */}
@@ -93,9 +108,19 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
             <div className="relative">
               <button
+                ref={buttonRef}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
+                  
+                  if (!showOptions && buttonRef.current) {
+                    const rect = buttonRef.current.getBoundingClientRect();
+                    setDropdownPosition({
+                      top: rect.bottom + 4,
+                      left: rect.right - 192 // 192px is the width of the dropdown (w-48)
+                    });
+                  }
+                  
                   setShowOptions(!showOptions);
                 }}
                 className="p-2 rounded-lg transition-all duration-200"
@@ -106,23 +131,33 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                 <MoreHorizontal size={18} />
               </button>
 
-              {/* Dropdown menu positioned relative to the three dots button */}
+              {/* Dropdown menu positioned with fixed positioning */}
               {showOptions && (
                 <div 
-                  className="absolute w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2"
+                  className="w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 flex flex-col items-center"
                   style={{ 
-                    top: '100%',
-                    right: '0',
-                    marginTop: '4px',
-                    zIndex: 1000
+                    position: 'fixed',
+                    top: `${dropdownPosition.top}px`,
+                    left: `${dropdownPosition.left}px`,
+                    zIndex: 9999,
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)',
+                    gap: '12px'
                   }}
                 >
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
+                  <button 
+                    className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                    style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                  >
                     Report Post
                   </button>
                   <button 
                     onClick={handleShare}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                    className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                    style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
                   >
                     Copy Link
                   </button>
@@ -132,21 +167,43 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </div>
         </div>
 
-        {/* Bottom Row: User Info */}
-        <div className="flex items-center space-x-3">
-          {post.user?.profileImage ? (
-            <img
-              src={post.user.profileImage}
-              alt={post.user.firstName}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-              <User size={20} className="text-white" />
-            </div>
-          )}
-          
-          <div className="flex-1 min-w-0">
+        {/* Bottom Row: User Info and Post Title */}
+        <div className="flex items-start" style={{ gap: '20px' }}>
+          {/* User Info with Profile Picture Inside - Reduced Width */}
+          <div 
+            className="min-w-0 flex items-start space-x-3"
+            style={{ 
+              border: '2px solid #d1d5db', 
+              borderRadius: '12px', 
+              paddingTop: '8px',
+              paddingBottom: '12px',
+              paddingLeft: '12px',
+              paddingRight: '12px',
+              backgroundColor: '#f9fafb',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+              width: '280px',
+              flexShrink: 0
+            }}
+          >
+            {/* Profile Picture */}
+            {post.user?.profileImage ? (
+              <img
+                src={post.user.profileImage}
+                alt={post.user.firstName}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                style={{ border: '2px solid #708d81' }}
+              />
+            ) : (
+              <div 
+                className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ border: '2px solid #708d81' }}
+              >
+                <User size={20} className="text-white" />
+              </div>
+            )}
+
+            {/* User Text Info */}
+            <div className="flex-1 min-w-0">
             {/* Display Name - Large and Bold */}
             <div className="flex items-center space-x-2 mb-0">
               <p 
@@ -158,8 +215,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                   : post.user?.displayName || post.user?.username || 'Unknown User'
                 }
               </p>
-              <span className="text-xs text-gray-500">•</span>
-              <span className="text-xs text-gray-500">{formatDate(post.createdAt)}</span>
             </div>
             
             {/* Username - Small and Separate */}
@@ -178,16 +233,23 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                 {post.user.major} • {post.user.year ? getYearLabel(post.user.year) : 'Not specified'}
               </p>
             )}
+            </div>
+          </div>
+
+          {/* Post Title - To the right of user info */}
+          <div className="flex-1 min-w-0">
+            <h3 
+              className="text-xl font-bold text-gray-900 line-clamp-2"
+              style={{ fontSize: '26px', lineHeight: '32px' }}
+            >
+              {post.title}
+            </h3>
           </div>
         </div>
       </div>
 
       {/* Post Content */}
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-          {post.title}
-        </h3>
-        
+      <div className="px-4 pb-4 pt-2">
         <p className="text-gray-700 mb-4 line-clamp-3">
           {post.description}
         </p>
@@ -231,11 +293,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               <span>{post.location}</span>
             </div>
           )}
-          
-          <div className="flex items-center space-x-1">
-            <Clock size={16} />
-            <span>{post.duration}</span>
-          </div>
+
         </div>
       </div>
 

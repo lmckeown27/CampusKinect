@@ -360,7 +360,7 @@ const HomeTab: React.FC = () => {
   // Define sub-tags for each main category
   const subTags = {
     goods: [
-      'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+      'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
       'Automotive', 'Pets', 'Pet Supplies', 'Other'
     ],
     services: [
