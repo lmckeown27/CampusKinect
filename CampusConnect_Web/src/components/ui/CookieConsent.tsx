@@ -9,34 +9,40 @@ export default function CookieConsent() {
 
   // Check if user has already consented on mount
   useEffect(() => {
-    const hasUserConsented = localStorage.getItem('cookie-consent') !== null;
-    const hasUserPreferences = localStorage.getItem('cookie-preferences') !== null;
-    
-    // TEMPORARILY FORCE VISIBILITY FOR DEBUGGING
-    setIsVisible(true);
-    
-    if (hasUserConsented || hasUserPreferences) {
-      // setIsVisible(false); // Commented out temporarily
+    if (typeof window !== 'undefined') {
+      const hasUserConsented = localStorage.getItem('cookie-consent') !== null;
+      const hasUserPreferences = localStorage.getItem('cookie-preferences') !== null;
+      
+      // TEMPORARILY FORCE VISIBILITY FOR DEBUGGING
+      setIsVisible(true);
+      
+      if (hasUserConsented || hasUserPreferences) {
+        // setIsVisible(false); // Commented out temporarily
+      }
     }
   }, []);
 
   const handleAcceptAll = () => {
-    // Save to localStorage
-    localStorage.setItem('cookie-consent', 'true');
-    localStorage.setItem('cookie-preferences', JSON.stringify({
-      essential: true,
-      analytics: true,
-      functional: true
-    }));
+    if (typeof window !== 'undefined') {
+      // Save to localStorage
+      localStorage.setItem('cookie-consent', 'true');
+      localStorage.setItem('cookie-preferences', JSON.stringify({
+        essential: true,
+        analytics: true,
+        functional: true
+      }));
+    }
     
     // Hide banner immediately
     setIsVisible(false);
   };
 
   const handleRejectAll = () => {
-    // Clear localStorage
-    localStorage.removeItem('cookie-consent');
-    localStorage.removeItem('cookie-preferences');
+    if (typeof window !== 'undefined') {
+      // Clear localStorage
+      localStorage.removeItem('cookie-consent');
+      localStorage.removeItem('cookie-preferences');
+    }
     
     // Hide banner immediately
     setIsVisible(false);

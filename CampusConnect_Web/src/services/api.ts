@@ -112,7 +112,9 @@ class ApiService {
     
     if (response.data.success && response.data.data) {
       this.setTokens(response.data.data.tokens);
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      }
       return response.data.data;
     }
     
@@ -133,7 +135,9 @@ class ApiService {
         // Handle legacy flow (auto-verify with tokens)
         if (response.data.data && response.data.data.user && response.data.data.tokens) {
           this.setTokens(response.data.data.tokens);
-          localStorage.setItem('user', JSON.stringify(response.data.data.user));
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('user', JSON.stringify(response.data.data.user));
+          }
           return response.data.data;
         }
         
@@ -335,11 +339,13 @@ class ApiService {
     if (response.data.success && response.data.data) {
       // Get current user info from localStorage
       let currentUser = null;
-      try {
-        const userStr = localStorage.getItem('user');
-        currentUser = userStr ? JSON.parse(userStr) : null;
-      } catch (error) {
-        console.warn('Failed to parse user from localStorage:', error);
+      if (typeof window !== 'undefined') {
+        try {
+          const userStr = localStorage.getItem('user');
+          currentUser = userStr ? JSON.parse(userStr) : null;
+        } catch (error) {
+          console.warn('Failed to parse user from localStorage:', error);
+        }
       }
       
       // Transform backend structure to frontend structure
@@ -371,7 +377,9 @@ class ApiService {
     
     if (response.data.success && response.data.data) {
       this.setTokens(response.data.data.tokens);
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      }
       return response.data.data;
     }
     
@@ -452,7 +460,9 @@ class ApiService {
     const response: AxiosResponse<ApiResponse<User>> = await this.api.put('/users/profile', userData);
     
     if (response.data.success && response.data.data) {
-      localStorage.setItem('user', JSON.stringify(response.data.data));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(response.data.data));
+      }
       return response.data.data;
     }
     

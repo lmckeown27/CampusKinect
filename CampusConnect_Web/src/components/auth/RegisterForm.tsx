@@ -65,7 +65,9 @@ const RegisterForm: React.FC = () => {
       setRegistrationSuccess(true);
       
       // Store email in localStorage for verification page
-      localStorage.setItem('registrationEmail', formData.email);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('registrationEmail', formData.email);
+      }
       router.push('/auth/verify');
       
     } catch (error: any) {

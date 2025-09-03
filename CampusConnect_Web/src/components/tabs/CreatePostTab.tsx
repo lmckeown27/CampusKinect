@@ -38,15 +38,19 @@ const CreatePostTab: React.FC = () => {
 
   // Load saved post type from localStorage on component mount
   useEffect(() => {
-    const savedPostType = localStorage.getItem('campusConnect_createPostType');
-    if (savedPostType && ['goods', 'services', 'events', 'housing'].includes(savedPostType)) {
-      setFormData(prev => ({ ...prev, postType: savedPostType as 'goods' | 'services' | 'events' | 'housing' }));
+    if (typeof window !== 'undefined') {
+      const savedPostType = localStorage.getItem('campusConnect_createPostType');
+      if (savedPostType && ['goods', 'services', 'events', 'housing'].includes(savedPostType)) {
+        setFormData(prev => ({ ...prev, postType: savedPostType as 'goods' | 'services' | 'events' | 'housing' }));
+      }
     }
   }, []);
 
   // Save post type to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_createPostType', formData.postType);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('campusConnect_createPostType', formData.postType);
+    }
   }, [formData.postType]);
 
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
@@ -101,31 +105,39 @@ const CreatePostTab: React.FC = () => {
 
 
   useEffect(() => {
-    const savedTags = localStorage.getItem('campusConnect_offerRequestTags');
-    if (savedTags) {
-      setOfferRequestTags(JSON.parse(savedTags));
+    if (typeof window !== 'undefined') {
+      const savedTags = localStorage.getItem('campusConnect_offerRequestTags');
+      if (savedTags) {
+        setOfferRequestTags(JSON.parse(savedTags));
+      }
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('campusConnect_offerRequestTags', JSON.stringify(offerRequestTags));
+    }
   }, [offerRequestTags]);
 
   // Load saved tags from localStorage on component mount
   useEffect(() => {
-    const savedTags = localStorage.getItem('campusConnect_createPostTags');
-    if (savedTags) {
-      try {
-        setFormData(prev => ({ ...prev, tags: JSON.parse(savedTags) }));
-      } catch (error) {
-        console.error('Failed to parse saved tags:', error);
+    if (typeof window !== 'undefined') {
+      const savedTags = localStorage.getItem('campusConnect_createPostTags');
+      if (savedTags) {
+        try {
+          setFormData(prev => ({ ...prev, tags: JSON.parse(savedTags) }));
+        } catch (error) {
+          console.error('Failed to parse saved tags:', error);
+        }
       }
     }
   }, []);
 
   // Save tags to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('campusConnect_createPostTags', JSON.stringify(formData.tags));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('campusConnect_createPostTags', JSON.stringify(formData.tags));
+    }
   }, [formData.tags]);
 
   useEffect(() => {

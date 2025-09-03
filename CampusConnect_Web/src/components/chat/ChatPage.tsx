@@ -21,7 +21,13 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   const [chatUser, setChatUser] = useState<UserType | null>(null);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Ensure component is mounted before running client-side code
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
@@ -34,30 +40,34 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
 
   // Load chat user info
   useEffect(() => {
+    if (!isMounted) return;
+
     const loadChatUser = async () => {
       try {
         const user = await apiService.getUserById(userId);
         setChatUser(user);
       } catch (error) {
         console.error('Failed to load user:', error);
-        router.push('/messages');
+        if (typeof window !== 'undefined') {
+          router.push('/messages');
+        }
       }
     };
 
     if (userId) {
       loadChatUser();
     }
-  }, [userId, router]);
+  }, [userId, router, isMounted]);
 
   // Load or create conversation
   useEffect(() => {
+    if (!isMounted) return;
+
     const loadConversation = async () => {
       if (!currentUser || !chatUser) return;
       
       try {
-        // Try to find existing conversation
-        // TODO: Implement API endpoint to find conversation between two users
-        // For now, we'll create a mock conversation
+        // Mock conversation for now
         const mockConversation: Conversation = {
           id: `conv_${currentUser.id}_${chatUser.id}`,
           participants: [currentUser, chatUser],
@@ -65,14 +75,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           lastMessage: undefined,
           lastMessageAt: new Date().toISOString(),
           unreadCount: 0,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         };
         
         setConversation(mockConversation);
-        
-        // Load messages for this conversation
-        // TODO: Implement API endpoint to load messages between two users
-        setChatMessages([]);
+        setChatMessages([]); // Initialize with empty messages
         
       } catch (error) {
         console.error('Failed to load conversation:', error);
@@ -80,7 +87,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     };
 
     loadConversation();
-  }, [currentUser, chatUser]);
+  }, [currentUser, chatUser, isMounted]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversation || !currentUser) return;
@@ -96,7 +103,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
         isRead: false
       };
 
-      // Add to local state immediately
       setChatMessages(prev => [...prev, optimisticMessage]);
       setNewMessage('');
 
@@ -117,8 +123,25 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     }
   };
 
+  const handleBackClick = () => {
+    if (typeof window !== 'undefined') {
+      router.back();
+    }
+  };
+
+  // Show loading state until mounted
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-[#f8f9f6] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
+      </div>
+    );
+  }
+
   if (!currentUser) {
-    router.push('/auth/login');
+    if (typeof window !== 'undefined') {
+      router.push('/auth/login');
+    }
     return null;
   }
 
@@ -136,8 +159,24 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       <div className="bg-white border-b border-[#708d81] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => router.back()}
-            className="p-2 text-[#708d81] hover:bg-gray-100 rounded-lg transition-colors"
+            onClick={handleBackClick}
+            className="p-2 rounded-lg transition-all duration-200"
+            style={{ 
+              backgroundColor: '#708d81', 
+              color: 'white', 
+              border: '2px solid #708d81', 
+              cursor: 'pointer' 
+            }}
+            onMouseEnter={(e) => { 
+              e.currentTarget.style.backgroundColor = '#a8c4a2'; 
+              e.currentTarget.style.border = '2px solid #a8c4a2'; 
+              e.currentTarget.style.cursor = 'pointer'; 
+            }}
+            onMouseLeave={(e) => { 
+              e.currentTarget.style.backgroundColor = '#708d81'; 
+              e.currentTarget.style.border = '2px solid #708d81'; 
+              e.currentTarget.style.cursor = 'pointer'; 
+            }}
           >
             <ArrowLeft size={20} />
           </button>
@@ -154,7 +193,25 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           </div>
         </div>
 
-        <button className="p-2 text-[#708d81] hover:bg-gray-100 rounded-lg transition-colors">
+        <button 
+          className="p-2 rounded-lg transition-all duration-200"
+          style={{ 
+            backgroundColor: '#708d81', 
+            color: 'white', 
+            border: '2px solid #708d81', 
+            cursor: 'pointer' 
+          }}
+          onMouseEnter={(e) => { 
+            e.currentTarget.style.backgroundColor = '#a8c4a2'; 
+            e.currentTarget.style.border = '2px solid #a8c4a2'; 
+            e.currentTarget.style.cursor = 'pointer'; 
+          }}
+          onMouseLeave={(e) => { 
+            e.currentTarget.style.backgroundColor = '#708d81'; 
+            e.currentTarget.style.border = '2px solid #708d81'; 
+            e.currentTarget.style.cursor = 'pointer'; 
+          }}
+        >
           <MoreVertical size={20} />
         </button>
       </div>
@@ -224,7 +281,27 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           <button
             onClick={handleSendMessage}
             disabled={!newMessage.trim() || isLoading}
-            className="w-12 h-12 bg-[#708d81] text-white rounded-full hover:bg-[#5a7268] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200"
+            style={{ 
+              backgroundColor: !newMessage.trim() || isLoading ? '#d1d5db' : '#708d81',
+              color: 'white',
+              border: !newMessage.trim() || isLoading ? '2px solid #d1d5db' : '2px solid #708d81',
+              cursor: !newMessage.trim() || isLoading ? 'not-allowed' : 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              if (!(!newMessage.trim() || isLoading)) {
+                e.currentTarget.style.backgroundColor = '#a8c4a2';
+                e.currentTarget.style.border = '2px solid #a8c4a2';
+                e.currentTarget.style.cursor = 'pointer';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!(!newMessage.trim() || isLoading)) {
+                e.currentTarget.style.backgroundColor = '#708d81';
+                e.currentTarget.style.border = '2px solid #708d81';
+                e.currentTarget.style.cursor = 'pointer';
+              }
+            }}
           >
             <Send size={20} />
           </button>
@@ -234,4 +311,4 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   );
 };
 
-export default ChatPage; 
+export default ChatPage;

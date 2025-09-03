@@ -17,15 +17,19 @@ const MessagesTab: React.FC = () => {
 
   // Load saved search query from localStorage on component mount
   useEffect(() => {
-    const savedSearchQuery = localStorage.getItem('campusConnect_messagesSearchQuery');
-    if (savedSearchQuery) {
-      setSearchQuery(savedSearchQuery);
+    if (typeof window !== 'undefined') {
+      const savedSearchQuery = localStorage.getItem('campusConnect_messagesSearchQuery');
+      if (savedSearchQuery) {
+        setSearchQuery(savedSearchQuery);
+      }
     }
   }, []);
 
   // Save search query to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_messagesSearchQuery', searchQuery);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('campusConnect_messagesSearchQuery', searchQuery);
+    }
   }, [searchQuery]);
 
   const [newMessage, setNewMessage] = useState('');
@@ -41,15 +45,19 @@ const MessagesTab: React.FC = () => {
 
   // Load saved active tab from localStorage on component mount
   useEffect(() => {
-    const savedActiveTab = localStorage.getItem('campusConnect_messagesActiveTab');
-    if (savedActiveTab && ['unread', 'primary', 'requests'].includes(savedActiveTab)) {
-      setActiveTab(savedActiveTab as 'unread' | 'primary' | 'requests');
+    if (typeof window !== 'undefined') {
+      const savedActiveTab = localStorage.getItem('campusConnect_messagesActiveTab');
+      if (savedActiveTab && ['unread', 'primary', 'requests'].includes(savedActiveTab)) {
+        setActiveTab(savedActiveTab as 'unread' | 'primary' | 'requests');
+      }
     }
   }, []);
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_messagesActiveTab', activeTab);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('campusConnect_messagesActiveTab', activeTab);
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -245,7 +253,23 @@ const MessagesTab: React.FC = () => {
                   <h3 className="text-base font-medium text-[#708d81]">New Message</h3>
                   <button
                     onClick={handleCloseNewMessageModal}
-                    className="p-2 text-[#708d81] rounded-lg transition-fast hover:bg-gray-100 hover-lift focus-ring-primary"
+                    className="p-2 rounded-lg transition-all duration-200"
+                    style={{ 
+                      backgroundColor: '#708d81', 
+                      color: 'white', 
+                      border: '2px solid #708d81', 
+                      cursor: 'pointer' 
+                    }}
+                    onMouseEnter={(e) => { 
+                      e.currentTarget.style.backgroundColor = '#a8c4a2'; 
+                      e.currentTarget.style.border = '2px solid #a8c4a2'; 
+                      e.currentTarget.style.cursor = 'pointer'; 
+                    }}
+                    onMouseLeave={(e) => { 
+                      e.currentTarget.style.backgroundColor = '#708d81'; 
+                      e.currentTarget.style.border = '2px solid #708d81'; 
+                      e.currentTarget.style.cursor = 'pointer'; 
+                    }}
                   >
                     <X size={16} />
                   </button>
@@ -268,7 +292,23 @@ const MessagesTab: React.FC = () => {
                       </div>
                       <button
                         onClick={() => setSelectedUser(null)}
-                        className="p-1 text-gray-400 hover:text-gray-600 rounded-lg transition-fast hover:bg-gray-100 hover-lift"
+                        className="p-1 rounded-lg transition-all duration-200"
+                        style={{ 
+                          backgroundColor: '#708d81', 
+                          color: 'white', 
+                          border: '2px solid #708d81', 
+                          cursor: 'pointer' 
+                        }}
+                        onMouseEnter={(e) => { 
+                          e.currentTarget.style.backgroundColor = '#a8c4a2'; 
+                          e.currentTarget.style.border = '2px solid #a8c4a2'; 
+                          e.currentTarget.style.cursor = 'pointer'; 
+                        }}
+                        onMouseLeave={(e) => { 
+                          e.currentTarget.style.backgroundColor = '#708d81'; 
+                          e.currentTarget.style.border = '2px solid #708d81'; 
+                          e.currentTarget.style.cursor = 'pointer'; 
+                        }}
                       >
                         <X size={16} />
                       </button>
@@ -327,11 +367,27 @@ const MessagesTab: React.FC = () => {
                     <button 
                       onClick={handleStartChat}
                       disabled={!selectedUser}
-                      className={`w-full py-3 px-4 rounded-lg text-sm font-medium transition-fast ${
-                        selectedUser 
-                          ? 'bg-[#708d81] text-white hover:bg-[#5a7268] hover-lift focus-ring-primary' 
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
+                      className="w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200"
+                      style={{ 
+                        backgroundColor: selectedUser ? '#708d81' : '#d1d5db',
+                        color: 'white',
+                        border: selectedUser ? '2px solid #708d81' : '2px solid #d1d5db',
+                        cursor: selectedUser ? 'pointer' : 'not-allowed'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedUser) {
+                          e.currentTarget.style.backgroundColor = '#a8c4a2';
+                          e.currentTarget.style.border = '2px solid #a8c4a2';
+                          e.currentTarget.style.cursor = 'pointer';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedUser) {
+                          e.currentTarget.style.backgroundColor = '#708d81';
+                          e.currentTarget.style.border = '2px solid #708d81';
+                          e.currentTarget.style.cursor = 'pointer';
+                        }
+                      }}
                     >
                       Start Chat
                     </button>

@@ -26,6 +26,12 @@ export function useCookieConsent() {
 
   const loadCookieConsent = () => {
     console.log('useCookieConsent hook: loadCookieConsent called');
+    
+    if (typeof window === 'undefined') {
+      setIsLoaded(true);
+      return;
+    }
+    
     try {
       const consentData = localStorage.getItem(COOKIE_CONSENT_KEY);
       const preferencesData = localStorage.getItem(COOKIE_PREFERENCES_KEY);
@@ -53,6 +59,8 @@ export function useCookieConsent() {
   };
 
   const saveCookieConsent = (preferences: CookiePreferences) => {
+    if (typeof window === 'undefined') return false;
+    
     try {
       const consentInfo: CookieConsent = {
         hasConsented: true,
@@ -76,6 +84,8 @@ export function useCookieConsent() {
   };
 
   const clearCookieConsent = () => {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.removeItem(COOKIE_CONSENT_KEY);
       localStorage.removeItem(COOKIE_PREFERENCES_KEY);
