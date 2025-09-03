@@ -130,7 +130,7 @@ const LoginForm: React.FC = () => {
                 </label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     id="password"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}

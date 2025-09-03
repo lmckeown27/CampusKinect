@@ -477,16 +477,27 @@ class ApiService {
   }
 
   public async searchUsers(query: string): Promise<User[]> {
-    const params = new URLSearchParams({ q: query });
+    const params = new URLSearchParams({ query: query });
     
-    const response: AxiosResponse<ApiResponse<User[]>> = 
+    const response: AxiosResponse<ApiResponse<{users: User[], pagination: any, searchQuery: string}>> = 
       await this.api.get(`/search/users?${params}`);
+    
+    if (response.data.success && response.data.data && response.data.data.users) {
+      return response.data.data.users;
+    }
+    
+    throw new Error(response.data.message || 'User search failed');
+  }
+
+  public async getUserById(userId: string): Promise<User> {
+    const response: AxiosResponse<ApiResponse<User>> = 
+      await this.api.get(`/users/${userId}`);
     
     if (response.data.success && response.data.data) {
       return response.data.data;
     }
     
-    throw new Error(response.data.message || 'User search failed');
+    throw new Error(response.data.message || 'Failed to fetch user');
   }
 
   // Upload

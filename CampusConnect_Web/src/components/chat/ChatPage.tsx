@@ -1,0 +1,237 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { Send, ArrowLeft, User, MoreVertical } from 'lucide-react';
+import { useAuthStore } from '../../stores/authStore';
+import { useMessagesStore } from '../../stores/messagesStore';
+import apiService from '../../services/api';
+import { User as UserType, Message, Conversation } from '../../types';
+
+interface ChatPageProps {
+  userId: string;
+}
+
+const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
+  const router = useRouter();
+  const { user: currentUser } = useAuthStore();
+  const { messages, isLoading, sendMessage } = useMessagesStore();
+  
+  const [newMessage, setNewMessage] = useState('');
+  const [chatUser, setChatUser] = useState<UserType | null>(null);
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
+  // Load chat user info
+  useEffect(() => {
+    const loadChatUser = async () => {
+      try {
+        const user = await apiService.getUserById(userId);
+        setChatUser(user);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+        router.push('/messages');
+      }
+    };
+
+    if (userId) {
+      loadChatUser();
+    }
+  }, [userId, router]);
+
+  // Load or create conversation
+  useEffect(() => {
+    const loadConversation = async () => {
+      if (!currentUser || !chatUser) return;
+      
+      try {
+        // Try to find existing conversation
+        // TODO: Implement API endpoint to find conversation between two users
+        // For now, we'll create a mock conversation
+        const mockConversation: Conversation = {
+          id: `conv_${currentUser.id}_${chatUser.id}`,
+          participants: [currentUser, chatUser],
+          participantIds: [currentUser.id, chatUser.id],
+          lastMessage: undefined,
+          lastMessageAt: new Date().toISOString(),
+          unreadCount: 0,
+          createdAt: new Date().toISOString()
+        };
+        
+        setConversation(mockConversation);
+        
+        // Load messages for this conversation
+        // TODO: Implement API endpoint to load messages between two users
+        setChatMessages([]);
+        
+      } catch (error) {
+        console.error('Failed to load conversation:', error);
+      }
+    };
+
+    loadConversation();
+  }, [currentUser, chatUser]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !conversation || !currentUser) return;
+
+    try {
+      // Create optimistic message
+      const optimisticMessage: Message = {
+        id: `temp_${Date.now()}`,
+        conversationId: conversation.id,
+        senderId: currentUser.id,
+        content: newMessage.trim(),
+        createdAt: new Date().toISOString(),
+        isRead: false
+      };
+
+      // Add to local state immediately
+      setChatMessages(prev => [...prev, optimisticMessage]);
+      setNewMessage('');
+
+      // Send to backend
+      await sendMessage(conversation.id, newMessage.trim());
+      
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Remove optimistic message on error
+      setChatMessages(prev => prev.filter(msg => !msg.id.startsWith('temp_')));
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  if (!currentUser) {
+    router.push('/auth/login');
+    return null;
+  }
+
+  if (!chatUser) {
+    return (
+      <div className="min-h-screen bg-[#f8f9f6] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f8f9f6] flex flex-col">
+      {/* Header */}
+      <div className="bg-white border-b border-[#708d81] px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => router.back()}
+            className="p-2 text-[#708d81] hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          
+          <div className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center">
+            <User size={20} className="text-white" />
+          </div>
+          
+          <div>
+            <h1 className="font-semibold text-[#708d81] text-lg">
+              {chatUser.displayName || `${chatUser.firstName} ${chatUser.lastName}`}
+            </h1>
+            <p className="text-sm text-gray-500">@{chatUser.username}</p>
+          </div>
+        </div>
+
+        <button className="p-2 text-[#708d81] hover:bg-gray-100 rounded-lg transition-colors">
+          <MoreVertical size={20} />
+        </button>
+      </div>
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {chatMessages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="w-16 h-16 bg-[#708d81] rounded-full flex items-center justify-center mb-4">
+              <User size={32} className="text-white" />
+            </div>
+            <h3 className="text-lg font-medium text-[#708d81] mb-2">
+              Start a conversation with {chatUser.firstName}
+            </h3>
+            <p className="text-gray-500 max-w-md">
+              Send a message to begin your conversation. Be respectful and follow community guidelines.
+            </p>
+          </div>
+        ) : (
+          <>
+            {chatMessages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.senderId === currentUser.id ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                    message.senderId === currentUser.id
+                      ? 'bg-[#708d81] text-white rounded-br-md'
+                      : 'bg-white text-[#708d81] border border-gray-200 rounded-bl-md'
+                  }`}
+                >
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className={`text-xs mt-1 ${
+                    message.senderId === currentUser.id 
+                      ? 'text-white opacity-80' 
+                      : 'text-gray-500'
+                  }`}>
+                    {new Date(message.createdAt).toLocaleTimeString([], { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </>
+        )}
+      </div>
+
+      {/* Message Input */}
+      <div className="bg-white border-t border-[#708d81] p-4">
+        <div className="flex items-center space-x-3">
+          <textarea
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={`Message ${chatUser.firstName}...`}
+            className="flex-1 px-4 py-3 border border-[#708d81] rounded-2xl focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none max-h-32"
+            rows={1}
+            style={{
+              minHeight: '48px',
+              height: Math.min(Math.max(48, newMessage.split('\n').length * 24), 128)
+            }}
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={!newMessage.trim() || isLoading}
+            className="w-12 h-12 bg-[#708d81] text-white rounded-full hover:bg-[#5a7268] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+          >
+            <Send size={20} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ChatPage; 
