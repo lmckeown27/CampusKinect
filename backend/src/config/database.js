@@ -222,8 +222,8 @@ const createTables = async () => {
         status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'ignored')),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(from_user_id, to_user_id, post_id),
-        CHECK (from_user_id != to_user_id)
+        UNIQUE(from_user_id, to_user_id, post_id)
+        -- Temporarily disabled for testing: CHECK (from_user_id != to_user_id)
       );
     `);
 

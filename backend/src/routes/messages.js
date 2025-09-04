@@ -95,6 +95,104 @@ router.post('/conversations', [
   }
 });
 
+// @route   POST /api/v1/messages/requests
+// @desc    Create a message request
+// @access  Private
+router.post('/requests', [
+  auth,
+  requireVerification,
+  body('toUserId').isInt().withMessage('To user ID must be an integer'),
+  body('content').isLength({ min: 1, max: 2000 }).withMessage('Message content must be 1-2000 characters'),
+  body('postId').optional().isInt().withMessage('Post ID must be an integer'),
+  validate
+], async (req, res) => {
+  try {
+    const { toUserId, content, postId } = req.body;
+    const fromUserId = req.user.id;
+
+    const result = await messageService.createMessageRequest(fromUserId, toUserId, content, postId);
+    res.status(201).json(result);
+
+  } catch (error) {
+    console.error('Create message request error:', error);
+    const statusCode = error.message.includes('already exists') || error.message.includes('already sent') ? 409 : 500;
+    res.status(statusCode).json({
+      success: false,
+      error: {
+        message: error.message || 'Failed to create message request. Please try again.'
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/messages/requests/sent
+// @desc    Get sent message requests for user
+// @access  Private
+router.get('/requests/sent', [
+  auth,
+  requireVerification,
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  validate
+], async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { page = 1, limit = 20 } = req.query;
+
+    const result = await messageService.getSentMessageRequests(userId, page, limit);
+    res.json(result);
+
+  } catch (error) {
+    console.error('Get sent message requests error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: error.message || 'Failed to fetch sent message requests. Please try again.'
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/messages/conversations/:id/messages
+// @desc    Get messages from a conversation
+// @access  Private
+router.get('/conversations/:id/messages', [
+  auth,
+  requireVerification,
+  param('id').isInt().withMessage('Conversation ID must be an integer'),
+  validate
+], async (req, res) => {
+  try {
+    const { id: conversationId } = req.params;
+    const userId = req.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+
+    const result = await messageService.getConversationMessages(conversationId, userId, page, limit);
+    
+    res.json({
+      success: true,
+      data: {
+        messages: result.messages,
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: Math.ceil(result.total / result.limit)
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get conversation messages error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: error.message || 'Failed to fetch conversation messages. Please try again.'
+      }
+    });
+  }
+});
+
 // @route   POST /api/v1/messages/conversations/:id/messages
 // @desc    Send a message in a conversation
 // @access  Private
@@ -245,7 +343,7 @@ router.put('/requests/:id/respond', [
   auth,
   requireVerification,
   param('id').isInt().withMessage('Request ID must be an integer'),
-  body('action').isIn(['accept', 'reject', 'ignore']).withMessage('Action must be accept, reject, or ignore'),
+  body('action').isIn(['accepted', 'rejected', 'ignored']).withMessage('Action must be accepted, rejected, or ignored'),
   body('message').optional().isLength({ min: 1, max: 2000 }).withMessage('Message must be 1-2000 characters'),
   validate
 ], async (req, res) => {

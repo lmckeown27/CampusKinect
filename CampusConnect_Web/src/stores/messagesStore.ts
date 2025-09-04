@@ -1,12 +1,13 @@
 import { create } from 'zustand';
-import { Message, Conversation } from '../types';
+import { Message, Conversation, MessageRequest } from '../types';
 import apiService from '../services/api';
 
 interface MessagesState {
   conversations: Conversation[];
   currentConversation: Conversation | null;
   messages: Message[];
-  messageRequests: Conversation[];
+  messageRequests: MessageRequest[];
+  sentMessageRequests: MessageRequest[];
   isLoading: boolean;
   error: string | null;
   unreadCount: number;
@@ -17,8 +18,11 @@ interface MessagesActions {
   fetchMessages: (conversationId: string, page?: number) => Promise<void>;
   sendMessage: (conversationId: string, content: string) => Promise<void>;
   createConversation: (participantIds: string[]) => Promise<void>;
+  createMessageRequest: (toUserId: string, content: string, postId?: string) => Promise<void>;
+  fetchMessageRequests: () => Promise<void>;
+  fetchSentMessageRequests: () => Promise<void>;
+  respondToMessageRequest: (requestId: string, action: 'accepted' | 'rejected' | 'ignored', message?: string) => Promise<void>;
   markAsRead: (conversationId: string, messageIds: string[]) => Promise<void>;
-  respondToRequest: (conversationId: string, accept: boolean) => Promise<void>;
   setCurrentConversation: (conversation: Conversation | null) => void;
   clearMessages: () => void;
   clearError: () => void;
@@ -32,6 +36,7 @@ const initialState: MessagesState = {
   currentConversation: null,
   messages: [],
   messageRequests: [],
+  sentMessageRequests: [],
   isLoading: false,
   error: null,
   unreadCount: 0,
@@ -46,14 +51,9 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
     try {
       const conversations = await apiService.getConversations();
       
-      // Separate regular conversations from message requests
-      const regularConversations = conversations.filter(conv => conv.participants && conv.participants.length > 0);
-      const requests = conversations.filter(conv => !conv.participants || conv.participants.length === 0);
-
       set({
-        conversations: regularConversations,
-        messageRequests: requests,
-        unreadCount: conversations.reduce((total, conv) => total + conv.unreadCount, 0),
+        conversations,
+        unreadCount: conversations.reduce((total, conv) => total + (conv.unreadCount || 0), 0),
         isLoading: false,
       });
     } catch (error: any) {
@@ -84,8 +84,6 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
   },
 
   sendMessage: async (conversationId: string, content: string) => {
-    if (!content.trim()) return;
-
     try {
       const newMessage = await apiService.sendMessage(conversationId, content);
       
@@ -136,68 +134,106 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
     }
   },
 
-  markAsRead: async (conversationId: string, messageIds: string[]) => {
-    try {
-      // This would typically call an API to mark messages as read
-      // For now, just update local state
-      set((state) => ({
-        messages: state.messages.map(msg => 
-          messageIds.includes(msg.id) ? { ...msg, isRead: true } : msg
-        ),
-        conversations: state.conversations.map(conv => 
-          conv.id === conversationId 
-            ? { ...conv, unreadCount: Math.max(0, conv.unreadCount - messageIds.length) }
-            : conv
-        ),
-      }));
+  createMessageRequest: async (toUserId: string, content: string, postId?: string) => {
+    set({ isLoading: true, error: null });
 
-      // Update unread count
-      get().updateUnreadCount();
+    try {
+      const messageRequest = await apiService.createMessageRequest(toUserId, content, postId);
+      
+      set((state) => ({
+        sentMessageRequests: [messageRequest.messageRequest, ...state.sentMessageRequests],
+        isLoading: false,
+      }));
     } catch (error: any) {
-      set({ error: error.message || 'Failed to mark messages as read' });
+      set({ 
+        error: error.message || 'Failed to send message request', 
+        isLoading: false 
+      });
+      throw error;
     }
   },
 
-  respondToRequest: async (conversationId: string, accept: boolean) => {
-    try {
-      if (accept) {
-        // Accept the message request - this would typically call an API
-        // For now, just move it to regular conversations
-        set((state) => {
-          const request = state.messageRequests.find(req => req.id === conversationId);
-          if (!request) return state;
+  fetchMessageRequests: async () => {
+    set({ isLoading: true, error: null });
 
-          return {
-            messageRequests: state.messageRequests.filter(req => req.id !== conversationId),
-            conversations: [request, ...state.conversations],
-          };
-        });
-      } else {
-        // Reject the message request - this would typically call an API
-        // For now, just remove it from requests
+    try {
+      const messageRequests = await apiService.getMessageRequests();
+      
+      set({
+        messageRequests,
+        isLoading: false,
+      });
+    } catch (error: any) {
+      set({ 
+        error: error.message || 'Failed to fetch message requests', 
+        isLoading: false 
+      });
+    }
+  },
+
+  fetchSentMessageRequests: async () => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const sentMessageRequests = await apiService.getSentMessageRequests();
+      
+      set({
+        sentMessageRequests,
+        isLoading: false,
+      });
+    } catch (error: any) {
+      set({ 
+        error: error.message || 'Failed to fetch sent message requests', 
+        isLoading: false 
+      });
+    }
+  },
+
+  respondToMessageRequest: async (requestId: string, action: 'accepted' | 'rejected' | 'ignored', message?: string) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await apiService.respondToMessageRequest(requestId, action, message);
+      
+      // Remove the request from messageRequests if accepted/rejected
+      if (action !== 'ignored') {
         set((state) => ({
-          messageRequests: state.messageRequests.filter(req => req.id !== conversationId),
+          messageRequests: state.messageRequests.filter(req => req.id !== requestId),
+          isLoading: false,
         }));
+
+        // If accepted, refresh conversations to get the new conversation
+        if (action === 'accepted') {
+          get().fetchConversations();
+        }
+      } else {
+        set({ isLoading: false });
       }
     } catch (error: any) {
-      set({ error: error.message || 'Failed to respond to request' });
+      set({ 
+        error: error.message || 'Failed to respond to message request', 
+        isLoading: false 
+      });
+      throw error;
+    }
+  },
+
+  markAsRead: async (conversationId: string, messageIds: string[]) => {
+    try {
+      // Implementation for marking messages as read
+      // This would require a backend endpoint
+      console.log('Mark as read not implemented yet');
+    } catch (error: any) {
+      set({ error: error.message || 'Failed to mark as read' });
     }
   },
 
   setCurrentConversation: (conversation: Conversation | null) => {
-    set({ currentConversation: conversation });
-    
-    if (conversation) {
-      // Fetch messages for the selected conversation
-      get().fetchMessages(conversation.id, 1);
-    } else {
-      // Clear messages when no conversation is selected
-      set({ messages: [] });
-    }
+    set({ currentConversation: conversation, messages: [] });
   },
 
   clearMessages: () => {
-    set({ messages: [] });
+    set({ messages: [], currentConversation: null });
   },
 
   clearError: () => {
@@ -206,7 +242,7 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
 
   updateUnreadCount: () => {
     const { conversations } = get();
-    const totalUnread = conversations.reduce((total, conv) => total + conv.unreadCount, 0);
-    set({ unreadCount: totalUnread });
+    const unreadCount = conversations.reduce((total, conv) => total + (conv.unreadCount || 0), 0);
+    set({ unreadCount });
   },
 })); 

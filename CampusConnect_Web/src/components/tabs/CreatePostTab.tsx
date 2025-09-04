@@ -56,6 +56,18 @@ const CreatePostTab: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+  // Cleanup image URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      imagePreview.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [imagePreview]);
   const [offerRequestTags, setOfferRequestTags] = useState({
     goods: [] as string[],
     services: [] as string[],
@@ -192,13 +204,86 @@ const CreatePostTab: React.FC = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newPreviews = Array.from(files).map(file => URL.createObjectURL(file));
-      setImagePreview(prev => [...prev, ...newPreviews].slice(0, 4));
+      const fileArray = Array.from(files);
+      
+      // Store original files immediately for upload
+      setImageFiles(prev => [...prev, ...fileArray].slice(0, 4));
+      
+      const processedImages: Promise<string>[] = fileArray.map(file => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                resolve(URL.createObjectURL(file));
+                return;
+              }
+
+              // Define consistent sizing based on aspect ratio
+              const aspectRatio = img.width / img.height;
+              let targetWidth: number;
+              let targetHeight: number;
+
+              if (aspectRatio > 1.5) {
+                // Wide image - landscape
+                targetWidth = 400;
+                targetHeight = Math.round(400 / aspectRatio);
+                // Ensure minimum height
+                if (targetHeight < 200) {
+                  targetHeight = 200;
+                  targetWidth = Math.round(200 * aspectRatio);
+                }
+              } else if (aspectRatio < 0.7) {
+                // Tall image - portrait
+                targetHeight = 400;
+                targetWidth = Math.round(400 * aspectRatio);
+                // Ensure minimum width
+                if (targetWidth < 200) {
+                  targetWidth = 200;
+                  targetHeight = Math.round(200 / aspectRatio);
+                }
+              } else {
+                // Square-ish image
+                targetWidth = 350;
+                targetHeight = 350;
+              }
+
+              canvas.width = targetWidth;
+              canvas.height = targetHeight;
+
+              // Draw the resized image
+              ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+              // Convert to data URL with good quality (for preview only)
+              const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.85);
+              resolve(resizedImageUrl);
+            };
+            img.src = e.target?.result as string;
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      // Process all images and update preview array
+      Promise.all(processedImages).then(processedUrls => {
+        setImagePreview(prev => [...prev, ...processedUrls].slice(0, 4));
+      });
     }
   };
 
   const removeImage = (index: number) => {
-    setImagePreview(prev => prev.filter((_, i) => i !== index));
+    setImagePreview(prev => {
+      const imageToRemove = prev[index];
+      // Clean up object URL if it's a blob URL to prevent memory leaks
+      if (imageToRemove && imageToRemove.startsWith('blob:')) {
+        URL.revokeObjectURL(imageToRemove);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const areOfferRequestTagsAvailable = () => {
@@ -245,6 +330,7 @@ const CreatePostTab: React.FC = () => {
       const postData = {
         ...formData,
         tags: combinedTags,
+        images: imageFiles, // Include the actual image files
       };
 
       console.log('Sending post data:', postData);
@@ -265,7 +351,15 @@ const CreatePostTab: React.FC = () => {
         housing: [],
         events: [],
       });
+      
+      // Clean up image URLs before clearing
+      imagePreview.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
       setImagePreview([]);
+      setImageFiles([]);
       setValidationErrors({});
       
       // Show success message or redirect
@@ -472,6 +566,50 @@ const CreatePostTab: React.FC = () => {
                             className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none"
                             placeholder="Describe what you're offering or looking for..."
             />
+            
+            {/* Image Preview Inside Description Box */}
+            {imagePreview.length > 0 && (
+              <div className="mt-3 px-4 pb-3">
+                <div className="flex flex-wrap gap-3">
+                  {imagePreview.map((preview, index) => (
+                    <div key={index} className="relative rounded-lg overflow-hidden bg-gray-100 shadow-sm">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="max-w-full h-auto"
+                        style={{ 
+                          maxHeight: '200px',
+                          minWidth: '120px',
+                          maxWidth: '250px'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-2 right-2 w-6 h-6 text-white rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md"
+                        style={{ 
+                          backgroundColor: 'var(--color-error)',
+                          cursor: 'pointer',
+                          border: 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#dc2626';
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'var(--color-error)';
+                          e.currentTarget.style.transform = 'translateY(0px)';
+                        }}
+                        title="Remove image"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             {validationErrors.description && (
                             <p className="mt-2 text-sm text-red-600">{validationErrors.description}</p>
             )}
@@ -599,31 +737,7 @@ const CreatePostTab: React.FC = () => {
           </div>
 
 
-            
-            {/* Image Preview Grid */}
-            {imagePreview.length > 0 && (
-                <div className="mt-6">
-                  <div className="grid grid-cols-4 gap-3">
-                {imagePreview.map((preview, index) => (
-                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                    <img
-                      src={preview}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors cursor-pointer"
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-                </div>
-            )}
+
 
 
             </form>

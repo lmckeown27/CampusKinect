@@ -15,7 +15,7 @@ interface ChatPageProps {
 const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   const router = useRouter();
   const { user: currentUser } = useAuthStore();
-  const { messages, isLoading, sendMessage } = useMessagesStore();
+  const { messages, isLoading, sendMessage, createMessageRequest } = useMessagesStore();
   
   const [newMessage, setNewMessage] = useState('');
   const [chatUser, setChatUser] = useState<UserType | null>(null);
@@ -59,7 +59,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     }
   }, [userId, router, isMounted]);
 
-  // Load or create conversation
+  // Load existing conversation if it exists
   useEffect(() => {
     if (!isMounted) return;
 
@@ -67,22 +67,56 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       if (!currentUser || !chatUser) return;
       
       try {
-        // Mock conversation for now
-        const mockConversation: Conversation = {
-          id: `conv_${currentUser.id}_${chatUser.id}`,
-          participants: [currentUser, chatUser],
-          participantIds: [currentUser.id, chatUser.id],
-          lastMessage: undefined,
-          lastMessageAt: new Date().toISOString(),
-          unreadCount: 0,
-          createdAt: new Date().toISOString(),
-        };
+        // Clear any existing conversation state first
+        setConversation(null);
+        setChatMessages([]);
         
-        setConversation(mockConversation);
-        setChatMessages([]); // Initialize with empty messages
+        // Try to find existing conversation between these users
+        console.log('🔍 Loading conversations for user:', currentUser?.id, 'chatting with:', chatUser.id);
+        console.log('🔍 Current user object:', currentUser);
+        console.log('🔍 Chat user object:', chatUser);
+        
+        const conversations = await apiService.getConversations();
+        console.log('📋 All conversations from API:', conversations);
+        console.log('📋 Number of conversations:', conversations.length);
+        
+        const existingConversation = conversations.find(conv => {
+          console.log('🔍 Checking conversation:', conv);
+          console.log('🔍 Conversation participants:', conv.participants);
+          
+          const hasTargetUser = conv.participants?.some(p => {
+            console.log('🔍 Comparing participant ID:', p.id, 'with chat user ID:', chatUser.id);
+            return p.id === chatUser.id;
+          });
+          return hasTargetUser;
+        });
+        console.log('🎯 Found existing conversation:', existingConversation);
+        
+        if (existingConversation) {
+          setConversation(existingConversation);
+          console.log('💾 Set conversation state to:', existingConversation);
+          
+          // Load messages for this conversation
+          try {
+            console.log('📬 Loading messages for conversation ID:', existingConversation.id);
+            const messagesData = await apiService.getMessages(existingConversation.id);
+            setChatMessages(messagesData.data || []);
+            console.log('✅ Loaded messages:', messagesData.data?.length || 0);
+          } catch (error) {
+            console.error('❌ Failed to load messages:', error);
+            setChatMessages([]);
+          }
+        } else {
+          // No existing conversation - this will be a new message request
+          setConversation(null);
+          setChatMessages([]);
+        }
         
       } catch (error) {
         console.error('Failed to load conversation:', error);
+        // If there's an error, assume no existing conversation
+        setConversation(null);
+        setChatMessages([]);
       }
     };
 
@@ -90,29 +124,76 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   }, [currentUser, chatUser, isMounted]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !conversation || !currentUser) return;
+    if (!newMessage.trim() || !currentUser || !chatUser) return;
 
     try {
-      // Create optimistic message
-      const optimisticMessage: Message = {
-        id: `temp_${Date.now()}`,
-        conversationId: conversation.id,
-        senderId: currentUser.id,
-        content: newMessage.trim(),
-        createdAt: new Date().toISOString(),
-        isRead: false
-      };
-
-      setChatMessages(prev => [...prev, optimisticMessage]);
-      setNewMessage('');
-
-      // Send to backend
-      await sendMessage(conversation.id, newMessage.trim());
+      console.log('📤 SEND MESSAGE ATTEMPT');
+      console.log('📤 Current conversation state:', conversation);
+      console.log('📤 Message to send:', newMessage.trim());
+      console.log('📤 Current user:', currentUser);
+      console.log('📤 Chat user:', chatUser);
       
-    } catch (error) {
+      alert(`📤 SEND DEBUG: Attempting to send message "${newMessage.trim()}"`);
+      
+      if (conversation) {
+        console.log('✅ Using existing conversation');
+        console.log('✅ Conversation object:', JSON.stringify(conversation, null, 2));
+        alert(`✅ SEND DEBUG: Using existing conversation ID "${conversation.id}" (type: ${typeof conversation.id})`);
+        alert(`✅ SEND DEBUG: Conversation details: ${JSON.stringify({id: conversation.id, participants: conversation.participants}, null, 2)}`);
+        
+        // Existing conversation - send message normally
+        const optimisticMessage: Message = {
+          id: `temp_${Date.now()}`,
+          conversationId: conversation.id,
+          senderId: currentUser.id,
+          content: newMessage.trim(),
+          createdAt: new Date().toISOString(),
+          isRead: false
+        };
+
+        setChatMessages(prev => [...prev, optimisticMessage]);
+        setNewMessage('');
+
+        // Send to backend using API service directly
+        console.log('💬 Sending message to conversation:', conversation);
+        console.log('📝 Message content:', newMessage.trim());
+        console.log('🔢 Conversation ID:', conversation.id, 'Type:', typeof conversation.id);
+        
+        alert(`💬 SEND DEBUG: About to call apiService.sendMessage with conversation ID "${conversation.id}"`);
+        
+        const sentMessage = await apiService.sendMessage(conversation.id, newMessage.trim());
+        
+        alert(`✅ SEND DEBUG: Message sent successfully!`);
+        
+        // Replace optimistic message with real message
+        setChatMessages(prev => prev.map(msg => 
+          msg.id === optimisticMessage.id ? sentMessage : msg
+        ));
+      } else {
+        // No existing conversation - create message request
+        await createMessageRequest(chatUser.id, newMessage.trim());
+        setNewMessage('');
+        
+        // Show success message and navigate back
+        alert('Message request sent! The user will see your message in their requests.');
+        router.push('/messages');
+      }
+      
+    } catch (error: any) {
       console.error('Failed to send message:', error);
-      // Remove optimistic message on error
-      setChatMessages(prev => prev.filter(msg => !msg.id.startsWith('temp_')));
+      console.error('Error details:', error.message);
+      
+      alert(`❌ SEND DEBUG: FAILED to send message: ${error.message || error}`);
+      alert(`❌ SEND DEBUG: Error details: ${JSON.stringify(error, null, 2)}`);
+      
+      // Remove optimistic message on error if it was a regular message
+      if (conversation) {
+        setChatMessages(prev => prev.filter(msg => !msg.id.startsWith('temp_')));
+      }
+      
+      // Show error to user with more detail
+      const errorMessage = error.message || 'Failed to send message. Please try again.';
+      alert(`Error: ${errorMessage}`);
     }
   };
 
@@ -125,7 +206,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
 
   const handleBackClick = () => {
     if (typeof window !== 'undefined') {
-      router.back();
+      router.push('/messages');
     }
   };
 
@@ -217,71 +298,99 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-6">
         {chatMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="w-16 h-16 bg-[#708d81] rounded-full flex items-center justify-center mb-4">
               <User size={32} className="text-white" />
             </div>
             <h3 className="text-lg font-medium text-[#708d81] mb-2">
-              Start a conversation with {chatUser.firstName}
+              {conversation ? 
+                `Start a conversation with ${chatUser.firstName}` :
+                `Send a message request to ${chatUser.firstName}`
+              }
             </h3>
             <p className="text-gray-500 max-w-md">
-              Send a message to begin your conversation. Be respectful and follow community guidelines.
+              {conversation ? 
+                'Send a message to begin your conversation. Be respectful and follow community guidelines.' :
+                'Your message will be sent as a request. They can choose to accept or decline it.'
+              }
             </p>
           </div>
         ) : (
-          <>
-            {chatMessages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.senderId === currentUser.id ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                    message.senderId === currentUser.id
-                      ? 'bg-[#708d81] text-white rounded-br-md'
-                      : 'bg-white text-[#708d81] border border-gray-200 rounded-bl-md'
-                  }`}
-                >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.senderId === currentUser.id 
-                      ? 'text-white opacity-80' 
-                      : 'text-gray-500'
-                  }`}>
-                    {new Date(message.createdAt).toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </p>
+          <div className="space-y-3">
+            {chatMessages.map((message, index) => {
+              const isCurrentUser = message.senderId === currentUser.id;
+              const showTime = index === 0 || 
+                Math.abs(new Date(message.createdAt).getTime() - new Date(chatMessages[index - 1].createdAt).getTime()) > 300000; // 5 minutes
+              
+              return (
+                <div key={message.id}>
+                  {showTime && (
+                    <div className="flex justify-center mb-2">
+                      <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
+                        {new Date(message.createdAt).toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                    </div>
+                  )}
+                  <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs lg:max-w-md ${isCurrentUser ? 'ml-12' : 'mr-12'}`}>
+                      <div
+                        className={`px-4 py-3 rounded-2xl ${
+                          isCurrentUser
+                            ? 'bg-[#708d81] text-white rounded-br-md shadow-sm'
+                            : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm'
+                        }`}
+                      >
+                        <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
+                          {message.content}
+                        </p>
+                      </div>
+                      {/* Individual message timestamp (shown on hover or for latest message) */}
+                      <div className={`text-xs text-gray-400 mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+                        {index === chatMessages.length - 1 && (
+                          <span>
+                            {new Date(message.createdAt).toLocaleTimeString([], { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={messagesEndRef} />
-          </>
+          </div>
         )}
       </div>
 
-      {/* Message Input */}
+      {/* Message Input - Centered and Reduced Width */}
       <div className="bg-white border-t border-[#708d81] p-4">
-        <div className="flex items-center space-x-3">
+        <div className="max-w-sm mx-auto flex items-end space-x-3">
           <textarea
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={`Message ${chatUser.firstName}...`}
-            className="flex-1 px-4 py-3 border border-[#708d81] rounded-2xl focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none max-h-32"
+            placeholder={conversation ? `Message ${chatUser.firstName}...` : `Send a message request to ${chatUser.firstName}...`}
+            className="flex-1 px-4 py-3 border border-[#708d81] rounded-2xl focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none max-h-32 text-base"
             rows={1}
             style={{
-              minHeight: '48px',
-              height: Math.min(Math.max(48, newMessage.split('\n').length * 24), 128)
+              minHeight: '52px',
+              fontSize: '16px',
+              lineHeight: '1.5',
+              height: Math.min(Math.max(52, newMessage.split('\n').length * 24 + 28), 128)
             }}
           />
           <button
             onClick={handleSendMessage}
             disabled={!newMessage.trim() || isLoading}
-            className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200"
+            className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0"
             style={{ 
               backgroundColor: !newMessage.trim() || isLoading ? '#d1d5db' : '#708d81',
               color: 'white',

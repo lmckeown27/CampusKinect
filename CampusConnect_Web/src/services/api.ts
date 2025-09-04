@@ -222,14 +222,11 @@ class ApiService {
     // Transform postData to match backend expectations
     const transformedData: any = { ...postData };
     
-    // Map frontend postType categories to backend action types
-    if (postData.postType === 'goods' || postData.postType === 'services' || postData.postType === 'housing') {
-      // For goods/services/housing, default to 'offer' unless 'request' is in tags
-      const hasRequestTag = postData.tags?.some(tag => tag.toLowerCase().includes('request'));
-      transformedData.postType = hasRequestTag ? 'request' : 'offer';
-    } else if (postData.postType === 'events') {
+    // Map frontend postType categories to backend expectations
+    if (postData.postType === 'events') {
       transformedData.postType = 'event';
     }
+    // Keep 'goods', 'services', 'housing' as-is since backend expects them
     
     // Map duration to durationType (backend expects durationType field)
     let durationType = postData.duration || 'one-time';
@@ -250,7 +247,49 @@ class ApiService {
     console.log('Sending transformed data:', transformedData);
 
     try {
-      const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/posts', transformedData, {
+      let imageUrls: string[] = [];
+      
+      // If we have image files, upload them first
+      if (postData.images && postData.images.length > 0) {
+        const imageFormData = new FormData();
+        postData.images.forEach((file) => {
+          imageFormData.append('images', file);
+        });
+
+        try {
+          console.log('Uploading images:', postData.images.length, 'files');
+          console.log('FormData entries:');
+          for (let [key, value] of imageFormData.entries()) {
+            console.log(key, value);
+          }
+          
+          const imageUploadResponse: AxiosResponse<ApiResponse<{ images: { url: string }[] }>> = 
+            await this.api.post('/upload/images', imageFormData);
+          
+          if (imageUploadResponse.data.success && imageUploadResponse.data.data?.images) {
+            imageUrls = imageUploadResponse.data.data.images.map(img => img.url);
+          }
+        } catch (imageError: any) {
+          console.error('Image upload failed:', imageError);
+          console.error('Error response:', imageError.response?.data);
+          console.error('Error status:', imageError.response?.status);
+          throw new Error(`Failed to upload images. ${imageError.response?.data?.error?.message || 'Please try again.'}`);
+        }
+      }
+
+      // Create post with image URLs
+      const postDataWithImages = {
+        ...transformedData,
+        images: imageUrls, // Use uploaded image URLs instead of File objects
+      };
+      
+      // Remove images from the data since we've converted them to URLs
+      delete postDataWithImages.images;
+      if (imageUrls.length > 0) {
+        postDataWithImages.images = imageUrls;
+      }
+
+      const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/posts', postDataWithImages, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -283,14 +322,11 @@ class ApiService {
     // Transform postData to match backend expectations (similar to createPost)
     const transformedData: any = { ...postData };
     
-    // Map frontend postType categories to backend action types
-    if (postData.postType === 'goods' || postData.postType === 'services' || postData.postType === 'housing') {
-      // For goods/services/housing, default to 'offer' unless 'request' is in tags
-      const hasRequestTag = postData.tags?.some(tag => tag.toLowerCase().includes('request'));
-      transformedData.postType = hasRequestTag ? 'request' : 'offer';
-    } else if (postData.postType === 'events') {
+    // Map frontend postType categories to backend expectations
+    if (postData.postType === 'events') {
       transformedData.postType = 'event';
     }
+    // Keep 'goods', 'services', 'housing' as-is since backend expects them
     
     // Map duration to durationType (backend expects durationType field)
     if (postData.duration) {
@@ -397,11 +433,39 @@ class ApiService {
 
   // Messages
   public async getConversations(): Promise<Conversation[]> {
-    const response: AxiosResponse<ApiResponse<Conversation[]>> = 
-      await this.api.get('/messages/conversations');
+    // Add cache busting to ensure fresh data
+    const cacheBuster = `?_t=${Date.now()}`;
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get(`/messages/conversations${cacheBuster}`);
     
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+    if (response.data.success && response.data.data?.conversations) {
+            console.log('🔄 Frontend API: Raw backend response:', response.data.data);
+      
+      // Transform backend format to frontend format
+      const transformed = response.data.data.conversations.map((conv: any) => {
+        console.log('🔄 Frontend API: Transforming conversation:', conv);
+        const frontendConv = {
+          id: conv.id.toString(),
+          participantIds: [conv.otherUser.id],
+          lastMessageAt: conv.lastMessageTime || conv.createdAt,
+          createdAt: conv.createdAt,
+          participants: [conv.otherUser],
+          lastMessage: conv.lastMessage ? {
+            id: 'unknown',
+            content: typeof conv.lastMessage === 'string' ? conv.lastMessage : conv.lastMessage.content,
+            senderId: typeof conv.lastMessage === 'string' ? 'unknown' : conv.lastMessage.senderId?.toString() || 'unknown',
+            conversationId: conv.id.toString(),
+            isRead: true,
+            createdAt: conv.lastMessageTime || conv.createdAt
+          } : undefined,
+          unreadCount: conv.unreadCount || 0
+        };
+        console.log('🔄 Frontend API: Transformed to:', frontendConv);
+        return frontendConv;
+      });
+      
+      console.log('🔄 Frontend API: Final transformed conversations:', transformed);
+      return transformed;
     }
     
     throw new Error(response.data.message || 'Failed to fetch conversations');
@@ -413,22 +477,43 @@ class ApiService {
       limit: limit.toString(),
     });
 
-    const response: AxiosResponse<ApiResponse<PaginatedResponse<Message>>> = 
+    const response: AxiosResponse<ApiResponse<any>> = 
       await this.api.get(`/messages/conversations/${conversationId}/messages?${params}`);
     
     if (response.data.success && response.data.data) {
-      return response.data.data;
+      // Transform backend message format to frontend format
+      const messages = response.data.data.messages?.map((msg: any) => ({
+        id: msg.id.toString(),
+        content: msg.content,
+        senderId: msg.sender.id.toString(),
+        conversationId: conversationId,
+        isRead: msg.isRead,
+        createdAt: msg.createdAt,
+        sender: {
+          id: msg.sender.id.toString(),
+          username: msg.sender.username,
+          firstName: msg.sender.firstName,
+          lastName: msg.sender.lastName,
+          displayName: msg.sender.displayName,
+          profilePicture: msg.sender.profilePicture
+        }
+      })) || [];
+
+      return {
+        data: messages,
+        pagination: response.data.data.pagination
+      };
     }
     
     throw new Error(response.data.message || 'Failed to fetch messages');
   }
 
   public async sendMessage(conversationId: string, content: string): Promise<Message> {
-    const response: AxiosResponse<ApiResponse<Message>> = 
+    const response: AxiosResponse<ApiResponse<any>> = 
       await this.api.post(`/messages/conversations/${conversationId}/messages`, { content });
     
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+    if (response.data.success && response.data.data?.message) {
+      return response.data.data.message;
     }
     
     throw new Error(response.data.message || 'Failed to send message');
@@ -443,6 +528,60 @@ class ApiService {
     }
     
     throw new Error(response.data.message || 'Failed to create conversation');
+  }
+
+  public async createMessageRequest(toUserId: string, content: string, postId?: string): Promise<any> {
+    const requestData: any = { toUserId: parseInt(toUserId), content };
+    if (postId) {
+      requestData.postId = parseInt(postId);
+    }
+
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post('/messages/requests', requestData);
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to send message request');
+  }
+
+  public async getMessageRequests(): Promise<any[]> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get('/messages/requests');
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data.requests || [];
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch message requests');
+  }
+
+  public async getSentMessageRequests(): Promise<any[]> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get('/messages/requests/sent');
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data.requests || [];
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch sent message requests');
+  }
+
+  public async respondToMessageRequest(requestId: string, action: 'accepted' | 'rejected' | 'ignored', message?: string): Promise<any> {
+    const requestData: any = { action };
+    if (message) {
+      requestData.message = message;
+    }
+
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.put(`/messages/requests/${requestId}/respond`, requestData);
+    
+    if (response.data.success) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to respond to message request');
   }
 
   // Users

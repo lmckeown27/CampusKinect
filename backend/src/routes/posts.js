@@ -1488,6 +1488,7 @@ router.post('/', [
       body('eventStart').optional().isISO8601().withMessage('Event start date must be a valid ISO 8601 date'),
       body('eventEnd').optional().isISO8601().withMessage('Event end date must be a valid ISO 8601 date'),
   body('tags').optional().isArray({ min: 1, max: 10 }).withMessage('Tags must be an array with 1 to 10 items'),
+  body('images').optional().isArray({ max: 10 }).withMessage('Images must be an array with maximum 10 items'),
   validate
 ], async (req, res) => {
   try {
@@ -1501,7 +1502,8 @@ router.post('/', [
       expiresAt,
       eventStart,
       eventEnd,
-      tags
+      tags,
+      images
     } = req.body;
 
     const userId = req.user.id;
@@ -1555,6 +1557,16 @@ router.post('/', [
         }
       }
 
+      // Add images if provided
+      if (images && images.length > 0) {
+        for (let i = 0; i < images.length; i++) {
+          await client.query(`
+            INSERT INTO post_images (post_id, image_url, image_order)
+            VALUES ($1, $2, $3)
+          `, [post.id, images[i], i]);
+        }
+      }
+
       await client.query('COMMIT');
 
       // Calculate and update initial scores
@@ -1564,7 +1576,7 @@ router.post('/', [
       const cacheKey = generateCacheKey('post', post.id);
       await redisDel(cacheKey);
 
-      // Get full post with tags
+      // Get full post with tags and images
       const fullPostResult = await dbQuery(`
         SELECT 
           p.*,
@@ -1574,12 +1586,14 @@ router.post('/', [
           u.display_name,
           u.profile_picture,
           un.name as university_name,
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags
+          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
+          ARRAY_AGG(DISTINCT pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
         FROM posts p
         JOIN users u ON p.user_id = u.id
         JOIN universities un ON p.university_id = un.id
         LEFT JOIN post_tags pt ON p.id = pt.post_id
         LEFT JOIN tags t ON pt.tag_id = t.id
+        LEFT JOIN post_images pi ON p.id = pi.post_id
         WHERE p.id = $1
         GROUP BY p.id, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture, un.name
       `, [post.id]);
@@ -1611,7 +1625,8 @@ router.post('/', [
           id: fullPost.university_id,
           name: fullPost.university_name
         },
-        tags: fullPost.tags || []
+        tags: fullPost.tags || [],
+        images: fullPost.images || []
       };
 
       res.status(201).json({

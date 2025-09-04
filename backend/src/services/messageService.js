@@ -44,6 +44,13 @@ class MessageService {
             LIMIT 1
           ) as last_message,
           (
+            SELECT m.sender_id 
+            FROM messages m 
+            WHERE m.conversation_id = c.id 
+            ORDER BY m.created_at DESC 
+            LIMIT 1
+          ) as last_message_sender_id,
+          (
             SELECT m.created_at 
             FROM messages m 
             WHERE m.conversation_id = c.id 
@@ -53,7 +60,9 @@ class MessageService {
           (
             SELECT COUNT(*) 
             FROM messages m 
-            WHERE m.conversation_id = c.id AND m.sender_id != $1 AND m.is_read = false
+            WHERE m.conversation_id = c.id 
+            AND m.sender_id != $1 
+            AND m.is_read = false
           ) as unread_count
         FROM conversations c
         JOIN users u ON (
@@ -79,25 +88,33 @@ class MessageService {
       const total = parseInt(countResult.rows[0].total);
 
       // Format conversations
-      const conversations = result.rows.map(conv => ({
-        id: conv.conversation_id,
-        postId: conv.post_id,
-        postTitle: conv.post_title,
-        postType: conv.post_type,
-        otherUser: {
-          id: conv.other_user_id,
-          username: conv.username,
-          firstName: conv.first_name,
-          lastName: conv.last_name,
-          displayName: conv.display_name,
-          profilePicture: conv.profile_picture,
-          university: conv.university_name
-        },
-        lastMessage: conv.last_message,
-        lastMessageTime: conv.last_message_time,
-        unreadCount: conv.unread_count || 0,
-        createdAt: conv.conversation_created
-      }));
+      const conversations = result.rows.map(conv => {
+        const formatted = {
+          id: conv.conversation_id,
+          postId: conv.post_id,
+          postTitle: conv.post_title,
+          postType: conv.post_type,
+          otherUser: {
+            id: conv.other_user_id,
+            username: conv.username,
+            firstName: conv.first_name,
+            lastName: conv.last_name,
+            displayName: conv.display_name,
+            profilePicture: conv.profile_picture,
+            university: conv.university_name
+          },
+          lastMessage: conv.last_message ? {
+            content: conv.last_message,
+            senderId: conv.last_message_sender_id
+          } : null,
+          lastMessageTime: conv.last_message_time,
+          unreadCount: conv.unread_count || 0,
+          createdAt: conv.conversation_created
+        };
+        console.log('🔄 Backend formatting conversation:', formatted);
+        console.log(`🔄 Backend: Conversation ID ${formatted.id} has otherUser ID ${formatted.otherUser.id}`);
+        return formatted;
+      });
 
       const response = {
         success: true,
@@ -171,11 +188,13 @@ class MessageService {
 
       const total = parseInt(countResult.rows[0].total);
 
-      // Mark messages as read if they're from the other user
+      // Mark messages as read (only messages from other users)
       await dbQuery(`
         UPDATE messages 
         SET is_read = true 
-        WHERE conversation_id = $1 AND sender_id != $2 AND is_read = false
+        WHERE conversation_id = $1 
+        AND sender_id != $2 
+        AND is_read = false
       `, [conversationId, userId]);
 
       // Format messages
@@ -300,6 +319,8 @@ class MessageService {
         throw new Error('Access denied to this conversation');
       }
 
+
+
       // Create message
       const result = await dbQuery(`
         INSERT INTO messages (conversation_id, sender_id, content, message_type, media_url)
@@ -356,6 +377,98 @@ class MessageService {
 
     } catch (error) {
       console.error('Send message error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a message request (for first contact between users)
+   */
+  async createMessageRequest(fromUserId, toUserId, content, postId = null) {
+    try {
+      if (fromUserId === toUserId) {
+        throw new Error('Cannot send message request to yourself');
+      }
+
+      // Check if users already have a conversation
+      const existingConv = await dbQuery(`
+        SELECT id FROM conversations 
+        WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)
+      `, [fromUserId, toUserId]);
+
+      if (existingConv.rows.length > 0) {
+        throw new Error('Conversation already exists. Use sendMessage instead.');
+      }
+
+      // Check if a message request already exists from this user to the target user
+      const existingRequest = await dbQuery(`
+        SELECT id FROM message_requests 
+        WHERE from_user_id = $1 AND to_user_id = $2 AND status = 'pending'
+      `, [fromUserId, toUserId]);
+
+      if (existingRequest.rows.length > 0) {
+        throw new Error('Message request already sent');
+      }
+
+      // Check if target user exists and is active
+      const targetUser = await dbQuery(`
+        SELECT id, username, first_name, last_name, display_name, profile_picture
+        FROM users 
+        WHERE id = $1 AND is_active = true
+      `, [toUserId]);
+
+      if (targetUser.rows.length === 0) {
+        throw new Error('User not found');
+      }
+
+      // Create message request
+      const result = await dbQuery(`
+        INSERT INTO message_requests (from_user_id, to_user_id, message, post_id)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, created_at
+      `, [fromUserId, toUserId, content, postId]);
+
+      const messageRequest = result.rows[0];
+
+      // Get sender info
+      const senderResult = await dbQuery(`
+        SELECT username, first_name, last_name, display_name, profile_picture
+        FROM users 
+        WHERE id = $1
+      `, [fromUserId]);
+
+      const sender = senderResult.rows[0];
+
+      return {
+        success: true,
+        message: 'Message request sent successfully',
+        data: {
+          messageRequest: {
+            id: messageRequest.id,
+            content,
+            createdAt: messageRequest.created_at,
+            fromUser: {
+              id: fromUserId,
+              username: sender.username,
+              firstName: sender.first_name,
+              lastName: sender.last_name,
+              displayName: sender.display_name,
+              profilePicture: sender.profile_picture
+            },
+            toUser: {
+              id: targetUser.rows[0].id,
+              username: targetUser.rows[0].username,
+              firstName: targetUser.rows[0].first_name,
+              lastName: targetUser.rows[0].last_name,
+              displayName: targetUser.rows[0].display_name,
+              profilePicture: targetUser.rows[0].profile_picture
+            }
+          }
+        }
+      };
+
+    } catch (error) {
+      console.error('Create message request error:', error);
       throw error;
     }
   }
@@ -471,7 +584,7 @@ class MessageService {
         JOIN users u ON mr.from_user_id = u.id
         JOIN universities un ON u.university_id = un.id
         LEFT JOIN posts p ON mr.post_id = p.id
-        WHERE mr.to_user_id = $1
+        WHERE mr.to_user_id = $1 AND mr.status = 'pending'
         ORDER BY mr.created_at DESC
         LIMIT $2 OFFSET $3
       `, [userId, limit, offset]);
@@ -480,7 +593,7 @@ class MessageService {
       const countResult = await dbQuery(`
         SELECT COUNT(*) as total
         FROM message_requests
-        WHERE to_user_id = $1
+        WHERE to_user_id = $1 AND status = 'pending'
       `, [userId]);
 
       const total = parseInt(countResult.rows[0].total);
@@ -531,7 +644,7 @@ class MessageService {
     try {
       // Check if user owns this request
       const requestCheck = await dbQuery(`
-        SELECT id, from_user_id, post_id FROM message_requests 
+        SELECT id, from_user_id, to_user_id, post_id, message, status FROM message_requests 
         WHERE id = $1 AND to_user_id = $2
       `, [requestId, userId]);
 
@@ -541,21 +654,43 @@ class MessageService {
 
       const request = requestCheck.rows[0];
 
-      if (action === 'accept') {
-        // Start conversation
-        await this.startConversation(userId, request.from_user_id, request.post_id);
+      // Check if request is already processed
+      if (request.status !== 'pending') {
+        return {
+          success: true,
+          message: `Request already ${request.status}`,
+          data: { status: request.status }
+        };
+      }
+
+      if (action === 'accepted') {
+        // Check if conversation already exists, if not create it
+        let conversationId = null;
         
-        // If there was an initial message, send it
-        if (message) {
-          const conversation = await dbQuery(`
-            SELECT id FROM conversations 
-            WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)
-            ${request.post_id ? 'AND post_id = $3' : ''}
-          `, [userId, request.from_user_id, request.post_id]);
-          
-          if (conversation.rows.length > 0) {
-            await this.sendMessage(conversation.rows[0].id, request.from_user_id, message);
+        const existingConv = await dbQuery(`
+          SELECT id FROM conversations 
+          WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)
+          ${request.post_id ? 'AND post_id = $3' : ''}
+        `, request.post_id ? [userId, request.from_user_id, request.post_id] : [userId, request.from_user_id]);
+
+        if (existingConv.rows.length > 0) {
+          conversationId = existingConv.rows[0].id;
+        } else {
+          // Create new conversation
+          const conversation = await this.startConversation(userId, request.from_user_id, request.post_id);
+          if (conversation.success) {
+            conversationId = conversation.data.conversation.id;
           }
+        }
+        
+        // Send the original message from the request
+        if (conversationId && request.message) {
+          await this.sendMessage(conversationId, request.from_user_id, request.message);
+        }
+        
+        // If user provided a response message, send it too
+        if (message && conversationId) {
+          await this.sendMessage(conversationId, userId, message);
         }
       }
 
@@ -568,12 +703,95 @@ class MessageService {
 
       return {
         success: true,
-        message: `Message request ${action}ed successfully`
+        message: `Message request ${action}ed successfully`,
+        data: {
+          action,
+          requestId
+        }
       };
 
     } catch (error) {
       console.error('Respond to message request error:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Get sent message requests for a user
+   */
+  async getSentMessageRequests(userId, page = 1, limit = 20) {
+    try {
+      const offset = (page - 1) * limit;
+
+      const result = await dbQuery(`
+        SELECT 
+          mr.id,
+          mr.message,
+          mr.status,
+          mr.created_at,
+          mr.post_id,
+          p.title as post_title,
+          p.post_type as post_type,
+          u.username,
+          u.first_name,
+          u.last_name,
+          u.display_name,
+          u.profile_picture,
+          un.name as university_name
+        FROM message_requests mr
+        JOIN users u ON mr.to_user_id = u.id
+        JOIN universities un ON u.university_id = un.id
+        LEFT JOIN posts p ON mr.post_id = p.id
+        WHERE mr.from_user_id = $1 AND mr.status = 'pending'
+        ORDER BY mr.created_at DESC
+        LIMIT $2 OFFSET $3
+      `, [userId, limit, offset]);
+
+      // Get total count
+      const countResult = await dbQuery(`
+        SELECT COUNT(*) as total
+        FROM message_requests
+        WHERE from_user_id = $1 AND status = 'pending'
+      `, [userId]);
+
+      const total = parseInt(countResult.rows[0].total);
+
+      const requests = result.rows.map(req => ({
+        id: req.id,
+        message: req.message,
+        status: req.status,
+        createdAt: req.created_at,
+        post: req.post_id ? {
+          id: req.post_id,
+          title: req.post_title,
+          postType: req.post_type
+        } : null,
+        toUser: {
+          username: req.username,
+          firstName: req.first_name,
+          lastName: req.last_name,
+          displayName: req.display_name,
+          profilePicture: req.profile_picture,
+          university: req.university_name
+        }
+      }));
+
+      return {
+        success: true,
+        data: {
+          requests,
+          pagination: {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total,
+            pages: Math.ceil(total / limit)
+          }
+        }
+      };
+
+    } catch (error) {
+      console.error('Get sent message requests error:', error);
+      throw new Error('Failed to fetch sent message requests');
     }
   }
 
@@ -631,6 +849,40 @@ class MessageService {
       console.log(`Cache cleared for user conversations: ${userId}`);
     } catch (error) {
       console.error('Clear user conversation cache error:', error);
+    }
+  }
+
+  /**
+   * Send welcome message to a new user from Liam McKeown
+   */
+  async sendWelcomeMessage(newUserId) {
+    try {
+      const LIAM_MCKEOWN_USER_ID = 1; // Liam McKeown's user ID
+      const welcomeMessage = `Hi there! 👋 Welcome to CampusConnect! I'm Liam, the creator of this platform. Thanks for creating an account! If you encounter any bugs or have questions about how the platform works, feel free to message me anytime. I'm here to help make your campus experience better! 🎓`;
+
+      // Create a message request from Liam to the new user
+      await this.createMessageRequest(
+        LIAM_MCKEOWN_USER_ID,
+        newUserId,
+        welcomeMessage,
+        null // no associated post
+      );
+
+      console.log(`✅ Welcome message sent to user ${newUserId} from Liam McKeown`);
+      
+      return {
+        success: true,
+        message: 'Welcome message sent successfully'
+      };
+
+    } catch (error) {
+      console.error('❌ Failed to send welcome message:', error);
+      // Don't throw error - welcome message failure shouldn't block user registration
+      return {
+        success: false,
+        message: 'Failed to send welcome message',
+        error: error.message
+      };
     }
   }
 }

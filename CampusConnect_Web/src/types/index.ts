@@ -75,6 +75,20 @@ export interface Conversation {
   unreadCount: number;
 }
 
+export interface MessageRequest {
+  id: string;
+  message: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'ignored';
+  createdAt: string;
+  fromUser: User;
+  toUser?: User;
+  post?: {
+    id: string;
+    title: string;
+    postType: string;
+  };
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;

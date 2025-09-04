@@ -19,6 +19,7 @@ import {
   Edit2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '../../stores/authStore';
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
@@ -42,10 +43,15 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onDelete, showEditButton = false, onEdit }) => {
   const router = useRouter();
+  const { user: currentUser } = useAuthStore();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Determine if this post belongs to the current user and get current profile picture
+  const isCurrentUserPost = currentUser && post.userId === currentUser.id;
+  const currentProfilePicture = isCurrentUserPost ? (currentUser.profileImage || currentUser.profilePicture) : null;
 
 
 
@@ -246,9 +252,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             }}
           >
             {/* Profile Picture */}
-            {post.poster?.profilePicture ? (
+            {(currentProfilePicture || post.poster?.profilePicture) ? (
               <img
-                src={post.poster.profilePicture}
+                src={currentProfilePicture || post.poster?.profilePicture || ''}
                 alt={post.poster?.firstName || 'User'}
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer"
                 style={{ border: '2px solid #708d81', cursor: 'pointer' }}

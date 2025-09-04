@@ -9,6 +9,7 @@ const { auth } = require('../middleware/auth');
 const { sendVerificationCode } = require('../services/emailService');
 const { UNIVERSITY_CONFIG } = require('../config/university');
 const educationalDomainService = require('../services/educationalDomainService');
+const messageService = require('../services/messageService');
 
 const router = express.Router();
 
@@ -383,6 +384,13 @@ router.post('/register', [
         // Auto-verify the user in development or if it's a test bypass/hardcoded test
         await query('UPDATE users SET is_verified = true WHERE id = $1', [user.id]);
         user.is_verified = true;
+        
+        // Send welcome message to auto-verified user
+        try {
+          await messageService.sendWelcomeMessage(user.id);
+        } catch (welcomeError) {
+          console.error('Failed to send welcome message (non-blocking):', welcomeError);
+        }
       } else {
         console.log('📧 Production mode: Sending verification code email');
         // Generate 6-digit verification code
@@ -760,6 +768,14 @@ router.post('/verify-email', [
     // Clear cached user data
     const cacheKey = generateCacheKey('session', user.id);
     await redisSet(cacheKey, null, 1);
+
+    // Send welcome message from Liam McKeown to the newly verified user
+    try {
+      await messageService.sendWelcomeMessage(user.id);
+    } catch (welcomeError) {
+      console.error('Failed to send welcome message (non-blocking):', welcomeError);
+      // Don't fail the verification process if welcome message fails
+    }
 
     res.json({
       success: true,

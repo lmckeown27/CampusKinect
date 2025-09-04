@@ -250,20 +250,55 @@ const ProfileTab: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
-        setUser((prevUser: User | null) => {
-          if (!prevUser) return null;
-          return {
-            ...prevUser,
-            profileImage: imageUrl
-          };
-        });
         
-        // Save image to localStorage
-        const currentProfile = JSON.parse(localStorage.getItem('campusConnect_profile') || '{}');
-        localStorage.setItem('campusConnect_profile', JSON.stringify({
-          ...currentProfile,
-          profileImage: imageUrl
-        }));
+        // Create a canvas to crop the image into a circle
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+          
+          // Set canvas size to a square (use the smaller dimension)
+          const size = Math.min(img.width, img.height);
+          canvas.width = size;
+          canvas.height = size;
+          
+          // Create circular clipping path
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+          ctx.clip();
+          
+          // Calculate cropping position to center the image
+          const offsetX = (img.width - size) / 2;
+          const offsetY = (img.height - size) / 2;
+          
+          // Draw the image centered and cropped
+          ctx.drawImage(img, -offsetX, -offsetY, img.width, img.height);
+          
+          // Convert canvas to data URL
+          const croppedImageUrl = canvas.toDataURL('image/png');
+          
+          setUser((prevUser: User | null) => {
+            if (!prevUser) return null;
+            return {
+              ...prevUser,
+              profileImage: croppedImageUrl
+            };
+          });
+          
+          // Update auth store immediately for real-time updates across platform
+          if (authUser) {
+            updateUser({ profileImage: croppedImageUrl });
+          }
+          
+          // Save image to localStorage
+          const currentProfile = JSON.parse(localStorage.getItem('campusConnect_profile') || '{}');
+          localStorage.setItem('campusConnect_profile', JSON.stringify({
+            ...currentProfile,
+            profileImage: croppedImageUrl
+          }));
+        };
+        img.src = imageUrl;
       };
       reader.readAsDataURL(file);
     }

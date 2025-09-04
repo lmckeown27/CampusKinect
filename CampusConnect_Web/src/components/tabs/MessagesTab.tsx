@@ -10,7 +10,18 @@ import apiService from '../../services/api';
 
 const MessagesTab: React.FC = () => {
   const router = useRouter();
-  const { messages, isLoading, conversations, messageRequests, sendMessage } = useMessagesStore();
+  const { 
+    messages, 
+    isLoading, 
+    conversations, 
+    messageRequests, 
+    sentMessageRequests,
+    sendMessage, 
+    fetchConversations,
+    fetchMessageRequests, 
+    fetchSentMessageRequests,
+    respondToMessageRequest 
+  } = useMessagesStore();
   const { user: currentUser } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,12 +47,23 @@ const MessagesTab: React.FC = () => {
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [activeTab, setActiveTab] = useState<'unread' | 'primary' | 'requests'>('primary');
+  const [requestsSubTab, setRequestsSubTab] = useState<'incoming' | 'sent'>('incoming');
+  const [processingRequests, setProcessingRequests] = useState<Set<string>>(new Set());
   
   // New Message Modal state
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<UserType[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Helper function to truncate message text
+  const truncateMessage = (message: string, maxWords: number = 10): string => {
+    const words = message.split(' ');
+    if (words.length <= maxWords) {
+      return message;
+    }
+    return words.slice(0, maxWords).join(' ') + '...';
+  };
 
   // Load saved active tab from localStorage on component mount
   useEffect(() => {
@@ -60,9 +82,24 @@ const MessagesTab: React.FC = () => {
     }
   }, [activeTab]);
 
+  // Fetch data based on active tab
   useEffect(() => {
-    // fetchConversations(); // This line was removed as per the edit hint
-  }, []); // Removed fetchConversations from dependency array
+    console.log('📂 Active tab changed to:', activeTab);
+    if (activeTab === 'requests') {
+      fetchMessageRequests();
+      fetchSentMessageRequests();
+    } else if (activeTab === 'primary' || activeTab === 'unread') {
+      fetchConversations();
+    }
+  }, [activeTab, fetchMessageRequests, fetchSentMessageRequests, fetchConversations]);
+
+  // Initial data fetch on component mount
+  useEffect(() => {
+    console.log('🚀 MessagesTab mounted - fetching initial data');
+    fetchConversations();
+    fetchMessageRequests();
+    fetchSentMessageRequests();
+  }, [fetchConversations, fetchMessageRequests, fetchSentMessageRequests]);
 
   // Search users with debouncing
   useEffect(() => {
@@ -76,10 +113,9 @@ const MessagesTab: React.FC = () => {
       try {
         setIsSearching(true);
         const users = await apiService.searchUsers(userSearchQuery);
-        // Filter out the current user from search results (DISABLED FOR TESTING)
-        // const filteredUsers = users.filter(user => currentUser && user.id !== currentUser.id);
-        // setSearchResults(filteredUsers);
-        setSearchResults(users); // Show all users including self for testing
+        // Filter out the current user from search results
+        const filteredUsers = users.filter(user => currentUser && user.id !== currentUser.id);
+        setSearchResults(filteredUsers);
       } catch (error) {
         console.error('Failed to search users:', error);
         setSearchResults([]);
@@ -92,10 +128,10 @@ const MessagesTab: React.FC = () => {
   }, [userSearchQuery, currentUser]);
 
   const handleUserSelect = (user: UserType) => {
-    // Prevent selecting self (DISABLED FOR TESTING)
-    // if (currentUser && user.id === currentUser.id) {
-    //   return;
-    // }
+    // Prevent selecting self
+    if (currentUser && user.id === currentUser.id) {
+      return;
+    }
     
     setSelectedUser(user);
     setUserSearchQuery('');
@@ -105,11 +141,11 @@ const MessagesTab: React.FC = () => {
   const handleStartChat = async () => {
     if (!selectedUser || !currentUser) return;
     
-    // Double-check to prevent self-messaging (DISABLED FOR TESTING)
-    // if (selectedUser.id === currentUser.id) {
-    //   console.warn('Cannot start a chat with yourself');
-    //   return;
-    // }
+    // Double-check to prevent self-messaging
+    if (selectedUser.id === currentUser.id) {
+      console.warn('Cannot start a chat with yourself');
+      return;
+    }
     
     try {
       // Navigate to the universal messaging page
@@ -144,7 +180,142 @@ const MessagesTab: React.FC = () => {
   };
 
   const handleConversationSelect = (conversation: Conversation) => {
-    setCurrentConversation(conversation);
+    console.log('🖱️ CONVERSATION CLICKED');
+    console.log('Active tab:', activeTab);
+    console.log('Conversation:', conversation);
+    console.log('Current user:', currentUser);
+    console.log('Participants:', conversation.participants);
+    
+    // For both Primary and Unread tabs, navigate to chat page
+    if (activeTab === 'primary' || activeTab === 'unread') {
+      console.log('💬 CONVERSATION CLICKED - NAVIGATING TO CHAT');
+      
+      // Find other user, or use the same user for self-conversations
+      let targetUser = conversation.participants?.find(p => p.id !== currentUser?.id);
+      
+      // If no other user found (self-conversation), use the current user
+      if (!targetUser && conversation.participants && conversation.participants.length > 0) {
+        targetUser = conversation.participants[0];
+        console.log('🔄 Self-conversation detected, using same user');
+      }
+      
+      console.log('Target user for navigation:', targetUser);
+      
+      if (targetUser) {
+        const chatUrl = `/chat/${targetUser.id}`;
+        console.log('✅ Navigating to:', chatUrl);
+        router.push(chatUrl);
+      } else {
+        console.error('❌ No user found in conversation participants');
+        console.error('Conversation structure:', JSON.stringify(conversation, null, 2));
+      }
+    } else {
+      // For other tabs, just select the conversation
+      console.log('📩 CONVERSATION CLICKED - SELECTING CONVERSATION');
+      setCurrentConversation(conversation);
+    }
+  };
+
+  const handleAcceptRequest = async (requestId: string) => {
+    if (processingRequests.has(requestId)) {
+      console.log('⏳ Request already being processed, ignoring duplicate click');
+      console.log('⏳ ACCEPT: Already processing this request, please wait...');
+      return;
+    }
+
+    console.log('🟢 ACCEPT BUTTON CLICKED');
+    console.log('Request ID:', requestId);
+    console.log('Current user:', currentUser);
+    console.log('Message requests before:', messageRequests);
+    console.log('Conversations before:', conversations);
+    
+    console.log(`🟢 ACCEPT DEBUG: Starting accept process for request ${requestId}`);
+    
+    // Mark request as being processed
+    setProcessingRequests(prev => new Set([...prev, requestId]));
+    
+    try {
+      console.log('🔄 Calling respondToMessageRequest with action: accepted');
+      await respondToMessageRequest(requestId, 'accepted');
+      console.log('✅ respondToMessageRequest completed successfully');
+      
+      // Wait a moment for the backend to process
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log('🔄 Refreshing message requests...');
+      await fetchMessageRequests();
+      console.log('✅ Message requests refreshed');
+      
+      console.log('🔄 Refreshing conversations...');
+      await fetchConversations();
+      console.log('✅ Conversations refreshed');
+      
+      // Force a small delay to ensure state updates
+      setTimeout(() => {
+        console.log('Message requests after:', messageRequests);
+        console.log('Conversations after:', conversations);
+      }, 100);
+      
+      console.log('✅ ACCEPT SUCCESS: Request accepted and moved to Primary section!');
+    } catch (error) {
+      console.error('❌ Failed to accept request:', error);
+      console.error(`❌ ACCEPT ERROR: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+    } finally {
+      // Remove from processing set
+      setProcessingRequests(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(requestId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleRejectRequest = async (requestId: string) => {
+    if (processingRequests.has(requestId)) {
+      console.log('⏳ Request already being processed, ignoring duplicate click');
+      console.log('⏳ DECLINE: Already processing this request, please wait...');
+      return;
+    }
+
+    console.log('🔴 DECLINE BUTTON CLICKED');
+    console.log('Request ID:', requestId);
+    console.log('Current user:', currentUser);
+    console.log('Message requests before:', messageRequests);
+    
+    console.log(`🔴 DECLINE DEBUG: Starting decline process for request ${requestId}`);
+    
+    // Mark request as being processed
+    setProcessingRequests(prev => new Set([...prev, requestId]));
+    
+    try {
+      console.log('🔄 Calling respondToMessageRequest with action: rejected');
+      await respondToMessageRequest(requestId, 'rejected');
+      console.log('✅ respondToMessageRequest completed successfully');
+      
+      // Wait a moment for the backend to process
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log('🔄 Refreshing message requests...');
+      await fetchMessageRequests();
+      console.log('✅ Message requests refreshed');
+      
+      // Force a small delay to ensure state updates
+      setTimeout(() => {
+        console.log('Message requests after:', messageRequests);
+      }, 100);
+      
+      console.log('✅ DECLINE SUCCESS: Request rejected and deleted from Requests section!');
+    } catch (error) {
+      console.error('❌ Failed to reject request:', error);
+      console.error(`❌ DECLINE ERROR: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+    } finally {
+      // Remove from processing set
+      setProcessingRequests(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(requestId);
+        return newSet;
+      });
+    }
   };
 
   const filteredConversations = conversations.filter(conv => {
@@ -154,15 +325,24 @@ const MessagesTab: React.FC = () => {
     );
     
     if (activeTab === 'unread') {
-      return matchesSearch && conv.unreadCount > 0;
+      // Unread: Show conversations where OTHER person sent the last message AND there are unread messages
+      return matchesSearch && conv.unreadCount > 0 && conv.lastMessage?.senderId !== currentUser?.id;
+    } else if (activeTab === 'primary') {
+      // Primary: Show conversations where YOU sent the last message AND no unread messages
+      return matchesSearch && conv.lastMessage?.senderId === currentUser?.id && conv.unreadCount === 0;
     }
     return matchesSearch;
   });
 
   const filteredRequests = messageRequests.filter(req => 
-    req.participants?.some(user => 
-      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+    req.fromUser.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    req.fromUser.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredSentRequests = sentMessageRequests.filter(req => 
+    req.toUser && (
+      req.toUser.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.toUser.lastName.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
 
@@ -180,7 +360,7 @@ const MessagesTab: React.FC = () => {
                   type="text"
                   placeholder={
                     activeTab === 'unread' ? 'Search unread messages' :
-                    activeTab === 'primary' ? 'Search general messages' :
+                    activeTab === 'primary' ? 'Search primary messages' :
                     activeTab === 'requests' ? 'Search message requests' :
                     'Search conversations...'
                   }
@@ -226,7 +406,7 @@ const MessagesTab: React.FC = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    General
+                    Primary
                   </button>
                   
                   <button
@@ -404,39 +584,162 @@ const MessagesTab: React.FC = () => {
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
               </div>
             ) : activeTab === 'requests' ? (
-              // Requests Tab
-              filteredRequests.length === 0 ? (
-                <div className="p-4 text-center text-[#708d81]">
-                  <p className="text-lg font-medium">No message requests</p>
-                  <p className="text-sm mt-2">You're all caught up!</p>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  {filteredRequests.map((request) => (
-                    <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg hover:bg-[#f8f9f6] transition-colors" style={{ cursor: 'pointer' }}>
-                      <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center">
-                        <User size={24} className="text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[#708d81] truncate">
-                          {request.participants?.map(p => `${p.firstName} ${p.lastName}`).join(', ') || 'Unknown User'}
-                        </p>
-                        <p className="text-xs text-[#708d81] opacity-70 truncate">
-                          {request.lastMessage?.content || 'No message content'}
-                        </p>
-                      </div>
-                      <div className="flex space-x-1">
-                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors cursor-pointer" style={{ cursor: 'pointer' }}>
-                          <Check size={16} />
-                        </button>
-                        <button className="p-1 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded transition-colors cursor-pointer" style={{ cursor: 'pointer' }}>
-                          <X size={16} />
-                        </button>
-                      </div>
+              // Requests Tab - Show both incoming and sent requests
+              <div className="flex flex-col h-full">
+                {/* Requests Subtabs */}
+                <div className="flex justify-center p-2 border-b border-[#708d81]">
+                  <div className="relative bg-[#708d81] rounded-lg p-0 w-64">
+                    <div className="flex relative w-full">
+                      <button
+                        onClick={() => setRequestsSubTab('incoming')}
+                        className={`relative z-10 flex-1 px-3 py-1 text-xs font-medium transition-colors rounded-md cursor-pointer`}
+                        style={{
+                          backgroundColor: requestsSubTab === 'incoming' ? 'white' : '#708d81',
+                          color: requestsSubTab === 'incoming' ? '#708d81' : 'white',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Incoming
+                      </button>
+                      <button
+                        onClick={() => setRequestsSubTab('sent')}
+                        className={`relative z-10 flex-1 px-3 py-1 text-xs font-medium transition-colors rounded-md cursor-pointer`}
+                        style={{
+                          backgroundColor: requestsSubTab === 'sent' ? 'white' : '#708d81',
+                          color: requestsSubTab === 'sent' ? '#708d81' : 'white',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Sent
+                      </button>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              )
+
+                {/* Requests Content */}
+                <div className="flex-1 overflow-y-auto">
+                  {requestsSubTab === 'incoming' ? (
+                    // Incoming Requests
+                    filteredRequests.length === 0 ? (
+                      <div className="p-4 text-center text-[#708d81]">
+                        <p className="text-lg font-medium">No incoming requests</p>
+                        <p className="text-sm mt-2">You're all caught up!</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        {filteredRequests.map((request) => (
+                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81' }}>
+                            <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center">
+                              <User size={24} className="text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-base font-medium text-black truncate">
+                                {`${request.fromUser.firstName} ${request.fromUser.lastName}`}
+                              </p>
+                              <p className="text-sm truncate" style={{ color: 'white' }}>
+                                {request.message}
+                              </p>
+                            </div>
+                            <div className="flex space-x-2">
+                              <button 
+                                onClick={() => handleAcceptRequest(request.id)}
+                                disabled={processingRequests.has(request.id)}
+                                className="btn-primary btn-sm flex items-center space-x-1"
+                                style={{ 
+                                  backgroundColor: processingRequests.has(request.id) ? '#9ca3af' : 'var(--color-success)', 
+                                  padding: '0.5rem 1rem',
+                                  borderRadius: '0.5rem',
+                                  color: 'white',
+                                  fontWeight: '500',
+                                  transition: 'all 0.2s',
+                                  border: 'none',
+                                  cursor: processingRequests.has(request.id) ? 'not-allowed' : 'pointer'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#16a34a';
+                                  e.currentTarget.style.transform = 'translateY(-1px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'var(--color-success)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <Check size={14} />
+                                <span>Accept</span>
+                              </button>
+                              <button 
+                                onClick={() => handleRejectRequest(request.id)}
+                                disabled={processingRequests.has(request.id)}
+                                className="btn-primary btn-sm flex items-center space-x-1"
+                                style={{ 
+                                  backgroundColor: processingRequests.has(request.id) ? '#9ca3af' : 'var(--color-error)',
+                                  color: 'white',
+                                  padding: '0.5rem 1rem',
+                                  borderRadius: '0.5rem',
+                                  fontWeight: '500',
+                                  transition: 'all 0.2s',
+                                  border: 'none',
+                                  cursor: processingRequests.has(request.id) ? 'not-allowed' : 'pointer'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#dc2626';
+                                  e.currentTarget.style.transform = 'translateY(-1px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'var(--color-error)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <X size={14} />
+                                <span>Decline</span>
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  ) : (
+                    // Sent Requests
+                    filteredSentRequests.length === 0 ? (
+                      <div className="p-4 text-center text-[#708d81]">
+                        <p className="text-lg font-medium">No sent requests</p>
+                        <p className="text-sm mt-2">Start a conversation to send a message!</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        {filteredSentRequests.map((request) => (
+                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81' }}>
+                            <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center">
+                              <User size={24} className="text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-base font-medium text-black truncate">
+                                To: {request.toUser ? `${request.toUser.firstName} ${request.toUser.lastName}` : 'Unknown User'}
+                              </p>
+                              <p className="text-sm truncate" style={{ color: 'white' }}>
+                                {request.message}
+                              </p>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <p className="text-xs text-gray-500">
+                                  Status: 
+                                </p>
+                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                  request.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                                  request.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                  request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
             ) : filteredConversations.length === 0 ? (
               // Primary/Unread Tabs - No conversations
               <div className="p-4 text-center text-[#708d81]">
@@ -456,26 +759,45 @@ const MessagesTab: React.FC = () => {
                 {filteredConversations.map((conversation) => (
                   <div
                     key={conversation.id}
-                    onClick={() => handleConversationSelect(conversation)}
-                    className={`p-4 cursor-pointer transition-colors ${
+                    className={`p-4 transition-colors rounded-lg ${
                       currentConversation?.id === conversation.id
-                        ? 'bg-[#f0f2f0]'
+                        ? 'bg-[#e8f5e8]'
                         : 'hover:bg-[#f8f9f6]'
                     }`}
-                    style={{ cursor: 'pointer' }}
+                    style={{ 
+                      backgroundColor: currentConversation?.id === conversation.id ? '#5a7268' : '#708d81',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleConversationSelect(conversation)}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center">
                         <User size={24} className="text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[#708d81] truncate">
-                          {conversation.participants?.map(u => `${u.firstName} ${u.lastName}`).join(', ') || 'Unknown User'}
-                        </p>
-                        {conversation.unreadCount > 0 && (
-                          <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                            {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
-                          </span>
+                        <div className="flex items-center justify-between">
+                          <p className="text-base font-medium text-black truncate">
+                            {conversation.participants?.map(u => `${u.firstName} ${u.lastName}`).join(', ') || 'Unknown User'}
+                          </p>
+                          {conversation.unreadCount > 0 && (
+                            <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                              {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+                            </span>
+                          )}
+                        </div>
+                        {/* Message preview */}
+                        {conversation.lastMessage && (
+                          <p 
+                            className="text-sm mt-1 truncate" 
+                            style={{ 
+                              color: activeTab === 'primary' ? '#4b5563' : 'white' // Darker grey for primary, white for unread
+                            }}
+                          >
+                            {activeTab === 'primary' 
+                              ? `You: ${truncateMessage(conversation.lastMessage.content, 8)}`
+                              : truncateMessage(conversation.lastMessage.content, 10)
+                            }
+                          </p>
                         )}
                       </div>
                     </div>

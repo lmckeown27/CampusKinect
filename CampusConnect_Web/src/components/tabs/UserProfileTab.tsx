@@ -199,9 +199,9 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
         <div className="flex items-start space-x-6">
           {/* Profile Picture */}
           <div className="flex-shrink-0">
-            {user.profileImage ? (
+            {(isOwnProfile && currentUser?.profileImage) || user.profileImage ? (
               <img
-                src={user.profileImage}
+                src={(isOwnProfile && currentUser?.profileImage) || user.profileImage}
                 alt={`${user.firstName} ${user.lastName}`}
                 className="w-24 h-24 rounded-full object-cover"
                 style={{ border: '3px solid #708d81' }}
