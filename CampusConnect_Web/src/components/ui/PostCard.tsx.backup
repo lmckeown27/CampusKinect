@@ -54,8 +54,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   const handleMessage = () => {
-    // Navigate directly to chat page with the post author
-    router.push(`/chat/${post.userId}`);
+    // Navigate to messages or open message modal
+    console.log('Message user:', post.userId);
   };
 
   const handleShare = () => {

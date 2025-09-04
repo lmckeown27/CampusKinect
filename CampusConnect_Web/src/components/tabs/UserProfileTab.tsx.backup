@@ -86,8 +86,8 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
   }, [userId]);
 
   const handleSendMessage = () => {
-    // Navigate directly to chat page with this user
-    router.push(`/chat/${userId}`);
+    // Navigate to messages with this user
+    router.push(`/messages?userId=${userId}`);
   };
 
   const handleBackClick = () => {
