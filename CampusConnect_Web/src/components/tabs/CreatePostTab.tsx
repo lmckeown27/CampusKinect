@@ -58,6 +58,9 @@ const CreatePostTab: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
+
+
+
   // Cleanup image URLs when component unmounts
   useEffect(() => {
     return () => {
@@ -199,6 +202,10 @@ const CreatePostTab: React.FC = () => {
 
   const handleClearAllTags = () => {
     setFormData(prev => ({ ...prev, tags: [] }));
+  };
+
+  const showImageDevelopmentPopup = () => {
+    alert('Images is currently in development, hold on tight :)');
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -543,12 +550,15 @@ const CreatePostTab: React.FC = () => {
                       onChange={handleImageUpload}
                       className="hidden"
                       id="image-upload-top"
+                      disabled
                     />
-                    <label htmlFor="image-upload-top" className="cursor-pointer" style={{ cursor: 'pointer' }}>
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors" style={{ cursor: 'pointer' }}>
-                        <ImageIcon className="h-6 w-6 text-gray-600" />
-                      </div>
-            </label>
+                    <button 
+                      type="button"
+                      onClick={showImageDevelopmentPopup}
+                      className="p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <ImageIcon className="h-6 w-6 text-gray-600" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -743,6 +753,8 @@ const CreatePostTab: React.FC = () => {
             </form>
           </div>
         </div>
+
+
 
         
     </div>

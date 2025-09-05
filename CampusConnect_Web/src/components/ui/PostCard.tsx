@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
+import { apiService } from '../../services/api';
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
@@ -56,7 +57,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
 
   const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
+    alert('Bookmarks are currently in development, hold on tight :)');
   };
 
   const handleMessage = () => {
@@ -65,23 +66,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   const handleShare = () => {
-    // Implement share functionality
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        text: post.description,
-        url: window.location.href,
-      });
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(`${post.title}\n${post.description}`);
-    }
+    alert('Share feature is currently in development, hold on tight :)');
   };
 
   const handleRepost = () => {
-    // Implement repost functionality
-    console.log('Repost:', post.id);
-    // This would typically create a new post that references the original
+    alert('Reposts are currently in development, hold on tight :)');
   };
 
   const handleDelete = () => {
@@ -93,6 +82,33 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   const handleEdit = () => {
     if (onEdit) {
       onEdit(post.id, post);
+    }
+  };
+
+  const handleReport = async () => {
+    try {
+      // Search for liam_mckeown38 user
+      const users = await apiService.searchUsers('liam_mckeown38');
+      const liamUser = users.find(user => user.username === 'liam_mckeown38');
+      
+      if (!liamUser) {
+        alert('Unable to find admin user to report to. Please try again later.');
+        return;
+      }
+
+      // Create message request to liam_mckeown38 with the reported post
+      const reportMessage = `🚨 REPORTED POST\n\nUser reported the following post:\n\nTitle: ${post.title}\nDescription: ${post.description}\nAuthor: ${post.poster?.firstName} ${post.poster?.lastName} (@${post.poster?.username})\nPost ID: ${post.id}\nReported by: ${currentUser?.firstName} ${currentUser?.lastName} (@${currentUser?.username})`;
+      
+      await apiService.createMessageRequest(
+        liamUser.id.toString(), 
+        reportMessage, 
+        post.id
+      );
+      
+      alert('Post has been reported successfully. Thank you for keeping our community safe!');
+    } catch (error) {
+      console.error('Error reporting post:', error);
+      alert('Failed to report post. Please try again later.');
     }
   };
 
@@ -199,6 +215,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                   }}
                 >
                   <button 
+                    onClick={handleReport}
                     className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
                     style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
                     onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
@@ -330,18 +347,31 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
         {/* Post Images */}
         {post.images && post.images.length > 0 && (
-          <div className="mb-4">
-            <div className="grid grid-cols-2 gap-2">
-              {post.images.slice(0, 4).map((image, index) => (
-                <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img
-                    src={image}
-                    alt={`Post image ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+          <div className={`post-images-grid ${
+            (post.images?.length || 0) === 1 ? 'single' :
+            (post.images?.length || 0) === 2 ? 'double' :
+            (post.images?.length || 0) === 3 ? 'triple' : 'quad'
+          }`}>
+            {post.images.slice(0, 4).map((image, index) => (
+              <div 
+                key={index} 
+                className={`post-image-container ${
+                  (post.images?.length || 0) === 1 ? 'single-image' : 'multi-image'
+                }`}
+              >
+                <img
+                  src={image.startsWith("/uploads/") ? `http://localhost:3001${image}` : image}
+                  alt={`Post image ${index + 1}`}
+                  className="post-image"
+                  onLoad={() => {}}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    console.error("Image failed to load:", image, e);
+                    target.style.display = "none";
+                  }}
+                />
+              </div>
+            ))}
           </div>
         )}
 
@@ -397,9 +427,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
               onClick={handleBookmark}
               className="p-2 rounded-lg transition-all duration-200"
               style={{ 
-                backgroundColor: isBookmarked ? '#a8c4a2' : '#708d81', 
+                backgroundColor: '#708d81', 
                 color: 'white', 
-                border: isBookmarked ? '2px solid #a8c4a2' : '2px solid #708d81', 
+                border: '2px solid #708d81', 
                 cursor: 'pointer' 
               }}
               onMouseEnter={(e) => { 
@@ -408,12 +438,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                 e.currentTarget.style.cursor = 'pointer'; 
               }}
               onMouseLeave={(e) => { 
-                e.currentTarget.style.backgroundColor = isBookmarked ? '#a8c4a2' : '#708d81'; 
-                e.currentTarget.style.border = isBookmarked ? '2px solid #a8c4a2' : '2px solid #708d81'; 
+                e.currentTarget.style.backgroundColor = '#708d81'; 
+                e.currentTarget.style.border = '2px solid #708d81'; 
                 e.currentTarget.style.cursor = 'pointer'; 
               }}
             >
-              <Bookmark size={18} fill={isBookmarked ? 'currentColor' : 'none'} />
+              <Bookmark size={18} fill="none" />
             </button>
 
             {/* Edit button - only show if showEditButton is true */}
