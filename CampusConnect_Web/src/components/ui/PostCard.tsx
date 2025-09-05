@@ -85,6 +85,40 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     }
   };
 
+  // Dynamic text sizing and line clamping based on word count
+  const getTextSizeClass = (text: string) => {
+    const wordCount = text.trim().split(/\s+/).length;
+    
+    if (wordCount <= 40) {
+      return 'text-base'; // Default size (16px)
+    } else if (wordCount <= 60) {
+      return 'text-sm'; // Medium size (14px)
+    } else if (wordCount <= 80) {
+      return 'text-xs'; // Small size (12px)
+    } else if (wordCount <= 120) {
+      return 'text-xs leading-tight'; // Extra small with tight spacing
+    } else if (wordCount <= 200) {
+      return 'text-xs leading-tight'; // Very small with tight spacing
+    } else {
+      return 'text-xs leading-none'; // Minimal size with no line spacing
+    }
+  };
+
+  // Dynamic line clamp based on word count
+  const getLineClampClass = (text: string) => {
+    const wordCount = text.trim().split(/\s+/).length;
+    
+    if (wordCount <= 40) {
+      return 'line-clamp-3'; // Standard 3 lines for short posts
+    } else if (wordCount <= 80) {
+      return 'line-clamp-4'; // 4 lines for medium posts
+    } else if (wordCount <= 150) {
+      return 'line-clamp-5'; // 5 lines for longer posts
+    } else {
+      return 'line-clamp-6'; // 6 lines for very long posts
+    }
+  };
+
   const handleReport = async () => {
     try {
       // Search for liam_mckeown38 user
@@ -341,7 +375,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
       {/* Post Content */}
       <div className="px-4 pb-4 pt-2">
-        <p className="text-gray-700 mb-4 line-clamp-3">
+        <p className={`text-gray-700 mb-4 ${getLineClampClass(post.description)} ${getTextSizeClass(post.description)}`}>
           {post.description}
         </p>
 

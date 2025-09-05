@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { User, Shield, Bell, Palette, Save } from 'lucide-react';
+import { User, Shield, Bell, Palette, Save, Cookie } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
+import { useRouter } from 'next/navigation';
 
 const SettingsTab: React.FC = () => {
   const { user: authUser } = useAuthStore();
+  const router = useRouter();
   
   // Use real user data from auth store
   const user = authUser;
@@ -28,6 +30,10 @@ const SettingsTab: React.FC = () => {
     // Save settings logic here
     console.log('Settings saved:', { notifications, privacy, theme });
     // You could add a toast notification here
+  };
+
+  const handleCookieSettings = () => {
+    router.push('/cookie-settings');
   };
 
   return (
@@ -187,6 +193,26 @@ const SettingsTab: React.FC = () => {
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
                   </label>
+                </div>
+                
+                {/* Cookie Settings Button */}
+                <div className="pt-4 border-t border-gray-200">
+                  <button
+                    onClick={handleCookieSettings}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors cursor-pointer"
+                    style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                  >
+                    <div className="flex items-center">
+                      <Cookie size={18} className="text-white mr-3" />
+                      <div>
+                        <h3 className="text-sm font-medium text-white">Cookie Settings</h3>
+                        <p className="text-sm text-gray-200">Manage your cookie preferences</p>
+                      </div>
+                    </div>
+                    <div className="text-white">→</div>
+                  </button>
                 </div>
               </div>
             </div>

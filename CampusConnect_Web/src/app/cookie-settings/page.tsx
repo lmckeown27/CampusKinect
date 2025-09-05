@@ -69,14 +69,14 @@ export default function CookieSettingsPage() {
       {/* Header */}
       <div className="bg-white border-b border-neutral-200 shadow-sm relative">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {/* Back to Login Link - Positioned absolutely on left */}
+          {/* Back to Settings Link - Positioned absolutely on left */}
           <div className="absolute left-4 sm:left-6 lg:left-8 top-6 w-auto h-auto">
             <Link 
-              href="/auth/login"
+              href="/settings"
               className="flex items-center space-x-2 text-primary hover:text-primary-600 transition-colors duration-200 font-medium"
             >
               <ArrowLeft size={20} />
-              <span>Login</span>
+              <span>Settings</span>
             </Link>
           </div>
           
@@ -322,29 +322,7 @@ export default function CookieSettingsPage() {
                 </div>
               </section>
 
-              {/* Footer Navigation */}
-              <div className="border-t border-gray-200 pt-8 mt-12">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-sm text-gray-500">
-                    Last updated: August 2025
-                  </div>
-                  <div className="flex items-center">
-                    <Link 
-                      href="/auth/login" 
-                      className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
-                    >
-                      Login
-                    </Link>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <Link 
-                      href="/auth/register" 
-                      className="text-primary hover:text-primary-600 font-medium text-sm transition-colors duration-200"
-                    >
-                      Create Account
-                    </Link>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>

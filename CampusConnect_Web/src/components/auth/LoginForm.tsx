@@ -5,6 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { Eye, EyeOff, AlertCircle, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 const LoginForm: React.FC = () => {
   const { login, isLoading, error } = useAuthStore();
@@ -79,9 +80,11 @@ const LoginForm: React.FC = () => {
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-8 w-full">
-          <div className="h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-lg flex items-center justify-center mb-6 shadow-xl">
-            <span className="text-white font-bold text-2xl">K</span>
-          </div>
+                      <img 
+              src={KinectLogo.src} 
+              alt="Kinect Logo" 
+              className="h-12 w-12 rounded-lg mb-6 shadow-xl object-contain"
+            />
           <h1 
             className="text-3xl font-bold text-neutral-900 mb-2 w-full"
             style={{ textAlign: 'center' }}

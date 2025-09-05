@@ -5,6 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
 import { Menu, X, User, LogOut, Settings } from 'lucide-react';
 import { useNavigation } from './NavigationContext';
+import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuthStore();
@@ -69,9 +70,11 @@ const Header: React.FC = () => {
 
         {/* Center - App Logo & Title */}
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-600 rounded-md flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-lg">K</span>
-          </div>
+          <img 
+            src={KinectLogo.src} 
+            alt="Kinect Logo" 
+            className="w-8 h-8 rounded-md shadow-lg object-contain"
+          />
           <h1 
             className="text-xl font-bold text-neutral-900"
             style={{ marginLeft: '16px' }}

@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '../stores/authStore';
+import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -36,9 +37,11 @@ export default function HomePage() {
         {/* Hero Section */}
         <div className="mb-10">
           <div className="flex items-center justify-center mb-8 space-x-6">
-            <div className="h-24 w-24 bg-gradient-to-br from-primary to-primary-600 rounded-lg flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform duration-300 flex-shrink-0">
-              <span className="text-white font-bold text-4xl">K</span>
-            </div>
+                      <img 
+            src={KinectLogo.src} 
+            alt="Kinect Logo" 
+            className="h-16 w-16 rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-300 flex-shrink-0 object-contain"
+          />
             <h1 className="text-4xl font-bold text-neutral-900 leading-tight whitespace-nowrap">
               <span className="text-primary">CampusKinect</span>
             </h1>

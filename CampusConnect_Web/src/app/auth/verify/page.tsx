@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../../stores/authStore';
 import { ArrowLeft, Mail, AlertCircle } from 'lucide-react';
+import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 const VerifyPage: React.FC = () => {
   const router = useRouter();
@@ -57,9 +58,11 @@ const VerifyPage: React.FC = () => {
       <div className="max-w-sm">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-8">
-          <div className="h-16 w-16 bg-gradient-to-br from-primary to-primary-600 rounded-lg flex items-center justify-center mb-6 shadow-xl">
-            <Mail className="h-8 w-8 text-white" />
-          </div>
+          <img 
+            src={KinectLogo.src} 
+            alt="Kinect Logo" 
+            className="h-12 w-12 rounded-lg mb-6 shadow-xl object-contain"
+          />
           <h1 
             className="text-3xl font-bold text-neutral-900 mb-2 text-center"
           >
