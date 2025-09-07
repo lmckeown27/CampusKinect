@@ -143,10 +143,10 @@ if run_on_ec2 "[ -d /opt/campuskinect/CampusKinect ]"; then
     "
 else
     echo -e "${BLUE}📥 Cloning repository...${NC}"
-    print_warning "You'll need to update the repository URL below with your actual GitHub repository"
+    echo -e "${BLUE}Cloning from https://github.com/lmckeown27/CampusKinect.git${NC}"
     run_on_ec2 "
         cd /opt/campuskinect &&
-        git clone https://github.com/YOUR_USERNAME/CampusKinect.git
+        git clone https://github.com/lmckeown27/CampusKinect.git
     "
 fi
 

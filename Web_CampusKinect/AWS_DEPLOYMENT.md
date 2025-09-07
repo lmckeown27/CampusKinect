@@ -68,7 +68,7 @@ sudo chown ec2-user:ec2-user /opt/campuskinect
 cd /opt/campuskinect
 
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/CampusKinect.git
+git clone https://github.com/lmckeown27/CampusKinect.git
 cd CampusKinect/Web_CampusKinect
 
 # Create production environment file

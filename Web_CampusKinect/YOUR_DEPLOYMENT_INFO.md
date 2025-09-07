@@ -32,11 +32,11 @@ cd /Users/liammckeown/Desktop/CampusKinect/Web_CampusKinect
 # 1. SSH into your server
 ssh -i your-key.pem ec2-user@54.183.218.0
 
-# 2. Clone repository (update with your GitHub username)
+# 2. Clone repository
 sudo mkdir -p /opt/campuskinect
 sudo chown ec2-user:ec2-user /opt/campuskinect
 cd /opt/campuskinect
-git clone https://github.com/YOUR_USERNAME/CampusKinect.git
+git clone https://github.com/lmckeown27/CampusKinect.git
 cd CampusKinect/Web_CampusKinect
 
 # 3. Configure environment

@@ -29,7 +29,7 @@
 ### 1. Clone Repository
 ```bash
 cd /opt/campuskinect
-git clone https://github.com/YOUR_USERNAME/CampusKinect.git
+git clone https://github.com/lmckeown27/CampusKinect.git
 cd CampusKinect/Web_CampusKinect
 ```
 
