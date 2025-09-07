@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # CampusKinect Web Frontend
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: campuskinect/web:latest
+    container_name: campuskinect-web-prod
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      # Environment variables should be set via .env.production file
+      # or through your deployment platform (Vercel, AWS, etc.)
+    env_file:
+      - .env.production
+    networks:
+      - campuskinect-network
+    depends_on:
+      - nginx
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.campuskinect-web.rule=Host(`campuskinect.net`)"
+      - "traefik.http.routers.campuskinect-web.tls=true"
+      - "traefik.http.routers.campuskinect-web.tls.certresolver=letsencrypt"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: campuskinect-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - campuskinect-network
+    depends_on:
+      - web
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:alpine
+    container_name: campuskinect-redis-prod
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - campuskinect-network
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-defaultpassword}
+
+networks:
+  campuskinect-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local 

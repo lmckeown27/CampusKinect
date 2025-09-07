@@ -17,11 +17,25 @@ class ApiService {
   private baseURL: string;
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    // Environment-aware configuration
+    const isProduction = process.env.NEXT_PUBLIC_ENVIRONMENT === 'production';
+    const defaultURL = isProduction 
+      ? 'https://api.campuskinect.net/api/v1' 
+      : 'http://localhost:3001/api/v1';
+    
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || defaultURL;
+    
+    // Log configuration in development only
+    if (!isProduction && typeof window !== 'undefined') {
+      console.log('🔗 API Service initialized:', {
+        baseURL: this.baseURL,
+        environment: process.env.NEXT_PUBLIC_ENVIRONMENT || 'development'
+      });
+    }
     
     this.api = axios.create({
       baseURL: this.baseURL,
-      timeout: 10000,
+      timeout: isProduction ? 30000 : 10000, // Longer timeout for production
       headers: {
         'Content-Type': 'application/json',
       },

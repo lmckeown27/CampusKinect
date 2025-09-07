@@ -1,15 +1,34 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable static asset serving
-  assetPrefix: '',
+  // Production optimizations
+  swcMinify: true,
+  compress: true,
+  
+  // Environment-based asset prefix
+  assetPrefix: process.env.NEXT_PUBLIC_CDN_URL || '',
   
   // Image optimization settings
   images: {
-    domains: ['localhost'],
+    domains: [
+      'localhost',
+      'campuskinect.net',
+      'api.campuskinect.net',
+      'cdn.campuskinect.net',
+      'res.cloudinary.com',
+    ],
     formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
-  // Static file serving
+  // Performance optimizations
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
+  },
+  
+  // Static file serving with enhanced caching
   async headers() {
     return [
       {
@@ -21,7 +40,47 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
     ]
+  },
+  
+  // Redirects for production
+  async redirects() {
+    return [
+      {
+        source: '/admin',
+        destination: '/profile',
+        permanent: false,
+      },
+    ]
+  },
+  
+  // Build output configuration
+  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
+  
+  // Environment variables validation
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
 }
 

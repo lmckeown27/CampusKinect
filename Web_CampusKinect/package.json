@@ -4,14 +4,24 @@
   "private": true,
   "description": "CampusKinect Web Frontend - Student Community Hub",
   "scripts": {
-    "dev": "next dev ",
-    "build": "next build ",
+    "dev": "next dev",
+    "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
+    "build:production": "NODE_ENV=production next build",
     "start": "next start",
-    "lint": "eslint",
+    "start:production": "NODE_ENV=production next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "type-check": "tsc --noEmit"
+    "test:e2e": "playwright test",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next out dist",
+    "export": "next export",
+    "deploy:vercel": "vercel --prod",
+    "deploy:docker": "docker build -t campuskinect-web .",
+    "health-check": "curl -f http://localhost:3000/api/health || exit 1"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
@@ -41,7 +51,9 @@
     "eslint-config-next": "^14.2.32",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@next/bundle-analyzer": "^14.2.32",
+    "cross-env": "^7.0.3"
   },
   "engines": {
     "node": ">=18.0.0",

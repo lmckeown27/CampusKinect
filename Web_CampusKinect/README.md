@@ -1,3 +1,18 @@
+# CampusKinect Web Frontend
+
+A modern, responsive web application for the CampusKinect student community platform built with Next.js 14, TypeScript, and Tailwind CSS.
+
+## 🚀 Production Ready
+
+This frontend is now fully configured for production deployment with:
+- ✅ Docker containerization
+- ✅ nginx reverse proxy 
+- ✅ SSL/HTTPS support
+- ✅ Performance optimizations
+- ✅ Security headers
+- ✅ Health monitoring
+- ✅ CI/CD pipeline
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -64,6 +79,56 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## 🚢 Production Deployment
+
+### Quick Deployment
+
+```bash
+# 1. Copy environment file
+cp env.production.example .env.production
+
+# 2. Update .env.production with your values
+
+# 3. Deploy with Docker Compose
+./deploy.sh
+
+# 4. Or deploy to Vercel
+DEPLOY_METHOD=vercel ./deploy.sh
+```
+
+### Deployment Options
+
+1. **Docker Compose** (Recommended for VPS/dedicated servers)
+   - Full nginx reverse proxy setup
+   - SSL termination
+   - Redis caching
+   - Health monitoring
+
+2. **Vercel** (Recommended for quick deployment)
+   - Automatic SSL
+   - Global CDN
+   - Zero downtime deployments
+
+3. **Manual Docker** (For custom orchestration)
+   - Kubernetes
+   - Docker Swarm
+   - Custom container platforms
+
+### Documentation
+
+- 📖 **[Complete Production Guide](./production.md)** - Comprehensive deployment instructions
+- 🔧 **Environment Configuration** - See `env.production.example`
+- 🐳 **Docker Setup** - See `Dockerfile` and `docker-compose.prod.yml`
+- 🏥 **Health Monitoring** - Available at `/api/health`
+
+### Security Features
+
+- Security headers (CSP, HSTS, etc.)
+- Rate limiting
+- Input validation
+- HTTPS enforcement
+- Vulnerability scanning
 
 ## Deploy on Vercel
 
