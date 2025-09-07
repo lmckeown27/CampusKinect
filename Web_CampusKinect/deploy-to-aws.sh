@@ -18,7 +18,7 @@ EC2_IP="54.183.218.0"
 EC2_INSTANCE_ID="i-0217127ec92c47c9e"
 DOMAIN="campuskinect.net"
 SSH_KEY_PATH="${SSH_KEY_PATH:-./campuskinect.pem}"
-SSH_USER="ec2-user"
+SSH_USER="ubuntu"
 
 echo -e "${BLUE}🚀 CampusKinect AWS Deployment Script${NC}"
 echo -e "${BLUE}EC2 Instance: ${EC2_INSTANCE_ID} (${EC2_IP})${NC}"
@@ -92,7 +92,7 @@ else
         sudo yum install -y docker &&
         sudo systemctl start docker &&
         sudo systemctl enable docker &&
-        sudo usermod -a -G docker ec2-user
+        sudo usermod -a -G docker ubuntu
     "
     print_status "Docker installed"
 fi
@@ -131,7 +131,7 @@ fi
 echo -e "${BLUE}📁 Setting up application directory...${NC}"
 run_on_ec2 "
     sudo mkdir -p /opt/campuskinect &&
-    sudo chown ec2-user:ec2-user /opt/campuskinect
+    sudo chown ubuntu:ubuntu /opt/campuskinect
 "
 
 # Check if repository already exists
@@ -210,7 +210,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
             sudo mkdir -p nginx/ssl &&
             sudo cp /etc/letsencrypt/live/campuskinect.net/fullchain.pem nginx/ssl/campuskinect.net.crt 2>/dev/null || true &&
             sudo cp /etc/letsencrypt/live/campuskinect.net/privkey.pem nginx/ssl/campuskinect.net.key 2>/dev/null || true &&
-            sudo chown -R ec2-user:ec2-user nginx/ssl/ || true
+            sudo chown -R ubuntu:ubuntu nginx/ssl/ || true
         "
         print_status "SSL certificates configured"
     fi
