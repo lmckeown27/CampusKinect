@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { useAuthStore } from '../stores/authStore';
 import KinectLogo from '@/assets/logos/KinectLogo.png';
 
+// Disable static generation for this client component that imports images
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();

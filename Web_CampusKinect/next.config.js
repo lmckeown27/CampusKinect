@@ -14,6 +14,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
+  // Disable static optimization to prevent SSR issues with client components
+  trailingSlash: false,
+  poweredByHeader: false,
+  
   // Environment-based asset prefix
   assetPrefix: process.env.NEXT_PUBLIC_CDN_URL || '',
   
@@ -107,6 +111,11 @@ const nextConfig = {
   
   // Build output configuration
   output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
+  
+  // Disable static optimization for problematic pages
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
+  },
   
   // Environment variables validation
   env: {

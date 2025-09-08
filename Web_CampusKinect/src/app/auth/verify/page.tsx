@@ -7,6 +7,9 @@ import { useAuthStore } from '../../../stores/authStore';
 import { ArrowLeft, Mail, AlertCircle } from 'lucide-react';
 import KinectLogo from '@/assets/logos/KinectLogo.png';
 
+// Disable static generation for this client component
+export const dynamic = 'force-dynamic';
+
 const VerifyPage: React.FC = () => {
   const router = useRouter();
   const { verifyEmail, resendVerificationCode, isLoading, error, clearError } = useAuthStore();
