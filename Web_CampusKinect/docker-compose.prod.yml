@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # CampusKinect Web Frontend
   web:
@@ -21,8 +19,6 @@ services:
       - .env.production
     networks:
       - campuskinect-network
-    depends_on:
-      - nginx
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.campuskinect-web.rule=Host(`campuskinect.net`)"
