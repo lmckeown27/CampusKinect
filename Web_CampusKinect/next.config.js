@@ -40,10 +40,13 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
     scrollRestoration: true,
+    // Disable static optimization completely
+    staticPageGenerationTimeout: 0,
+    isrMemoryCacheSize: 0,
   },
   
   // Webpack configuration for module resolution
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     // Ensure proper alias resolution
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -58,6 +61,15 @@ const nextConfig = {
         filename: 'static/media/[name].[hash][ext]',
       },
     });
+
+    // Disable static optimization in production
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        usedExports: false,
+        sideEffects: false,
+      };
+    }
 
     return config;
   },
@@ -116,6 +128,9 @@ const nextConfig = {
   generateBuildId: async () => {
     return 'build-' + Date.now();
   },
+  
+  // Disable prerendering for all pages
+  generateStaticParams: false,
   
   // Environment variables validation
   env: {
