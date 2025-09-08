@@ -76,9 +76,9 @@ npm run type-check
 echo -e "${BLUE}🧹 Running linter...${NC}"
 npm run lint
 
-# Build Docker image
+# Build Docker image (force clean build)
 echo -e "${BLUE}🐳 Building Docker image...${NC}"
-docker build -t $DOCKER_IMAGE:$PRODUCTION_TAG .
+docker build --no-cache -t $DOCKER_IMAGE:$PRODUCTION_TAG .
 
 # Tag backup image
 docker tag $DOCKER_IMAGE:$PRODUCTION_TAG $DOCKER_IMAGE:$BACKUP_TAG
