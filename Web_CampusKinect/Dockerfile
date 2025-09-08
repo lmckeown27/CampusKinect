@@ -37,6 +37,9 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Copy package.json for dependencies info
+COPY --from=builder /app/package.json ./package.json
+
 # Copy built application
 COPY --from=builder /app/public ./public
 
