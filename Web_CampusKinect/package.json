@@ -5,7 +5,7 @@
   "description": "CampusKinect Web Frontend - Student Community Hub",
   "scripts": {
     "dev": "next dev",
-    "build": "node fix-build.js && NEXT_PRIVATE_STANDALONE=true next build",
+    "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "build:production": "NODE_ENV=production next build",
     "start": "next start",
@@ -40,8 +40,7 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
-    "sharp": "^0.33.5",
-    "critters": "^0.0.20"
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

@@ -68,17 +68,17 @@ echo -e "${BLUE}🔨 Building production image...${NC}"
 # Clean previous builds
 npm run clean
 
-# Type checking (optional - skip for faster deployment)
-echo -e "${BLUE}🔍 Skipping type checks for production deployment...${NC}"
-# npm run type-check
+# Type checking
+echo -e "${BLUE}🔍 Running type checks...${NC}"
+npm run type-check
 
-# Linting (skip for production - handled by next.config.js)
-echo -e "${BLUE}🧹 Skipping lint checks for production deployment...${NC}"
-# npm run lint
+# Linting
+echo -e "${BLUE}🧹 Running linter...${NC}"
+npm run lint
 
-# Build Docker image (force clean build)
+# Build Docker image
 echo -e "${BLUE}🐳 Building Docker image...${NC}"
-docker build --no-cache -t $DOCKER_IMAGE:$PRODUCTION_TAG .
+docker build -t $DOCKER_IMAGE:$PRODUCTION_TAG .
 
 # Tag backup image
 docker tag $DOCKER_IMAGE:$PRODUCTION_TAG $DOCKER_IMAGE:$BACKUP_TAG

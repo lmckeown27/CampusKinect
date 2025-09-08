@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Production optimizations (disabled for stability)
-  swcMinify: false,
-  compress: false,
+  // Production optimizations
+  swcMinify: true,
+  compress: true,
   
   // Disable ESLint during builds for production deployment
   eslint: {
@@ -13,10 +13,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  
-  // Disable static optimization to prevent SSR issues with client components
-  trailingSlash: false,
-  poweredByHeader: false,
   
   // Environment-based asset prefix
   assetPrefix: process.env.NEXT_PUBLIC_CDN_URL || '',
@@ -36,45 +32,10 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
-  // Performance optimizations - disable all static features
+  // Performance optimizations
   experimental: {
-    optimizeCss: false,
+    optimizeCss: true,
     scrollRestoration: true,
-    // Disable static optimization completely
-    staticPageGenerationTimeout: 0,
-    isrMemoryCacheSize: 0,
-    // Force dynamic rendering for all pages
-    forceSwcTransforms: false,
-    serverComponentsExternalPackages: [],
-  },
-  
-  // Webpack configuration for module resolution
-  webpack: (config, { isServer, dev }) => {
-    // Ensure proper alias resolution
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, 'src'),
-    };
-
-    // Handle static asset imports
-    config.module.rules.push({
-      test: /\.(png|jpe?g|gif|svg|ico|webp)$/,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/media/[name].[hash][ext]',
-      },
-    });
-
-    // Disable static optimization in production
-    if (!dev && !isServer) {
-      config.optimization = {
-        ...config.optimization,
-        usedExports: false,
-        sideEffects: false,
-      };
-    }
-
-    return config;
   },
   
   // Static file serving with enhanced caching
@@ -124,17 +85,8 @@ const nextConfig = {
     ]
   },
   
-  // Build output configuration - force standalone with no static generation
-  output: 'standalone',
-  
-  // Completely disable static optimization
-  generateBuildId: async () => {
-    return 'build-' + Date.now();
-  },
-  
-  // Disable all static generation features
-  generateStaticParams: false,
-  staticPageGenerationTimeout: 0,
+  // Build output configuration
+  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
   
   // Environment variables validation
   env: {

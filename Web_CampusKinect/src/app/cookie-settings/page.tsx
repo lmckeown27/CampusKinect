@@ -4,9 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Save, RefreshCw } from 'lucide-react';
 
-// Disable static generation for this client component
-export const dynamic = 'force-dynamic';
-
 export default function CookieSettingsPage() {
   const [preferences, setPreferences] = useState({
     essential: true,
