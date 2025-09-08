@@ -38,6 +38,26 @@ const nextConfig = {
     scrollRestoration: true,
   },
   
+  // Webpack configuration for module resolution
+  webpack: (config, { isServer }) => {
+    // Ensure proper alias resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+
+    // Handle static asset imports
+    config.module.rules.push({
+      test: /\.(png|jpe?g|gif|svg|ico|webp)$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/media/[name].[hash][ext]',
+      },
+    });
+
+    return config;
+  },
+  
   // Static file serving with enhanced caching
   async headers() {
     return [
