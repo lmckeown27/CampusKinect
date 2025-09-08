@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Production optimizations
-  swcMinify: true,
-  compress: true,
+  // Production optimizations (disabled for stability)
+  swcMinify: false,
+  compress: false,
   
   // Disable ESLint during builds for production deployment
   eslint: {
@@ -34,7 +34,7 @@ const nextConfig = {
   
   // Performance optimizations
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false,
     scrollRestoration: true,
   },
   
