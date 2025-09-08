@@ -5,7 +5,7 @@
   "description": "CampusKinect Web Frontend - Student Community Hub",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node fix-build.js && NEXT_PRIVATE_STANDALONE=true next build",
     "build:analyze": "ANALYZE=true next build",
     "build:production": "NODE_ENV=production next build",
     "start": "next start",

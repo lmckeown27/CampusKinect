@@ -36,13 +36,16 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
-  // Performance optimizations
+  // Performance optimizations - disable all static features
   experimental: {
     optimizeCss: false,
     scrollRestoration: true,
     // Disable static optimization completely
     staticPageGenerationTimeout: 0,
     isrMemoryCacheSize: 0,
+    // Force dynamic rendering for all pages
+    forceSwcTransforms: false,
+    serverComponentsExternalPackages: [],
   },
   
   // Webpack configuration for module resolution
@@ -121,16 +124,17 @@ const nextConfig = {
     ]
   },
   
-  // Build output configuration
-  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
+  // Build output configuration - force standalone with no static generation
+  output: 'standalone',
   
-  // Disable static optimization for problematic pages
+  // Completely disable static optimization
   generateBuildId: async () => {
     return 'build-' + Date.now();
   },
   
-  // Disable prerendering for all pages
+  // Disable all static generation features
   generateStaticParams: false,
+  staticPageGenerationTimeout: 0,
   
   // Environment variables validation
   env: {
