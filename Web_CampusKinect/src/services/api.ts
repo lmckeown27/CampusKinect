@@ -499,7 +499,7 @@ class ApiService {
       const messages = response.data.data.messages?.map((msg: any) => ({
         id: msg.id.toString(),
         content: msg.content,
-        senderId: msg.sender.id.toString(),
+        senderId: msg.senderId.toString(), // Use direct senderId from backend instead of msg.sender.id
         conversationId: conversationId,
         isRead: msg.isRead,
         createdAt: msg.createdAt,
