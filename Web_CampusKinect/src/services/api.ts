@@ -527,7 +527,29 @@ class ApiService {
       await this.api.post(`/messages/conversations/${conversationId}/messages`, { content });
     
     if (response.data.success && response.data.data?.message) {
-      return response.data.data.message;
+      const msg = response.data.data.message;
+      
+      // Transform backend message format to frontend format (same as getMessages)
+      return {
+        id: msg.id.toString(),
+        content: msg.content,
+        senderId: msg.sender.id.toString(), // Add the missing senderId property!
+        conversationId: conversationId,
+        isRead: msg.isRead,
+        createdAt: msg.createdAt,
+        sender: {
+          id: msg.sender.id.toString(),
+          username: msg.sender.username,
+          firstName: msg.sender.firstName,
+          lastName: msg.sender.lastName,
+          displayName: msg.sender.displayName,
+          profilePicture: msg.sender.profilePicture,
+          email: '', // Not needed for message display
+          universityId: '0', // Not needed for message display  
+          createdAt: '',
+          updatedAt: ''
+        }
+      };
     }
     
     throw new Error(response.data.message || 'Failed to send message');
