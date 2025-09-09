@@ -307,7 +307,7 @@ class MessageService {
   /**
    * Send a message in a conversation
    */
-  async sendMessage(conversationId, senderId, content, messageType = 'text', mediaUrl = null) {
+  async sendMessage(conversationId, senderId, content, messageType = 'text', mediaUrl = null, markAsRead = true) {
     try {
       // Check if user is part of this conversation
       const convCheck = await dbQuery(`
@@ -321,12 +321,12 @@ class MessageService {
 
 
 
-      // Create message (mark sent messages as read automatically)
+      // Create message with configurable read status
       const result = await dbQuery(`
         INSERT INTO messages (conversation_id, sender_id, content, message_type, media_url, is_read)
-        VALUES ($1, $2, $3, $4, $5, true)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING id, content, message_type, media_url, is_read, created_at
-      `, [conversationId, senderId, content, messageType, mediaUrl]);
+      `, [conversationId, senderId, content, messageType, mediaUrl, markAsRead]);
 
       const message = result.rows[0];
 
@@ -761,15 +761,15 @@ class MessageService {
           }
         }
         
-        // Send the original message from the request
+        // Send the original message from the request (mark as unread for recipient)
         if (conversationId && request.message) {
           console.log('📨 ACCEPT DEBUG: Sending original message to conversation', {
             conversationId,
             senderId: request.from_user_id,
             messageContent: request.message.substring(0, 50)
           });
-          const sentMessage = await this.sendMessage(conversationId, request.from_user_id, request.message);
-          console.log('✅ ACCEPT DEBUG: Original message sent successfully', sentMessage.success);
+          const sentMessage = await this.sendMessage(conversationId, request.from_user_id, request.message, 'text', null, false);
+          console.log('✅ ACCEPT DEBUG: Original message sent successfully as UNREAD', sentMessage.success);
         }
         
         // If user provided a response message, send it too
