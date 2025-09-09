@@ -184,18 +184,8 @@ router.get('/conversations/:id/messages', [
 
     const result = await messageService.getConversationMessages(conversationId, userId, page, limit);
     
-    res.json({
-      success: true,
-      data: {
-        messages: result.messages,
-        pagination: {
-          page: result.page,
-          limit: result.limit,
-          total: result.total,
-          totalPages: Math.ceil(result.total / result.limit)
-        }
-      }
-    });
+    // messageService returns { success: true, data: { messages: [...], pagination: {...} } }
+    res.json(result);
   } catch (error) {
     console.error('Get conversation messages error:', error);
     res.status(500).json({
