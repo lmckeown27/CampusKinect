@@ -1094,6 +1094,7 @@ router.get('/tabs', async (req, res) => {
 // @desc    Get posts with filtering, sorting, and pagination
 // @access  Public (with optional auth for personalized results)
 router.get('/', [
+  auth, // Require authentication for university isolation
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   queryValidator('universityId').optional().isInt().withMessage('University ID must be an integer'),
@@ -1128,6 +1129,17 @@ router.get('/', [
       expandCluster = false,
       userId
     } = req.query;
+
+    // Get user's university ID for proper filtering
+    const authUserId = req.user.id;
+    const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [authUserId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'User not found' }
+      });
+    }
+    const userUniversityId = userResult.rows[0].university_id;
 
     // Handle tags parameter (support both 'tags' and 'tags[]' formats)
     let tags = req.query.tags || req.query['tags[]'];
@@ -1187,10 +1199,10 @@ router.get('/', [
     const queryParams = [];
     let paramCount = 0;
 
-    // For now, filter to Cal Poly SLO only (multi-university ready)
+    // Filter to user's university only (university isolation)
     paramCount++;
     baseQuery += ` AND p.university_id = $${paramCount}`;
-    queryParams.push(UNIVERSITY_CONFIG.primaryUniversityId);
+    queryParams.push(userUniversityId);
 
     // Add post type filter - New system: Primary tag is the main category
     if (postTypes && postTypes.length > 0) {
