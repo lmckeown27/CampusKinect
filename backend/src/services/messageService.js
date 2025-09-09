@@ -416,7 +416,7 @@ class MessageService {
         const requestId = existingRequest.rows[0].id;
         
         if (status === 'pending') {
-          throw new Error('Message request already sent');
+          throw new Error('You already have a pending message request with this user. Please wait for them to respond.');
         } else if (status === 'accepted') {
           throw new Error('Message request was already accepted. You should have an existing conversation.');
         } else if (status === 'rejected' || status === 'ignored') {

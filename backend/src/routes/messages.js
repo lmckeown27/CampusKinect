@@ -110,12 +110,24 @@ router.post('/requests', [
     const { toUserId, content, postId } = req.body;
     const fromUserId = req.user.id;
 
+    console.log('🚀 POST /requests - Creating message request:', { fromUserId, toUserId, content: content?.substring(0, 50), postId });
+
     const result = await messageService.createMessageRequest(fromUserId, toUserId, content, postId);
+    
+    console.log('✅ POST /requests - Success:', result);
     res.status(201).json(result);
 
   } catch (error) {
-    console.error('Create message request error:', error);
+    console.error('❌ POST /requests - Error:', error);
+    console.error('❌ Error type:', error.constructor.name);
+    console.error('❌ Error message:', error.message);
+    console.error('❌ Error code:', error.code);
+    console.error('❌ Full error:', error);
+    
     const statusCode = error.message.includes('already exists') || error.message.includes('already sent') ? 409 : 500;
+    
+    console.log('❌ Sending status code:', statusCode);
+    
     res.status(statusCode).json({
       success: false,
       error: {

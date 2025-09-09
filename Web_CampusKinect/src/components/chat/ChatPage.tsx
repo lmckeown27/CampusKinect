@@ -133,13 +133,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       console.log('📤 Current user:', currentUser);
       console.log('📤 Chat user:', chatUser);
       
-      alert(`📤 SEND DEBUG: Attempting to send message "${newMessage.trim()}"`);
-      
       if (conversation) {
         console.log('✅ Using existing conversation');
         console.log('✅ Conversation object:', JSON.stringify(conversation, null, 2));
-        alert(`✅ SEND DEBUG: Using existing conversation ID "${conversation.id}" (type: ${typeof conversation.id})`);
-        alert(`✅ SEND DEBUG: Conversation details: ${JSON.stringify({id: conversation.id, participants: conversation.participants}, null, 2)}`);
         
         // Existing conversation - send message normally
         const optimisticMessage: Message = {
@@ -159,11 +155,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
         console.log('📝 Message content:', newMessage.trim());
         console.log('🔢 Conversation ID:', conversation.id, 'Type:', typeof conversation.id);
         
-        alert(`💬 SEND DEBUG: About to call apiService.sendMessage with conversation ID "${conversation.id}"`);
-        
         const sentMessage = await apiService.sendMessage(conversation.id, newMessage.trim());
-        
-        alert(`✅ SEND DEBUG: Message sent successfully!`);
         
         // Replace optimistic message with real message
         setChatMessages(prev => prev.map(msg => 
@@ -183,17 +175,24 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       console.error('Failed to send message:', error);
       console.error('Error details:', error.message);
       
-      alert(`❌ SEND DEBUG: FAILED to send message: ${error.message || error}`);
-      alert(`❌ SEND DEBUG: Error details: ${JSON.stringify(error, null, 2)}`);
-      
       // Remove optimistic message on error if it was a regular message
       if (conversation) {
         setChatMessages(prev => prev.filter(msg => !msg.id.startsWith('temp_')));
       }
       
-      // Show error to user with more detail
-      const errorMessage = error.message || 'Failed to send message. Please try again.';
-      alert(`Error: ${errorMessage}`);
+      // Handle specific error cases with user-friendly messages
+      if (error.response?.status === 409) {
+        // 409 means there's already a pending message request
+        alert('You already have a pending message request with this user. Please wait for them to respond or check your sent requests in the messages tab.');
+        router.push('/messages');
+      } else if (error.message?.includes('already sent') || error.message?.includes('already exists')) {
+        alert('You already have a pending message request with this user. Check the messages tab to see your sent requests.');
+        router.push('/messages');
+      } else {
+        // Show generic error for other cases
+        const errorMessage = error.message || 'Failed to send message. Please try again.';
+        alert(`Error: ${errorMessage}`);
+      }
     }
   };
 
