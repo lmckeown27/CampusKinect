@@ -123,6 +123,32 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     loadConversation();
   }, [currentUser, chatUser, isMounted]);
 
+  // Real-time message polling for live updates
+  useEffect(() => {
+    if (!conversation || !isMounted) return;
+
+    const pollMessages = async () => {
+      try {
+        const messagesData = await apiService.getMessages(conversation.id);
+        const newMessages = messagesData.data || [];
+        
+        // Only update if we have more messages than before
+        if (newMessages.length > chatMessages.length) {
+          console.log('📨 New messages detected:', newMessages.length - chatMessages.length);
+          setChatMessages(newMessages);
+        }
+      } catch (error) {
+        console.error('Failed to poll messages:', error);
+      }
+    };
+
+    // Poll every 2 seconds for new messages
+    const pollInterval = setInterval(pollMessages, 2000);
+
+    // Cleanup interval on unmount or conversation change
+    return () => clearInterval(pollInterval);
+  }, [conversation, chatMessages.length, isMounted]);
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentUser || !chatUser) return;
 
@@ -319,6 +345,20 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           <div className="space-y-3">
             {chatMessages.map((message, index) => {
               const isCurrentUser = message.senderId === currentUser.id.toString();
+              
+              // Debug alignment issue
+              if (message.content.includes('test') || message.id.includes('temp_')) {
+                console.log('🔍 ALIGNMENT DEBUG:', {
+                  messageId: message.id,
+                  content: message.content.substring(0, 30),
+                  messageSenderId: message.senderId,
+                  messageSenderIdType: typeof message.senderId,
+                  currentUserId: currentUser.id,
+                  currentUserIdString: currentUser.id.toString(),
+                  isCurrentUser,
+                  shouldBeRight: message.senderId === currentUser.id.toString()
+                });
+              }
               const showTime = index === 0 || 
                 Math.abs(new Date(message.createdAt).getTime() - new Date(chatMessages[index - 1].createdAt).getTime()) > 300000; // 5 minutes
               
