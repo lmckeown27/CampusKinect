@@ -3,7 +3,7 @@ const { body, query: queryValidator, param } = require('express-validator');
 const { query: dbQuery, pool } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
-const { auth, checkOwnership, requireVerification } = require('../middleware/auth');
+const { auth, optionalAuth, checkOwnership, requireVerification } = require('../middleware/auth');
 const { uploadImage } = require('../services/imageService');
 const { UNIVERSITY_CONFIG } = require('../config/university');
 const { calculateNextRepostDate, getRepostHistory, stopRecurringPost } = require('../services/recurringPostService');
@@ -18,6 +18,7 @@ const router = express.Router();
 // @desc    Get organized feed with recurring posts prioritized
 // @access  Private (requires authentication for university isolation)
 router.get('/organized', [
+  optionalAuth,
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   queryValidator('postType').optional().isIn(['goods', 'services', 'events', 'housing', 'tutoring', 'all']).withMessage('Invalid post type'),
@@ -188,7 +189,7 @@ router.get('/organized', [
       WHERE p.is_active = true AND p.university_id = $1
     `;
     
-    const countParams = [UNIVERSITY_CONFIG.primaryUniversityId];
+    const countParams = [userUniversityId];
     paramCount = 1;
 
     if (postType && postType !== 'all') {
@@ -1088,6 +1089,7 @@ router.get('/tabs', async (req, res) => {
 // @desc    Get posts with filtering, sorting, and pagination
 // @access  Public (with optional auth for personalized results)
 router.get('/', [
+  optionalAuth,
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   queryValidator('universityId').optional().isInt().withMessage('University ID must be an integer'),
