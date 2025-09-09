@@ -339,8 +339,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
                       <div
                         className={`px-4 py-3 rounded-2xl ${
                           isCurrentUser
-                            ? 'bg-[#6B7C32] text-white rounded-br-md shadow-sm'
-                            : 'bg-gray-300 text-gray-800 rounded-bl-md shadow-sm'
+                            ? 'bg-green-700 text-white rounded-br-md shadow-sm'
+                            : 'bg-gray-400 text-gray-900 rounded-bl-md shadow-sm'
                         }`}
                       >
                         <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
