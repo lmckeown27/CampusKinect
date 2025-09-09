@@ -28,6 +28,7 @@ const { UNIVERSITY_CONFIG } = require('./config/university');
 const { initializeCronJobs } = require('./services/cronService');
 
 const app = express();
+app.set('trust proxy', true);
 const server = createServer(app);
 
 // Socket.io setup
