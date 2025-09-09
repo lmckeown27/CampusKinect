@@ -332,13 +332,17 @@ const MessagesTab: React.FC = () => {
     );
     
     if (activeTab === 'unread') {
-      // Unread: Show conversations with unread messages (regardless of who sent the last message)
-      const result = matchesSearch && conv.unreadCount > 0;
-      console.log(`🔍 UNREAD FILTER: Conv ${conv.id}, unreadCount: ${conv.unreadCount}, matches: ${matchesSearch}, result: ${result}`, conv);
+      // Unread: Show conversations where the last message was sent TO the current user (incoming)
+      const isIncomingMessage = conv.lastMessage && conv.lastMessage.senderId !== currentUser?.id.toString();
+      const result = matchesSearch && isIncomingMessage;
+      console.log(`🔍 UNREAD FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessage?.senderId}, currentUserId: ${currentUser?.id}, isIncoming: ${isIncomingMessage}, result: ${result}`);
       return result;
     } else if (activeTab === 'primary') {
-      // Primary: Show all conversations (read and unread)
-      return matchesSearch;
+      // Primary: Show conversations where the last message was sent BY the current user (outgoing)
+      const isOutgoingMessage = conv.lastMessage && conv.lastMessage.senderId === currentUser?.id.toString();
+      const result = matchesSearch && isOutgoingMessage;
+      console.log(`🔍 PRIMARY FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessage?.senderId}, currentUserId: ${currentUser?.id}, isOutgoing: ${isOutgoingMessage}, result: ${result}`);
+      return result;
     }
     return matchesSearch;
   });

@@ -335,12 +335,12 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
                     </div>
                   )}
                   <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-xs lg:max-w-md ${isCurrentUser ? 'ml-12' : 'mr-12'}`}>
+                    <div className={`max-w-sm ${isCurrentUser ? 'ml-8' : 'mr-8'}`}>
                       <div
                         className={`px-4 py-3 rounded-2xl ${
                           isCurrentUser
-                            ? 'bg-[#708d81] text-white rounded-br-md shadow-sm'
-                            : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm'
+                            ? 'bg-[#6B7C32] text-white rounded-br-md shadow-sm'
+                            : 'bg-gray-300 text-gray-800 rounded-bl-md shadow-sm'
                         }`}
                       >
                         <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
