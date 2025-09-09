@@ -386,6 +386,8 @@ class MessageService {
    */
   async createMessageRequest(fromUserId, toUserId, content, postId = null) {
     try {
+      console.log('🔍 Creating message request:', { fromUserId, toUserId, content: content.substring(0, 50), postId });
+      
       if (fromUserId === toUserId) {
         throw new Error('Cannot send message request to yourself');
       }
@@ -401,10 +403,13 @@ class MessageService {
       }
 
       // Check if a message request already exists from this user to the target user
+      console.log('🔍 Checking for existing request with params:', { fromUserId, toUserId, postId });
       const existingRequest = await dbQuery(`
         SELECT id, status FROM message_requests 
         WHERE from_user_id = $1 AND to_user_id = $2 AND post_id IS NOT DISTINCT FROM $3
       `, [fromUserId, toUserId, postId]);
+      
+      console.log('🔍 Existing request query result:', existingRequest.rows);
 
       if (existingRequest.rows.length > 0) {
         const status = existingRequest.rows[0].status;
@@ -471,6 +476,7 @@ class MessageService {
       }
 
       // Create message request
+      console.log('✅ No existing request found, creating new one');
       const result = await dbQuery(`
         INSERT INTO message_requests (from_user_id, to_user_id, message, post_id)
         VALUES ($1, $2, $3, $4)
@@ -517,7 +523,22 @@ class MessageService {
       };
 
     } catch (error) {
-      console.error('Create message request error:', error);
+      console.error('❌ Create message request error:', error);
+      console.error('❌ Error details:', {
+        code: error.code,
+        detail: error.detail,
+        constraint: error.constraint,
+        table: error.table,
+        fromUserId,
+        toUserId,
+        postId
+      });
+      
+      // Handle specific database errors
+      if (error.code === '23505') { // Unique constraint violation
+        throw new Error('A message request between these users already exists');
+      }
+      
       throw error;
     }
   }
