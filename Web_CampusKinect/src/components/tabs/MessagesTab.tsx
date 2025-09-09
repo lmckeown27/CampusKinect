@@ -325,11 +325,11 @@ const MessagesTab: React.FC = () => {
     );
     
     if (activeTab === 'unread') {
-      // Unread: Show conversations where OTHER person sent the last message AND there are unread messages
-      return matchesSearch && conv.unreadCount > 0 && conv.lastMessage?.senderId !== currentUser?.id;
+      // Unread: Show conversations with unread messages (regardless of who sent the last message)
+      return matchesSearch && conv.unreadCount > 0;
     } else if (activeTab === 'primary') {
-      // Primary: Show conversations where YOU sent the last message AND no unread messages
-      return matchesSearch && conv.lastMessage?.senderId === currentUser?.id && conv.unreadCount === 0;
+      // Primary: Show all conversations (read and unread)
+      return matchesSearch;
     }
     return matchesSearch;
   });
