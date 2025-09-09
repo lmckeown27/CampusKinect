@@ -1,3 +1,6 @@
+// Load environment variables
+require('dotenv').config();
+
 const { query } = require('./src/config/database');
 const { UNIVERSITY_CONFIG } = require('./src/config/university');
 
@@ -9,6 +12,11 @@ const { UNIVERSITY_CONFIG } = require('./src/config/university');
 async function fixCalPolyUsers() {
   try {
     console.log('🔧 Starting Cal Poly user university assignment fix...');
+    
+    // Test database connection first
+    console.log('🔌 Testing database connection...');
+    await query('SELECT 1');
+    console.log('✅ Database connection successful');
     
     // First, let's see what we're working with
     console.log('📊 Checking current Cal Poly users...');
@@ -92,6 +100,16 @@ async function fixCalPolyUsers() {
     
   } catch (error) {
     console.error('❌ Error fixing Cal Poly users:', error);
+    
+    // Provide more specific error information
+    if (error.message.includes('SASL') || error.message.includes('password')) {
+      console.error('💡 Database connection issue. Make sure:');
+      console.error('   1. DATABASE_URL environment variable is set correctly');
+      console.error('   2. Database credentials are valid');
+      console.error('   3. Database server is accessible');
+      console.error('   4. Try running: export DATABASE_URL="your_database_url_here"');
+    }
+    
     throw error;
   }
 }
