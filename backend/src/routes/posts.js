@@ -1534,7 +1534,7 @@ router.post('/', [
     } = req.body;
 
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    const universityId = req.user.university_id;
 
     // Start transaction
     const client = await pool.connect();
@@ -2715,7 +2715,7 @@ router.post('/create', [
     } = req.body;
 
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    const universityId = req.user.university_id;
 
     // Validate tag selections based on post type
     let validationErrors = [];
@@ -3366,7 +3366,7 @@ router.post('/validate', [
 router.get('/create-stats', auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    const universityId = req.user.university_id;
 
     // Get user's post creation statistics
     const userStatsResult = await queryValidator(`
@@ -3585,7 +3585,7 @@ router.post('/draft', [
     } = req.body;
 
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    const universityId = req.user.university_id;
 
     // Check if user already has a draft
     const existingDraftResult = await queryValidator(`
@@ -3656,7 +3656,7 @@ router.post('/draft', [
 router.get('/draft', auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    const universityId = req.user.university_id;
 
     const draftResult = await queryValidator(`
       SELECT 
@@ -3721,7 +3721,7 @@ router.get('/draft', auth, async (req, res) => {
 router.delete('/draft', auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    const universityId = req.user.university_id;
 
     await queryValidator(`
       DELETE FROM post_drafts 
@@ -3859,7 +3859,7 @@ router.get('/create-tips', auth, async (req, res) => {
 
     // Add dynamic tips based on user's posting history
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    const universityId = req.user.university_id;
 
     const userStatsResult = await queryValidator(`
       SELECT 
