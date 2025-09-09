@@ -308,19 +308,39 @@ router.post('/register', [
     // Get or create university
     let universityId;
     const domain = email.split('@')[1];
-    const existingUniversity = await query('SELECT id FROM universities WHERE domain = $1', [domain]);
+    console.log('🏫 UNIVERSITY DEBUG: Looking up domain', domain);
+    
+    const existingUniversity = await query('SELECT id, name FROM universities WHERE domain = $1', [domain]);
+    console.log('🏫 UNIVERSITY DEBUG: Database lookup result', existingUniversity.rows);
     
     if (existingUniversity.rows.length > 0) {
       universityId = existingUniversity.rows[0].id;
+      console.log('✅ UNIVERSITY DEBUG: Found university', {
+        id: universityId,
+        name: existingUniversity.rows[0].name,
+        domain
+      });
     } else {
-      // Create new university entry
-      const newUniversityResult = await query(`
-        INSERT INTO universities (name, domain, city, state, country, is_active)
-        VALUES ($1, $2, $3, $4, $5, true)
-        RETURNING id
-      `, [domain, domain, 'Unknown', 'Unknown', 'US']); // Default values for required fields
-      universityId = newUniversityResult.rows[0].id;
+      console.log('❌ UNIVERSITY DEBUG: Domain not found, checking for Cal Poly fallback');
+      
+      // Special case: If domain is calpoly.edu and not found, use the primary university ID
+      if (domain === 'calpoly.edu') {
+        console.log('🔧 UNIVERSITY DEBUG: Using Cal Poly fallback for missing calpoly.edu');
+        universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+      } else {
+        // Create new university entry for other domains
+        console.log('🆕 UNIVERSITY DEBUG: Creating new university for domain', domain);
+        const newUniversityResult = await query(`
+          INSERT INTO universities (name, domain, city, state, country, is_active)
+          VALUES ($1, $2, $3, $4, $5, true)
+          RETURNING id
+        `, [domain, domain, 'Unknown', 'Unknown', 'US']); // Default values for required fields
+        universityId = newUniversityResult.rows[0].id;
+        console.log('✅ UNIVERSITY DEBUG: Created new university with ID', universityId);
+      }
     }
+    
+    console.log('🎯 UNIVERSITY DEBUG: Final university ID assignment', universityId);
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
