@@ -20,13 +20,18 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Copy source code
+# Copy source code and environment files
 COPY . .
 
-# Disable Next.js telemetry during build
+# Set build-time environment variables
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
+ENV NEXT_PUBLIC_ENVIRONMENT production
+ENV NEXT_PUBLIC_API_URL https://campuskinect.net/api/v1
+ENV NEXT_PUBLIC_WS_URL ws://campuskinect.net:8080
+ENV NEXT_PUBLIC_APP_URL https://campuskinect.net
 
-# Build the application
+# Build the application with embedded environment variables
 RUN npm run build
 
 # Stage 3: Runner
@@ -53,7 +58,7 @@ USER nextjs
 # Expose port
 EXPOSE 3000
 
-# Set environment variables
+# Set runtime environment variables
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV PORT 3000
