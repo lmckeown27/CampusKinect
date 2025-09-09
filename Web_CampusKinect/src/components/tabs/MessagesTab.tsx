@@ -252,9 +252,16 @@ const MessagesTab: React.FC = () => {
       
       // Force a small delay to ensure state updates
       setTimeout(() => {
-        console.log('Message requests after:', messageRequests);
-        console.log('Conversations after:', conversations);
-      }, 100);
+        console.log('📊 ACCEPT DEBUG - Message requests after:', messageRequests.length);
+        console.log('📊 ACCEPT DEBUG - Conversations after:', conversations.length);
+        console.log('📊 ACCEPT DEBUG - Conversations with unread:', conversations.filter(c => c.unreadCount > 0));
+        console.log('📊 ACCEPT DEBUG - All conversation details:', conversations.map(c => ({
+          id: c.id,
+          unreadCount: c.unreadCount,
+          lastMessage: c.lastMessage,
+          participants: c.participants?.map(p => `${p.firstName} ${p.lastName}`)
+        })));
+      }, 1000); // Increased delay to 1 second
       
       console.log('✅ ACCEPT SUCCESS: Request accepted and moved to Primary section!');
     } catch (error) {
@@ -326,13 +333,25 @@ const MessagesTab: React.FC = () => {
     
     if (activeTab === 'unread') {
       // Unread: Show conversations with unread messages (regardless of who sent the last message)
-      return matchesSearch && conv.unreadCount > 0;
+      const result = matchesSearch && conv.unreadCount > 0;
+      console.log(`🔍 UNREAD FILTER: Conv ${conv.id}, unreadCount: ${conv.unreadCount}, matches: ${matchesSearch}, result: ${result}`, conv);
+      return result;
     } else if (activeTab === 'primary') {
       // Primary: Show all conversations (read and unread)
       return matchesSearch;
     }
     return matchesSearch;
   });
+
+  // Debug: Log all conversations and their unread counts
+  console.log('📊 ALL CONVERSATIONS:', conversations.map(c => ({
+    id: c.id,
+    unreadCount: c.unreadCount,
+    lastMessage: c.lastMessage,
+    participants: c.participants?.map(p => `${p.firstName} ${p.lastName}`)
+  })));
+  
+  console.log('📊 FILTERED CONVERSATIONS FOR', activeTab, 'TAB:', filteredConversations.length);
 
   const filteredRequests = messageRequests.filter(req => 
     req.fromUser.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||

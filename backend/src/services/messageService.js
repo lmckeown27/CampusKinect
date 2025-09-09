@@ -745,17 +745,31 @@ class MessageService {
 
         if (existingConv.rows.length > 0) {
           conversationId = existingConv.rows[0].id;
+          console.log('📞 ACCEPT DEBUG: Using existing conversation', conversationId);
         } else {
           // Create new conversation
+          console.log('📞 ACCEPT DEBUG: Creating new conversation between users', {
+            accepter: userId,
+            requester: request.from_user_id,
+            postId: request.post_id
+          });
           const conversation = await this.startConversation(userId, request.from_user_id, request.post_id);
+          console.log('📞 ACCEPT DEBUG: Conversation creation result', conversation);
           if (conversation.success) {
             conversationId = conversation.data.conversation.id;
+            console.log('✅ ACCEPT DEBUG: New conversation created with ID', conversationId);
           }
         }
         
         // Send the original message from the request
         if (conversationId && request.message) {
-          await this.sendMessage(conversationId, request.from_user_id, request.message);
+          console.log('📨 ACCEPT DEBUG: Sending original message to conversation', {
+            conversationId,
+            senderId: request.from_user_id,
+            messageContent: request.message.substring(0, 50)
+          });
+          const sentMessage = await this.sendMessage(conversationId, request.from_user_id, request.message);
+          console.log('✅ ACCEPT DEBUG: Original message sent successfully', sentMessage.success);
         }
         
         // If user provided a response message, send it too
