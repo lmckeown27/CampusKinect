@@ -127,15 +127,10 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     if (!newMessage.trim() || !currentUser || !chatUser) return;
 
     try {
-      console.log('📤 SEND MESSAGE ATTEMPT');
-      console.log('📤 Current conversation state:', conversation);
-      console.log('📤 Message to send:', newMessage.trim());
-      console.log('📤 Current user:', currentUser);
-      console.log('📤 Chat user:', chatUser);
+      // Attempting to send message
       
       if (conversation) {
-        console.log('✅ Using existing conversation');
-        console.log('✅ Conversation object:', JSON.stringify(conversation, null, 2));
+        // Using existing conversation
         
         // Existing conversation - send message normally
         const optimisticMessage: Message = {
@@ -151,9 +146,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
         setNewMessage('');
 
         // Send to backend using API service directly
-        console.log('💬 Sending message to conversation:', conversation);
-        console.log('📝 Message content:', newMessage.trim());
-        console.log('🔢 Conversation ID:', conversation.id, 'Type:', typeof conversation.id);
         
         const sentMessage = await apiService.sendMessage(conversation.id, newMessage.trim());
         
@@ -172,9 +164,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       }
       
     } catch (error: any) {
-      console.error('Failed to send message:', error);
-      console.error('Error details:', error.message);
-      
       // Remove optimistic message on error if it was a regular message
       if (conversation) {
         setChatMessages(prev => prev.filter(msg => !msg.id.startsWith('temp_')));
@@ -183,14 +172,24 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       // Handle specific error cases with user-friendly messages
       if (error.response?.status === 409) {
         // 409 means there's already a pending message request
-        alert('You already have a pending message request with this user. Please wait for them to respond or check your sent requests in the messages tab.');
+        // Try to get the specific error message from the backend
+        const backendMessage = error.response?.data?.error?.message || 
+                              error.response?.data?.message ||
+                              'You already have a pending message request with this user. Please wait for them to respond.';
+        
+        alert(`${backendMessage}\n\nYou can check your sent requests in the messages tab.`);
         router.push('/messages');
-      } else if (error.message?.includes('already sent') || error.message?.includes('already exists')) {
+      } else if (error.message?.includes('already sent') || 
+                 error.message?.includes('already exists') || 
+                 error.message?.includes('already have a pending')) {
         alert('You already have a pending message request with this user. Check the messages tab to see your sent requests.');
         router.push('/messages');
       } else {
         // Show generic error for other cases
-        const errorMessage = error.message || 'Failed to send message. Please try again.';
+        const errorMessage = error.response?.data?.error?.message || 
+                            error.response?.data?.message || 
+                            error.message || 
+                            'Failed to send message. Please try again.';
         alert(`Error: ${errorMessage}`);
       }
     }
