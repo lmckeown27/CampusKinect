@@ -145,13 +145,18 @@ class MessageService {
    */
   async getConversationMessages(conversationId, userId, page = 1, limit = 50) {
     try {
+      console.log('🔍 DEBUG: getConversationMessages called with:', { conversationId, userId, page, limit });
+      
       // Check if user is part of this conversation
       const convCheck = await dbQuery(`
         SELECT id FROM conversations 
         WHERE id = $1 AND (user1_id = $2 OR user2_id = $2)
       `, [conversationId, userId]);
 
+      console.log('🔍 DEBUG: Conversation access check result:', convCheck.rows);
+
       if (convCheck.rows.length === 0) {
+        console.log('❌ DEBUG: Access denied to conversation');
         throw new Error('Access denied to this conversation');
       }
 
