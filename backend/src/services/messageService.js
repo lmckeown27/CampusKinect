@@ -89,6 +89,14 @@ class MessageService {
 
       // Format conversations
       const conversations = result.rows.map(conv => {
+        console.log('🔍 RAW BACKEND DATA:', {
+          conversationId: conv.conversation_id,
+          otherUserId: conv.other_user_id,
+          firstName: conv.first_name,
+          lastName: conv.last_name,
+          requestingUserId: userId
+        });
+        
         const formatted = {
           id: conv.conversation_id,
           postId: conv.post_id,
@@ -201,6 +209,13 @@ class MessageService {
         AND sender_id != $2 
         AND is_read = false
       `, [conversationId, userId]);
+
+      console.log('🔍 DEBUG: Messages query result:', {
+        rowCount: result.rows.length,
+        totalCount: total,
+        conversationId,
+        userId
+      });
 
       // Format messages
       const messages = result.rows.map(msg => ({
