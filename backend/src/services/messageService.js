@@ -6,14 +6,15 @@ class MessageService {
    * Get user's conversations with pagination and caching
    */
   async getUserConversations(userId, page = 1, limit = 20) {
-    const cacheKey = generateCacheKey(`conversations:${userId}:${page}:${limit}`);
+    // TEMPORARILY DISABLE CACHING - causes user data bleeding
+    // const cacheKey = generateCacheKey(`conversations:${userId}:${page}:${limit}`);
     
     try {
-      // Try to get from cache first
-      const cached = await redisGet(cacheKey);
-      if (cached) {
-        return JSON.parse(cached);
-      }
+      // Skip cache for now to prevent user data contamination
+      // const cached = await redisGet(cacheKey);
+      // if (cached) {
+      //   return JSON.parse(cached);
+      // }
 
       const offset = (page - 1) * limit;
 
@@ -137,8 +138,8 @@ class MessageService {
         }
       };
 
-      // Cache the result
-      await redisSet(cacheKey, JSON.stringify(response), CACHE_TTL.MEDIUM);
+      // TEMPORARILY DISABLE CACHING - causes user data bleeding
+      // await redisSet(cacheKey, JSON.stringify(response), CACHE_TTL.MEDIUM);
       
       return response;
 
