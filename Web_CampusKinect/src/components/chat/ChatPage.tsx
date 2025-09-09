@@ -319,6 +319,19 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           <div className="space-y-3">
             {chatMessages.map((message, index) => {
               const isCurrentUser = message.senderId === currentUser.id;
+              // Debug logging for message alignment
+              if (index < 3) {
+                console.log('🔍 Message alignment debug:', {
+                  messageId: message.id,
+                  content: message.content.substring(0, 20),
+                  messageSenderId: message.senderId,
+                  messageSenderIdType: typeof message.senderId,
+                  currentUserId: currentUser.id,
+                  currentUserIdType: typeof currentUser.id,
+                  isCurrentUser,
+                  comparison: `${message.senderId} === ${currentUser.id}`
+                });
+              }
               const showTime = index === 0 || 
                 Math.abs(new Date(message.createdAt).getTime() - new Date(chatMessages[index - 1].createdAt).getTime()) > 300000; // 5 minutes
               
