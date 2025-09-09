@@ -402,12 +402,61 @@ class MessageService {
 
       // Check if a message request already exists from this user to the target user
       const existingRequest = await dbQuery(`
-        SELECT id FROM message_requests 
-        WHERE from_user_id = $1 AND to_user_id = $2 AND status = 'pending'
-      `, [fromUserId, toUserId]);
+        SELECT id, status FROM message_requests 
+        WHERE from_user_id = $1 AND to_user_id = $2 AND post_id IS NOT DISTINCT FROM $3
+      `, [fromUserId, toUserId, postId]);
 
       if (existingRequest.rows.length > 0) {
-        throw new Error('Message request already sent');
+        const status = existingRequest.rows[0].status;
+        const requestId = existingRequest.rows[0].id;
+        
+        if (status === 'pending') {
+          throw new Error('Message request already sent');
+        } else if (status === 'accepted') {
+          throw new Error('Message request was already accepted. You should have an existing conversation.');
+        } else if (status === 'rejected' || status === 'ignored') {
+          // Update the existing request instead of creating a new one
+          const result = await dbQuery(`
+            UPDATE message_requests 
+            SET message = $1, status = 'pending', created_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $2
+            RETURNING id, created_at
+          `, [content, requestId]);
+          
+          const messageRequest = result.rows[0];
+
+          // Get sender info
+          const senderResult = await dbQuery(`
+            SELECT username, first_name, last_name, display_name, profile_picture
+            FROM users 
+            WHERE id = $1
+          `, [fromUserId]);
+
+          const sender = senderResult.rows[0];
+
+          return {
+            success: true,
+            message: 'Message request updated and sent successfully',
+            data: {
+              id: messageRequest.id,
+              fromUserId,
+              toUserId,
+              content,
+              postId,
+              status: 'pending',
+              createdAt: messageRequest.created_at,
+              sender: {
+                id: fromUserId,
+                username: sender.username,
+                firstName: sender.first_name,
+                lastName: sender.last_name,
+                displayName: sender.display_name,
+                profilePicture: sender.profile_picture
+              },
+              targetUser: targetUser.rows[0]
+            }
+          };
+        }
       }
 
       // Check if target user exists and is active
