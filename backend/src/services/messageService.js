@@ -223,6 +223,8 @@ class MessageService {
       const messages = result.rows.map(msg => ({
         id: msg.id,
         content: msg.content,
+        senderId: msg.sender_id, // Add direct senderId property for frontend alignment logic
+        conversationId: conversationId,
         messageType: msg.message_type,
         mediaUrl: msg.media_url,
         isRead: msg.is_read,
