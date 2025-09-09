@@ -136,7 +136,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
         const optimisticMessage: Message = {
           id: `temp_${Date.now()}`,
           conversationId: conversation.id,
-          senderId: currentUser.id,
+          senderId: currentUser.id.toString(), // Convert to string to match backend and alignment logic
           content: newMessage.trim(),
           createdAt: new Date().toISOString(),
           isRead: true // Mark sent messages as read immediately
