@@ -124,7 +124,9 @@ router.post('/requests', [
     console.error('❌ Error code:', error.code);
     console.error('❌ Full error:', error);
     
-    const statusCode = error.message.includes('already exists') || error.message.includes('already sent') ? 409 : 500;
+    const statusCode = error.message.includes('already exists') || 
+                      error.message.includes('already sent') || 
+                      error.message.includes('already have a pending') ? 409 : 500;
     
     console.log('❌ Sending status code:', statusCode);
     
