@@ -219,6 +219,7 @@ class MessageService {
       });
 
       // Format messages
+      console.log('🔍 DEBUG: Formatting messages, first few rows:', result.rows.slice(0, 2));
       const messages = result.rows.map(msg => ({
         id: msg.id,
         content: msg.content,
@@ -236,8 +237,10 @@ class MessageService {
         },
         isOwn: msg.sender_id === userId
       }));
+      
+      console.log('🔍 DEBUG: Formatted messages count:', messages.length);
 
-      return {
+      const response = {
         success: true,
         data: {
           messages: messages.reverse(), // Reverse to show oldest first
@@ -249,6 +252,14 @@ class MessageService {
           }
         }
       };
+      
+      console.log('🔍 DEBUG: Final response structure:', {
+        success: response.success,
+        messagesCount: response.data.messages.length,
+        paginationTotal: response.data.pagination.total
+      });
+      
+      return response;
 
     } catch (error) {
       console.error('Get messages error:', error);
