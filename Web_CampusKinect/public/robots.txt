@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Allow: /auth/register
+Allow: /auth/login
+Allow: /privacy
+Allow: /terms
+Disallow: /auth/verify
+Disallow: /auth/resend-code
+Disallow: /home
+Disallow: /create-post
+Disallow: /messages
+Disallow: /profile
+Disallow: /settings
+Disallow: /chat/
+Disallow: /user/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://campuskinect.net/sitemap.xml
+
+# Crawl-delay for better server performance
+Crawl-delay: 1 
