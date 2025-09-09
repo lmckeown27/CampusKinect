@@ -321,10 +321,10 @@ class MessageService {
 
 
 
-      // Create message
+      // Create message (mark sent messages as read automatically)
       const result = await dbQuery(`
-        INSERT INTO messages (conversation_id, sender_id, content, message_type, media_url)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO messages (conversation_id, sender_id, content, message_type, media_url, is_read)
+        VALUES ($1, $2, $3, $4, $5, true)
         RETURNING id, content, message_type, media_url, is_read, created_at
       `, [conversationId, senderId, content, messageType, mediaUrl]);
 

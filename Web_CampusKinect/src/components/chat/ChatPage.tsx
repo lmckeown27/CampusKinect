@@ -139,7 +139,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           senderId: currentUser.id,
           content: newMessage.trim(),
           createdAt: new Date().toISOString(),
-          isRead: false
+          isRead: true // Mark sent messages as read immediately
         };
 
         setChatMessages(prev => [...prev, optimisticMessage]);
