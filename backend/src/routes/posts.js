@@ -38,6 +38,15 @@ router.get('/organized', [
       postType
     } = req.query;
 
+    // Get user's university ID for filtering (if authenticated)
+    let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
+    if (req.user && req.user.id) {
+      const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
+      if (userResult.rows.length > 0) {
+        userUniversityId = userResult.rows[0].university_id;
+      }
+    }
+
     // Handle tags parameter (support both 'tags' and 'tags[]' formats)
     let tags = req.query.tags || req.query['tags[]'];
     if (tags && typeof tags === 'string') {
@@ -104,7 +113,7 @@ router.get('/organized', [
       WHERE p.is_active = true AND p.university_id = $1
     `;
 
-    const queryParams = [UNIVERSITY_CONFIG.primaryUniversityId];
+    const queryParams = [userUniversityId];
     let paramCount = 1;
 
     // Add post type filter - New system: Primary tag is the main category
@@ -491,6 +500,15 @@ router.get('/tabbed', [
   try {
     const { mainTab = 'combined', subTab = 'all', offers, requests, limit = 20, offset = 0 } = req.query;
     
+    // Get user's university ID for filtering (if authenticated)
+    let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
+    if (req.user && req.user.id) {
+      const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
+      if (userResult.rows.length > 0) {
+        userUniversityId = userResult.rows[0].university_id;
+      }
+    }
+    
     // Define main tab structure with simplified sub-tabs
     const MAIN_TABS = {
       'goods-services': {
@@ -632,7 +650,7 @@ router.get('/tabbed', [
       WHERE p.is_active = true AND p.university_id = $1
     `;
     
-    const queryParams = [UNIVERSITY_CONFIG.primaryUniversityId];
+    const queryParams = [userUniversityId];
     let paramCount = 1;
     
     // Apply main tab filtering
@@ -1105,6 +1123,15 @@ router.get('/', [
       userId
     } = req.query;
 
+    // Get user's university ID for filtering (if authenticated)
+    let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
+    if (req.user && req.user.id) {
+      const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
+      if (userResult.rows.length > 0) {
+        userUniversityId = userResult.rows[0].university_id;
+      }
+    }
+
     // Handle tags parameter (support both 'tags' and 'tags[]' formats)
     let tags = req.query.tags || req.query['tags[]'];
     if (tags && typeof tags === 'string') {
@@ -1163,10 +1190,10 @@ router.get('/', [
     const queryParams = [];
     let paramCount = 0;
 
-    // For now, filter to Cal Poly SLO only (multi-university ready)
+    // Filter to user's university (defaults to Cal Poly if not authenticated)
     paramCount++;
     baseQuery += ` AND p.university_id = $${paramCount}`;
-    queryParams.push(UNIVERSITY_CONFIG.primaryUniversityId);
+    queryParams.push(userUniversityId);
 
     // Add post type filter - New system: Primary tag is the main category
     if (postTypes && postTypes.length > 0) {
