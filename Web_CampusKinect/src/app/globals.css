@@ -28,8 +28,32 @@
   overscroll-behavior-x: contain;
 }
 
-/* Mobile-specific improvements */
+/* Mobile horizontal scroll specific styles */
 @media (max-width: 1024px) {
+  /* Ensure horizontal scroll container works */
+  .mobile-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    height: calc(100vh - 120px);
+  }
+  
+  .mobile-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobile-section {
+    flex: 0 0 100vw;
+    min-width: 100vw;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  
   /* Prevent zoom on input focus */
   input[type="text"], 
   input[type="email"], 
@@ -44,6 +68,24 @@
   a {
     min-height: 44px;
     min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Prevent text selection during scroll */
+  .mobile-scroll-container * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Allow text selection in content areas */
+  .mobile-scroll-container p,
+  .mobile-scroll-container h1,
+  .mobile-scroll-container h2,
+  .mobile-scroll-container h3,
+  .mobile-scroll-container h4 {
+    user-select: text;
+    -webkit-user-select: text;
   }
 }
 

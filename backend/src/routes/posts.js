@@ -16,8 +16,9 @@ const router = express.Router();
 
 // @route   GET /api/v1/posts/organized
 // @desc    Get organized feed with recurring posts prioritized
-// @access  Public
+// @access  Private (requires authentication for university isolation)
 router.get('/organized', [
+  auth, // Require authentication for university isolation
   queryValidator('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   queryValidator('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   queryValidator('postType').optional().isIn(['goods', 'services', 'events', 'housing', 'tutoring', 'all']).withMessage('Invalid post type'),
@@ -37,6 +38,17 @@ router.get('/organized', [
       limit = 20,
       postType
     } = req.query;
+
+    // Get user's university ID for proper filtering
+    const userId = req.user.id;
+    const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [userId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'User not found' }
+      });
+    }
+    const userUniversityId = userResult.rows[0].university_id;
 
     // Handle tags parameter (support both 'tags' and 'tags[]' formats)
     let tags = req.query.tags || req.query['tags[]'];
@@ -104,7 +116,7 @@ router.get('/organized', [
       WHERE p.is_active = true AND p.university_id = $1
     `;
 
-    const queryParams = [UNIVERSITY_CONFIG.primaryUniversityId];
+    const queryParams = [userUniversityId];
     let paramCount = 1;
 
     // Add post type filter - New system: Primary tag is the main category
@@ -480,6 +492,7 @@ router.get('/personalized-feed', [
 
 // GET /api/v1/posts/tabbed - Get posts organized by main tabs with slide-out sub-tab selection
 router.get('/tabbed', [
+  auth, // Require authentication for university isolation
   queryValidator('mainTab').optional().isIn(['goods-services', 'events', 'combined']).withMessage('Invalid main tab category'),
   queryValidator('subTab').optional().isString().withMessage('Sub tab must be a string'),
   queryValidator('offers').optional().isBoolean().withMessage('Offers filter must be boolean'),
@@ -490,6 +503,17 @@ router.get('/tabbed', [
 ], async (req, res) => {
   try {
     const { mainTab = 'combined', subTab = 'all', offers, requests, limit = 20, offset = 0 } = req.query;
+    
+    // Get user's university ID for proper filtering
+    const userId = req.user.id;
+    const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [userId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'User not found' }
+      });
+    }
+    const userUniversityId = userResult.rows[0].university_id;
     
     // Define main tab structure with simplified sub-tabs
     const MAIN_TABS = {
@@ -632,7 +656,7 @@ router.get('/tabbed', [
       WHERE p.is_active = true AND p.university_id = $1
     `;
     
-    const queryParams = [UNIVERSITY_CONFIG.primaryUniversityId];
+    const queryParams = [userUniversityId];
     let paramCount = 1;
     
     // Apply main tab filtering
@@ -2688,7 +2712,16 @@ router.post('/create', [
     } = req.body;
 
     const userId = req.user.id;
-    const universityId = UNIVERSITY_CONFIG.primaryUniversityId;
+    
+    // Get user's university ID to assign post to correct university
+    const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [userId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'User not found' }
+      });
+    }
+    const universityId = userResult.rows[0].university_id;
 
     // Validate tag selections based on post type
     let validationErrors = [];

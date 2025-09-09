@@ -19,6 +19,13 @@ class PersonalizedFeedService {
    */
   async getPersonalizedFeed(userId, limit = 20, offset = 0, mainTab = 'combined', subTab = 'all', options = {}) {
     try {
+      // Get user's university ID for proper filtering
+      const userResult = await query('SELECT university_id FROM users WHERE id = $1', [userId]);
+      if (userResult.rows.length === 0) {
+        throw new Error('User not found');
+      }
+      const userUniversityId = userResult.rows[0].university_id;
+
       // Get user's bookmarked posts to exclude them
       const bookmarkedPosts = await this.getUserBookmarkedPosts(userId);
       const bookmarkedPostIds = bookmarkedPosts.map(post => post.post_id);
@@ -34,7 +41,8 @@ class PersonalizedFeedService {
         mainTab, 
         subTab, 
         bookmarkedPostIds,
-        options
+        options,
+        userUniversityId
       );
 
       // Execute the query
@@ -53,7 +61,8 @@ class PersonalizedFeedService {
         mainTab, 
         subTab, 
         bookmarkedPostIds,
-        options
+        options,
+        userUniversityId
       );
 
       return {
@@ -80,7 +89,7 @@ class PersonalizedFeedService {
   /**
    * Build personalized query with bookmark filtering and fresh content prioritization
    */
-  buildPersonalizedQuery(userId, limit, offset, mainTab, subTab, bookmarkedPostIds, options) {
+  buildPersonalizedQuery(userId, limit, offset, mainTab, subTab, bookmarkedPostIds, options, userUniversityId) {
     let baseQuery = `
       SELECT 
         p.id, p.user_id, p.university_id, p.title, p.description, p.post_type, 
@@ -105,7 +114,7 @@ class PersonalizedFeedService {
       WHERE p.is_active = true AND p.university_id = $2
     `;
 
-    const params = [userId, 11]; // 11 is Cal Poly SLO university ID
+    const params = [userId, userUniversityId]; // Use actual user's university ID
     let paramCount = 2;
 
     // Exclude bookmarked posts
@@ -171,14 +180,14 @@ class PersonalizedFeedService {
   /**
    * Get total count for personalized feed pagination
    */
-  async getPersonalizedFeedCount(userId, mainTab, subTab, bookmarkedPostIds, options) {
+  async getPersonalizedFeedCount(userId, mainTab, subTab, bookmarkedPostIds, options, userUniversityId) {
     let countQuery = `
       SELECT COUNT(DISTINCT p.id) as total
       FROM posts p
       WHERE p.is_active = true AND p.university_id = $1
     `;
 
-    const params = [11]; // Cal Poly SLO university ID
+    const params = [userUniversityId]; // Use actual user's university ID
     let paramCount = 1;
 
     // Exclude bookmarked posts
