@@ -1396,7 +1396,7 @@ router.get('/:id', [
         un.city as university_city,
         un.state as university_state,
         ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
-        ARRAY_AGG(DISTINCT pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
+        ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
       FROM posts p
       JOIN users u ON p.user_id = u.id
       JOIN universities un ON p.university_id = un.id
@@ -2841,7 +2841,7 @@ router.post('/create', [
           u.profile_picture,
           un.name as university_name,
           ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
-          ARRAY_AGG(DISTINCT pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
+          ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
         FROM posts p
         JOIN users u ON p.user_id = u.id
         JOIN universities un ON p.university_id = un.id
