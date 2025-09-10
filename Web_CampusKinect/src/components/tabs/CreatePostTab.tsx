@@ -55,6 +55,7 @@ const CreatePostTab: React.FC = () => {
 
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [imagePreview, setImagePreview] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
@@ -204,81 +205,147 @@ const CreatePostTab: React.FC = () => {
     setFormData(prev => ({ ...prev, tags: [] }));
   };
 
-  const showImageDevelopmentPopup = () => {
-    alert('Images is currently in development, hold on tight :)');
+  // File validation helper
+  const validateImageFile = (file: File): string | null => {
+    // Check file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      return 'Image must be less than 10MB';
+    }
+    
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      return 'Please select a valid image file';
+    }
+    
+    return null;
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Convert data URL to File for upload (same as profile picture logic)
+  const dataURLtoFile = (dataURL: string, filename: string): File => {
+    const arr = dataURL.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files);
-      
-      // Store original files immediately for upload
-      setImageFiles(prev => [...prev, ...fileArray].slice(0, 4));
-      
-      const processedImages: Promise<string>[] = fileArray.map(file => {
-        return new Promise((resolve) => {
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    
+    // Validate each file before processing
+    for (const file of fileArray) {
+      const validationError = validateImageFile(file);
+      if (validationError) {
+        alert(validationError);
+        return;
+      }
+    }
+
+    // Check total image limit (4 images max)
+    const totalImages = imageFiles.length + fileArray.length;
+    if (totalImages > 4) {
+      alert(`You can only upload up to 4 images. You're trying to add ${fileArray.length} more to your existing ${imageFiles.length} images.`);
+      return;
+    }
+
+    setIsUploadingImages(true);
+    try {
+      const processedImages: Promise<{ preview: string; file: File }>[] = fileArray.map(file => {
+        return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              if (!ctx) {
-                resolve(URL.createObjectURL(file));
-                return;
-              }
-
-              // Define consistent sizing based on aspect ratio
-              const aspectRatio = img.width / img.height;
-              let targetWidth: number;
-              let targetHeight: number;
-
-              if (aspectRatio > 1.5) {
-                // Wide image - landscape
-                targetWidth = 400;
-                targetHeight = Math.round(400 / aspectRatio);
-                // Ensure minimum height
-                if (targetHeight < 200) {
-                  targetHeight = 200;
-                  targetWidth = Math.round(200 * aspectRatio);
+              try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                  // Fallback: use original file if canvas fails
+                  resolve({ preview: URL.createObjectURL(file), file });
+                  return;
                 }
-              } else if (aspectRatio < 0.7) {
-                // Tall image - portrait
-                targetHeight = 400;
-                targetWidth = Math.round(400 * aspectRatio);
-                // Ensure minimum width
-                if (targetWidth < 200) {
-                  targetWidth = 200;
-                  targetHeight = Math.round(200 / aspectRatio);
+
+                // Define consistent sizing based on aspect ratio
+                const aspectRatio = img.width / img.height;
+                let targetWidth: number;
+                let targetHeight: number;
+
+                if (aspectRatio > 1.5) {
+                  // Wide image - landscape
+                  targetWidth = 400;
+                  targetHeight = Math.round(400 / aspectRatio);
+                  // Ensure minimum height
+                  if (targetHeight < 200) {
+                    targetHeight = 200;
+                    targetWidth = Math.round(200 * aspectRatio);
+                  }
+                } else if (aspectRatio < 0.7) {
+                  // Tall image - portrait
+                  targetHeight = 400;
+                  targetWidth = Math.round(400 * aspectRatio);
+                  // Ensure minimum width
+                  if (targetWidth < 200) {
+                    targetWidth = 200;
+                    targetHeight = Math.round(200 / aspectRatio);
+                  }
+                } else {
+                  // Square-ish image
+                  targetWidth = 350;
+                  targetHeight = 350;
                 }
-              } else {
-                // Square-ish image
-                targetWidth = 350;
-                targetHeight = 350;
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                // Draw the resized image
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                // Convert to data URL with good quality
+                const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.85);
+                
+                // Convert back to File for backend upload
+                const processedFile = dataURLtoFile(resizedImageUrl, `post-image-${Date.now()}.jpg`);
+                
+                resolve({ preview: resizedImageUrl, file: processedFile });
+              } catch (error) {
+                console.error('Image processing error:', error);
+                // Fallback: use original file
+                resolve({ preview: URL.createObjectURL(file), file });
               }
-
-              canvas.width = targetWidth;
-              canvas.height = targetHeight;
-
-              // Draw the resized image
-              ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-              // Convert to data URL with good quality (for preview only)
-              const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.85);
-              resolve(resizedImageUrl);
             };
+            img.onerror = () => reject(new Error('Failed to load image'));
             img.src = e.target?.result as string;
           };
+          reader.onerror = () => reject(new Error('Failed to read file'));
           reader.readAsDataURL(file);
         });
       });
 
-      // Process all images and update preview array
-      Promise.all(processedImages).then(processedUrls => {
-        setImagePreview(prev => [...prev, ...processedUrls].slice(0, 4));
-      });
+      // Process all images
+      const processedResults = await Promise.all(processedImages);
+      
+      // Update preview and file arrays
+      setImagePreview(prev => [...prev, ...processedResults.map(r => r.preview)].slice(0, 4));
+      setImageFiles(prev => [...prev, ...processedResults.map(r => r.file)].slice(0, 4));
+      
+      console.log(`Successfully processed ${processedResults.length} images for upload`);
+      
+    } catch (error) {
+      console.error('Error processing images:', error);
+      alert('Failed to process one or more images. Please try again with different images.');
+    } finally {
+      setIsUploadingImages(false);
     }
+    
+    // Clear the input so the same file can be selected again if needed
+    event.target.value = '';
   };
 
   const removeImage = (index: number) => {
@@ -550,15 +617,21 @@ const CreatePostTab: React.FC = () => {
                       onChange={handleImageUpload}
                       className="hidden"
                       id="image-upload-top"
-                      disabled
                     />
-                    <button 
-                      type="button"
-                      onClick={showImageDevelopmentPopup}
-                      className="p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                    <label 
+                      htmlFor="image-upload-top"
+                      className={`relative p-3 hover:bg-gray-50 rounded-lg transition-colors inline-block ${
+                        isUploadingImages ? 'cursor-wait opacity-50' : 'cursor-pointer'
+                      }`}
+                      title={isUploadingImages ? "Processing images..." : `Upload images (${imageFiles.length}/4)`}
                     >
                       <ImageIcon className="h-6 w-6 text-gray-600" />
-                    </button>
+                      {isUploadingImages && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-[#708d81]"></div>
+                        </div>
+                      )}
+                    </label>
                   </div>
                 </div>
               </div>
@@ -580,6 +653,9 @@ const CreatePostTab: React.FC = () => {
             {/* Image Preview Inside Description Box */}
             {imagePreview.length > 0 && (
               <div className="mt-3 px-4 pb-3">
+                <p className="text-xs text-gray-500 mb-2">
+                  {imagePreview.length} image{imagePreview.length === 1 ? '' : 's'} selected (max 4)
+                </p>
                 <div className="flex flex-wrap gap-3">
                   {imagePreview.map((preview, index) => (
                     <div key={index} className="relative rounded-lg overflow-hidden bg-gray-100 shadow-sm">
