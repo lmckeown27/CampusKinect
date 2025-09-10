@@ -151,6 +151,11 @@ router.post('/register', [
       const validation = await educationalDomainService.validateEducationalDomain(value);
       
       if (!validation.isValid) {
+        // Check if it's an unsupported university (.edu domain not in our list)
+        if (validation.isUnsupportedUniversity) {
+          throw new Error(`Your university (${validation.domain}) is not currently supported on CampusKinect. Please email campuskinect01@gmail.com to request that your university be added to the platform.`);
+        }
+        
         throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
       }
       
@@ -542,6 +547,11 @@ router.post('/login', [
       if (value.includes('@')) {
         const validation = await educationalDomainService.validateEducationalDomain(value);
         if (!validation.isValid) {
+          // Check if it's an unsupported university (.edu domain not in our list)
+          if (validation.isUnsupportedUniversity) {
+            throw new Error(`Your university (${validation.domain}) is not currently supported on CampusKinect. Please email campuskinect01@gmail.com to request that your university be added to the platform.`);
+          }
+          
           throw new Error('Email must be from a valid educational institution in a supported country (US, UK, Canada, Australia, Germany, France)');
         }
       }

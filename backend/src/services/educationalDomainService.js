@@ -48,6 +48,18 @@ class EducationalDomainService {
         };
       }
 
+      // Special case: Check if it's a .edu domain but not in our supported list
+      if (domain.endsWith('.edu')) {
+        return {
+          isValid: false,
+          isUnsupportedUniversity: true,
+          country: 'US',
+          domain: domain,
+          confidence: 'high',
+          source: 'unsupported_university'
+        };
+      }
+
       // Second: Try external validation APIs
       const apiValidation = await this.checkExternalAPIs(domain);
       if (apiValidation.isValid) {
