@@ -24,6 +24,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
 import { apiService } from '../../services/api';
+import TagSelector from './TagSelector';
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
@@ -59,11 +60,47 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     title: post.title,
     description: post.description,
     location: post.location || '',
-    images: post.images || []
+    images: post.images || [],
+    postType: post.postType,
+    tags: post.tags || []
   });
   const [newImages, setNewImages] = useState<File[]>([]);
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // State for offer/request tags (same as CreatePost and EditPostModal)
+  const [offerRequestTags, setOfferRequestTags] = useState({
+    goods: [] as string[],
+    services: [] as string[],
+    housing: [] as string[],
+    events: [] as string[],
+  });
+
+  // Post type options (same as CreatePost and EditPostModal)
+  const postTypes = [
+    { value: 'goods', label: 'Good', icon: '🛍️' },
+    { value: 'services', label: 'Service', icon: '🔧' },
+    { value: 'housing', label: 'Housing', icon: '🏠' },
+    { value: 'events', label: 'Event', icon: '📅' },
+  ];
+
+  // Available tags (same as CreatePost)
+  const allAvailableTags = [
+    // Goods
+    'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+    'Automotive', 'Pets', 'Pet Supplies',
+    // Services
+    'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',
+    'Tech Support', 'Web Development', 'Writing & Editing', 'Translation', 'Towing',
+    // Events
+    'Sports Events', 'Study Groups', 'Rush', 'Pickup Basketball', 'Philanthropy', 'Cultural Events',
+    'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
+    'Hiking Trips', 'Volunteer Events', 'Career Fairs',
+    // Housing
+    'Leasing', 'Subleasing', 'Roommate Search', 'Storage Space',
+    // General
+    'Other'
+  ];
 
   // Determine if this post belongs to the current user and get current profile picture
   const isCurrentUserPost = currentUser && post.userId === currentUser.id;
@@ -102,7 +139,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       title: post.title,
       description: post.description,
       location: post.location || '',
-      images: post.images || []
+      images: post.images || [],
+      postType: post.postType,
+      tags: post.tags || []
     });
     setNewImages([]);
     setImagesToDelete([]);
@@ -114,7 +153,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       title: post.title,
       description: post.description,
       location: post.location || '',
-      images: post.images || []
+      images: post.images || [],
+      postType: post.postType,
+      tags: post.tags || []
     });
     setNewImages([]);
     setImagesToDelete([]);
@@ -784,7 +825,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                           `${typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://campuskinect.net'}${imageUrl}` : 
                           imageUrl
                         }
-                        alt={`Current image ${index + 1}`}
+                        alt={imageUrl}
                         className="w-20 h-20 object-cover rounded-lg border"
                       />
                       <button
@@ -824,7 +865,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                         {previewUrl ? (
                           <img
                             src={previewUrl}
-                            alt={`New image ${index + 1}`}
+                            alt={file.name}
                             className="w-20 h-20 object-cover rounded-lg border"
                           />
                         ) : (
