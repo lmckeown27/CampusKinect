@@ -312,7 +312,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
   const handleRemoveExistingImage = (imageUrl: string) => {
     // Extract filename from URL for deletion (backend expects just the filename)
-    const filename = imageUrl.replace('/uploads/', '');
+    // Handle both URL formats: "/uploads/filename.jpg" and "filename.jpg"
+    const filename = imageUrl.startsWith('/uploads/') 
+      ? imageUrl.replace('/uploads/', '') 
+      : imageUrl;
 
     setImagesToDelete(prev => [...prev, filename]);
     setEditFormData(prev => ({
@@ -802,22 +805,43 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
               <div className="mb-3">
                 <p className="text-sm text-gray-600 mb-2">New images to add:</p>
                 <div className="flex flex-wrap gap-2">
-                  {newImages.map((file, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={`New image ${index + 1}`}
-                        className="w-20 h-20 object-cover rounded-lg border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveNewImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
+                  {newImages.map((file, index) => {
+                    // Create data URL for preview (CSP-compliant)
+                    const reader = new FileReader();
+                    const [previewUrl, setPreviewUrl] = useState<string>('');
+                    
+                    React.useEffect(() => {
+                      reader.onload = (e) => {
+                        if (e.target?.result) {
+                          setPreviewUrl(e.target.result as string);
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }, [file]);
+
+                    return (
+                      <div key={index} className="relative">
+                        {previewUrl ? (
+                          <img
+                            src={previewUrl}
+                            alt={`New image ${index + 1}`}
+                            className="w-20 h-20 object-cover rounded-lg border"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 bg-gray-200 rounded-lg border flex items-center justify-center">
+                            <span className="text-gray-500 text-xs">Loading...</span>
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNewImage(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
