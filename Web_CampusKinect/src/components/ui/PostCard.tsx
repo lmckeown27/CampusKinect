@@ -87,6 +87,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
   // Dynamic text sizing and line clamping based on word count
   const getTextSizeClass = (text: string) => {
+    if (!text || typeof text !== 'string') return 'text-base';
     const wordCount = text.trim().split(/\s+/).length;
     
     if (wordCount <= 40) {
@@ -106,6 +107,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
   // Dynamic line clamp based on word count
   const getLineClampClass = (text: string) => {
+    if (!text || typeof text !== 'string') return 'line-clamp-3';
     const wordCount = text.trim().split(/\s+/).length;
     
     if (wordCount <= 40) {
