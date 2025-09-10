@@ -16,7 +16,10 @@ import {
   MapPin,
   User,
   Trash2,
-  Edit2
+  Edit2,
+  X,
+  Upload,
+  Flag
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
@@ -49,6 +52,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   const [showOptions, setShowOptions] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+  
+  // Inline editing state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    title: post.title,
+    description: post.description,
+    location: post.location || '',
+    images: post.images || []
+  });
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Determine if this post belongs to the current user and get current profile picture
   const isCurrentUserPost = currentUser && post.userId === currentUser.id;
@@ -80,9 +95,61 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   const handleEdit = () => {
+    setIsEditing(true);
+    setShowOptions(false);
+    // Reset form data to current post values
+    setEditFormData({
+      title: post.title,
+      description: post.description,
+      location: post.location || '',
+      images: post.images || []
+    });
+    setNewImages([]);
+    setImagesToDelete([]);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditFormData({
+      title: post.title,
+      description: post.description,
+      location: post.location || '',
+      images: post.images || []
+    });
+    setNewImages([]);
+    setImagesToDelete([]);
+  };
+
+  const handleSaveEdit = async () => {
+    // Here you would call the API to save the edit
+    // For now, we'll just call the original onEdit if provided
     if (onEdit) {
-      onEdit(post.id, post);
+      onEdit(post.id, {
+        ...post,
+        title: editFormData.title,
+        description: editFormData.description,
+        location: editFormData.location,
+        // TODO: Handle image updates
+      });
     }
+    setIsEditing(false);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setNewImages(prev => [...prev, ...files]);
+  };
+
+  const handleRemoveNewImage = (index: number) => {
+    setNewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveExistingImage = (imageUrl: string) => {
+    setImagesToDelete(prev => [...prev, imageUrl]);
+    setEditFormData(prev => ({
+      ...prev,
+      images: prev.images.filter(img => img !== imageUrl)
+    }));
   };
 
   // Fixed text sizing - no dynamic sizing based on content length
@@ -490,6 +557,142 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
         />
       )}
 
+      {/* Inline Edit Form */}
+      {isEditing && (
+        <div className="mt-4 p-4 bg-gray-50 border-2 border-[#708d81] rounded-lg">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Post</h3>
+          
+          {/* Title Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <input
+              type="text"
+              value={editFormData.title}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+            />
+          </div>
+
+          {/* Description Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea
+              value={editFormData.description}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-vertical"
+            />
+          </div>
+
+          {/* Location Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+            <input
+              type="text"
+              value={editFormData.location}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, location: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+              placeholder="Optional location"
+            />
+          </div>
+
+          {/* Image Management */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
+            
+            {/* Existing Images */}
+            {editFormData.images.length > 0 && (
+              <div className="mb-3">
+                <p className="text-sm text-gray-600 mb-2">Current images:</p>
+                <div className="flex flex-wrap gap-2">
+                  {editFormData.images.map((imageUrl, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={imageUrl.startsWith("/uploads/") ? 
+                          `${typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://campuskinect.net'}${imageUrl}` : 
+                          imageUrl
+                        }
+                        alt={`Current image ${index + 1}`}
+                        className="w-20 h-20 object-cover rounded-lg border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveExistingImage(imageUrl)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* New Images */}
+            {newImages.length > 0 && (
+              <div className="mb-3">
+                <p className="text-sm text-gray-600 mb-2">New images to add:</p>
+                <div className="flex flex-wrap gap-2">
+                  {newImages.map((file, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`New image ${index + 1}`}
+                        className="w-20 h-20 object-cover rounded-lg border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveNewImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Upload New Images */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+              >
+                <Upload size={16} />
+                Add Images
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveEdit}
+              className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268]"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );
