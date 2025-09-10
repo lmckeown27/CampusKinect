@@ -1192,7 +1192,7 @@ select.border-olive-green:focus {
 .post-image {
   width: 100%;
   height: auto;
-  max-height: 180px;
+  max-height: 300px;
   object-fit: scale-down;
   display: block;
   transition: transform 0.2s ease;
@@ -1200,7 +1200,7 @@ select.border-olive-green:focus {
 
 /* Adjust max-height for multiple images */
 .post-image-container.multi-image .post-image {
-  max-height: 120px;
+  max-height: 200px;
 }
 
 .post-image:hover {
@@ -1235,21 +1235,21 @@ select.border-olive-green:focus {
 
 /* Responsive sizing for different screen sizes */
 @media (max-width: 640px) {
-  .post-image-container.single-image {
-    max-height: 150px;
+  .post-image {
+    max-height: 250px;
   }
   
-  .post-image-container.multi-image {
-    max-height: 100px;
+  .post-image-container.multi-image .post-image {
+    max-height: 150px;
   }
 }
 
 @media (min-width: 1024px) {
-  .post-image-container.single-image {
-    max-height: 200px;
+  .post-image {
+    max-height: 350px;
   }
   
-  .post-image-container.multi-image {
-    max-height: 140px;
+  .post-image-container.multi-image .post-image {
+    max-height: 220px;
   }
 }
