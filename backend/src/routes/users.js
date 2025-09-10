@@ -227,12 +227,25 @@ router.put('/profile', [
 router.put('/profile-picture', [
   auth,
   requireVerification,
-  body('profilePictureUrl').isURL().withMessage('Profile picture must be a valid URL'),
+  body('profilePictureUrl')
+    .custom((value) => {
+      // Allow full URLs or relative paths starting with /uploads/
+      if (value.startsWith('/uploads/') || value.match(/^https?:\/\//)) {
+        return true;
+      }
+      throw new Error('Profile picture must be a valid URL or upload path');
+    }),
   validate
 ], async (req, res) => {
   try {
     const userId = req.user.id;
     const { profilePictureUrl } = req.body;
+    
+    console.log('🖼️ Profile picture update request:', {
+      userId,
+      profilePictureUrl,
+      requestBody: req.body
+    });
 
     // Update user's profile picture
     const result = await query(`
