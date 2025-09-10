@@ -24,7 +24,6 @@ import {
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
 import { apiService } from '../../services/api';
-import TagSelector from './TagSelector';
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
@@ -84,23 +83,31 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     { value: 'events', label: 'Event', icon: '📅' },
   ];
 
-  // Available tags (same as CreatePost)
-  const allAvailableTags = [
-    // Goods
-    'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
-    'Automotive', 'Pets', 'Pet Supplies',
-    // Services
-    'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',
-    'Tech Support', 'Web Development', 'Writing & Editing', 'Translation', 'Towing',
-    // Events
-    'Sports Events', 'Study Groups', 'Rush', 'Pickup Basketball', 'Philanthropy', 'Cultural Events',
-    'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
-    'Hiking Trips', 'Volunteer Events', 'Career Fairs',
-    // Housing
-    'Leasing', 'Subleasing', 'Roommate Search', 'Storage Space',
-    // General
-    'Other'
-  ];
+  // Category-specific tags (same as CreatePost)
+  const subTags = {
+    goods: [
+      'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+      'Automotive', 'Pets', 'Pet Supplies', 'Other'
+    ],
+    services: [
+      'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',
+      'Tech Support', 'Web Development', 'Writing & Editing', 'Translation', 'Towing',
+      'Other'
+    ],
+    events: [
+      'Sports Events', 'Study Groups', 'Rush', 'Pickup Basketball', 'Philanthropy', 'Cultural Events',
+      'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights',
+      'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other'
+    ],
+    housing: [
+      'Leasing', 'Subleasing', 'Roommate Search', 'Storage Space', 'Other'
+    ]
+  };
+
+  // Function to get sub-tags for a specific post type (same as CreatePost)
+  const getSubTagsForPostType = (postType: string): string[] => {
+    return subTags[postType as keyof typeof subTags] || [];
+  };
 
   // Determine if this post belongs to the current user and get current profile picture
   const isCurrentUserPost = currentUser && post.userId === currentUser.id;
@@ -429,9 +436,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   const handleClearAllTags = () => {
+    // Clear only tags for the current post type (category-specific)
+    const tagsToRemove = getSubTagsForPostType(editFormData.postType || '');
     setEditFormData(prev => ({
       ...prev,
-      tags: []
+      tags: (prev.tags || []).filter(tag => !tagsToRemove.includes(tag))
     }));
   };
 
@@ -853,7 +862,27 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                 <button
                   key={type.value}
                   type="button"
-                  onClick={() => setEditFormData(prev => ({ ...prev, postType: type.value as any }))}
+                  onClick={() => {
+                    // Clear offer/request tags when changing post type
+                    setOfferRequestTags({
+                      goods: [],
+                      services: [],
+                      housing: [],
+                      events: [],
+                    });
+                    
+                    // Clear category-specific tags when changing post type
+                    const currentCategoryTags = getSubTagsForPostType(editFormData.postType || '');
+                    const filteredTags = (editFormData.tags || []).filter(tag => 
+                      !currentCategoryTags.includes(tag) && tag !== 'offer' && tag !== 'request'
+                    );
+                    
+                    setEditFormData(prev => ({ 
+                      ...prev, 
+                      postType: type.value as any,
+                      tags: filteredTags
+                    }));
+                  }}
                   className={`flex flex-col items-center justify-center w-20 h-20 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                     editFormData.postType === type.value
                       ? 'text-white'
@@ -979,15 +1008,75 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             />
           </div>
 
-          {/* Tags */}
+          {/* Category-Specific Tags */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-            <TagSelector
-              selectedTags={editFormData.tags || []}
-              onTagSelect={handleTagSelect}
-              onClearAll={handleClearAllTags}
-              availableTags={allAvailableTags}
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {editFormData.postType ? editFormData.postType.charAt(0).toUpperCase() + editFormData.postType.slice(1) : 'Select Category'} Tags
+            </label>
+            
+            {/* Category tags buttons */}
+            <div className="border border-gray-300 rounded-lg bg-white">
+              <div className="p-4">
+                <div className="flex flex-wrap gap-2">
+                  {getSubTagsForPostType(editFormData.postType || '').map((subTag) => (
+                    <button
+                      key={subTag}
+                      type="button"
+                      onClick={() => handleTagSelect(subTag)}
+                      className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                        (editFormData.tags || []).includes(subTag)
+                          ? 'text-white shadow-sm'
+                          : 'text-[#708d81] hover:text-[#5a7268]'
+                      }`}
+                      style={{
+                        backgroundColor: (editFormData.tags || []).includes(subTag) ? '#708d81' : '#f0f2f0',
+                        color: (editFormData.tags || []).includes(subTag) ? 'white' : '#708d81',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!(editFormData.tags || []).includes(subTag)) {
+                          e.currentTarget.style.backgroundColor = '#e8ebe8';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = (editFormData.tags || []).includes(subTag) ? '#708d81' : '#f0f2f0';
+                      }}
+                    >
+                      {subTag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer with clear action */}
+              {(editFormData.tags || []).filter(tag => getSubTagsForPostType(editFormData.postType || '').includes(tag)).length > 0 && (
+                <div className="p-3 border-t border-gray-200 bg-gray-50">
+                  <div className="flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Clear tags for this specific post type only
+                        const tagsToRemove = getSubTagsForPostType(editFormData.postType || '');
+                        setEditFormData(prev => ({
+                          ...prev,
+                          tags: (prev.tags || []).filter(tag => !tagsToRemove.includes(tag))
+                        }));
+                      }}
+                      className="px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer"
+                      style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#e8ebe8';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f0f2f0';
+                      }}
+                    >
+                      Clear All ({(editFormData.tags || []).filter(tag => getSubTagsForPostType(editFormData.postType || '').includes(tag)).length})
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Image Management */}
