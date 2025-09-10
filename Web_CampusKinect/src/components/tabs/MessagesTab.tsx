@@ -395,7 +395,15 @@ const MessagesTab: React.FC = () => {
                 <button
                   onClick={() => setShowNewMessageModal(true)}
                   className="px-4 py-2 text-[#708d81] border border-[#708d81] rounded-md transition-colors cursor-pointer"
-                  style={{ backgroundColor: '#f8f9f6', cursor: 'pointer' }}
+                  style={{ 
+                    backgroundColor: '#f8f9f6', 
+                    cursor: 'pointer',
+                    color: '#708d81',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f8f9f6'}
                 >

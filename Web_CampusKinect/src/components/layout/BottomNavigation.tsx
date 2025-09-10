@@ -52,6 +52,13 @@ const BottomNavigation: React.FC = () => {
                   ? 'text-[#708d81] bg-[#f0f2f0]'
                   : 'text-[#708d81] hover:text-[#5a7268] hover:bg-[#f8f9f6]'
               }`}
+              style={{ 
+                color: '#708d81',
+                WebkitTapHighlightColor: 'transparent',
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
             >
               <div className="relative">
                 <Icon size={20} />
