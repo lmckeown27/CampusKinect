@@ -746,15 +746,15 @@ const CreatePostTab: React.FC = () => {
             </p>
           </div>
 
-              {/* Bottom Section: Category Tags, Duration, and Post Button */}
+              {/* Bottom Section: Category Tags and Post Button */}
               <div className="flex items-start justify-between mt-8">
-                {/* Category Tags Section - Bottom Left */}
-                <div className="w-80 p-4 bg-gray-50 rounded-lg border">
+                {/* Category Tags Section - Expanded Width */}
+                <div className="flex-1 p-4 bg-gray-50 rounded-lg border mr-6">
 
                   
                   {/* Category Box for selected Post Type */}
                   {formData.postType && (
-                    <div className="bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" style={{ width: '300px', height: '400px' }}>
+                    <div className="bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" style={{ width: '100%', height: '200px' }}>
                       {/* Header */}
                       <div className="flex items-center justify-center p-3 border-b border-gray-200">
                         <h3 className="text-base font-semibold text-[#708d81]">
@@ -762,8 +762,8 @@ const CreatePostTab: React.FC = () => {
                         </h3>
                       </div>
 
-                      {/* Scrollable category buttons for this post type */}
-                      <div className="category-buttons-container p-4">
+                      {/* Horizontal scrollable category buttons for this post type */}
+                      <div className="category-buttons-container-horizontal p-4">
                         {getSubTagsForPostType(formData.postType).map((subTag) => (
                           <button
                             key={subTag}
