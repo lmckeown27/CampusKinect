@@ -23,6 +23,22 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
     tags: []
   });
 
+  // State for offer/request tags (same as CreatePost)
+  const [offerRequestTags, setOfferRequestTags] = useState({
+    goods: [] as string[],
+    services: [] as string[],
+    housing: [] as string[],
+    events: [] as string[],
+  });
+
+  // Post type options (same as CreatePost)
+  const postTypes = [
+    { value: 'goods', label: 'Good', icon: '🛍️' },
+    { value: 'services', label: 'Service', icon: '🔧' },
+    { value: 'housing', label: 'Housing', icon: '🏠' },
+    { value: 'events', label: 'Event', icon: '📅' },
+  ];
+
   // Define all available tags from different categories (same as Create Post)
   const allAvailableTags = [
     // Goods
@@ -52,6 +68,28 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
         location: post.location || '',
         tags: post.tags || []
       });
+
+      // Initialize offer/request tags based on existing post tags
+      const newOfferRequestTags = {
+        goods: [] as string[],
+        services: [] as string[],
+        housing: [] as string[],
+        events: [] as string[],
+      };
+
+      if (post.tags) {
+        const postType = post.postType as keyof typeof newOfferRequestTags;
+        if (postType in newOfferRequestTags) {
+          if (post.tags.includes('offer')) {
+            newOfferRequestTags[postType].push('offer');
+          }
+          if (post.tags.includes('request')) {
+            newOfferRequestTags[postType].push('request');
+          }
+        }
+      }
+
+      setOfferRequestTags(newOfferRequestTags);
     }
   }, [post]);
 
@@ -65,6 +103,42 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }));
+
+    // Clear offer/request tags when changing post type
+    if (field === 'postType') {
+      setOfferRequestTags({
+        goods: [],
+        services: [],
+        housing: [],
+        events: [],
+      });
+    }
+  };
+
+  const handleOfferRequestTagSelect = (tag: string) => {
+    const postType = formData.postType as keyof typeof offerRequestTags;
+    if (!postType || postType === 'events') return; // Events don't have offer/request
+
+    setOfferRequestTags(prev => ({
+      ...prev,
+      [postType]: prev[postType].includes(tag)
+        ? prev[postType].filter(t => t !== tag) // Deselect if already selected
+        : [tag] // Select only this tag (deselect the other)
+    }));
+
+    // Update formData tags to include/exclude offer/request
+    const currentTags = formData.tags || [];
+    const otherOfferRequestTag = tag === 'offer' ? 'request' : 'offer';
+    
+    let updatedTags = currentTags.filter(t => t !== 'offer' && t !== 'request');
+    if (!offerRequestTags[postType].includes(tag)) {
+      updatedTags.push(tag);
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      tags: updatedTags
     }));
   };
 
@@ -89,6 +163,108 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Post Type Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Post Type *
+            </label>
+            <div className="flex gap-4">
+              {postTypes.map((type) => (
+                <button
+                  key={type.value}
+                  type="button"
+                  onClick={() => handleInputChange('postType', type.value)}
+                  className={`flex flex-col items-center justify-center w-20 h-20 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    formData.postType === type.value
+                      ? 'text-white'
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: formData.postType === type.value ? '#708d81' : '#f0f2f0',
+                    color: formData.postType === type.value ? 'white' : '#708d81',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (formData.postType !== type.value) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (formData.postType !== type.value) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  <span className="text-2xl mb-1">{type.icon}</span>
+                  <span className="text-xs">{type.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Offer/Request Tags (for goods, services, housing only) */}
+          {formData.postType && formData.postType !== 'events' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Type of {formData.postType?.charAt(0).toUpperCase() + formData.postType?.slice(1)}
+              </label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleOfferRequestTagSelect('offer')}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('offer')
+                      ? 'text-white'
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('offer') ? '#708d81' : '#f0f2f0',
+                    color: offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('offer') ? 'white' : '#708d81',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('offer')) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('offer')) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  Offer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOfferRequestTagSelect('request')}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('request')
+                      ? 'text-white'
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('request') ? '#708d81' : '#f0f2f0',
+                    color: offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('request') ? 'white' : '#708d81',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('request')) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.includes('request')) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  Request
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
