@@ -307,15 +307,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
               <img
                 src={currentProfilePicture || post.poster?.profilePicture || ''}
                 alt={post.poster?.firstName || 'User'}
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer"
-                style={{ border: '2px solid #708d81', cursor: 'pointer' }}
+                className="w-6 h-6 rounded-full object-cover flex-shrink-0 cursor-pointer"
+                style={{ border: '1px solid #708d81', cursor: 'pointer' }}
               />
             ) : (
               <div 
-                className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
-                style={{ border: '2px solid #708d81', cursor: 'pointer' }}
+                className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
+                style={{ border: '1px solid #708d81', cursor: 'pointer' }}
               >
-                <User size={20} className="text-white" />
+                <User size={12} className="text-white" />
               </div>
             )}
 
