@@ -66,6 +66,16 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   const [newImages, setNewImages] = useState<File[]>([]);
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const objectUrlsRef = useRef<string[]>([]);
+
+  // Cleanup object URLs when component unmounts
+  React.useEffect(() => {
+    return () => {
+      objectUrlsRef.current.forEach(url => {
+        if (url) URL.revokeObjectURL(url);
+      });
+    };
+  }, []);
 
   // State for offer/request tags (same as CreatePost and EditPostModal)
   const [offerRequestTags, setOfferRequestTags] = useState({
@@ -382,7 +392,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   const handleRemoveNewImage = (index: number) => {
+    // Clean up object URL for the removed image
+    const objectUrl = objectUrlsRef.current[index];
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+    }
+    
+    // Remove from arrays
     setNewImages(prev => prev.filter((_, i) => i !== index));
+    objectUrlsRef.current = objectUrlsRef.current.filter((_, i) => i !== index);
   };
 
   const handleRemoveExistingImage = (imageUrl: string) => {
@@ -1122,32 +1140,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                 <p className="text-sm text-gray-600 mb-2">New images to add:</p>
                 <div className="flex flex-wrap gap-2">
                   {newImages.map((file, index) => {
-                    // Create data URL for preview (CSP-compliant)
-                    const reader = new FileReader();
-                    const [previewUrl, setPreviewUrl] = useState<string>('');
-                    
-                    React.useEffect(() => {
-                      reader.onload = (e) => {
-                        if (e.target?.result) {
-                          setPreviewUrl(e.target.result as string);
-                        }
-                      };
-                      reader.readAsDataURL(file);
-                    }, [file]);
+                    // Create and track object URL for cleanup
+                    let objectUrl = objectUrlsRef.current[index];
+                    if (!objectUrl) {
+                      objectUrl = URL.createObjectURL(file);
+                      objectUrlsRef.current[index] = objectUrl;
+                    }
 
                     return (
-                      <div key={index} className="relative">
-                        {previewUrl ? (
-                          <img
-                            src={previewUrl}
-                            alt={file.name}
-                            className="w-20 h-20 object-cover rounded-lg border"
-                          />
-                        ) : (
-                          <div className="w-20 h-20 bg-gray-200 rounded-lg border flex items-center justify-center">
-                            <span className="text-gray-500 text-xs">Loading...</span>
-                          </div>
-                        )}
+                      <div key={`${file.name}-${index}`} className="relative">
+                        <img
+                          src={objectUrl}
+                          alt={file.name}
+                          className="w-20 h-20 object-cover rounded-lg border"
+                        />
                         <button
                           type="button"
                           onClick={() => handleRemoveNewImage(index)}
