@@ -220,6 +220,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
       console.log('💾 Saving post update:', updateData);
       console.log('📄 Original post data:', post);
+      console.log('🏷️ Tags being sent:', updateData.tags);
+      console.log('📝 PostType being sent:', updateData.postType);
+      console.log('🎯 EditFormData state:', editFormData);
 
       // Call API to update the post
       const updatedPost = await apiService.updatePost(post.id, updateData);
