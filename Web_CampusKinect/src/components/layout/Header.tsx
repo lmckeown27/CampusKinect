@@ -101,7 +101,7 @@ const Header: React.FC = () => {
                 backgroundColor: showProfileDropdown ? 'transparent' : '#708d81',
                 transition: 'background-color 300ms ease-in-out',
                 cursor: 'pointer',
-                color: 'white',
+                color: showProfileDropdown ? '#708d81' : 'white', // Dark green when open, white when closed
                 WebkitTapHighlightColor: 'transparent',
                 WebkitTouchCallout: 'none',
                 WebkitUserSelect: 'none',
