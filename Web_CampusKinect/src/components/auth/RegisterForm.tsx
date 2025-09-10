@@ -291,6 +291,10 @@ const RegisterForm: React.FC = () => {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     required
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    autoComplete="email"
+                    spellCheck="false"
                     className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder="yourname@yourcollege.edu"
                   />
@@ -319,6 +323,10 @@ const RegisterForm: React.FC = () => {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    autoComplete="new-password"
+                    spellCheck="false"
                     className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
@@ -378,6 +386,10 @@ const RegisterForm: React.FC = () => {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     required
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    autoComplete="new-password"
+                    spellCheck="false"
                     className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />

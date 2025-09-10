@@ -114,6 +114,10 @@ const LoginForm: React.FC = () => {
                     value={formData.usernameOrEmail}
                     onChange={(e) => handleInputChange('usernameOrEmail', e.target.value)}
                     required
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    autoComplete="username"
+                    spellCheck="false"
                     className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
@@ -138,6 +142,10 @@ const LoginForm: React.FC = () => {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    autoComplete="current-password"
+                    spellCheck="false"
                     className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
