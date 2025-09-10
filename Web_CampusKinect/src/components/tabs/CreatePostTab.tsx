@@ -762,8 +762,8 @@ const CreatePostTab: React.FC = () => {
                         </h3>
                       </div>
 
-                      {/* Horizontal scrollable category buttons for this post type */}
-                      <div className="category-buttons-container-horizontal p-4">
+                      {/* Vertical scrollable category buttons for this post type */}
+                      <div className="category-buttons-container p-4">
                         {getSubTagsForPostType(formData.postType).map((subTag) => (
                           <button
                             key={subTag}
