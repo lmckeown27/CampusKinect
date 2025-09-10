@@ -205,17 +205,75 @@ const ProfileTab: React.FC = () => {
 
   const handleSaveProfile = async () => {
     try {
+      // Validate required fields
+      if (!editForm.firstName?.trim() || !editForm.lastName?.trim()) {
+        alert('First name and last name are required.');
+        return;
+      }
+
+      // Validate field lengths (matching backend validation)
+      if (editForm.firstName.length > 100) {
+        alert('First name cannot exceed 100 characters.');
+        return;
+      }
+
+      if (editForm.lastName.length > 100) {
+        alert('Last name cannot exceed 100 characters.');
+        return;
+      }
+
+      if (editForm.major && editForm.major.length > 200) {
+        alert('Major cannot exceed 200 characters.');
+        return;
+      }
+
+      if (editForm.hometown && editForm.hometown.length > 200) {
+        alert('Hometown cannot exceed 200 characters.');
+        return;
+      }
+
+      if (editForm.biography && editForm.biography.length > 500) {
+        alert('Bio cannot exceed 500 characters.');
+        return;
+      }
+
+      if (editForm.year < 1 || editForm.year > 10) {
+        alert('Year must be between 1 and 10.');
+        return;
+      }
+
+      // Validate names contain only letters (matching backend validation)
+      const nameRegex = /^[A-Za-z]+$/;
+      if (!nameRegex.test(editForm.firstName.trim())) {
+        alert('First name must contain only letters.');
+        return;
+      }
+
+      if (!nameRegex.test(editForm.lastName.trim())) {
+        alert('Last name must contain only letters.');
+        return;
+      }
+
       // Transform editForm to match API expectations
       const updateData = {
-        firstName: editForm.firstName,
-        lastName: editForm.lastName,
-        year: editForm.year,
-        major: editForm.major,
-        hometown: editForm.hometown,
-        bio: editForm.biography // Map biography to bio
+        firstName: editForm.firstName.trim(),
+        lastName: editForm.lastName.trim(),
+        year: parseInt(editForm.year.toString()), // Ensure it's a number
+        major: editForm.major?.trim() || undefined,
+        hometown: editForm.hometown?.trim() || undefined,
+        bio: editForm.biography?.trim() || undefined // Map biography to bio
       };
+
+      // Remove undefined values to avoid sending empty strings
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key as keyof typeof updateData] === undefined || updateData[key as keyof typeof updateData] === '') {
+          delete updateData[key as keyof typeof updateData];
+        }
+      });
+
+      console.log('Sending profile update:', updateData);
       
-      // Update profile via API
+      // Update profile via API (using the working authStore pattern)
       await updateUser(updateData);
       
       // Update local state immediately
@@ -223,12 +281,12 @@ const ProfileTab: React.FC = () => {
         if (!prevUser) return null;
         return {
           ...prevUser,
-          firstName: editForm.firstName,
-          lastName: editForm.lastName,
-          major: editForm.major,
-          year: editForm.year,
-          hometown: editForm.hometown,
-          bio: editForm.biography
+          firstName: updateData.firstName,
+          lastName: updateData.lastName,
+          major: updateData.major || prevUser.major,
+          year: updateData.year,
+          hometown: updateData.hometown || prevUser.hometown,
+          bio: updateData.bio || prevUser.bio
         };
       });
       
@@ -239,9 +297,15 @@ const ProfileTab: React.FC = () => {
       setIsEditing(false);
       
       alert('Profile updated successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update profile:', error);
-      alert('Failed to update profile. Please try again.');
+      
+      // Provide more specific error messages
+      if (error.message) {
+        alert(`Failed to update profile: ${error.message}`);
+      } else {
+        alert('Failed to update profile. Please try again.');
+      }
     }
   };
 
