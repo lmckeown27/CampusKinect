@@ -135,6 +135,94 @@ const seedDatabase = async () => {
         longitude: -122.3321,
         timezone: 'America/Los_Angeles',
         cluster: 'West Coast'
+      },
+      {
+        name: 'University of Georgia',
+        domain: 'uga.edu',
+        city: 'Athens',
+        state: 'GA',
+        country: 'USA',
+        latitude: 33.9480,
+        longitude: -83.3773,
+        timezone: 'America/New_York',
+        cluster: 'Southeast'
+      },
+      {
+        name: 'Vanderbilt University',
+        domain: 'vanderbilt.edu',
+        city: 'Nashville',
+        state: 'TN',
+        country: 'USA',
+        latitude: 36.1447,
+        longitude: -86.8027,
+        timezone: 'America/Chicago',
+        cluster: 'Southeast'
+      },
+      {
+        name: 'University of Alabama',
+        domain: 'ua.edu',
+        city: 'Tuscaloosa',
+        state: 'AL',
+        country: 'USA',
+        latitude: 33.2098,
+        longitude: -87.5692,
+        timezone: 'America/Chicago',
+        cluster: 'Southeast'
+      },
+      {
+        name: 'University of Michigan',
+        domain: 'umich.edu',
+        city: 'Ann Arbor',
+        state: 'MI',
+        country: 'USA',
+        latitude: 42.2780,
+        longitude: -83.7382,
+        timezone: 'America/Detroit',
+        cluster: 'Midwest'
+      },
+      {
+        name: 'Yale University',
+        domain: 'yale.edu',
+        city: 'New Haven',
+        state: 'CT',
+        country: 'USA',
+        latitude: 41.3163,
+        longitude: -72.9223,
+        timezone: 'America/New_York',
+        cluster: 'Northeast'
+      },
+      {
+        name: 'Florida State University',
+        domain: 'fsu.edu',
+        city: 'Tallahassee',
+        state: 'FL',
+        country: 'USA',
+        latitude: 30.4518,
+        longitude: -84.2807,
+        timezone: 'America/New_York',
+        cluster: 'Southeast'
+      },
+      {
+        name: 'University of Oklahoma',
+        domain: 'ou.edu',
+        city: 'Norman',
+        state: 'OK',
+        country: 'USA',
+        latitude: 35.2056,
+        longitude: -97.4457,
+        timezone: 'America/Chicago',
+        cluster: 'Southwest'
+      },
+      {
+        name: 'University of Virginia',
+        domain: 'virginia.edu',
+        city: 'Charlottesville',
+        state: 'VA',
+        country: 'USA',
+        latitude: 38.0336,
+        longitude: -78.5080,
+        timezone: 'America/New_York',
+        cluster: 'Southeast'
       }
     ];
 
