@@ -25,9 +25,9 @@ router.post('/image', [
 
     // Process and save image
     const imageData = await processAndSaveImage(req.file.buffer, req.file.originalname, {
-      width: 800,
-      height: 600,
-      quality: 80,
+      width: 600,
+      height: 450,
+      quality: 85,
       format: 'jpeg'
     });
 
@@ -79,9 +79,9 @@ router.post('/images', [
     for (const file of req.files) {
       try {
         const imageData = await processAndSaveImage(file.buffer, file.originalname, {
-          width: 800,
-          height: 600,
-          quality: 80,
+          width: 600,
+          height: 450,
+          quality: 85,
           format: 'jpeg'
         });
 
@@ -168,9 +168,9 @@ router.post('/post-images/:postId', [
       const file = req.files[i];
       try {
         const imageData = await processAndSaveImage(file.buffer, file.originalname, {
-          width: 800,
-          height: 600,
-          quality: 80,
+          width: 600,
+          height: 450,
+          quality: 85,
           format: 'jpeg'
         });
 

@@ -29,19 +29,23 @@ const upload = multer({
 const processAndSaveImage = async (buffer, filename, options = {}) => {
   try {
     const {
-      width = 800,
-      height = 600,
-      quality = 80,
+      width = 600,
+      height = 450,
+      quality = 85,
       format = 'jpeg'
     } = options;
 
-    // Process image with sharp
+    // Process image with sharp - maintain aspect ratio, fit within bounds
     let processedImage = sharp(buffer)
       .resize(width, height, {
-        fit: 'inside',
-        withoutEnlargement: true
+        fit: 'inside',           // Maintains aspect ratio, fits within dimensions
+        withoutEnlargement: true // Don't enlarge small images
       })
-      .jpeg({ quality });
+      .jpeg({ 
+        quality,
+        progressive: true,       // Better loading for web
+        mozjpeg: true           // Better compression
+      });
 
     if (format === 'png') {
       processedImage = processedImage.png();
