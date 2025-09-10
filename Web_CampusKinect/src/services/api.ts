@@ -703,6 +703,18 @@ class ApiService {
     
     throw new Error(response.data.message || 'Image upload failed');
   }
+
+  // Update user profile picture
+  public async updateProfilePicture(profilePictureUrl: string): Promise<User> {
+    const response: AxiosResponse<ApiResponse<{ user: User }>> = 
+      await this.api.put('/users/profile-picture', { profilePictureUrl });
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data.user;
+    }
+    
+    throw new Error(response.data.message || 'Failed to update profile picture');
+  }
 }
 
 export const apiService = new ApiService();

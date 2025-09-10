@@ -221,6 +221,68 @@ router.put('/profile', [
   }
 });
 
+// @route   PUT /api/v1/users/profile-picture
+// @desc    Update current user's profile picture
+// @access  Private
+router.put('/profile-picture', [
+  auth,
+  requireVerification,
+  body('profilePictureUrl').isURL().withMessage('Profile picture must be a valid URL'),
+  validate
+], async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { profilePictureUrl } = req.body;
+
+    // Update user's profile picture
+    const result = await query(`
+      UPDATE users 
+      SET profile_picture = $1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $2
+      RETURNING id, first_name, last_name, display_name, profile_picture, updated_at
+    `, [profilePictureUrl, userId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'User not found'
+        }
+      });
+    }
+
+    const updatedUser = result.rows[0];
+
+    // Clear cache
+    const cacheKey = generateCacheKey('user', userId);
+    await redisDel(cacheKey);
+
+    res.json({
+      success: true,
+      message: 'Profile picture updated successfully',
+      data: {
+        user: {
+          id: updatedUser.id,
+          firstName: updatedUser.first_name,
+          lastName: updatedUser.last_name,
+          displayName: updatedUser.display_name,
+          profilePicture: updatedUser.profile_picture,
+          updatedAt: updatedUser.updated_at
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Update profile picture error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to update profile picture. Please try again.'
+      }
+    });
+  }
+});
+
 // @route   GET /api/v1/users/:id
 // @desc    Get public user profile by ID
 // @access  Public

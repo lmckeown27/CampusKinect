@@ -278,25 +278,77 @@ const ProfileTab: React.FC = () => {
           // Convert canvas to data URL
           const croppedImageUrl = canvas.toDataURL('image/png');
           
-          setUser((prevUser: User | null) => {
-            if (!prevUser) return null;
-            return {
-              ...prevUser,
-              profileImage: croppedImageUrl
-            };
-          });
-          
-          // Update auth store immediately for real-time updates across platform
-          if (authUser) {
-            updateUser({ profileImage: croppedImageUrl });
-          }
-          
-          // Save image to sessionStorage
-          const currentProfile = JSON.parse(sessionStorage.getItem('campusConnect_profile') || '{}');
-          sessionStorage.setItem('campusConnect_profile', JSON.stringify({
-            ...currentProfile,
-            profileImage: croppedImageUrl
-          }));
+          // Convert data URL to File for upload
+          const dataURLtoFile = (dataURL: string, filename: string): File => {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png';
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+              u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, { type: mime });
+          };
+
+          // Upload to backend and update database
+          (async () => {
+            try {
+              const file = dataURLtoFile(croppedImageUrl, 'profile-picture.png');
+              
+              // Upload image to backend
+              const uploadResult = await apiService.uploadImage(file);
+              const profilePictureUrl = uploadResult.url;
+              
+              // Update user profile picture in database
+              const updatedUser = await apiService.updateProfilePicture(profilePictureUrl);
+              
+              // Update local state with backend URL
+              setUser((prevUser: User | null) => {
+                if (!prevUser) return null;
+                return {
+                  ...prevUser,
+                  profileImage: croppedImageUrl, // Keep data URL for immediate display
+                  profilePicture: profilePictureUrl // Store backend URL
+                };
+              });
+              
+              // Update auth store with both URLs
+              if (authUser) {
+                updateUser({ 
+                  profileImage: croppedImageUrl,
+                  profilePicture: profilePictureUrl 
+                });
+              }
+              
+              // Save both URLs to sessionStorage
+              const currentProfile = JSON.parse(sessionStorage.getItem('campusConnect_profile') || '{}');
+              sessionStorage.setItem('campusConnect_profile', JSON.stringify({
+                ...currentProfile,
+                profileImage: croppedImageUrl,
+                profilePicture: profilePictureUrl
+              }));
+              
+              console.log('Profile picture uploaded successfully:', profilePictureUrl);
+              
+            } catch (error) {
+              console.error('Failed to upload profile picture:', error);
+              alert('Failed to upload profile picture. Please try again.');
+              
+              // Fallback: still update local display
+              setUser((prevUser: User | null) => {
+                if (!prevUser) return null;
+                return {
+                  ...prevUser,
+                  profileImage: croppedImageUrl
+                };
+              });
+              
+              if (authUser) {
+                updateUser({ profileImage: croppedImageUrl });
+              }
+            }
+          })();
         };
         img.src = imageUrl;
       };
