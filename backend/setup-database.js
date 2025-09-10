@@ -55,6 +55,7 @@ const createTables = async () => {
         year INTEGER,
         major VARCHAR(200),
         hometown VARCHAR(200),
+        bio TEXT,
         university_id INTEGER NOT NULL,
         is_verified BOOLEAN DEFAULT FALSE,
         is_active BOOLEAN DEFAULT TRUE,

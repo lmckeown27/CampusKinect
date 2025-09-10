@@ -35,6 +35,7 @@ const createTables = async () => {
         year INTEGER,
         major VARCHAR(200),
         hometown VARCHAR(200),
+        bio TEXT,
         university_id INTEGER NOT NULL,
         is_verified BOOLEAN DEFAULT FALSE,
         is_active BOOLEAN DEFAULT TRUE,
@@ -55,6 +56,17 @@ const createTables = async () => {
       console.log('✅ Verification code columns added to users table');
     } catch (error) {
       console.log('ℹ️ Verification code columns already exist or could not be added:', error.message);
+    }
+
+    // Add bio column to existing users table if it doesn't exist
+    try {
+      await pool.query(`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS bio TEXT
+      `);
+      console.log('✅ Bio column added to users table');
+    } catch (error) {
+      console.log('ℹ️ Bio column already exists or could not be added:', error.message);
     }
 
     // Universities table
