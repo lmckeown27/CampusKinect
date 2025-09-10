@@ -268,6 +268,12 @@ const CreatePostTab: React.FC = () => {
                 const ctx = canvas.getContext('2d');
                 if (!ctx) {
                   // Fallback: use original file if canvas fails
+                  console.log('⚠️ Canvas context failed, using original file:', {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    isFile: file instanceof File
+                  });
                   resolve({ preview: URL.createObjectURL(file), file });
                   return;
                 }
@@ -313,10 +319,23 @@ const CreatePostTab: React.FC = () => {
                 // Convert back to File for backend upload
                 const processedFile = dataURLtoFile(resizedImageUrl, `post-image-${Date.now()}.jpg`);
                 
+                console.log('📸 Processed image file:', {
+                  name: processedFile.name,
+                  size: processedFile.size,
+                  type: processedFile.type,
+                  isFile: processedFile instanceof File
+                });
+                
                 resolve({ preview: resizedImageUrl, file: processedFile });
               } catch (error) {
                 console.error('Image processing error:', error);
                 // Fallback: use original file
+                console.log('🔄 Using original file as fallback:', {
+                  name: file.name,
+                  size: file.size,
+                  type: file.type,
+                  isFile: file instanceof File
+                });
                 resolve({ preview: URL.createObjectURL(file), file });
               }
             };
@@ -407,7 +426,16 @@ const CreatePostTab: React.FC = () => {
         images: imageFiles, // Include the actual image files
       };
 
-      console.log('Sending post data:', postData);
+      console.log('🚀 Sending post data:', {
+        ...postData,
+        images: imageFiles.map((file, i) => ({
+          index: i,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          isFile: file instanceof File
+        }))
+      });
       await createPost(postData);
       
       // Reset form

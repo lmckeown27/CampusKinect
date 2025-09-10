@@ -266,27 +266,50 @@ class ApiService {
       // If we have image files, upload them first
       if (postData.images && postData.images.length > 0) {
         const imageFormData = new FormData();
-        postData.images.forEach((file) => {
+        
+        // Add detailed logging for debugging
+        console.log('🖼️ Preparing to upload images:', {
+          count: postData.images.length,
+          files: postData.images.map((file, i) => ({
+            index: i,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            isFile: file instanceof File
+          }))
+        });
+        
+        postData.images.forEach((file, index) => {
+          if (!(file instanceof File)) {
+            console.error(`❌ File at index ${index} is not a File object:`, file);
+            throw new Error(`Invalid file at position ${index + 1}. Please try uploading again.`);
+          }
           imageFormData.append('images', file);
         });
 
         try {
-          console.log('Uploading images:', postData.images.length, 'files');
-          console.log('FormData entries:');
-          for (let [key, value] of imageFormData.entries()) {
-            console.log(key, value);
-          }
+          console.log('📤 Uploading images to /upload/images endpoint...');
           
           const imageUploadResponse: AxiosResponse<ApiResponse<{ images: { url: string }[] }>> = 
-            await this.api.post('/upload/images', imageFormData);
+            await this.api.post('/upload/images', imageFormData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+          
+          console.log('✅ Image upload response:', imageUploadResponse.data);
           
           if (imageUploadResponse.data.success && imageUploadResponse.data.data?.images) {
             imageUrls = imageUploadResponse.data.data.images.map(img => img.url);
+            console.log('🎯 Extracted image URLs:', imageUrls);
+          } else {
+            throw new Error('Invalid response format from image upload');
           }
         } catch (imageError: any) {
-          console.error('Image upload failed:', imageError);
-          console.error('Error response:', imageError.response?.data);
-          console.error('Error status:', imageError.response?.status);
+          console.error('❌ Image upload failed:', imageError);
+          console.error('📋 Error response:', imageError.response?.data);
+          console.error('🔢 Error status:', imageError.response?.status);
+          console.error('📝 Error details:', imageError.response?.data?.error);
           throw new Error(`Failed to upload images. ${imageError.response?.data?.error?.message || 'Please try again.'}`);
         }
       }
