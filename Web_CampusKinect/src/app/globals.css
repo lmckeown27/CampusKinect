@@ -1182,13 +1182,13 @@ select.border-olive-green:focus {
 /* Single image container - wider aspect ratio */
 .post-image-container.single-image {
   aspect-ratio: 16 / 9;
-  max-height: 300px;
+  max-height: 180px;
 }
 
 /* Multiple images container - square aspect ratio */
 .post-image-container.multi-image {
   aspect-ratio: 1 / 1;
-  max-height: 200px;
+  max-height: 120px;
 }
 
 .post-image {
@@ -1232,20 +1232,20 @@ select.border-olive-green:focus {
 /* Responsive sizing for different screen sizes */
 @media (max-width: 640px) {
   .post-image-container.single-image {
-    max-height: 250px;
+    max-height: 150px;
   }
   
   .post-image-container.multi-image {
-    max-height: 150px;
+    max-height: 100px;
   }
 }
 
 @media (min-width: 1024px) {
   .post-image-container.single-image {
-    max-height: 350px;
+    max-height: 200px;
   }
   
   .post-image-container.multi-image {
-    max-height: 220px;
+    max-height: 140px;
   }
 }
