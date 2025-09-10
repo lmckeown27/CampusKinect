@@ -414,6 +414,7 @@ router.get('/:id/posts', [
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name,
         ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
+        ARRAY_AGG(DISTINCT pi.image_url ORDER BY pi.image_url) FILTER (WHERE pi.image_url IS NOT NULL) as images,
         COUNT(pi.id) as image_count
       FROM posts p
       JOIN users u ON p.user_id = u.id
@@ -464,6 +465,7 @@ router.get('/:id/posts', [
         name: post.university_name
       },
       tags: post.tags || [],
+      images: post.images || [],
       imageCount: post.image_count
     }));
 
