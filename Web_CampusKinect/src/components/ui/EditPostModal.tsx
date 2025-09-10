@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Camera, Image } from 'lucide-react';
 import { Post, CreatePostForm } from '../../types';
 import DurationSelector from './DurationSelector';
 import TagSelector from './TagSelector';
@@ -22,6 +22,12 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
     location: '',
     tags: []
   });
+
+  // Image handling state (same as CreatePost)
+  const [imagePreview, setImagePreview] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // State for offer/request tags (same as CreatePost)
   const [offerRequestTags, setOfferRequestTags] = useState({
@@ -95,7 +101,14 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(post.id, formData);
+    
+    // Include images in the form data
+    const submitData = {
+      ...formData,
+      images: imageFiles.length > 0 ? imageFiles : undefined
+    };
+    
+    onSave(post.id, submitData);
     onClose();
   };
 
@@ -140,6 +153,45 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
       ...prev,
       tags: updatedTags
     }));
+  };
+
+  // Image handling functions (same as CreatePost)
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    
+    // Check total image limit (4 images max)
+    const totalImages = imageFiles.length + fileArray.length;
+    if (totalImages > 4) {
+      alert(`You can only upload up to 4 images. You're trying to add ${fileArray.length} more to your existing ${imageFiles.length} images.`);
+      return;
+    }
+
+    fileArray.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        setImagePreview(prev => [...prev, imageUrl]);
+        setImageFiles(prev => [...prev, file]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Clear the input
+    if (event.target) {
+      event.target.value = '';
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImagePreview(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
   };
 
   if (!isOpen) return null;
@@ -341,6 +393,68 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
               onClearAll={() => handleInputChange('tags', [])}
               availableTags={allAvailableTags}
             />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Images (Optional)
+            </label>
+            
+            {/* Image Upload Area */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#708d81] transition-colors">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              
+              <div className="space-y-4">
+                <div className="flex justify-center">
+                  <Image 
+                    className="h-12 w-12 text-gray-400 cursor-pointer hover:text-[#708d81] transition-colors" 
+                    onClick={handleImageClick}
+                  />
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleImageClick}
+                    className="text-[#708d81] hover:text-[#5a7268] font-medium transition-colors"
+                  >
+                    Click to upload images
+                  </button>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Up to 4 images, 10MB each
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Image Preview */}
+            {imagePreview.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                {imagePreview.map((src, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={src}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
