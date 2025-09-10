@@ -30,17 +30,17 @@ const ProfileTab: React.FC = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
 
-  // Load saved active tab from localStorage on component mount
+  // Load saved active tab from sessionStorage on component mount
   useEffect(() => {
-    const savedActiveTab = localStorage.getItem('campusConnect_profileActiveTab');
+    const savedActiveTab = sessionStorage.getItem('campusConnect_profileActiveTab');
     if (savedActiveTab && ['posts', 'reposts', 'bookmarks'].includes(savedActiveTab)) {
       setActiveTab(savedActiveTab as 'posts' | 'reposts' | 'bookmarks');
     }
   }, []);
 
-  // Save active tab to localStorage whenever it changes
+  // Save active tab to sessionStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('campusConnect_profileActiveTab', activeTab);
+    sessionStorage.setItem('campusConnect_profileActiveTab', activeTab);
   }, [activeTab]);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -57,7 +57,7 @@ const ProfileTab: React.FC = () => {
   // Load saved profile data and sync with auth user
   useEffect(() => {
     if (authUser) {
-      const savedProfile = localStorage.getItem('campusConnect_profile');
+      const savedProfile = sessionStorage.getItem('campusConnect_profile');
       if (savedProfile) {
         try {
           const parsedProfile = JSON.parse(savedProfile);
@@ -231,8 +231,8 @@ const ProfileTab: React.FC = () => {
         };
       });
       
-      // Save to localStorage as backup
-      localStorage.setItem('campusConnect_profile', JSON.stringify(editForm));
+      // Save to sessionStorage as backup
+      sessionStorage.setItem('campusConnect_profile', JSON.stringify(editForm));
       
       // Exit edit mode
       setIsEditing(false);
@@ -291,9 +291,9 @@ const ProfileTab: React.FC = () => {
             updateUser({ profileImage: croppedImageUrl });
           }
           
-          // Save image to localStorage
-          const currentProfile = JSON.parse(localStorage.getItem('campusConnect_profile') || '{}');
-          localStorage.setItem('campusConnect_profile', JSON.stringify({
+          // Save image to sessionStorage
+          const currentProfile = JSON.parse(sessionStorage.getItem('campusConnect_profile') || '{}');
+          sessionStorage.setItem('campusConnect_profile', JSON.stringify({
             ...currentProfile,
             profileImage: croppedImageUrl
           }));
