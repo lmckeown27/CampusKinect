@@ -22,7 +22,8 @@ const getYearLabel = (year: number): string => {
 };
 
 const ProfileTab: React.FC = () => {
-  const { user: authUser, updateUser } = useAuthStore();
+  const authStore = useAuthStore();
+  const { user: authUser, updateUser } = authStore;
   const [activeTab, setActiveTab] = useState<'posts' | 'reposts' | 'bookmarks'>('posts');
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
@@ -313,18 +314,18 @@ const ProfileTab: React.FC = () => {
                 };
               });
               
-              // Update local user state immediately (no API call needed)
+              // Update global auth store so all components see the new profile picture
               if (authUser) {
-                // The database is already updated via updateProfilePicture()
-                // Just update the local component state for immediate display
-                setUser((prevUser: User | null) => {
-                  if (!prevUser) return null;
-                  return {
-                    ...prevUser,
+                // Update the global auth store user object directly
+                // This ensures PostCard, UserProfileTab, and other components see the change
+                useAuthStore.setState((state) => ({
+                  ...state,
+                  user: state.user ? {
+                    ...state.user,
                     profileImage: croppedImageUrl, // For immediate display
                     profilePicture: profilePictureUrl // From database
-                  };
-                });
+                  } : null
+                }));
               }
               
               // Save both URLs to sessionStorage
