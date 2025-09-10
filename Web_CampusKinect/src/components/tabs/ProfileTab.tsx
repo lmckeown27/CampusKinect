@@ -313,11 +313,17 @@ const ProfileTab: React.FC = () => {
                 };
               });
               
-              // Update auth store with both URLs
+              // Update local user state immediately (no API call needed)
               if (authUser) {
-                updateUser({ 
-                  profileImage: croppedImageUrl,
-                  profilePicture: profilePictureUrl 
+                // The database is already updated via updateProfilePicture()
+                // Just update the local component state for immediate display
+                setUser((prevUser: User | null) => {
+                  if (!prevUser) return null;
+                  return {
+                    ...prevUser,
+                    profileImage: croppedImageUrl, // For immediate display
+                    profilePicture: profilePictureUrl // From database
+                  };
                 });
               }
               
@@ -335,7 +341,7 @@ const ProfileTab: React.FC = () => {
               console.error('Failed to upload profile picture:', error);
               alert('Failed to upload profile picture. Please try again.');
               
-              // Fallback: still update local display
+              // Fallback: still update local display only
               setUser((prevUser: User | null) => {
                 if (!prevUser) return null;
                 return {
@@ -343,10 +349,6 @@ const ProfileTab: React.FC = () => {
                   profileImage: croppedImageUrl
                 };
               });
-              
-              if (authUser) {
-                updateUser({ profileImage: croppedImageUrl });
-              }
             }
           })();
         };
