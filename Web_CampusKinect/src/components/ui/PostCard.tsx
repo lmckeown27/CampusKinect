@@ -60,8 +60,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     description: post.description,
     location: post.location || '',
     images: post.images || [],
-    postType: post.postType,
-    tags: post.tags || []
+    postType: post.postType || 'goods',
+    tags: Array.isArray(post.tags) ? post.tags : []
   });
   const [newImages, setNewImages] = useState<File[]>([]);
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
@@ -147,8 +147,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       description: post.description,
       location: post.location || '',
       images: post.images || [],
-      postType: post.postType,
-      tags: post.tags || []
+      postType: post.postType || 'goods',
+      tags: Array.isArray(post.tags) ? post.tags : []
     });
     setNewImages([]);
     setImagesToDelete([]);
@@ -183,8 +183,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       description: post.description,
       location: post.location || '',
       images: post.images || [],
-      postType: post.postType,
-      tags: post.tags || []
+      postType: post.postType || 'goods',
+      tags: Array.isArray(post.tags) ? post.tags : []
     });
     setNewImages([]);
     setImagesToDelete([]);
