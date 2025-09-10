@@ -603,6 +603,8 @@ const ProfileTab: React.FC = () => {
                     <h1 className="text-2xl font-bold text-gray-900">
                       {user?.firstName} {user?.lastName}
                     </h1>
+                    {/* EDIT PROFILE BUTTON COMMENTED OUT - User will fix locally */}
+                    {/*
                     <button
                       onClick={() => setIsEditing(true)}
                       className="p-2 rounded-lg transition-all duration-200"
@@ -625,6 +627,7 @@ const ProfileTab: React.FC = () => {
                     >
                       <Edit2 size={20} />
                     </button>
+                    */}
                   </div>
                   
                   <p className="text-gray-600 mb-1">@{user?.username || 'username'}</p>

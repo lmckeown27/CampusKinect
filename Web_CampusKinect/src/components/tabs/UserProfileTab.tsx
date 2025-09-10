@@ -259,7 +259,9 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
             {/* Academic Info */}
             <div className="mb-3">
               <p className="text-gray-700 text-lg">
-                {user.major || 'Major not specified'} • {user.year ? getYearLabel(user.year) : 'Year not specified'}
+                {user.major || ''} {user.major && user.year && '•'} {user.year ? getYearLabel(user.year) : ''}
+                {/* COMMENTED OUT "not specified" text - User will fix locally */}
+                {/* {user.major || 'Major not specified'} • {user.year ? getYearLabel(user.year) : 'Year not specified'} */}
               </p>
             </div>
 
