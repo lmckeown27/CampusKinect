@@ -1185,17 +1185,17 @@ select.border-olive-green:focus {
 /* Single image container - preserve full image content */
 .post-image-container.single-image {
   max-height: 180px;
-  min-height: 100px;
+  height: auto;
   width: 100%;
 }
 
 /* Multiple images container - preserve full image content, flow horizontally */
 .post-image-container.multi-image {
   max-height: 120px;
-  min-height: 80px;
+  height: auto;
   flex: 0 0 auto;
   max-width: 200px;
-  min-width: 120px;
+  width: auto;
 }
 
 .post-image {
@@ -1204,7 +1204,7 @@ select.border-olive-green:focus {
   width: auto;
   height: auto;
   object-fit: contain;
-  object-position: center;
+  object-position: left center;
   display: block;
   transition: transform 0.2s ease;
   background-color: #f9fafb;
