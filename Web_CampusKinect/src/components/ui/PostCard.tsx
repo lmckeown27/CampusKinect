@@ -207,11 +207,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
         console.log('✅ New images uploaded:', uploadedImages);
       }
 
-      // Update the post text content
+      // Update the post content including tags and post type
       const updateData = {
         title: editFormData.title,
         description: editFormData.description,
         location: editFormData.location,
+        postType: editFormData.postType as 'goods' | 'services' | 'events' | 'housing',
+        tags: editFormData.tags || [],
         // Include required fields from original post
         duration: post.duration || 'one-time'
       };
