@@ -122,20 +122,22 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
   const handleSaveEdit = async () => {
     try {
-      // First, upload any new images
-      let newImageUrls: string[] = [];
-      if (newImages.length > 0) {
-        console.log('📤 Uploading', newImages.length, 'new images...');
-        const uploadPromises = newImages.map(file => apiService.uploadImage(file));
-        const uploadResults = await Promise.all(uploadPromises);
-        newImageUrls = uploadResults.map(result => result.url);
-        console.log('✅ New images uploaded:', newImageUrls);
+      // First, delete any marked images
+      if (imagesToDelete.length > 0) {
+        console.log('🗑️ Deleting', imagesToDelete.length, 'images...');
+        const deletePromises = imagesToDelete.map(filename => apiService.deletePostImage(filename));
+        await Promise.all(deletePromises);
+        console.log('✅ Images deleted successfully');
       }
 
-      // Combine existing images (minus deleted ones) with new images
-      const updatedImages = [...editFormData.images, ...newImageUrls];
+      // Then, upload any new images
+      if (newImages.length > 0) {
+        console.log('📤 Uploading', newImages.length, 'new images...');
+        const uploadedImages = await apiService.uploadPostImages(post.id, newImages);
+        console.log('✅ New images uploaded:', uploadedImages);
+      }
 
-      // Prepare update data (excluding images as they're handled separately)
+      // Update the post text content
       const updateData = {
         title: editFormData.title,
         description: editFormData.description,
@@ -165,6 +167,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       // Show success message
       alert('Post updated successfully!');
 
+      // Refresh the page to show updated images
+      window.location.reload();
+
     } catch (error: any) {
       console.error('❌ Failed to save post:', error);
       console.error('📋 Error response:', error.response?.data);
@@ -174,9 +179,131 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setNewImages(prev => [...prev, ...files]);
+  // File validation helper (from CreatePostTab)
+  const validateImageFile = (file: File): string | null => {
+    // Check file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      return 'Image must be less than 10MB';
+    }
+    
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      return 'Please select a valid image file';
+    }
+    
+    return null;
+  };
+
+  // Convert data URL to File for upload (from CreatePostTab)
+  const dataURLtoFile = (dataURL: string, filename: string): File => {
+    const arr = dataURL.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    
+    // Validate each file before processing
+    for (const file of fileArray) {
+      const validationError = validateImageFile(file);
+      if (validationError) {
+        alert(validationError);
+        return;
+      }
+    }
+
+    // Check total image limit (4 images max)
+    const totalImages = newImages.length + fileArray.length;
+    if (totalImages > 4) {
+      alert(`You can only upload up to 4 images. You're trying to add ${fileArray.length} more to your existing ${newImages.length} images.`);
+      return;
+    }
+
+    try {
+      const processedImages: Promise<File>[] = fileArray.map(file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                  // Fallback: use original file if canvas fails
+                  resolve(file);
+                  return;
+                }
+
+                // Define consistent sizing based on aspect ratio (from CreatePostTab)
+                const aspectRatio = img.width / img.height;
+                let targetWidth: number;
+                let targetHeight: number;
+
+                if (aspectRatio > 1.5) {
+                  // Wide image - landscape
+                  targetWidth = 400;
+                  targetHeight = Math.round(400 / aspectRatio);
+                  if (targetHeight < 200) {
+                    targetHeight = 200;
+                    targetWidth = Math.round(200 * aspectRatio);
+                  }
+                } else if (aspectRatio < 0.7) {
+                  // Tall image - portrait
+                  targetHeight = 400;
+                  targetWidth = Math.round(400 * aspectRatio);
+                  if (targetWidth < 200) {
+                    targetWidth = 200;
+                    targetHeight = Math.round(200 / aspectRatio);
+                  }
+                } else {
+                  // Square-ish image
+                  targetWidth = 350;
+                  targetHeight = 350;
+                }
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                // Draw the resized image
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                // Convert to data URL with good quality
+                const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.85);
+                
+                // Convert back to File for backend upload
+                const processedFile = dataURLtoFile(resizedImageUrl, `post-image-${Date.now()}.jpg`);
+                
+                resolve(processedFile);
+              } catch (error) {
+                console.error('Error processing image:', error);
+                resolve(file); // Fallback to original file
+              }
+            };
+            img.src = e.target?.result as string;
+          };
+          reader.onerror = () => reject(new Error('Failed to read file'));
+          reader.readAsDataURL(file);
+        });
+      });
+
+      const processedFiles = await Promise.all(processedImages);
+      setNewImages(prev => [...prev, ...processedFiles]);
+
+    } catch (error) {
+      console.error('Error processing images:', error);
+      alert('Failed to process images. Please try again.');
+    }
   };
 
   const handleRemoveNewImage = (index: number) => {
@@ -184,7 +311,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   const handleRemoveExistingImage = (imageUrl: string) => {
-    setImagesToDelete(prev => [...prev, imageUrl]);
+    // Extract filename from URL for deletion
+    const filename = imageUrl.replace('/uploads/', '');
+    setImagesToDelete(prev => [...prev, filename]);
     setEditFormData(prev => ({
       ...prev,
       images: prev.images.filter(img => img !== imageUrl)

@@ -734,6 +734,37 @@ class ApiService {
     
     throw new Error(response.data.message || 'Failed to update profile picture');
   }
+
+  // Upload images to existing post
+  public async uploadPostImages(postId: string, files: File[]): Promise<{ url: string; id: string; filename: string; order: number }[]> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('images', file);
+    });
+
+    const response: AxiosResponse<ApiResponse<{ images: { id: string; filename: string; url: string; order: number }[] }>> = 
+      await this.api.post(`/upload/post-images/${postId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    
+    if (response.data.success && response.data.data && response.data.data.images) {
+      return response.data.data.images;
+    }
+    
+    throw new Error(response.data.message || 'Failed to upload post images');
+  }
+
+  // Delete image from post
+  public async deletePostImage(filename: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<void>> = 
+      await this.api.delete(`/upload/image/${filename}`);
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to delete image');
+    }
+  }
 }
 
 export const apiService = new ApiService();
