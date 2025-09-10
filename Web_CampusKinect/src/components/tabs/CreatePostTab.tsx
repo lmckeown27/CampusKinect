@@ -426,7 +426,7 @@ const CreatePostTab: React.FC = () => {
         images: imageFiles, // Include the actual image files
       };
 
-      console.log('🚀 Sending post data:', {
+      console.log('🚀 CreatePostTab sending to store:', {
         ...postData,
         images: imageFiles.map((file, i) => ({
           index: i,
@@ -436,7 +436,10 @@ const CreatePostTab: React.FC = () => {
           isFile: file instanceof File
         }))
       });
+      
+      console.log('🎯 About to call createPost store action...');
       await createPost(postData);
+      console.log('✅ createPost store action completed');
       
       // Reset form
       setFormData({

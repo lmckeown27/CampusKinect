@@ -96,16 +96,25 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
   },
 
   createPost: async (postData: CreatePostForm) => {
+    console.log('🏪 PostsStore.createPost called with:', {
+      ...postData,
+      images: postData.images ? `${postData.images.length} images` : 'No images'
+    });
+    
     set({ isLoading: true, error: null });
 
     try {
+      console.log('📞 Calling apiService.createPost...');
       const newPost = await apiService.createPost(postData);
+      console.log('✅ Post created successfully:', newPost.id);
+      
       set((state) => ({
         posts: [newPost, ...state.posts],
         filteredPosts: [newPost, ...state.filteredPosts],
         isLoading: false,
       }));
     } catch (error: any) {
+      console.error('❌ Post creation failed:', error);
       set({ 
         error: error.message || 'Failed to create post', 
         isLoading: false 
