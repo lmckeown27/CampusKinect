@@ -174,12 +174,13 @@ router.post('/post-images/:postId', [
           format: 'jpeg'
         });
 
-        // Save image reference to database
+        // Save image reference to database (with /uploads/ prefix for consistency)
+        const imageUrl = `/uploads/${imageData.original}`;
         const imageResult = await query(`
           INSERT INTO post_images (post_id, image_url, image_order)
           VALUES ($1, $2, $3)
           RETURNING id, image_url, image_order
-        `, [postId, imageData.original, i]);
+        `, [postId, imageUrl, i]);
 
         uploadedImages.push({
           id: imageResult.rows[0].id,
