@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, query: queryValidator, param } = require('express-validator');
-const { query: dbQuery, pool } = require('../config/database');
+const { query, pool } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
 const { validate, commonValidations } = require('../middleware/validation');
 const { auth, optionalAuth, checkOwnership, requireVerification } = require('../middleware/auth');
@@ -42,7 +42,7 @@ router.get('/organized', [
     // Get user's university ID for filtering (if authenticated)
     let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
     if (req.user && req.user.id) {
-      const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
+      const userResult = await query('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
       if (userResult.rows.length > 0) {
         userUniversityId = userResult.rows[0].university_id;
       }
@@ -180,7 +180,7 @@ router.get('/organized', [
     queryParams.push(limit, offset);
 
     // Execute organized query
-    const result = await dbQuery(organizedQuery, queryParams);
+    const result = await query(organizedQuery, queryParams);
 
     // Get total count
     let countQuery = `
@@ -224,7 +224,7 @@ router.get('/organized', [
       countParams.push(tags);
     }
 
-    const countResult = await dbQuery(countQuery, countParams);
+    const countResult = await query(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
 
     // Format posts with organization info
@@ -504,7 +504,7 @@ router.get('/tabbed', [
     // Get user's university ID for filtering (if authenticated)
     let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
     if (req.user && req.user.id) {
-      const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
+      const userResult = await query('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
       if (userResult.rows.length > 0) {
         userUniversityId = userResult.rows[0].university_id;
       }
@@ -1128,7 +1128,7 @@ router.get('/', [
     // Get user's university ID for filtering (if authenticated)
     let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
     if (req.user && req.user.id) {
-      const userResult = await dbQuery('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
+      const userResult = await query('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
       if (userResult.rows.length > 0) {
         userUniversityId = userResult.rows[0].university_id;
       }
@@ -1276,7 +1276,7 @@ router.get('/', [
     queryParams.push(limit, offset);
 
     // Execute query
-    const result = await dbQuery(baseQuery, queryParams);
+    const result = await query(baseQuery, queryParams);
 
     // Get total count for pagination (Cal Poly SLO only for now)
     let countQuery = `
@@ -1332,7 +1332,7 @@ router.get('/', [
       countParams.push(tags);
     }
 
-    const countResult = await dbQuery(countQuery, countParams);
+    const countResult = await query(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
 
     // Format posts
@@ -1408,14 +1408,14 @@ router.get('/:id', [
     const { id } = req.params;
 
     // Increment view count
-    await dbQuery(`
+    await query(`
       UPDATE posts 
       SET view_count = view_count + 1 
       WHERE id = $1
     `, [id]);
 
     // Get post with details
-    const result = await dbQuery(`
+    const result = await query(`
       SELECT 
         p.*,
         u.username,
@@ -1614,7 +1614,7 @@ router.post('/', [
       await redisDel(cacheKey);
 
       // Get full post with tags and images
-      const fullPostResult = await dbQuery(`
+      const fullPostResult = await query(`
         SELECT 
           p.*,
           u.username,
@@ -1879,7 +1879,7 @@ router.delete('/:id', [
     const { id } = req.params;
 
     // Mark post as fulfilled (soft delete)
-    const result = await dbQuery(`
+    const result = await query(`
       UPDATE posts 
       SET is_active = false, updated_at = CURRENT_TIMESTAMP
       WHERE id = $1
