@@ -99,6 +99,14 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
     }
   }, [post]);
 
+  // Cleanup image previews when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setImagePreview([]);
+      setImageFiles([]);
+    }
+  }, [isOpen]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -156,7 +164,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
   };
 
   // Image handling functions (same as CreatePost)
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -169,15 +177,33 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
       return;
     }
 
-    fileArray.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        setImagePreview(prev => [...prev, imageUrl]);
-        setImageFiles(prev => [...prev, file]);
-      };
-      reader.readAsDataURL(file);
-    });
+    try {
+      // Process all files with Promise.all to avoid race conditions
+      const processedImages = await Promise.all(
+        fileArray.map(file => {
+          return new Promise<{ preview: string; file: File }>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const imageUrl = e.target?.result as string;
+              resolve({ preview: imageUrl, file });
+            };
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsDataURL(file);
+          });
+        })
+      );
+
+      // Update state once with all processed images
+      const previews = processedImages.map(img => img.preview);
+      const files = processedImages.map(img => img.file);
+      
+      setImagePreview(prev => [...prev, ...previews]);
+      setImageFiles(prev => [...prev, ...files]);
+
+    } catch (error) {
+      console.error('Error processing images:', error);
+      alert('Failed to process one or more images. Please try again.');
+    }
 
     // Clear the input
     if (event.target) {
@@ -186,6 +212,12 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
   };
 
   const handleRemoveImage = (index: number) => {
+    // Clean up the blob URL to prevent memory leaks
+    const previewUrl = imagePreview[index];
+    if (previewUrl && previewUrl.startsWith('data:')) {
+      // For data URLs from FileReader, no cleanup needed
+    }
+    
     setImagePreview(prev => prev.filter((_, i) => i !== index));
     setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
