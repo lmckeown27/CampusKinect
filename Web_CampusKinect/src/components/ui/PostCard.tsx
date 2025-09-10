@@ -139,10 +139,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       const updateData = {
         title: editFormData.title,
         description: editFormData.description,
-        location: editFormData.location
+        location: editFormData.location,
+        // Include required fields from original post
+        duration: post.duration || 'one-time'
       };
 
       console.log('💾 Saving post update:', updateData);
+      console.log('📄 Original post data:', post);
 
       // Call API to update the post
       const updatedPost = await apiService.updatePost(post.id, updateData);
@@ -162,9 +165,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       // Show success message
       alert('Post updated successfully!');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to save post:', error);
-      alert('Failed to save changes. Please try again.');
+      console.error('📋 Error response:', error.response?.data);
+      console.error('🔢 Error status:', error.response?.status);
+      console.error('📝 Error details:', error.response?.data?.error);
+      alert(`Failed to save changes: ${error.response?.data?.message || error.message || 'Please try again.'}`);
     }
   };
 
