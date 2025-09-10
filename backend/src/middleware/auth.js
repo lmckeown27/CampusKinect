@@ -61,7 +61,7 @@ const auth = async (req, res, next) => {
       user = result.rows[0];
       
       // Cache user data
-      await redisGet(cacheKey, user, CACHE_TTL.SESSION);
+      await redisSet(cacheKey, user, CACHE_TTL.SESSION);
     }
 
     // Add user to request object
@@ -126,7 +126,7 @@ const optionalAuth = async (req, res, next) => {
 
           if (result.rows.length > 0) {
             user = result.rows[0];
-            await redisGet(cacheKey, user, CACHE_TTL.SESSION);
+            await redisSet(cacheKey, user, CACHE_TTL.SESSION);
           }
         }
 
