@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { usePostsStore } from '../../stores/postsStore';
 import { apiService } from '../../services/api';
 import TagSelector from '../ui/TagSelector';
-import DurationSelector from '../ui/DurationSelector';
 import { ImageIcon, X, Tag, Calendar, Repeat, Clock, Hash } from 'lucide-react';
 
 interface FormData {
@@ -33,7 +32,7 @@ const CreatePostTab: React.FC = () => {
     postType: 'goods',
     tags: [],
     location: '',
-    duration: 'one-time', // Set default duration
+    duration: 'ongoing', // Set default duration to ongoing
   });
 
   // Load saved post type from localStorage on component mount
@@ -448,7 +447,7 @@ const CreatePostTab: React.FC = () => {
         postType: 'goods',
         tags: [],
         location: '',
-        duration: 'one-time', // Reset to default duration
+        duration: 'ongoing', // Reset to default duration
       });
       setOfferRequestTags({
         goods: [],
@@ -651,12 +650,24 @@ const CreatePostTab: React.FC = () => {
                     />
                     <label 
                       htmlFor="image-upload-top"
-                      className={`relative p-3 hover:bg-gray-50 rounded-lg transition-colors inline-block ${
-                        isUploadingImages ? 'cursor-wait opacity-50' : 'cursor-pointer'
+                      className={`relative p-3 hover:bg-gray-50 rounded-lg transition-all duration-200 inline-block ${
+                        isUploadingImages ? 'cursor-wait opacity-50' : 'cursor-pointer hover:shadow-md'
                       }`}
                       title={isUploadingImages ? "Processing images..." : `Upload images (${imageFiles.length}/4)`}
+                      style={{ cursor: isUploadingImages ? 'wait' : 'pointer' }}
+                      onMouseEnter={(e) => {
+                        if (!isUploadingImages) {
+                          e.currentTarget.style.cursor = 'pointer';
+                          e.currentTarget.style.backgroundColor = '#f3f4f6';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isUploadingImages) {
+                          e.currentTarget.style.backgroundColor = '';
+                        }
+                      }}
                     >
-                      <ImageIcon className="h-6 w-6 text-gray-600" />
+                      <ImageIcon className="h-6 w-6 text-gray-600 hover:text-[#708d81] transition-colors" />
                       {isUploadingImages && (
                         <div className="absolute -top-1 -right-1 w-3 h-3">
                           <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-[#708d81]"></div>
@@ -820,13 +831,7 @@ const CreatePostTab: React.FC = () => {
                   )}
                 </div>
 
-                {/* Duration Section - Bottom Center */}
-                <div className="w-fit">
-            <DurationSelector
-              value={formData.duration}
-              onChange={(duration: string) => handleInputChange('duration', duration)}
-            />
-          </div>
+
 
                 {/* Post Button - Bottom Right */}
                 <div className="w-fit">
