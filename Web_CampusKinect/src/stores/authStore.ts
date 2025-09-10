@@ -48,7 +48,21 @@ export const useAuthStore = create<AuthStore>()(
           let errorMessage = 'Login failed';
           
           // Handle specific error scenarios
-          if (error.response?.status === 401) {
+          if (error.response?.status === 400) {
+            // Handle validation errors (including unsupported university)
+            const errorData = error.response?.data?.error;
+            if (errorData?.details && Array.isArray(errorData.details)) {
+              // Extract validation error messages
+              const validationMessages = errorData.details.map((detail: any) => detail.msg || detail.message).filter(Boolean);
+              if (validationMessages.length > 0) {
+                errorMessage = validationMessages[0]; // Show first validation error
+              }
+            } else if (errorData?.message) {
+              errorMessage = errorData.message;
+            } else if (error.response?.data?.message) {
+              errorMessage = error.response.data.message;
+            }
+          } else if (error.response?.status === 401) {
             if (error.response?.data?.message?.toLowerCase().includes('not found') ||
                 error.response?.data?.message?.toLowerCase().includes('does not exist')) {
               errorMessage = 'Account not found. This username or email is not registered in our database.';
@@ -113,7 +127,21 @@ export const useAuthStore = create<AuthStore>()(
           let errorMessage = 'Registration failed';
           
           // Handle specific error scenarios
-          if (error.response?.status === 409) {
+          if (error.response?.status === 400) {
+            // Handle validation errors (including unsupported university)
+            const errorData = error.response?.data?.error;
+            if (errorData?.details && Array.isArray(errorData.details)) {
+              // Extract validation error messages
+              const validationMessages = errorData.details.map((detail: any) => detail.msg || detail.message).filter(Boolean);
+              if (validationMessages.length > 0) {
+                errorMessage = validationMessages[0]; // Show first validation error
+              }
+            } else if (errorData?.message) {
+              errorMessage = errorData.message;
+            } else if (error.response?.data?.message) {
+              errorMessage = error.response.data.message;
+            }
+          } else if (error.response?.status === 409) {
             const message = error.response?.data?.message?.toLowerCase() || '';
             if (message.includes('email') && message.includes('already exists')) {
               errorMessage = 'This email address has already been used to create an account. Please sign in instead.';
