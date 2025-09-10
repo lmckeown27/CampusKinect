@@ -69,9 +69,17 @@ initializeCronJobs();
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 10 * 60 * 1000, // 10 minutes (updated default)
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 750, // Updated default for campus networks
+  message: {
+    success: false,
+    error: {
+      message: 'Too many requests from this IP address. Please wait a few minutes before trying again.',
+      details: 'This limit helps protect the server and ensures fair usage for all users.'
+    }
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   trustProxy: true // Allow rate limiting to work behind proxy
 });
 
