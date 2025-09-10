@@ -690,15 +690,15 @@ class ApiService {
     const formData = new FormData();
     formData.append('image', file);
 
-    const response: AxiosResponse<ApiResponse<{ url: string }>> = 
+    const response: AxiosResponse<ApiResponse<{ image: { url: string; filename: string; thumbnail: string; thumbnailUrl: string } }>> = 
       await this.api.post('/upload/image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
     
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+    if (response.data.success && response.data.data && response.data.data.image) {
+      return { url: response.data.data.image.url };
     }
     
     throw new Error(response.data.message || 'Image upload failed');
