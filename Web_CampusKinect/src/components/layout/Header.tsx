@@ -40,7 +40,12 @@ const Header: React.FC = () => {
             style={{ 
               backgroundColor: showNavigation ? 'transparent' : '#708d81',
               transition: 'background-color 300ms ease-in-out',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              color: 'white',
+              WebkitTapHighlightColor: 'transparent',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none'
             }}
             onMouseEnter={(e) => {
               if (showNavigation) {

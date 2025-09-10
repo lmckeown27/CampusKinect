@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuthStore } from '../../stores/authStore';
 
 interface NavigationContextType {
   showNavigation: boolean;
@@ -24,6 +25,8 @@ interface NavigationProviderProps {
 }
 
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
+  const { user } = useAuthStore();
+  
   // Mobile detection function
   const isMobileDevice = () => {
     if (typeof window === 'undefined') return false;
@@ -60,6 +63,13 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Close navigation on mobile when user logs in
+  useEffect(() => {
+    if (user && isMobileDevice()) {
+      setShowNavigation(false);
+    }
+  }, [user]); // React to user login/logout changes
 
   return (
     <NavigationContext.Provider value={{ 
