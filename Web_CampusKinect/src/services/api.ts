@@ -666,7 +666,7 @@ class ApiService {
   // Search
   public async searchPosts(query: string, filters?: any): Promise<PaginatedResponse<Post>> {
     const params = new URLSearchParams({
-      q: query,
+      query: query,
       ...filters,
     });
 

@@ -20,6 +20,9 @@ const HomeTab: React.FC = () => {
   } = usePostsStore();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load saved search query from localStorage on component mount
   useEffect(() => {
@@ -38,6 +41,15 @@ const HomeTab: React.FC = () => {
   useEffect(() => {
     fetchPosts(1, true); // Fetch first page, reset the list
   }, [fetchPosts]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -485,11 +497,51 @@ const HomeTab: React.FC = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    if (query.trim()) {
-      searchPosts(query);
-    } else {
-      clearFilters();
+    
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
     }
+
+    // If query is empty, clear search
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      clearFilters();
+      return;
+    }
+
+    // Show search results immediately for better UX
+    setShowSearchResults(true);
+    
+    // Debounce the API call by 300ms
+    searchTimeoutRef.current = setTimeout(() => {
+      performSearch(query);
+    }, 300);
+  };
+
+  const performSearch = async (query: string) => {
+    try {
+      // First filter existing posts for instant feedback
+      const filteredLocalPosts = filteredPosts.filter(post => 
+        post.title.toLowerCase().includes(query.toLowerCase()) ||
+        post.description.toLowerCase().includes(query.toLowerCase()) ||
+        post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      );
+      
+      setSearchResults(filteredLocalPosts);
+      
+      // Then perform API search for comprehensive results
+      await searchPosts(query);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  };
+
+  const handleSearchResultSelect = (post: any) => {
+    setSearchQuery(post.title);
+    setShowSearchResults(false);
+    // Optionally scroll to the post or highlight it
   };
 
   const handleLoadMore = () => {
@@ -707,8 +759,45 @@ const HomeTab: React.FC = () => {
               placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
+              onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
+              onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
               className="w-full px-4 py-3 border border-[#708d81] rounded-full focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-lg"
             />
+            
+            {/* Search Results Dropdown */}
+            {showSearchResults && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 bg-white border border-[#708d81] rounded-lg shadow-lg mt-1 max-h-80 overflow-y-auto z-50">
+                {searchResults.slice(0, 8).map((post) => (
+                  <div
+                    key={post.id}
+                    onClick={() => handleSearchResultSelect(post)}
+                    className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  >
+                    <div className="font-medium text-gray-900 truncate">
+                      {post.title}
+                    </div>
+                    <div className="text-sm text-gray-500 truncate mt-1">
+                      {post.description}
+                    </div>
+                    <div className="flex items-center mt-2 space-x-2">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#708d81] text-white">
+                        {post.postType}
+                      </span>
+                      {post.tags.slice(0, 2).map((tag: string) => (
+                        <span key={tag} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                {searchResults.length > 8 && (
+                  <div className="px-4 py-2 text-sm text-gray-500 text-center border-t border-gray-100">
+                    +{searchResults.length - 8} more results
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

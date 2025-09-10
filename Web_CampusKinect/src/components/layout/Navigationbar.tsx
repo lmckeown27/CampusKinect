@@ -8,8 +8,7 @@ import { Home, Plus, MessageCircle } from 'lucide-react';
 const Navigationbar: React.FC = () => {
   const pathname = usePathname();
 
-  // Debug logging
-  console.log('🔍 LeftSidebar render:', { pathname });
+  // Debug logging removed to prevent console spam
 
   const navigationItems = [
     {
