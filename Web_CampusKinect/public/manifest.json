@@ -1,7 +1,7 @@
 {
   "name": "CampusKinect - Campus Social Network",
   "short_name": "CampusKinect",
-  "description": "Connect with your campus community. Find events, roommates, study groups, and more.",
+  "description": "Your Go-To University Marketplace",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8f9f6",
