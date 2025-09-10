@@ -236,17 +236,14 @@ class ApiService {
     // Transform postData to match backend expectations
     const transformedData: any = { ...postData };
     
-    // Map frontend postType categories to backend expectations
-    if (postData.postType === 'events') {
-      transformedData.postType = 'event';
-    }
-    // Keep 'goods', 'services', 'housing' as-is since backend expects them
+    // Keep postType as-is since backend expects 'goods', 'services', 'housing', 'events'
+    // No transformation needed for postType
     
     // Map duration to durationType (backend expects durationType field)
     let durationType = postData.duration || 'one-time';
     
     // Map frontend duration values to backend expected values
-    if (transformedData.postType === 'event') {
+    if (postData.postType === 'events') {
       // For event posts, always use 'event' durationType
       durationType = 'event';
     } else if (durationType === 'ongoing') {
