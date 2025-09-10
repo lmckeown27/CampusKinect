@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuthStore } from '../../stores/authStore';
 import { Edit2, Camera, X } from 'lucide-react';
 import { apiService } from '../../services/api';
@@ -202,6 +202,33 @@ const ProfileTab: React.FC = () => {
     setEditModalOpen(false);
     setEditingPost(null);
   };
+
+  // Memoized posts with poster data to prevent infinite renders
+  const postsWithPoster = useMemo(() => {
+    return posts.map(post => {
+      if (post.poster) {
+        return post;
+      }
+      
+      // Create default poster only when needed
+      return {
+        ...post,
+        poster: {
+          id: authUser?.id || 'unknown',
+          firstName: authUser?.firstName || user?.firstName || 'User',
+          lastName: authUser?.lastName || user?.lastName || '',
+          username: authUser?.username || user?.username || 'username',
+          email: authUser?.email || user?.email || '',
+          profileImage: authUser?.profileImage || user?.profileImage,
+          major: authUser?.major || user?.major,
+          year: authUser?.year || user?.year,
+          universityId: authUser?.universityId || 1,
+          createdAt: authUser?.createdAt || new Date().toISOString(),
+          updatedAt: authUser?.updatedAt || new Date().toISOString()
+        }
+      } as Post;
+    });
+  }, [posts, authUser, user]);
 
   const handleSaveProfile = async () => {
     try {
@@ -732,36 +759,17 @@ const ProfileTab: React.FC = () => {
                   </div>
                 ) : posts.length > 0 ? (
                   <div className="space-y-8" style={{ gap: '2rem' }}>
-                    {posts.map((post, index) => {
-                      // Ensure post has poster information
-                      const postWithPoster = {
-                        ...post,
-                        poster: post.poster || {
-                          id: authUser?.id || 'unknown',
-                          firstName: authUser?.firstName || user?.firstName || 'User',
-                          lastName: authUser?.lastName || user?.lastName || '',
-                          username: authUser?.username || user?.username || 'username',
-                          email: authUser?.email || user?.email || '',
-                          profileImage: authUser?.profileImage || user?.profileImage,
-                          major: authUser?.major || user?.major,
-                          year: authUser?.year || user?.year,
-                          universityId: authUser?.universityId || 1,
-                          createdAt: authUser?.createdAt || new Date().toISOString(),
-                          updatedAt: authUser?.updatedAt || new Date().toISOString()
-                        }
-                      } as Post;
-                      return (
-                        <div key={post.id} style={{ marginBottom: index < posts.length - 1 ? '2rem' : '0' }}>
-                          <PostCard 
-                            post={postWithPoster} 
-                            showDeleteButton={true}
-                            onDelete={handleDeletePost}
-                            showEditButton={true}
-                            onEdit={handleEditPost}
-                          />
-                        </div>
-                      );
-                    })}
+                    {postsWithPoster.map((post, index) => (
+                      <div key={post.id} style={{ marginBottom: index < postsWithPoster.length - 1 ? '2rem' : '0' }}>
+                        <PostCard 
+                          post={post} 
+                          showDeleteButton={true}
+                          onDelete={handleDeletePost}
+                          showEditButton={true}
+                          onEdit={handleEditPost}
+                        />
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="text-center py-12">
