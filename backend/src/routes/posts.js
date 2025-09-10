@@ -1521,6 +1521,7 @@ router.post('/', [
   validate
 ], async (req, res) => {
   try {
+    console.log('📝 POST /posts endpoint hit with body:', req.body);
     const {
       title,
       description,
@@ -1587,13 +1588,18 @@ router.post('/', [
       }
 
       // Add images if provided
+      console.log('🖼️ Backend received images:', images);
       if (images && images.length > 0) {
+        console.log('💾 Saving', images.length, 'images to database for post', post.id);
         for (let i = 0; i < images.length; i++) {
+          console.log('📸 Saving image:', images[i]);
           await client.query(`
             INSERT INTO post_images (post_id, image_url, image_order)
             VALUES ($1, $2, $3)
           `, [post.id, images[i], i]);
         }
+      } else {
+        console.log('❌ No images to save - images array:', images);
       }
 
       await client.query('COMMIT');
