@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { query } = require('../config/database');
-const { redisGet, generateCacheKey, CACHE_TTL } = require('../config/redis');
+const { redisGet, redisSet, generateCacheKey, CACHE_TTL } = require('../config/redis');
 
 const auth = async (req, res, next) => {
   try {
