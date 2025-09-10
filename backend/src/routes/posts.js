@@ -1179,7 +1179,8 @@ router.get('/', [
         un.city as university_city,
         un.state as university_state,
         COUNT(pi.id) as image_count,
-        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags
+        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
+        ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
       FROM posts p
       JOIN users u ON p.user_id = u.id
       JOIN universities un ON p.university_id = un.id
@@ -1368,6 +1369,7 @@ router.get('/', [
         state: post.university_state
       },
       tags: post.tags || [],
+      images: post.images || [],
       imageCount: post.image_count
     }));
 
