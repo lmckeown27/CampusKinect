@@ -26,20 +26,20 @@ const MessagesTab: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Load saved search query from localStorage on component mount
+  // Load saved search query from sessionStorage on component mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedSearchQuery = localStorage.getItem('campusConnect_messagesSearchQuery');
+      const savedSearchQuery = sessionStorage.getItem('campusConnect_messagesSearchQuery');
       if (savedSearchQuery) {
         setSearchQuery(savedSearchQuery);
       }
     }
   }, []);
 
-  // Save search query to localStorage whenever it changes
+  // Save search query to sessionStorage whenever it changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('campusConnect_messagesSearchQuery', searchQuery);
+      sessionStorage.setItem('campusConnect_messagesSearchQuery', searchQuery);
     }
   }, [searchQuery]);
 
@@ -49,6 +49,11 @@ const MessagesTab: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'unread' | 'primary' | 'requests'>('primary');
   const [requestsSubTab, setRequestsSubTab] = useState<'incoming' | 'sent'>('incoming');
   const [processingRequests, setProcessingRequests] = useState<Set<string>>(new Set());
+  
+  // Real-time polling state
+  const [isPollingEnabled, setIsPollingEnabled] = useState(true);
+  const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
+  const [isVisible, setIsVisible] = useState(true);
   
   // New Message Modal state
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -65,20 +70,20 @@ const MessagesTab: React.FC = () => {
     return words.slice(0, maxWords).join(' ') + '...';
   };
 
-  // Load saved active tab from localStorage on component mount
+  // Load saved active tab from sessionStorage on component mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedActiveTab = localStorage.getItem('campusConnect_messagesActiveTab');
+      const savedActiveTab = sessionStorage.getItem('campusConnect_messagesActiveTab');
       if (savedActiveTab && ['unread', 'primary', 'requests'].includes(savedActiveTab)) {
         setActiveTab(savedActiveTab as 'unread' | 'primary' | 'requests');
       }
     }
   }, []);
 
-  // Save active tab to localStorage whenever it changes
+  // Save active tab to sessionStorage whenever it changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('campusConnect_messagesActiveTab', activeTab);
+      sessionStorage.setItem('campusConnect_messagesActiveTab', activeTab);
     }
   }, [activeTab]);
 
@@ -100,6 +105,71 @@ const MessagesTab: React.FC = () => {
     fetchMessageRequests();
     fetchSentMessageRequests();
   }, [fetchConversations, fetchMessageRequests, fetchSentMessageRequests]);
+
+  // Handle visibility change to pause/resume polling
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsVisible(!document.hidden);
+      console.log(`📱 Tab visibility changed: ${document.hidden ? 'hidden' : 'visible'}`);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
+  // Real-time polling for message updates
+  useEffect(() => {
+    if (!isPollingEnabled || !isVisible) return;
+
+    const pollForUpdates = async () => {
+      try {
+        console.log('🔄 Real-time polling: Checking for message updates...');
+        
+        // Store previous counts for comparison
+        const prevMessageRequestsCount = messageRequests.length;
+        const prevConversationsCount = conversations.length;
+        const prevUnreadCount = conversations.filter(c => c.unreadCount > 0).length;
+        
+        // Refresh data based on current active tab
+        if (activeTab === 'requests') {
+          await Promise.all([
+            fetchMessageRequests(),
+            fetchSentMessageRequests()
+          ]);
+        } else if (activeTab === 'primary' || activeTab === 'unread') {
+          await fetchConversations();
+        }
+        
+        setLastUpdateTime(Date.now());
+        
+        // Log if significant changes detected
+        const newMessageRequestsCount = messageRequests.length;
+        const newConversationsCount = conversations.length;
+        const newUnreadCount = conversations.filter(c => c.unreadCount > 0).length;
+        
+        if (prevMessageRequestsCount !== newMessageRequestsCount ||
+            prevConversationsCount !== newConversationsCount ||
+            prevUnreadCount !== newUnreadCount) {
+          console.log('🔔 Real-time update: Message state changed!', {
+            messageRequests: `${prevMessageRequestsCount} → ${newMessageRequestsCount}`,
+            conversations: `${prevConversationsCount} → ${newConversationsCount}`,
+            unreadConversations: `${prevUnreadCount} → ${newUnreadCount}`
+          });
+        }
+        
+        console.log('✅ Real-time polling: Message data updated');
+      } catch (error) {
+        console.error('❌ Real-time polling error:', error);
+      }
+    };
+
+    // Poll every 5 seconds (less aggressive than 3 seconds)
+    const pollingInterval = setInterval(pollForUpdates, 5000);
+
+    return () => {
+      clearInterval(pollingInterval);
+    };
+     }, [activeTab, isPollingEnabled, isVisible, fetchConversations, fetchMessageRequests, fetchSentMessageRequests, messageRequests.length, conversations.length]);
 
   // Search users with debouncing
   useEffect(() => {
@@ -231,6 +301,9 @@ const MessagesTab: React.FC = () => {
     
     console.log(`🟢 ACCEPT DEBUG: Starting accept process for request ${requestId}`);
     
+    // Pause real-time polling during user action
+    setIsPollingEnabled(false);
+    
     // Mark request as being processed
     setProcessingRequests(prev => new Set([...prev, requestId]));
     
@@ -274,6 +347,12 @@ const MessagesTab: React.FC = () => {
         newSet.delete(requestId);
         return newSet;
       });
+      
+      // Resume real-time polling after action completes
+      setTimeout(() => {
+        setIsPollingEnabled(true);
+        console.log('🔄 Real-time polling resumed after accept action');
+      }, 1000);
     }
   };
 
@@ -290,6 +369,9 @@ const MessagesTab: React.FC = () => {
     console.log('Message requests before:', messageRequests);
     
     console.log(`🔴 DECLINE DEBUG: Starting decline process for request ${requestId}`);
+    
+    // Pause real-time polling during user action
+    setIsPollingEnabled(false);
     
     // Mark request as being processed
     setProcessingRequests(prev => new Set([...prev, requestId]));
@@ -322,6 +404,12 @@ const MessagesTab: React.FC = () => {
         newSet.delete(requestId);
         return newSet;
       });
+      
+      // Resume real-time polling after action completes
+      setTimeout(() => {
+        setIsPollingEnabled(true);
+        console.log('🔄 Real-time polling resumed after reject action');
+      }, 1000);
     }
   };
 
