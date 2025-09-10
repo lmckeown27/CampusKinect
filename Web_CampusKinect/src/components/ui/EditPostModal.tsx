@@ -163,13 +163,47 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
     }));
   };
 
-  // Image handling functions (same as CreatePost)
+  // File validation helper (copied from CreatePostTab)
+  const validateImageFile = (file: File): string | null => {
+    if (!file.type.startsWith('image/')) {
+      return 'Please select only image files.';
+    }
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      return 'Image size must be less than 10MB.';
+    }
+    return null;
+  };
+
+  // Convert data URL to File (copied from CreatePostTab)
+  const dataURLtoFile = (dataurl: string, filename: string): File => {
+    const arr = dataurl.split(',');
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  // Image handling functions (copied exactly from CreatePostTab)
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
     
+    // Validate each file before processing
+    for (const file of fileArray) {
+      const validationError = validateImageFile(file);
+      if (validationError) {
+        alert(validationError);
+        return;
+      }
+    }
+
     // Check total image limit (4 images max)
     const totalImages = imageFiles.length + fileArray.length;
     if (totalImages > 4) {
@@ -177,38 +211,116 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
       return;
     }
 
+    setIsUploadingImages(true);
     try {
-      // Process all files with Promise.all to avoid race conditions
-      const processedImages = await Promise.all(
-        fileArray.map(file => {
-          return new Promise<{ preview: string; file: File }>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const imageUrl = e.target?.result as string;
-              resolve({ preview: imageUrl, file });
+      const processedImages: Promise<{ preview: string; file: File }>[] = fileArray.map(file => {
+        return new Promise<{ preview: string; file: File }>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = document.createElement('img');
+            img.onload = () => {
+              try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                  // Fallback: use original file if canvas fails
+                  console.log('⚠️ Canvas context failed, using original file:', {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    isFile: file instanceof File
+                  });
+                  resolve({ preview: URL.createObjectURL(file), file });
+                  return;
+                }
+
+                // Define consistent sizing based on aspect ratio
+                const aspectRatio = img.width / img.height;
+                let targetWidth: number;
+                let targetHeight: number;
+
+                if (aspectRatio > 1.5) {
+                  // Wide image - landscape
+                  targetWidth = 400;
+                  targetHeight = Math.round(400 / aspectRatio);
+                  // Ensure minimum height
+                  if (targetHeight < 200) {
+                    targetHeight = 200;
+                    targetWidth = Math.round(200 * aspectRatio);
+                  }
+                } else if (aspectRatio < 0.7) {
+                  // Tall image - portrait
+                  targetHeight = 400;
+                  targetWidth = Math.round(400 * aspectRatio);
+                  // Ensure minimum width
+                  if (targetWidth < 200) {
+                    targetWidth = 200;
+                    targetHeight = Math.round(200 / aspectRatio);
+                  }
+                } else {
+                  // Square-ish image
+                  targetWidth = 350;
+                  targetHeight = 350;
+                }
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                // Draw the resized image
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                // Convert to data URL with good quality
+                const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.85);
+                
+                // Convert back to File for backend upload
+                const processedFile = dataURLtoFile(resizedImageUrl, `post-image-${Date.now()}.jpg`);
+                
+                console.log('📸 Processed image file:', {
+                  name: processedFile.name,
+                  size: processedFile.size,
+                  type: processedFile.type,
+                  isFile: processedFile instanceof File
+                });
+                
+                resolve({ preview: resizedImageUrl, file: processedFile });
+              } catch (error) {
+                console.error('Image processing error:', error);
+                // Fallback: use original file
+                console.log('🔄 Using original file as fallback:', {
+                  name: file.name,
+                  size: file.size,
+                  type: file.type,
+                  isFile: file instanceof File
+                });
+                resolve({ preview: URL.createObjectURL(file), file });
+              }
             };
-            reader.onerror = () => reject(new Error('Failed to read file'));
-            reader.readAsDataURL(file);
-          });
-        })
-      );
+            img.onerror = () => reject(new Error('Failed to load image'));
+            img.src = e.target?.result as string;
+          };
+          reader.onerror = () => reject(new Error('Failed to read file'));
+          reader.readAsDataURL(file);
+        });
+      });
 
-      // Update state once with all processed images
-      const previews = processedImages.map(img => img.preview);
-      const files = processedImages.map(img => img.file);
+      // Process all images
+      const processedResults = await Promise.all(processedImages);
       
-      setImagePreview(prev => [...prev, ...previews]);
-      setImageFiles(prev => [...prev, ...files]);
-
+      // Update preview and file arrays
+      setImagePreview(prev => [...prev, ...processedResults.map(r => r.preview)].slice(0, 4));
+      setImageFiles(prev => [...prev, ...processedResults.map(r => r.file)].slice(0, 4));
+      
+      console.log(`Successfully processed ${processedResults.length} images for upload`);
+      
     } catch (error) {
       console.error('Error processing images:', error);
-      alert('Failed to process one or more images. Please try again.');
+      alert('Failed to process one or more images. Please try again with different images.');
+    } finally {
+      setIsUploadingImages(false);
     }
-
-    // Clear the input
-    if (event.target) {
-      event.target.value = '';
-    }
+    
+    // Clear the input so the same file can be selected again if needed
+    event.target.value = '';
   };
 
   const handleRemoveImage = (index: number) => {
