@@ -313,6 +313,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   const handleRemoveExistingImage = (imageUrl: string) => {
     // Extract filename from URL for deletion (backend expects just the filename)
     const filename = imageUrl.replace('/uploads/', '');
+
     setImagesToDelete(prev => [...prev, filename]);
     setEditFormData(prev => ({
       ...prev,

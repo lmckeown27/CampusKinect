@@ -234,13 +234,18 @@ router.delete('/image/:filename', [
     const { filename } = req.params;
     const userId = req.user.id;
 
-    // Check if image belongs to user's post
+
+
+    // Check if image belongs to user's post (image_url includes /uploads/ prefix)
+    const imageUrlWithPrefix = `/uploads/${filename}`;
     const imageCheck = await query(`
-      SELECT pi.id, p.user_id
+      SELECT pi.id, p.user_id, pi.image_url, pi.post_id
       FROM post_images pi
       JOIN posts p ON pi.post_id = p.id
       WHERE pi.image_url = $1 AND p.user_id = $2
-    `, [filename, userId]);
+    `, [imageUrlWithPrefix, userId]);
+
+
 
     if (imageCheck.rows.length === 0) {
       return res.status(403).json({
