@@ -316,12 +316,11 @@ class ApiService {
         ...transformedData,
         images: imageUrls, // Use uploaded image URLs instead of File objects
       };
-      
-      // Remove images from the data since we've converted them to URLs
-      delete postDataWithImages.images;
-      if (imageUrls.length > 0) {
-        postDataWithImages.images = imageUrls;
-      }
+
+      console.log('📝 Creating post with data:', {
+        ...postDataWithImages,
+        images: imageUrls.length > 0 ? `${imageUrls.length} image URLs: ${imageUrls.join(', ')}` : 'No images'
+      });
 
       const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/posts', postDataWithImages, {
         headers: {
