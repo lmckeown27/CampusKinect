@@ -758,6 +758,7 @@ class ApiService {
 
   // Delete image from post
   public async deletePostImage(filename: string): Promise<void> {
+    // filename should be just the filename (e.g., "image.jpg"), not full URL
     const response: AxiosResponse<ApiResponse<void>> = 
       await this.api.delete(`/upload/image/${filename}`);
     
