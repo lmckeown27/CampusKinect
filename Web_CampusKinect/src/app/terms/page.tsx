@@ -88,6 +88,12 @@ export default function TermsOfServicePage() {
                   You retain ownership of content you post on CampusKinect. However, by posting content, you grant us 
                   a license to use, display, and distribute that content on our platform.
                 </p>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  <strong>Third-Party Content Disclaimer:</strong> The contents requested or offered on this website is sole property of the third party individual and not in any way affiliated with the platform. CampusKinect does not endorse, guarantee, or assume responsibility for any user-generated content, including but not limited to goods, services, housing, events, or any other listings.
+                </p>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  <strong>Content Moderation:</strong> The website reserves the right to monitor all posts and at its discretion to takedown posts that violates our content moderation policy. We maintain the authority to review, edit, or remove any content that we deem inappropriate, harmful, or in violation of these terms.
+                </p>
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <div className="flex items-start space-x-3">
                     <AlertTriangle size={20} className="text-yellow-600 mt-0.5" />
