@@ -145,6 +145,28 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     });
     setNewImages([]);
     setImagesToDelete([]);
+
+    // Initialize offer/request tags based on existing post tags
+    const newOfferRequestTags = {
+      goods: [] as string[],
+      services: [] as string[],
+      housing: [] as string[],
+      events: [] as string[],
+    };
+
+    if (post.tags) {
+      const postType = post.postType as keyof typeof newOfferRequestTags;
+      if (postType in newOfferRequestTags) {
+        if (post.tags.includes('offer')) {
+          newOfferRequestTags[postType].push('offer');
+        }
+        if (post.tags.includes('request')) {
+          newOfferRequestTags[postType].push('request');
+        }
+      }
+    }
+
+    setOfferRequestTags(newOfferRequestTags);
   };
 
   const handleCancelEdit = () => {
@@ -362,6 +384,54 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     setEditFormData(prev => ({
       ...prev,
       images: prev.images.filter(img => img !== imageUrl)
+    }));
+  };
+
+  const handleOfferRequestTagSelect = (tag: string) => {
+    const postType = editFormData.postType as keyof typeof offerRequestTags;
+    if (!postType || postType === 'events') return; // Events don't have offer/request
+
+    setOfferRequestTags(prev => ({
+      ...prev,
+      [postType]: prev[postType].includes(tag)
+        ? prev[postType].filter(t => t !== tag) // Deselect if already selected
+        : [tag] // Select only this tag (deselect the other)
+    }));
+
+    // Update editFormData tags to include/exclude offer/request
+    const currentTags = editFormData.tags || [];
+    const otherOfferRequestTag = tag === 'offer' ? 'request' : 'offer';
+    
+    let updatedTags = currentTags.filter(t => t !== 'offer' && t !== 'request');
+    if (!offerRequestTags[postType].includes(tag)) {
+      updatedTags.push(tag);
+    }
+
+    setEditFormData(prev => ({
+      ...prev,
+      tags: updatedTags
+    }));
+  };
+
+  const handleTagSelect = (tag: string) => {
+    const currentTags = editFormData.tags || [];
+    if (currentTags.includes(tag)) {
+      setEditFormData(prev => ({
+        ...prev,
+        tags: currentTags.filter(t => t !== tag)
+      }));
+    } else {
+      setEditFormData(prev => ({
+        ...prev,
+        tags: [...currentTags, tag]
+      }));
+    }
+  };
+
+  const handleClearAllTags = () => {
+    setEditFormData(prev => ({
+      ...prev,
+      tags: []
     }));
   };
 
@@ -775,6 +845,106 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
         <div className="mt-4 p-4 bg-gray-50 border-2 border-[#708d81] rounded-lg">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Post</h3>
           
+          {/* Post Type Selection */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-3">Post Type *</label>
+            <div className="flex gap-4">
+              {postTypes.map((type) => (
+                <button
+                  key={type.value}
+                  type="button"
+                  onClick={() => setEditFormData(prev => ({ ...prev, postType: type.value as any }))}
+                  className={`flex flex-col items-center justify-center w-20 h-20 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    editFormData.postType === type.value
+                      ? 'text-white'
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: editFormData.postType === type.value ? '#708d81' : '#f0f2f0',
+                    color: editFormData.postType === type.value ? 'white' : '#708d81',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (editFormData.postType !== type.value) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (editFormData.postType !== type.value) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  <span className="text-2xl mb-1">{type.icon}</span>
+                  <span className="text-xs">{type.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Offer/Request Tags (for goods, services, housing only) */}
+          {editFormData.postType && editFormData.postType !== 'events' && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Type of {editFormData.postType?.charAt(0).toUpperCase() + editFormData.postType?.slice(1)}
+              </label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleOfferRequestTagSelect('offer')}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('offer')
+                      ? 'text-white'
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('offer') ? '#708d81' : '#f0f2f0',
+                    color: offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('offer') ? 'white' : '#708d81',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('offer')) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('offer')) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  Offer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOfferRequestTagSelect('request')}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('request')
+                      ? 'text-white'
+                      : 'text-[#708d81] hover:text-[#5a7268]'
+                  }`}
+                  style={{
+                    backgroundColor: offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('request') ? '#708d81' : '#f0f2f0',
+                    color: offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('request') ? 'white' : '#708d81',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('request')) {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!offerRequestTags[editFormData.postType as keyof typeof offerRequestTags]?.includes('request')) {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }
+                  }}
+                >
+                  Request
+                </button>
+              </div>
+            </div>
+          )}
+          
           {/* Title Input */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
@@ -806,6 +976,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
               onChange={(e) => setEditFormData(prev => ({ ...prev, location: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
               placeholder="Optional location"
+            />
+          </div>
+
+          {/* Tags */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <TagSelector
+              selectedTags={editFormData.tags || []}
+              onTagSelect={handleTagSelect}
+              onClearAll={handleClearAllTags}
+              availableTags={allAvailableTags}
             />
           </div>
 
