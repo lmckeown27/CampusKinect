@@ -396,7 +396,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                 }`}
               >
                 <img
-                  src={image.startsWith("/uploads/") ? `http://localhost:3001${image}` : image}
+                  src={image.startsWith("/uploads/") ? 
+                    `${typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://campuskinect.net'}${image}` : 
+                    image
+                  }
                   alt={`Post image ${index + 1}`}
                   className="post-image"
                   onLoad={() => {}}
