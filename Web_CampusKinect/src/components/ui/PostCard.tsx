@@ -707,14 +707,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
           <div className="flex-1 min-w-0">
             <h3 
               className="text-xl font-bold text-gray-900 line-clamp-2"
-              style={{ fontSize: '26px', lineHeight: '28px', marginBottom: '0' }}
+              style={{ fontSize: '26px', lineHeight: '32px', marginBottom: '2px' }}
             >
               {post.title}
             </h3>
             
             {/* Location - Underneath the title */}
             {post.location && (
-              <div className="flex items-center space-x-1" style={{ marginTop: '4px' }}>
+              <div className="flex items-center space-x-1" style={{ marginTop: '6px' }}>
                 <MapPin size={16} className="text-gray-500" />
                 <span className="text-sm text-gray-600">{post.location}</span>
               </div>
