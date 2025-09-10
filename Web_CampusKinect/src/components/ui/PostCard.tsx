@@ -121,18 +121,51 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   const handleSaveEdit = async () => {
-    // Here you would call the API to save the edit
-    // For now, we'll just call the original onEdit if provided
-    if (onEdit) {
-      onEdit(post.id, {
-        ...post,
+    try {
+      // First, upload any new images
+      let newImageUrls: string[] = [];
+      if (newImages.length > 0) {
+        console.log('📤 Uploading', newImages.length, 'new images...');
+        const uploadPromises = newImages.map(file => apiService.uploadImage(file));
+        const uploadResults = await Promise.all(uploadPromises);
+        newImageUrls = uploadResults.map(result => result.url);
+        console.log('✅ New images uploaded:', newImageUrls);
+      }
+
+      // Combine existing images (minus deleted ones) with new images
+      const updatedImages = [...editFormData.images, ...newImageUrls];
+
+      // Prepare update data (excluding images as they're handled separately)
+      const updateData = {
         title: editFormData.title,
         description: editFormData.description,
-        location: editFormData.location,
-        // TODO: Handle image updates
-      });
+        location: editFormData.location
+      };
+
+      console.log('💾 Saving post update:', updateData);
+
+      // Call API to update the post
+      const updatedPost = await apiService.updatePost(post.id, updateData);
+      
+      console.log('✅ Post updated successfully:', updatedPost);
+
+      // Call the onEdit callback if provided (for state updates)
+      if (onEdit) {
+        onEdit(post.id, updatedPost);
+      }
+
+      // Reset editing state
+      setIsEditing(false);
+      setNewImages([]);
+      setImagesToDelete([]);
+
+      // Show success message
+      alert('Post updated successfully!');
+
+    } catch (error) {
+      console.error('❌ Failed to save post:', error);
+      alert('Failed to save changes. Please try again.');
     }
-    setIsEditing(false);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -658,7 +691,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                className="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-2"
+                style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
               >
                 <Upload size={16} />
                 Add Images
@@ -679,14 +715,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             <button
               type="button"
               onClick={handleCancelEdit}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              style={{ backgroundColor: '#f3f4f6', color: '#374151', border: '2px solid #d1d5db', cursor: 'pointer' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e5e7eb'; e.currentTarget.style.border = '2px solid #9ca3af'; e.currentTarget.style.cursor = 'pointer'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f6'; e.currentTarget.style.border = '2px solid #d1d5db'; e.currentTarget.style.cursor = 'pointer'; }}
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSaveEdit}
-              className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268]"
+              className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
             >
               Save Changes
             </button>
