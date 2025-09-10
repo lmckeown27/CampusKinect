@@ -200,7 +200,16 @@ const SettingsTab: React.FC = () => {
                   <button
                     onClick={handleCookieSettings}
                     className="w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors cursor-pointer"
-                    style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                    style={{ 
+                      backgroundColor: '#708d81', 
+                      color: 'white', 
+                      border: '2px solid #708d81', 
+                      cursor: 'pointer',
+                      WebkitTapHighlightColor: 'transparent',
+                      WebkitTouchCallout: 'none',
+                      WebkitUserSelect: 'none',
+                      userSelect: 'none'
+                    }}
                     onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
                   >
@@ -235,7 +244,14 @@ const SettingsTab: React.FC = () => {
                     <button
                       onClick={() => setTheme('light')}
                       className="px-4 py-2 text-white rounded-lg transition-colors cursor-pointer"
-                      style={{ backgroundColor: theme === 'light' ? '#708d81' : '#f0f2f0', cursor: 'pointer' }}
+                      style={{ 
+                        backgroundColor: theme === 'light' ? '#708d81' : '#f0f2f0', 
+                        cursor: 'pointer',
+                        WebkitTapHighlightColor: 'transparent',
+                        WebkitTouchCallout: 'none',
+                        WebkitUserSelect: 'none',
+                        userSelect: 'none'
+                      }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme === 'light' ? '#5a7268' : '#e8ebe8'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme === 'light' ? '#708d81' : '#f0f2f0'}
                     >
@@ -244,7 +260,14 @@ const SettingsTab: React.FC = () => {
                     <button
                       onClick={() => alert('Dark mode coming soon :)')}
                       className="px-4 py-2 text-white rounded-lg transition-colors cursor-pointer"
-                      style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
+                      style={{ 
+                        backgroundColor: '#f0f2f0', 
+                        cursor: 'pointer',
+                        WebkitTapHighlightColor: 'transparent',
+                        WebkitTouchCallout: 'none',
+                        WebkitUserSelect: 'none',
+                        userSelect: 'none'
+                      }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
                     >
@@ -261,7 +284,15 @@ const SettingsTab: React.FC = () => {
             <button
               onClick={handleSave}
               className="px-6 py-3 text-white rounded-lg transition-colors cursor-pointer"
-              style={{ backgroundColor: '#708d81', cursor: 'pointer' }}
+              style={{ 
+                backgroundColor: '#708d81', 
+                cursor: 'pointer',
+                color: 'white',
+                WebkitTapHighlightColor: 'transparent',
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
             >
