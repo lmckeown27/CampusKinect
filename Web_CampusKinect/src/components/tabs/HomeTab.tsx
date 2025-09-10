@@ -523,10 +523,10 @@ const HomeTab: React.FC = () => {
   const performSearch = async (query: string) => {
     try {
       // First filter existing posts for instant feedback
-      const filteredLocalPosts = filteredPosts.filter(post => 
-        post.title.toLowerCase().includes(query.toLowerCase()) ||
-        post.description.toLowerCase().includes(query.toLowerCase()) ||
-        post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      const filteredLocalPosts = (filteredPosts || []).filter(post => 
+        (post?.title?.toLowerCase().includes(query.toLowerCase())) ||
+        (post?.description?.toLowerCase().includes(query.toLowerCase())) ||
+        (post?.tags && Array.isArray(post.tags) && post.tags.some(tag => tag?.toLowerCase().includes(query.toLowerCase())))
       );
       
       setSearchResults(filteredLocalPosts);
@@ -539,7 +539,7 @@ const HomeTab: React.FC = () => {
   };
 
   const handleSearchResultSelect = (post: any) => {
-    setSearchQuery(post.title);
+    setSearchQuery(post?.title || '');
     setShowSearchResults(false);
     // Optionally scroll to the post or highlight it
   };
@@ -765,25 +765,25 @@ const HomeTab: React.FC = () => {
             />
             
             {/* Search Results Dropdown */}
-            {showSearchResults && searchResults.length > 0 && (
+            {showSearchResults && searchResults && Array.isArray(searchResults) && searchResults.length > 0 && (
               <div className="absolute top-full left-0 right-0 bg-white border border-[#708d81] rounded-lg shadow-lg mt-1 max-h-80 overflow-y-auto z-50">
-                {searchResults.slice(0, 8).map((post) => (
+                {searchResults.slice(0, 8).map((post, index) => (
                   <div
-                    key={post.id}
+                    key={post?.id || index}
                     onClick={() => handleSearchResultSelect(post)}
                     className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                   >
                     <div className="font-medium text-gray-900 truncate">
-                      {post.title}
+                      {post?.title || 'Untitled Post'}
                     </div>
                     <div className="text-sm text-gray-500 truncate mt-1">
-                      {post.description}
+                      {post?.description || 'No description available'}
                     </div>
                     <div className="flex items-center mt-2 space-x-2">
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#708d81] text-white">
-                        {post.postType}
+                        {post.postType || 'Post'}
                       </span>
-                      {post.tags.slice(0, 2).map((tag: string) => (
+                      {(post.tags && Array.isArray(post.tags) ? post.tags.slice(0, 2) : []).map((tag: string) => (
                         <span key={tag} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                           {tag}
                         </span>
