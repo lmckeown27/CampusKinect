@@ -1173,41 +1173,34 @@ select.border-olive-green:focus {
 .post-image-container {
   position: relative;
   width: 100%;
-  background-color: #f3f4f6;
   border-radius: 0.5rem;
   overflow: hidden;
   margin-bottom: 1rem;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
 }
 
-/* Single image container - preserve full image content */
+/* Single image container */
 .post-image-container.single-image {
-  max-height: 180px;
-  height: auto;
   width: 100%;
 }
 
-/* Multiple images container - preserve full image content, flow horizontally */
+/* Multiple images container - flow horizontally */
 .post-image-container.multi-image {
-  max-height: 120px;
-  height: auto;
   flex: 0 0 auto;
   max-width: 200px;
-  width: auto;
 }
 
 .post-image {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
+  width: 100%;
   height: auto;
-  object-fit: contain;
-  object-position: left center;
+  max-height: 180px;
+  object-fit: scale-down;
   display: block;
   transition: transform 0.2s ease;
-  background-color: #f9fafb;
+}
+
+/* Adjust max-height for multiple images */
+.post-image-container.multi-image .post-image {
+  max-height: 120px;
 }
 
 .post-image:hover {
