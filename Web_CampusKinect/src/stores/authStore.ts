@@ -266,6 +266,18 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: 'auth-storage',
+      storage: {
+        getItem: (key: string) => {
+          const value = sessionStorage.getItem(key);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (key: string, value: unknown) => {
+          sessionStorage.setItem(key, JSON.stringify(value));
+        },
+        removeItem: (key: string) => {
+          sessionStorage.removeItem(key);
+        },
+      },
       partialize: (state) => ({ 
         user: state.user, 
         isAuthenticated: state.isAuthenticated 
