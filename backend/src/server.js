@@ -6,7 +6,12 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-require('dotenv').config();
+// Load environment variables based on NODE_ENV
+if (process.env.NODE_ENV === 'production') {
+  require('dotenv').config({ path: '.env.production' });
+} else {
+  require('dotenv').config();
+}
 
 const { initDatabase, pool } = require('./config/database');
 const { connectRedis, redis } = require('./config/redis');

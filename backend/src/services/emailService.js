@@ -32,9 +32,16 @@ const createTransporter = () => {
   // Generic SMTP configuration for other providers
   console.log('⚠️  EMAIL DEBUG: Using generic SMTP configuration (not Gmail)');
   
-  // PRODUCTION FIX: If SMTP_HOST is localhost/127.0.0.1, force Gmail config
-  if (process.env.SMTP_HOST === '127.0.0.1' || process.env.SMTP_HOST === 'localhost') {
-    console.log('🚨 EMAIL DEBUG: Detected localhost SMTP_HOST, forcing Gmail configuration');
+  // PRODUCTION FIX: If SMTP_HOST is localhost/127.0.0.1/undefined, force Gmail config  
+  if (!process.env.SMTP_HOST || process.env.SMTP_HOST === '127.0.0.1' || process.env.SMTP_HOST === 'localhost') {
+    console.log('🚨 EMAIL DEBUG: SMTP_HOST missing or localhost detected, forcing Gmail configuration');
+    
+    // Check if we have the required Gmail credentials
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.log('❌ EMAIL ERROR: Gmail credentials missing! SMTP_USER or SMTP_PASS not set');
+      throw new Error('Email service not configured: Missing SMTP_USER or SMTP_PASS environment variables');
+    }
+    
     return nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',

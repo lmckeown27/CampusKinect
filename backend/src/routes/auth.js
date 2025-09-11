@@ -531,16 +531,9 @@ router.post('/register', [
       const emailSent = await sendVerificationCode(email, firstName, verificationCode);
       
       if (!emailSent) {
-        // If email fails, remove the pending registration to prevent blocking future attempts
-        console.log('⚠️  EMAIL FAILED: Removing pending registration to prevent blocking future attempts');
-        pendingRegistrations.delete(registrationId);
-        
-        return res.status(500).json({
-          success: false,
-          error: {
-            message: 'Failed to send verification email. Please check your email address and try again. If the problem persists, contact support.'
-          }
-        });
+        // Log the failure but still let user proceed to verification page
+        console.log('⚠️  EMAIL FAILED: Email service not working, but allowing user to proceed to verification page for debugging');
+        // Note: We keep the pending registration so user can still verify manually if needed
       }
       
       res.status(200).json({
@@ -1292,6 +1285,97 @@ router.get('/me', auth, async (req, res) => {
       error: {
         message: 'Failed to get profile. Please try again.'
       }
+    });
+  }
+});
+
+// @route   POST /api/v1/auth/admin/clear-pending
+// @desc    Clear all pending registrations (admin only)
+// @access  Admin
+router.post('/admin/clear-pending', async (req, res) => {
+  try {
+    // Simple admin check - only allow in development or with specific header
+    if (process.env.NODE_ENV !== 'development' && req.headers['x-admin-secret'] !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'Access denied' }
+      });
+    }
+
+    const beforeCount = pendingRegistrations.size;
+    pendingRegistrations.clear();
+    
+    console.log(`🧹 ADMIN: Cleared ${beforeCount} pending registrations`);
+    
+    res.json({
+      success: true,
+      message: `Cleared ${beforeCount} pending registrations`,
+      data: {
+        clearedCount: beforeCount,
+        remainingCount: pendingRegistrations.size
+      }
+    });
+
+  } catch (error) {
+    console.error('Clear pending registrations error:', error);
+    res.status(500).json({
+      success: false,
+      error: { message: 'Failed to clear pending registrations' }
+    });
+  }
+});
+
+// @route   GET /api/v1/auth/admin/pending-stats
+// @desc    Get pending registration statistics (admin only)
+// @access  Admin  
+router.get('/admin/pending-stats', async (req, res) => {
+  try {
+    // Simple admin check
+    if (process.env.NODE_ENV !== 'development' && req.headers['x-admin-secret'] !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'Access denied' }
+      });
+    }
+
+    const now = new Date();
+    const registrations = Array.from(pendingRegistrations.values());
+    
+    const stats = {
+      total: registrations.length,
+      byAge: {
+        under1min: 0,
+        under5min: 0,
+        under15min: 0,
+        over15min: 0
+      },
+      oldestAge: null,
+      newestAge: null
+    };
+
+    registrations.forEach(reg => {
+      const ageMs = now - new Date(reg.createdAt);
+      const ageMin = ageMs / (1000 * 60);
+      
+      if (ageMin < 1) stats.byAge.under1min++;
+      else if (ageMin < 5) stats.byAge.under5min++;
+      else if (ageMin < 15) stats.byAge.under15min++;
+      else stats.byAge.over15min++;
+      
+      if (!stats.oldestAge || ageMin > stats.oldestAge) stats.oldestAge = ageMin;
+      if (!stats.newestAge || ageMin < stats.newestAge) stats.newestAge = ageMin;
+    });
+
+    res.json({
+      success: true,
+      data: stats
+    });
+
+  } catch (error) {
+    console.error('Pending stats error:', error);
+    res.status(500).json({
+      success: false,
+      error: { message: 'Failed to get pending statistics' }
     });
   }
 });
