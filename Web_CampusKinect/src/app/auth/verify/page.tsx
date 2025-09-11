@@ -81,7 +81,7 @@ const VerifyPage: React.FC = () => {
         </div>
 
         {/* Verification Form */}
-        <div className="bg-white rounded-lg shadow-box-xl p-6 border border-neutral-100 mx-auto">
+        <div className="bg-white rounded-lg shadow-box-xl p-6 border border-neutral-100 mx-auto pb-8">
           <form onSubmit={handleSubmit} className="space-y-16">
             {/* Verification Code Input */}
             <div className="flex flex-col items-center" style={{ marginBottom: '0px' }}>
@@ -119,25 +119,25 @@ const VerifyPage: React.FC = () => {
               </div>
             )}
 
-            {/* Spam/Junk Mail Instructions and Resend Link */}
+            {/* Spam/Junk Mail Instructions and Resend Button */}
             <div className="text-center" style={{ marginTop: '20px', marginBottom: '40px' }}>
-              <div className="text-neutral-900 text-sm mb-2">
+              <div className="text-neutral-900 text-sm mb-4">
                 Check your spam/junkmail if you don't see a Verification Code
               </div>
-              <div className="text-neutral-900 text-sm text-center" style={{ textAlign: 'center' }}>
-                Still don't see the Verification Code?{' '}
-                <button
-                  type="button"
-                  onClick={handleResendCode}
-                  className="text-primary hover:text-primary-600 font-medium text-sm transition-colors bg-transparent border-none p-0 cursor-pointer"
-                  style={{ 
-                    backgroundColor: 'transparent',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Resend
-                </button>
+              <div className="text-neutral-900 text-sm text-center mb-4" style={{ textAlign: 'center' }}>
+                Still don't see the Verification Code?
               </div>
+              <button
+                type="button"
+                onClick={handleResendCode}
+                disabled={isLoading}
+                className="px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg font-medium hover:bg-neutral-200 hover:scale-105 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm border border-neutral-300"
+                style={{ 
+                  cursor: isLoading ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {isLoading ? 'Sending...' : 'Resend Code'}
+              </button>
             </div>
 
             {/* Submit Button */}
