@@ -6,8 +6,16 @@ const nodemailer = require('nodemailer');
 
 // Create email transporter based on environment configuration
 const createTransporter = () => {
+  // Debug environment variables
+  console.log('🔧 EMAIL DEBUG: Environment variables check:');
+  console.log('🔧 SMTP_HOST:', process.env.SMTP_HOST);
+  console.log('🔧 SMTP_PORT:', process.env.SMTP_PORT);
+  console.log('🔧 SMTP_USER:', process.env.SMTP_USER ? process.env.SMTP_USER.substring(0, 5) + '***' : 'NOT SET');
+  console.log('🔧 SMTP_PASS:', process.env.SMTP_PASS ? '***SET***' : 'NOT SET');
+  
   // For Gmail, we need a service account with App Password
   if (process.env.SMTP_HOST === 'smtp.gmail.com') {
+    console.log('✅ EMAIL DEBUG: Using Gmail configuration');
     return nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
@@ -22,6 +30,24 @@ const createTransporter = () => {
   }
   
   // Generic SMTP configuration for other providers
+  console.log('⚠️  EMAIL DEBUG: Using generic SMTP configuration (not Gmail)');
+  
+  // PRODUCTION FIX: If SMTP_HOST is localhost/127.0.0.1, force Gmail config
+  if (process.env.SMTP_HOST === '127.0.0.1' || process.env.SMTP_HOST === 'localhost') {
+    console.log('🚨 EMAIL DEBUG: Detected localhost SMTP_HOST, forcing Gmail configuration');
+    return nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // TLS
+      auth: { 
+        user: process.env.SMTP_USER, 
+        pass: process.env.SMTP_PASS 
+      },
+      tls: { rejectUnauthorized: false }
+    });
+  }
+  
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
