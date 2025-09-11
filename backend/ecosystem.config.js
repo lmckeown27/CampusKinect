@@ -21,6 +21,9 @@ module.exports = {
       PORT: 8080
     },
     
+    // Environment file loading
+    env_file: '.env.production',
+    
     // Logging
     log_file: './logs/combined.log',
     out_file: './logs/out.log',
