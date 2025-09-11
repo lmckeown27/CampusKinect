@@ -71,7 +71,6 @@ export interface Conversation {
   lastMessageAt: string;
   createdAt: string;
   participants?: User[];
-  otherUser?: User; // The other user in the conversation (from backend)
   lastMessage?: Message;
   unreadCount: number;
 }

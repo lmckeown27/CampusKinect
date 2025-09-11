@@ -832,18 +832,18 @@ const MessagesTab: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       {/* Profile Picture */}
                       <div className="w-12 h-12 flex-shrink-0">
-                        {conversation.otherUser?.profilePicture ? (
+                        {conversation.participants && conversation.participants[0]?.profilePicture ? (
                           <img
-                            src={conversation.otherUser.profilePicture}
-                            alt={`${conversation.otherUser.firstName} ${conversation.otherUser.lastName}`}
+                            src={conversation.participants[0].profilePicture}
+                            alt={`${conversation.participants[0].firstName} ${conversation.participants[0].lastName}`}
                             className="w-12 h-12 rounded-full object-cover"
                             style={{ border: '2px solid #708d81' }}
                           />
                         ) : (
                           <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
                             <span className="text-white text-sm font-bold">
-                              {conversation.otherUser 
-                                ? `${conversation.otherUser.firstName?.charAt(0) || '?'}${conversation.otherUser.lastName?.charAt(0) || '?'}`
+                              {conversation.participants && conversation.participants[0] 
+                                ? `${conversation.participants[0].firstName?.charAt(0) || '?'}${conversation.participants[0].lastName?.charAt(0) || '?'}`
                                 : <User size={24} className="text-white" />
                               }
                             </span>
@@ -853,7 +853,7 @@ const MessagesTab: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <p className="text-base font-medium text-black truncate">
-                            {conversation.otherUser ? `${conversation.otherUser.firstName} ${conversation.otherUser.lastName}` : 'Unknown User'}
+                            {conversation.participants && conversation.participants[0] ? `${conversation.participants[0].firstName} ${conversation.participants[0].lastName}` : 'Unknown User'}
                           </p>
                           {conversation.unreadCount > 0 && (
                             <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -894,18 +894,18 @@ const MessagesTab: React.FC = () => {
                   <div className="flex items-center space-x-3">
                     {/* Profile Picture */}
                     <div className="w-10 h-10 flex-shrink-0">
-                                             {currentConversation.otherUser?.profilePicture ? (
+                                             {currentConversation.participants && currentConversation.participants[0]?.profilePicture ? (
                          <img
-                           src={currentConversation.otherUser.profilePicture}
-                           alt={`${currentConversation.otherUser.firstName} ${currentConversation.otherUser.lastName}`}
+                           src={currentConversation.participants[0].profilePicture}
+                           alt={`${currentConversation.participants[0].firstName} ${currentConversation.participants[0].lastName}`}
                            className="w-10 h-10 rounded-full object-cover"
                            style={{ border: '2px solid #708d81' }}
                          />
                        ) : (
                          <div className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
                            <span className="text-white text-xs font-bold">
-                             {currentConversation.otherUser 
-                               ? `${currentConversation.otherUser.firstName?.charAt(0) || '?'}${currentConversation.otherUser.lastName?.charAt(0) || '?'}`
+                             {currentConversation.participants && currentConversation.participants[0] 
+                               ? `${currentConversation.participants[0].firstName?.charAt(0) || '?'}${currentConversation.participants[0].lastName?.charAt(0) || '?'}`
                                : <User size={20} className="text-white" />
                              }
                            </span>
@@ -914,7 +914,7 @@ const MessagesTab: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-[#708d81]">
-                        {currentConversation.otherUser ? `${currentConversation.otherUser.firstName} ${currentConversation.otherUser.lastName}` : 'Unknown User'}
+                        {currentConversation.participants && currentConversation.participants[0] ? `${currentConversation.participants[0].firstName} ${currentConversation.participants[0].lastName}` : 'Unknown User'}
                       </h3>
                       <p className="text-sm text-[#708d81] opacity-70">
                         Online
