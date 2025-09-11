@@ -1244,9 +1244,10 @@ select.border-olive-green:focus {
   width: 100%;
   height: auto;
   max-height: 300px;
-  object-fit: scale-down;
+  object-fit: contain;
   display: block;
   transition: transform 0.2s ease;
+  background-color: transparent;
 }
 
 /* Adjust max-height for multiple images */

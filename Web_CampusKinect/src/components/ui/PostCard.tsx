@@ -330,37 +330,39 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                   return;
                 }
 
-                // Define consistent sizing based on aspect ratio (from CreatePostTab)
+                // Preserve aspect ratio - resize to fit within max dimensions
                 const aspectRatio = img.width / img.height;
+                const maxDimension = 600; // Maximum width or height
                 let targetWidth: number;
                 let targetHeight: number;
 
-                if (aspectRatio > 1.5) {
-                  // Wide image - landscape
-                  targetWidth = 400;
-                  targetHeight = Math.round(400 / aspectRatio);
-                  if (targetHeight < 200) {
-                    targetHeight = 200;
-                    targetWidth = Math.round(200 * aspectRatio);
-                  }
-                } else if (aspectRatio < 0.7) {
-                  // Tall image - portrait
-                  targetHeight = 400;
-                  targetWidth = Math.round(400 * aspectRatio);
-                  if (targetWidth < 200) {
-                    targetWidth = 200;
-                    targetHeight = Math.round(200 / aspectRatio);
-                  }
+                // Calculate dimensions while preserving aspect ratio
+                if (img.width > img.height) {
+                  // Landscape: limit width, calculate height
+                  targetWidth = Math.min(img.width, maxDimension);
+                  targetHeight = Math.round(targetWidth / aspectRatio);
                 } else {
-                  // Square-ish image
-                  targetWidth = 350;
-                  targetHeight = 350;
+                  // Portrait or square: limit height, calculate width
+                  targetHeight = Math.min(img.height, maxDimension);
+                  targetWidth = Math.round(targetHeight * aspectRatio);
+                }
+
+                // Ensure minimum dimensions for very small images
+                const minDimension = 150;
+                if (targetWidth < minDimension && targetHeight < minDimension) {
+                  if (aspectRatio > 1) {
+                    targetWidth = minDimension;
+                    targetHeight = Math.round(minDimension / aspectRatio);
+                  } else {
+                    targetHeight = minDimension;
+                    targetWidth = Math.round(minDimension * aspectRatio);
+                  }
                 }
 
                 canvas.width = targetWidth;
                 canvas.height = targetHeight;
 
-                // Draw the resized image
+                // Draw the resized image maintaining aspect ratio
                 ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
                 // Convert to data URL with good quality
