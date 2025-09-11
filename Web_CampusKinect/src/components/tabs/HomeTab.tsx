@@ -465,7 +465,7 @@ const HomeTab: React.FC = () => {
   const subTags = {
     goods: [
       'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
-      'Automotive', 'Pets', 'Pet Supplies', 'Other'
+      'Automotive', 'Pets', 'Pet Supplies', 'Household Appliances', 'Other'
     ],
     services: [
       'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',
