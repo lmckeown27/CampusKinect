@@ -464,8 +464,8 @@ const HomeTab: React.FC = () => {
   // Define sub-tags for each main category
   const subTags = {
     goods: [
-      'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
-      'Automotive', 'Pets', 'Pet Supplies', 'Household Appliances', 'Other'
+      'Clothing', 'Parking Permits', 'Household Appliances', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+      'Automotive', 'Pets', 'Pet Supplies', 'Other'
     ],
     services: [
       'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',
@@ -990,7 +990,7 @@ const HomeTab: React.FC = () => {
                     <button
                       key={subTag}
                       onClick={() => handleTagSelect(subTag)}
-                      className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                      className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left ${
                         selectedTags.includes(subTag)
                           ? 'text-white shadow-sm'
                           : 'text-[#708d81] hover:text-[#5a7268]'

@@ -62,6 +62,7 @@ router.get('/profile', auth, async (req, res) => {
       year: user.year,
       major: user.major,
       hometown: user.hometown,
+      bio: user.bio,
       university: {
         id: user.university_id,
         name: user.university_name,

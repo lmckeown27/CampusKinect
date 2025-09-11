@@ -48,7 +48,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ post, isOpen, onClose, on
   // Define all available tags from different categories (same as Create Post)
   const allAvailableTags = [
     // Goods
-    'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+    'Clothing', 'Parking Permits', 'Household Appliances', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
     'Automotive', 'Pets', 'Pet Supplies',
     // Services
     'Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design',

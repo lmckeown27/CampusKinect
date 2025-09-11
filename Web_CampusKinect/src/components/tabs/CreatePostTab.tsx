@@ -87,7 +87,7 @@ const CreatePostTab: React.FC = () => {
   // Define sub-tags for each post type (same as Home tab)
   const subTags = {
     goods: [
-      'Clothing', 'Parking Permits', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
+      'Clothing', 'Parking Permits', 'Household Appliances', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 
       'Automotive', 'Pets', 'Pet Supplies', 'Other'
     ],
     services: [
@@ -769,7 +769,7 @@ const CreatePostTab: React.FC = () => {
                             key={subTag}
                             type="button"
                             onClick={() => handleTagSelect(subTag)}
-                            className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                            className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left ${
                               formData.tags.includes(subTag)
                                 ? 'text-white shadow-sm'
                                 : 'text-[#708d81] hover:text-[#5a7268]'
