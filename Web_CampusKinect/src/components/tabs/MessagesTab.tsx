@@ -657,11 +657,25 @@ const MessagesTab: React.FC = () => {
                         <p className="text-sm mt-2">You're all caught up!</p>
                       </div>
                     ) : (
-                      <div className="space-y-1">
+                      <div className="space-y-3">
                         {filteredRequests.map((request) => (
                           <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81' }}>
-                            <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center">
-                              <User size={24} className="text-white" />
+                            {/* Profile Picture */}
+                            <div className="w-12 h-12 flex-shrink-0">
+                              {request.fromUser.profilePicture ? (
+                                <img
+                                  src={request.fromUser.profilePicture}
+                                  alt={`${request.fromUser.firstName} ${request.fromUser.lastName}`}
+                                  className="w-12 h-12 rounded-full object-cover"
+                                  style={{ border: '2px solid #5a7268' }}
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center" style={{ border: '2px solid #5a7268' }}>
+                                  <span className="text-white text-sm font-bold">
+                                    {`${request.fromUser.firstName?.charAt(0) || '?'}${request.fromUser.lastName?.charAt(0) || '?'}`}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-base font-medium text-black truncate">
@@ -737,11 +751,25 @@ const MessagesTab: React.FC = () => {
                         <p className="text-sm mt-2">Start a conversation to send a message!</p>
                       </div>
                     ) : (
-                      <div className="space-y-1">
+                      <div className="space-y-3">
                         {filteredSentRequests.map((request) => (
                           <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81' }}>
-                            <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center">
-                              <User size={24} className="text-white" />
+                            {/* Profile Picture */}
+                            <div className="w-12 h-12 flex-shrink-0">
+                              {request.toUser?.profilePicture ? (
+                                <img
+                                  src={request.toUser.profilePicture}
+                                  alt={`${request.toUser.firstName} ${request.toUser.lastName}`}
+                                  className="w-12 h-12 rounded-full object-cover"
+                                  style={{ border: '2px solid #5a7268' }}
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center" style={{ border: '2px solid #5a7268' }}>
+                                  <span className="text-white text-sm font-bold">
+                                    {request.toUser ? `${request.toUser.firstName?.charAt(0) || '?'}${request.toUser.lastName?.charAt(0) || '?'}` : '?'}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-base font-medium text-black truncate">
@@ -786,7 +814,7 @@ const MessagesTab: React.FC = () => {
               </div>
             ) : (
               // Primary/Unread Tabs - Show conversations
-              <div className="space-y-1">
+              <div className="space-y-3">
                 {filteredConversations.map((conversation) => (
                   <div
                     key={conversation.id}
@@ -802,13 +830,30 @@ const MessagesTab: React.FC = () => {
                     onClick={() => handleConversationSelect(conversation)}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center">
-                        <User size={24} className="text-white" />
+                      {/* Profile Picture */}
+                      <div className="w-12 h-12 flex-shrink-0">
+                        {conversation.otherUser?.profilePicture ? (
+                          <img
+                            src={conversation.otherUser.profilePicture}
+                            alt={`${conversation.otherUser.firstName} ${conversation.otherUser.lastName}`}
+                            className="w-12 h-12 rounded-full object-cover"
+                            style={{ border: '2px solid #708d81' }}
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
+                            <span className="text-white text-sm font-bold">
+                              {conversation.otherUser 
+                                ? `${conversation.otherUser.firstName?.charAt(0) || '?'}${conversation.otherUser.lastName?.charAt(0) || '?'}`
+                                : <User size={24} className="text-white" />
+                              }
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <p className="text-base font-medium text-black truncate">
-                            {conversation.participants?.map(u => `${u.firstName} ${u.lastName}`).join(', ') || 'Unknown User'}
+                            {conversation.otherUser ? `${conversation.otherUser.firstName} ${conversation.otherUser.lastName}` : 'Unknown User'}
                           </p>
                           {conversation.unreadCount > 0 && (
                             <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -847,15 +892,32 @@ const MessagesTab: React.FC = () => {
               <div className="p-4 border-b border-[#708d81] bg-white">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center">
-                      <User size={20} className="text-white" />
+                    {/* Profile Picture */}
+                    <div className="w-10 h-10 flex-shrink-0">
+                                             {currentConversation.otherUser?.profilePicture ? (
+                         <img
+                           src={currentConversation.otherUser.profilePicture}
+                           alt={`${currentConversation.otherUser.firstName} ${currentConversation.otherUser.lastName}`}
+                           className="w-10 h-10 rounded-full object-cover"
+                           style={{ border: '2px solid #708d81' }}
+                         />
+                       ) : (
+                         <div className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
+                           <span className="text-white text-xs font-bold">
+                             {currentConversation.otherUser 
+                               ? `${currentConversation.otherUser.firstName?.charAt(0) || '?'}${currentConversation.otherUser.lastName?.charAt(0) || '?'}`
+                               : <User size={20} className="text-white" />
+                             }
+                           </span>
+                         </div>
+                       )}
                     </div>
                     <div>
                       <h3 className="font-medium text-[#708d81]">
-                        {currentConversation.participants?.map(u => `${u.firstName} ${u.lastName}`).join(', ') || 'Unknown User'}
+                        {currentConversation.otherUser ? `${currentConversation.otherUser.firstName} ${currentConversation.otherUser.lastName}` : 'Unknown User'}
                       </h3>
                       <p className="text-sm text-[#708d81] opacity-70">
-                        {currentConversation.participants?.length || 0} participant(s)
+                        Online
                       </p>
                     </div>
                   </div>
