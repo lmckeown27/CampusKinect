@@ -31,18 +31,22 @@ const ProfileTab: React.FC = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
 
-  // Load saved active tab from sessionStorage on component mount
+  // Load saved active tab from sessionStorage on component mount (user-specific)
   useEffect(() => {
-    const savedActiveTab = sessionStorage.getItem('campusConnect_profileActiveTab');
-    if (savedActiveTab && ['posts', 'reposts', 'bookmarks'].includes(savedActiveTab)) {
-      setActiveTab(savedActiveTab as 'posts' | 'reposts' | 'bookmarks');
+    if (authUser?.id) {
+      const savedActiveTab = sessionStorage.getItem(`campusConnect_profileActiveTab_${authUser.id}`);
+      if (savedActiveTab && ['posts', 'reposts', 'bookmarks'].includes(savedActiveTab)) {
+        setActiveTab(savedActiveTab as 'posts' | 'reposts' | 'bookmarks');
+      }
     }
-  }, []);
+  }, [authUser?.id]);
 
-  // Save active tab to sessionStorage whenever it changes
+  // Save active tab to sessionStorage whenever it changes (user-specific)
   useEffect(() => {
-    sessionStorage.setItem('campusConnect_profileActiveTab', activeTab);
-  }, [activeTab]);
+    if (authUser?.id) {
+      sessionStorage.setItem(`campusConnect_profileActiveTab_${authUser.id}`, activeTab);
+    }
+  }, [activeTab, authUser?.id]);
 
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,10 +59,10 @@ const ProfileTab: React.FC = () => {
     return null;
   });
   
-  // Load saved profile data and sync with auth user
+  // Load saved profile data and sync with auth user (user-specific)
   useEffect(() => {
     if (authUser) {
-      const savedProfile = sessionStorage.getItem('campusConnect_profile');
+      const savedProfile = sessionStorage.getItem(`campusConnect_profile_${authUser.id}`);
       if (savedProfile) {
         try {
           const parsedProfile = JSON.parse(savedProfile);
@@ -317,8 +321,10 @@ const ProfileTab: React.FC = () => {
         };
       });
       
-      // Save to sessionStorage as backup
-      sessionStorage.setItem('campusConnect_profile', JSON.stringify(editForm));
+      // Save to sessionStorage as backup (user-specific)
+      if (authUser?.id) {
+        sessionStorage.setItem(`campusConnect_profile_${authUser.id}`, JSON.stringify(editForm));
+      }
       
       // Exit edit mode
       setIsEditing(false);
@@ -406,26 +412,11 @@ const ProfileTab: React.FC = () => {
               });
               
               // Update global auth store so all components see the new profile picture
-              if (authUser) {
-                // Update the global auth store user object directly
+              if (authUser && authUser.id === user?.id) {
+                // Use dedicated profile picture update function for safety
                 // This ensures PostCard, UserProfileTab, and other components see the change
-                useAuthStore.setState((state) => ({
-                  ...state,
-                  user: state.user ? {
-                    ...state.user,
-                    profileImage: croppedImageUrl, // For immediate display
-                    profilePicture: profilePictureUrl // From database
-                  } : null
-                }));
+                await authStore.updateProfilePicture(profilePictureUrl);
               }
-              
-              // Save both URLs to sessionStorage
-              const currentProfile = JSON.parse(sessionStorage.getItem('campusConnect_profile') || '{}');
-              sessionStorage.setItem('campusConnect_profile', JSON.stringify({
-                ...currentProfile,
-                profileImage: croppedImageUrl,
-                profilePicture: profilePictureUrl
-              }));
               
               console.log('Profile picture uploaded successfully:', profilePictureUrl);
               

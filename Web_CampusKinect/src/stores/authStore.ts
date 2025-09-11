@@ -17,6 +17,7 @@ interface AuthActions {
   checkAuth: () => Promise<void>;
   clearError: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
+  updateProfilePicture: (profilePictureUrl: string) => Promise<void>;
   verifyEmail: (verificationCode: string) => Promise<void>;
   resendVerificationCode: (email: string) => Promise<void>;
 }
@@ -235,6 +236,33 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error: any) {
           set({ 
             error: error.message || 'Profile update failed', 
+            isLoading: false 
+          });
+          throw error;
+        }
+      },
+
+      updateProfilePicture: async (profilePictureUrl: string) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const updatedUser = await apiService.updateProfilePicture(profilePictureUrl);
+          console.log('🖼️ Auth store profile picture updated for user:', updatedUser.id, 'URL:', profilePictureUrl);
+          
+          // Update user state with the new profile picture
+          set((state) => ({ 
+            user: state.user ? { 
+              ...state.user, 
+              profilePicture: profilePictureUrl,
+              profileImage: profilePictureUrl // Ensure consistency
+            } : updatedUser,
+            isLoading: false,
+            error: null 
+          }));
+        } catch (error: any) {
+          console.error('Profile picture update failed in auth store:', error);
+          set({ 
+            error: error.message || 'Profile picture update failed', 
             isLoading: false 
           });
           throw error;
