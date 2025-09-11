@@ -51,6 +51,9 @@ router.get('/profile', auth, async (req, res) => {
       await redisSet(cacheKey, user, CACHE_TTL.USER);
     }
 
+    // Debug profile picture retrieval
+    console.log('👤 Profile retrieved for user:', user.id, 'profilePicture:', user.profile_picture);
+    
     const formattedUser = {
       id: user.id,
       username: user.username,
@@ -267,9 +270,15 @@ router.put('/profile-picture', [
 
     const updatedUser = result.rows[0];
 
-    // Clear cache
+    // Clear user cache
     const cacheKey = generateCacheKey('user', userId);
     await redisDel(cacheKey);
+    
+    // Also clear session cache to ensure updated profile picture is reflected immediately
+    const sessionCacheKey = generateCacheKey('session', userId);
+    await redisDel(sessionCacheKey);
+    
+    console.log('🖼️ Profile picture updated and cache cleared for user:', userId, 'URL:', profilePictureUrl);
 
     res.json({
       success: true,
