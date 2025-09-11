@@ -24,6 +24,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
 import { apiService } from '../../services/api';
+import ImageLightbox from './ImageLightbox';
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
@@ -65,6 +66,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   });
   const [newImages, setNewImages] = useState<File[]>([]);
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  // Image lightbox state
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const objectUrlsRef = useRef<string[]>([]);
 
@@ -76,6 +80,16 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       });
     };
   }, []);
+
+  // Lightbox handlers
+  const handleImageClick = (index: number) => {
+    setLightboxImageIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const handleCloseLightbox = () => {
+    setIsLightboxOpen(false);
+  };
 
   // State for offer/request tags (same as CreatePost and EditPostModal)
   const [offerRequestTags, setOfferRequestTags] = useState({
@@ -751,7 +765,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                     image
                   }
                   alt={`Post image ${index + 1}`}
-                  className="post-image"
+                  className="post-image cursor-pointer"
+                  onClick={() => handleImageClick(index)}
                   onLoad={() => {}}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -1218,6 +1233,16 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             </button>
           </div>
         </div>
+      )}
+
+      {/* Image Lightbox */}
+      {post.images && post.images.length > 0 && (
+        <ImageLightbox
+          images={post.images}
+          initialIndex={lightboxImageIndex}
+          isOpen={isLightboxOpen}
+          onClose={handleCloseLightbox}
+        />
       )}
 
     </div>

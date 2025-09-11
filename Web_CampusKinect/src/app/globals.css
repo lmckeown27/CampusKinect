@@ -1257,6 +1257,8 @@ select.border-olive-green:focus {
 
 .post-image:hover {
   transform: scale(1.02);
+  cursor: pointer;
+  filter: brightness(1.1);
 }
 
 /* Grid layout for multiple images - horizontal flow from left to right */
