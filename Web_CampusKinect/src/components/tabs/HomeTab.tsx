@@ -990,7 +990,7 @@ const HomeTab: React.FC = () => {
                     <button
                       key={subTag}
                       onClick={() => handleTagSelect(subTag)}
-                      className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left ${
+                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left ${
                         selectedTags.includes(subTag)
                           ? 'text-white shadow-sm'
                           : 'text-[#708d81] hover:text-[#5a7268]'

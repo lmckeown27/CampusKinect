@@ -769,7 +769,7 @@ const CreatePostTab: React.FC = () => {
                             key={subTag}
                             type="button"
                             onClick={() => handleTagSelect(subTag)}
-                            className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left ${
+                            className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left ${
                               formData.tags.includes(subTag)
                                 ? 'text-white shadow-sm'
                                 : 'text-[#708d81] hover:text-[#5a7268]'
