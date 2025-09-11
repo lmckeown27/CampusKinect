@@ -290,13 +290,29 @@ router.post('/register', [
       }
     }
 
-    // Check if there's a pending registration for this email/username
+    // Clean up any existing pending registrations for this email/username
+    // This prevents "zombie" registrations from blocking new attempts
+    const now = new Date();
+    let removedPending = false;
+    
     for (const [key, pendingReg] of pendingRegistrations.entries()) {
-      if (pendingReg.email === email || pendingReg.username === username) {
-        // Remove old pending registration
+      // Remove if same email/username OR if older than 5 minutes (aggressive cleanup)
+      const isExpiredOrDuplicate = 
+        pendingReg.email === email || 
+        pendingReg.username === username ||
+        (now - pendingReg.createdAt > 5 * 60 * 1000);
+        
+      if (isExpiredOrDuplicate) {
         pendingRegistrations.delete(key);
-        break;
+        removedPending = true;
+        console.log('🧹 CLEANUP: Removed pending registration for', pendingReg.email, 
+                   pendingReg.email === email ? '(same email)' : 
+                   pendingReg.username === username ? '(same username)' : '(expired)');
       }
+    }
+    
+    if (removedPending) {
+      console.log('📊 CLEANUP: Pending registrations after cleanup:', pendingRegistrations.size);
     }
 
     // Validate educational domain and get university info
@@ -512,7 +528,20 @@ router.post('/register', [
       }
       
       // Send verification code email
-      await sendVerificationCode(email, firstName, verificationCode);
+      const emailSent = await sendVerificationCode(email, firstName, verificationCode);
+      
+      if (!emailSent) {
+        // If email fails, remove the pending registration to prevent blocking future attempts
+        console.log('⚠️  EMAIL FAILED: Removing pending registration to prevent blocking future attempts');
+        pendingRegistrations.delete(registrationId);
+        
+        return res.status(500).json({
+          success: false,
+          error: {
+            message: 'Failed to send verification email. Please check your email address and try again. If the problem persists, contact support.'
+          }
+        });
+      }
       
       res.status(200).json({
         success: true,
@@ -1119,7 +1148,17 @@ router.post('/resend-code', [
       pendingRegistration.expiresAt = expiresAt;
       
       // Send new verification code email
-      await sendVerificationCode(pendingRegistration.email, pendingRegistration.firstName, verificationCode);
+      const emailSent = await sendVerificationCode(pendingRegistration.email, pendingRegistration.firstName, verificationCode);
+
+      if (!emailSent) {
+        console.log('⚠️  RESEND FAILED: Email service failed, providing helpful error message');
+        return res.status(500).json({
+          success: false,
+          error: {
+            message: 'Failed to send verification email. Please check your email address and try again. If the problem persists, please contact support.'
+          }
+        });
+      }
 
       res.json({
         success: true,
