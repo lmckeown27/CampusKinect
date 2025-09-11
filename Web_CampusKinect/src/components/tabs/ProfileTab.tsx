@@ -361,6 +361,10 @@ const ProfileTab: React.FC = () => {
           canvas.width = size;
           canvas.height = size;
           
+          // Fill canvas with white background first
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, size, size);
+          
           // Create circular clipping path
           ctx.beginPath();
           ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
@@ -465,15 +469,18 @@ const ProfileTab: React.FC = () => {
                 className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden transition-all duration-200"
                 onClick={() => fileInputRef.current?.click()}
                 style={{
-                  backgroundColor: '#e5e7eb', // gray-200
-                  cursor: 'pointer'
+                  backgroundColor: '#FFFFFF', // white background
+                  cursor: 'pointer',
+                  border: '2px solid #e5e7eb' // add subtle border
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#d1d5db'; // light grey (gray-300)
+                  e.currentTarget.style.backgroundColor = '#f9fafb'; // very light gray hover
+                  e.currentTarget.style.borderColor = '#d1d5db'; // darker border on hover
                   e.currentTarget.style.cursor = 'pointer';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#e5e7eb'; // return to gray-200
+                  e.currentTarget.style.backgroundColor = '#FFFFFF'; // return to white
+                  e.currentTarget.style.borderColor = '#e5e7eb'; // return to original border
                   e.currentTarget.style.cursor = 'pointer';
                 }}
               >
