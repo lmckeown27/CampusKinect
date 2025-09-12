@@ -47,18 +47,18 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
     };
   }, [isOpen]);
 
-  // Navigation functions
+  // Navigation functions with smoother transitions
   const goToPrevious = useCallback(() => {
     if (images.length > 1) {
-      setImageLoaded(false);
       setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+      setImageLoaded(false);
     }
   }, [images.length]);
 
   const goToNext = useCallback(() => {
     if (images.length > 1) {
-      setImageLoaded(false);
       setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+      setImageLoaded(false);
     }
   }, [images.length]);
 
@@ -150,7 +150,38 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
     >
 
 
-      {/* Image container with positioned controls */}
+      {/* Navigation buttons positioned relative to viewport center for stability */}
+      {images.length > 1 && (
+        <>
+          {/* Previous button - left of center */}
+          <button
+            onClick={goToPrevious}
+            className="fixed top-1/2 left-1/2 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            style={{ 
+              zIndex: 2147483648,
+              marginLeft: '-300px'
+            }}
+            aria-label="Previous image"
+          >
+            <ChevronLeft size={24} />
+          </button>
+
+          {/* Next button - right of center */}
+          <button
+            onClick={goToNext}
+            className="fixed top-1/2 left-1/2 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            style={{ 
+              zIndex: 2147483648,
+              marginLeft: '250px'
+            }}
+            aria-label="Next image"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </>
+      )}
+
+      {/* Image container */}
       <div 
         className={`relative max-w-[90vw] max-h-[90vh] transition-all duration-400 ease-out transform ${
           isVisible ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
@@ -159,61 +190,30 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Close button - top right of image */}
-        <button
-          onClick={onClose}
-          className="absolute -top-12 -right-4 p-2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
-          style={{ zIndex: 2147483648 }}
-          aria-label="Close image viewer"
-        >
-          <X size={24} />
-        </button>
+        {/* Main image with consistent container */}
+        <div className="relative flex items-center justify-center min-h-[400px] min-w-[400px]">
+          {/* Loading overlay */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 rounded-lg">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          )}
 
-        {/* Navigation buttons positioned relative to image sides */}
-        {images.length > 1 && (
-          <>
-            {/* Previous button - left side of image */}
-            <button
-              onClick={goToPrevious}
-              className="absolute top-1/2 -left-16 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
-              style={{ zIndex: 2147483648 }}
-              aria-label="Previous image"
-            >
-              <ChevronLeft size={24} />
-            </button>
-
-            {/* Next button - right side of image */}
-            <button
-              onClick={goToNext}
-              className="absolute top-1/2 -right-16 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
-              style={{ zIndex: 2147483648 }}
-              aria-label="Next image"
-            >
-              <ChevronRight size={24} />
-            </button>
-          </>
-        )}
-        {/* Loading overlay */}
-        {!imageLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 rounded-lg">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-          </div>
-        )}
-
-        {/* Main image */}
-        <img
-          src={getImageUrl(images[currentIndex])}
-          alt={`Image ${currentIndex + 1} of ${images.length}`}
-          className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          onLoad={() => setImageLoaded(true)}
-          onError={(e) => {
-            console.error('Failed to load image:', images[currentIndex]);
-            setImageLoaded(true);
-          }}
-          draggable={false}
-        />
+          {/* Main image */}
+          <img
+            src={getImageUrl(images[currentIndex])}
+            alt={`Image ${currentIndex + 1} of ${images.length}`}
+            className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              console.error('Failed to load image:', images[currentIndex]);
+              setImageLoaded(true);
+            }}
+            draggable={false}
+          />
+        </div>
       </div>
 
 
