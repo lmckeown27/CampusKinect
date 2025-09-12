@@ -657,9 +657,19 @@ const MessagesTab: React.FC = () => {
                         <p className="text-sm mt-2">You're all caught up!</p>
                       </div>
                     ) : (
-                      <div className="space-y-4 px-2">
-                        {filteredRequests.map((request) => (
-                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81', border: '2px solid #000000', width: '95%', margin: '0 auto' }}>
+                      <div className="px-2">
+                        {filteredRequests.map((request, index) => (
+                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-all duration-200" style={{ backgroundColor: '#708d81', border: '2px solid #000000', width: '95%', margin: index === 0 ? '0 auto' : '16px auto 0 auto', cursor: 'pointer' }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#5a7268';
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#708d81';
+                              e.currentTarget.style.transform = 'translateY(0px)';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}>
                             {/* Profile Picture */}
                             <div className="w-12 h-12 flex-shrink-0">
                               {request.fromUser.profilePicture ? (
@@ -678,10 +688,10 @@ const MessagesTab: React.FC = () => {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-base font-medium text-black truncate">
+                              <p className="text-lg font-semibold text-black truncate">
                                 {`${request.fromUser.firstName} ${request.fromUser.lastName}`}
                               </p>
-                              <p className="text-sm truncate" style={{ color: 'white' }}>
+                              <p className="text-base truncate" style={{ color: 'white' }}>
                                 {request.message}
                               </p>
                             </div>
@@ -751,9 +761,19 @@ const MessagesTab: React.FC = () => {
                         <p className="text-sm mt-2">Start a conversation to send a message!</p>
                       </div>
                     ) : (
-                      <div className="space-y-4 px-2">
-                        {filteredSentRequests.map((request) => (
-                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81', border: '2px solid #000000', width: '95%', margin: '0 auto' }}>
+                      <div className="px-2">
+                        {filteredSentRequests.map((request, index) => (
+                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-all duration-200" style={{ backgroundColor: '#708d81', border: '2px solid #000000', width: '95%', margin: index === 0 ? '0 auto' : '16px auto 0 auto', cursor: 'pointer' }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#5a7268';
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#708d81';
+                              e.currentTarget.style.transform = 'translateY(0px)';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}>
                             {/* Profile Picture */}
                             <div className="w-12 h-12 flex-shrink-0">
                               {request.toUser?.profilePicture ? (
@@ -772,10 +792,10 @@ const MessagesTab: React.FC = () => {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-base font-medium text-black truncate">
+                              <p className="text-lg font-semibold text-black truncate">
                                 To: {request.toUser ? `${request.toUser.firstName} ${request.toUser.lastName}` : 'Unknown User'}
                               </p>
-                              <p className="text-sm truncate" style={{ color: 'white' }}>
+                              <p className="text-base truncate" style={{ color: 'white' }}>
                                 {request.message}
                               </p>
                               <div className="flex items-center space-x-2 mt-1">
@@ -814,11 +834,11 @@ const MessagesTab: React.FC = () => {
               </div>
             ) : (
               // Primary/Unread Tabs - Show conversations
-              <div className="space-y-4 px-2">
-                {filteredConversations.map((conversation) => (
+              <div className="px-2">
+                {filteredConversations.map((conversation, index) => (
                   <div
                     key={conversation.id}
-                    className={`p-4 transition-colors rounded-lg ${
+                    className={`p-4 transition-all duration-200 rounded-lg ${
                       currentConversation?.id === conversation.id
                         ? 'bg-[#e8f5e8]'
                         : 'hover:bg-[#f8f9f6]'
@@ -828,7 +848,21 @@ const MessagesTab: React.FC = () => {
                       cursor: 'pointer',
                       border: '2px solid #000000',
                       width: '95%',
-                      margin: '0 auto'
+                      margin: index === 0 ? '0 auto' : '16px auto 0 auto'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentConversation?.id !== conversation.id) {
+                        e.currentTarget.style.backgroundColor = '#5a7268';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentConversation?.id !== conversation.id) {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                        e.currentTarget.style.transform = 'translateY(0px)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }
                     }}
                     onClick={() => handleConversationSelect(conversation)}
                   >
@@ -855,7 +889,7 @@ const MessagesTab: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <p className="text-base font-medium text-black truncate">
+                          <p className="text-lg font-semibold text-black truncate">
                             {conversation.participants && conversation.participants[0] ? `${conversation.participants[0].firstName} ${conversation.participants[0].lastName}` : 'Unknown User'}
                           </p>
                           {conversation.unreadCount > 0 && (
@@ -867,7 +901,7 @@ const MessagesTab: React.FC = () => {
                         {/* Message preview */}
                         {conversation.lastMessage && (
                           <p 
-                            className="text-sm mt-1 truncate" 
+                            className="text-base mt-1 truncate" 
                             style={{ 
                               color: activeTab === 'primary' ? '#4b5563' : 'white' // Darker grey for primary, white for unread
                             }}
