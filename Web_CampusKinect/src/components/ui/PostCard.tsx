@@ -83,11 +83,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
   // Lightbox handlers
   const handleImageClick = (index: number) => {
+    console.log('🖼️ Opening lightbox for image index:', index, 'Total images:', post.images?.length);
     setLightboxImageIndex(index);
     setIsLightboxOpen(true);
   };
 
   const handleCloseLightbox = () => {
+    console.log('🖼️ Closing lightbox');
     setIsLightboxOpen(false);
   };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ImageLightboxProps {
@@ -29,12 +30,15 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
 
   // Handle visibility with animation
   useEffect(() => {
+    console.log('🖼️ ImageLightbox isOpen changed:', isOpen, 'images:', images.length);
     if (isOpen) {
       setIsVisible(true);
       document.body.style.overflow = 'hidden';
+      console.log('🖼️ Lightbox opened, body scroll locked');
     } else {
       setIsVisible(false);
       document.body.style.overflow = 'unset';
+      console.log('🖼️ Lightbox closed, body scroll restored');
     }
 
     // Cleanup on unmount
@@ -126,21 +130,29 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  const lightboxContent = (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${
+      className={`fixed inset-0 flex items-center justify-center transition-all duration-400 ease-out ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
       style={{
-        backgroundColor: isVisible ? 'rgba(0, 0, 0, 0.85)' : 'rgba(0, 0, 0, 0)',
-        backdropFilter: isVisible ? 'blur(4px)' : 'blur(0px)',
+        zIndex: 2147483647, // Maximum z-index value
+        backgroundColor: isVisible ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0)',
+        backdropFilter: isVisible ? 'blur(10px)' : 'blur(0px)',
+        pointerEvents: isVisible ? 'auto' : 'none',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
       }}
       onClick={handleBackgroundClick}
     >
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-60 p-2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+        className="absolute top-4 right-4 p-2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+        style={{ zIndex: 2147483648 }}
         aria-label="Close image viewer"
       >
         <X size={24} />
@@ -178,8 +190,8 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
 
       {/* Image container */}
       <div 
-        className={`relative max-w-[95vw] max-h-[95vh] transition-all duration-500 transform ${
-          isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        className={`relative max-w-[90vw] max-h-[90vh] transition-all duration-400 ease-out transform ${
+          isVisible ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
         }`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -237,6 +249,29 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
       )}
     </div>
   );
+
+  // Render to document body using portal
+  if (typeof document === 'undefined') {
+    console.log('🖼️ Document undefined, not rendering lightbox');
+    return null;
+  }
+  
+  console.log('🖼️ Rendering lightbox to document.body');
+  
+  // Ensure we have a portal container
+  let portalContainer = document.getElementById('lightbox-portal');
+  if (!portalContainer) {
+    portalContainer = document.createElement('div');
+    portalContainer.id = 'lightbox-portal';
+    portalContainer.style.position = 'fixed';
+    portalContainer.style.top = '0';
+    portalContainer.style.left = '0';
+    portalContainer.style.zIndex = '2147483647';
+    portalContainer.style.pointerEvents = 'none';
+    document.body.appendChild(portalContainer);
+  }
+  
+  return createPortal(lightboxContent, portalContainer);
 };
 
 export default ImageLightbox; 
