@@ -137,7 +137,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
       }`}
       style={{
         zIndex: 2147483647, // Maximum z-index value
-        backgroundColor: isVisible ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0)',
+        backgroundColor: isVisible ? 'rgba(128, 128, 128, 0.8)' : 'rgba(128, 128, 128, 0)',
         backdropFilter: isVisible ? 'blur(10px)' : 'blur(0px)',
         pointerEvents: isVisible ? 'auto' : 'none',
         position: 'fixed',
@@ -148,47 +148,9 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
       }}
       onClick={handleBackgroundClick}
     >
-      {/* Close button */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 p-2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
-        style={{ zIndex: 2147483648 }}
-        aria-label="Close image viewer"
-      >
-        <X size={24} />
-      </button>
 
-      {/* Image counter (only show if multiple images) */}
-      {images.length > 1 && (
-        <div className="absolute top-4 left-4 z-60 px-3 py-2 bg-black bg-opacity-50 text-white rounded-lg text-sm font-medium">
-          {currentIndex + 1} / {images.length}
-        </div>
-      )}
 
-      {/* Navigation buttons (only show if multiple images) */}
-      {images.length > 1 && (
-        <>
-          {/* Previous button */}
-          <button
-            onClick={goToPrevious}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-60 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
-            aria-label="Previous image"
-          >
-            <ChevronLeft size={24} />
-          </button>
-
-          {/* Next button */}
-          <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-60 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
-            aria-label="Next image"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </>
-      )}
-
-      {/* Image container */}
+      {/* Image container with positioned controls */}
       <div 
         className={`relative max-w-[90vw] max-h-[90vh] transition-all duration-400 ease-out transform ${
           isVisible ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
@@ -197,6 +159,40 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Close button - top right of image */}
+        <button
+          onClick={onClose}
+          className="absolute -top-12 -right-4 p-2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+          style={{ zIndex: 2147483648 }}
+          aria-label="Close image viewer"
+        >
+          <X size={24} />
+        </button>
+
+        {/* Navigation buttons positioned relative to image sides */}
+        {images.length > 1 && (
+          <>
+            {/* Previous button - left side of image */}
+            <button
+              onClick={goToPrevious}
+              className="absolute top-1/2 -left-16 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+              style={{ zIndex: 2147483648 }}
+              aria-label="Previous image"
+            >
+              <ChevronLeft size={24} />
+            </button>
+
+            {/* Next button - right side of image */}
+            <button
+              onClick={goToNext}
+              className="absolute top-1/2 -right-16 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+              style={{ zIndex: 2147483648 }}
+              aria-label="Next image"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </>
+        )}
         {/* Loading overlay */}
         {!imageLoaded && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 rounded-lg">
@@ -220,33 +216,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
         />
       </div>
 
-      {/* Image dots indicator (only show if multiple images) */}
-      {images.length > 1 && images.length <= 10 && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setImageLoaded(false);
-                setCurrentIndex(index);
-              }}
-              className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                index === currentIndex
-                  ? 'bg-white scale-125'
-                  : 'bg-white bg-opacity-50 hover:bg-opacity-75'
-              }`}
-              aria-label={`Go to image ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
 
-      {/* Swipe gesture indicators for mobile */}
-      {images.length > 1 && (
-        <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-70 md:hidden">
-          Swipe left or right to navigate
-        </div>
-      )}
     </div>
   );
 
