@@ -159,8 +159,12 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
           {/* Previous button - left side of screen */}
           <button
             onClick={goToPrevious}
-            className="fixed top-1/2 left-8 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            className="p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
             style={{ 
+              position: 'fixed',
+              top: '50%',
+              left: '32px',
+              transform: 'translateY(-50%)',
               zIndex: 2147483648
             }}
             aria-label="Previous image"
@@ -171,8 +175,12 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
           {/* Next button - right side of screen */}
           <button
             onClick={goToNext}
-            className="fixed top-1/2 right-8 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            className="p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
             style={{ 
+              position: 'fixed',
+              top: '50%',
+              right: '32px',
+              transform: 'translateY(-50%)',
               zIndex: 2147483648
             }}
             aria-label="Next image"
