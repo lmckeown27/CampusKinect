@@ -640,7 +640,7 @@ const MessagesTab: React.FC = () => {
                   )}
 
                   {/* Start Chat Button */}
-                  <div>
+                  <div className="mt-16">
                     <button 
                       onClick={handleStartChat}
                       disabled={!selectedUser}
