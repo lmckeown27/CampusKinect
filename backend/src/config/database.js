@@ -18,11 +18,16 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
-// Create tables if they don't exist
+// Database query function
+const query = (text, params) => pool.query(text, params);
+
+// Create tables function
 const createTables = async () => {
   try {
+    // Existing tables creation...
+    
     // Users table
-    await pool.query(`
+    await query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(50) UNIQUE NOT NULL,
@@ -30,47 +35,23 @@ const createTables = async () => {
         password_hash VARCHAR(255) NOT NULL,
         first_name VARCHAR(100) NOT NULL,
         last_name VARCHAR(100) NOT NULL,
-        display_name VARCHAR(200) GENERATED ALWAYS AS (first_name || ' ' || last_name) STORED,
-        profile_picture VARCHAR(500),
+        display_name VARCHAR(200),
+        profile_picture TEXT,
         year INTEGER,
-        major VARCHAR(200),
-        hometown VARCHAR(200),
+        major VARCHAR(100),
+        hometown VARCHAR(100),
         bio TEXT,
-        university_id INTEGER NOT NULL,
+        university_id INTEGER REFERENCES universities(id),
         is_verified BOOLEAN DEFAULT FALSE,
         is_active BOOLEAN DEFAULT TRUE,
-        verification_code VARCHAR(10),
-        verification_code_expires TIMESTAMP,
+        notification_preferences JSONB DEFAULT '{}',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+      )
     `);
 
-    // Add verification code columns to existing users table if they don't exist
-    try {
-      await pool.query(`
-        ALTER TABLE users 
-        ADD COLUMN IF NOT EXISTS verification_code VARCHAR(10),
-        ADD COLUMN IF NOT EXISTS verification_code_expires TIMESTAMP
-      `);
-      console.log('✅ Verification code columns added to users table');
-    } catch (error) {
-      console.log('ℹ️ Verification code columns already exist or could not be added:', error.message);
-    }
-
-    // Add bio column to existing users table if it doesn't exist
-    try {
-      await pool.query(`
-        ALTER TABLE users 
-        ADD COLUMN IF NOT EXISTS bio TEXT
-      `);
-      console.log('✅ Bio column added to users table');
-    } catch (error) {
-      console.log('ℹ️ Bio column already exists or could not be added:', error.message);
-    }
-
     // Universities table
-    await pool.query(`
+    await query(`
       CREATE TABLE IF NOT EXISTS universities (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -78,326 +59,383 @@ const createTables = async () => {
         city VARCHAR(100),
         state VARCHAR(100),
         country VARCHAR(100) DEFAULT 'US',
-        latitude DECIMAL(10, 8),
-        longitude DECIMAL(11, 8),
-        timezone VARCHAR(50) DEFAULT 'America/Los_Angeles',
-        cluster_id INTEGER,
         is_active BOOLEAN DEFAULT TRUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // Add timezone column to existing universities table if it doesn't exist
-    try {
-      await pool.query(`
-        ALTER TABLE universities 
-        ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'America/Los_Angeles'
-      `);
-      console.log('✅ Timezone column added to universities table');
-    } catch (error) {
-      console.log('ℹ️ Timezone column already exists or could not be added:', error.message);
-    }
-
-    // Clusters table (geographic clusters)
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS clusters (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        region VARCHAR(100) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+      )
     `);
 
     // Posts table
-    await pool.query(`
+    await query(`
       CREATE TABLE IF NOT EXISTS posts (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        university_id INTEGER REFERENCES universities(id) ON DELETE CASCADE,
-        title VARCHAR(255) NOT NULL,
-        description TEXT NOT NULL,
-        post_type VARCHAR(20) NOT NULL CHECK (post_type IN ('goods', 'services', 'housing', 'events')),
-        duration_type VARCHAR(20) NOT NULL CHECK (duration_type IN ('one-time', 'recurring', 'event')),
+        content TEXT NOT NULL,
+        category VARCHAR(50),
+        subcategory VARCHAR(50),
         location VARCHAR(255),
-        expires_at TIMESTAMP,
-        event_start TIMESTAMP,
-        event_end TIMESTAMP,
-        is_fulfilled BOOLEAN DEFAULT FALSE,
+        duration_type VARCHAR(20) DEFAULT 'permanent',
+        camera_metadata JSONB DEFAULT '{}',
+        engagement_score DECIMAL(10,2) DEFAULT 0.0,
+        message_count INTEGER DEFAULT 0,
+        share_count INTEGER DEFAULT 0,
+        bookmark_count INTEGER DEFAULT 0,
+        repost_count INTEGER DEFAULT 0,
         is_active BOOLEAN DEFAULT TRUE,
-        view_count INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+      )
     `);
 
-    // Post universities junction table for multi-university posts
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS post_universities (
+    // Post images table
+    await query(`
+      CREATE TABLE IF NOT EXISTS post_images (
+        id SERIAL PRIMARY KEY,
         post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
-        university_id INTEGER REFERENCES universities(id) ON DELETE CASCADE,
-        is_primary BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (post_id, university_id)
-      );
+        image_url TEXT NOT NULL,
+        image_order INTEGER DEFAULT 0,
+        metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
     `);
 
     // Tags table
-    await pool.query(`
+    await query(`
       CREATE TABLE IF NOT EXISTS tags (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(100) UNIQUE NOT NULL,
-        category VARCHAR(50) NOT NULL,
+        name VARCHAR(50) UNIQUE NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+      )
     `);
 
     // Post tags junction table
-    await pool.query(`
+    await query(`
       CREATE TABLE IF NOT EXISTS post_tags (
         post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
         tag_id INTEGER REFERENCES tags(id) ON DELETE CASCADE,
         PRIMARY KEY (post_id, tag_id)
-      );
+      )
     `);
 
-    // Post images table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS post_images (
-        id SERIAL PRIMARY KEY,
-        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
-        image_url VARCHAR(500) NOT NULL,
-        image_order INTEGER DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // Post drafts table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS post_drafts (
+    // Post interactions table
+    await query(`
+      CREATE TABLE IF NOT EXISTS post_interactions (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        university_id INTEGER REFERENCES universities(id) ON DELETE CASCADE,
-        content TEXT DEFAULT '',
-        post_type VARCHAR(20),
-        primary_tags TEXT[] DEFAULT '{}',
-        secondary_tags TEXT[] DEFAULT '{}',
-        images TEXT[] DEFAULT '{}',
-        event_details JSONB DEFAULT '{}',
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        interaction_type VARCHAR(20) NOT NULL CHECK (interaction_type IN ('like', 'bookmark', 'repost', 'share', 'message')),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(user_id, university_id)
-      );
+        UNIQUE(user_id, post_id, interaction_type)
+      )
     `);
 
     // Conversations table
-    await pool.query(`
+    await query(`
       CREATE TABLE IF NOT EXISTS conversations (
         id SERIAL PRIMARY KEY,
         user1_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         user2_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        post_id INTEGER REFERENCES posts(id) ON DELETE SET NULL,
-        is_active BOOLEAN DEFAULT TRUE,
-        last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(user1_id, user2_id, post_id),
-        CHECK (user1_id != user2_id)
-      );
+        UNIQUE(user1_id, user2_id)
+      )
     `);
 
     // Messages table
-    await pool.query(`
+    await query(`
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
         conversation_id INTEGER REFERENCES conversations(id) ON DELETE CASCADE,
         sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         content TEXT NOT NULL,
-        message_type VARCHAR(20) DEFAULT 'text' CHECK (message_type IN ('text', 'image', 'contact', 'location', 'file')),
-        media_url VARCHAR(500),
         is_read BOOLEAN DEFAULT FALSE,
-        is_deleted BOOLEAN DEFAULT FALSE,
-        deleted_at TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
     `);
 
-    // Message requests table for users who haven't been contacted yet
-    await pool.query(`
+    // Message requests table
+    await query(`
       CREATE TABLE IF NOT EXISTS message_requests (
         id SERIAL PRIMARY KEY,
         from_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         to_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        post_id INTEGER REFERENCES posts(id) ON DELETE SET NULL,
         message TEXT NOT NULL,
-        status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'ignored')),
+        status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(from_user_id, to_user_id, post_id)
-        -- Temporarily disabled for testing: CHECK (from_user_id != to_user_id)
-      );
+        UNIQUE(from_user_id, to_user_id)
+      )
     `);
 
-    // User sessions table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS user_sessions (
+    // **NEW MOBILE-SPECIFIC TABLES**
+
+    // Mobile devices table for push notifications
+    await query(`
+      CREATE TABLE IF NOT EXISTS mobile_devices (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        refresh_token VARCHAR(500) NOT NULL,
-        expires_at TIMESTAMP NOT NULL,
+        device_token TEXT NOT NULL,
+        platform VARCHAR(10) NOT NULL CHECK (platform IN ('ios', 'android')),
+        app_version VARCHAR(20),
+        os_version VARCHAR(20),
+        device_model VARCHAR(100),
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, device_token)
+      )
+    `);
+
+    // Notification logs table
+    await query(`
+      CREATE TABLE IF NOT EXISTS notification_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        type VARCHAR(50) DEFAULT 'general',
+        results JSONB DEFAULT '{}',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+      )
     `);
 
-    // Reviews table for recurring posts
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS reviews (
+    // Offline sync queue table
+    await query(`
+      CREATE TABLE IF NOT EXISTS offline_sync_queue (
         id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        action_type VARCHAR(50) NOT NULL,
+        action_data JSONB NOT NULL,
+        client_timestamp TIMESTAMP NOT NULL,
+        processed BOOLEAN DEFAULT FALSE,
+        failed BOOLEAN DEFAULT FALSE,
+        retry_count INTEGER DEFAULT 0,
+        last_error TEXT,
+        processed_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // App analytics table for mobile usage tracking
+    await query(`
+      CREATE TABLE IF NOT EXISTS mobile_analytics (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        event_type VARCHAR(50) NOT NULL,
+        event_data JSONB DEFAULT '{}',
+        platform VARCHAR(10) NOT NULL,
+        app_version VARCHAR(20),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Camera uploads metadata table
+    await query(`
+      CREATE TABLE IF NOT EXISTS camera_uploads (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
-        reviewer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-        title VARCHAR(200),
-        content TEXT NOT NULL,
-        is_verified_customer BOOLEAN DEFAULT FALSE,
-        is_anonymous BOOLEAN DEFAULT FALSE,
+        image_url TEXT NOT NULL,
+        camera_metadata JSONB DEFAULT '{}',
+        location_data JSONB DEFAULT '{}',
+        processing_data JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // User preferences for mobile app
+    await query(`
+      CREATE TABLE IF NOT EXISTS mobile_preferences (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        preference_key VARCHAR(100) NOT NULL,
+        preference_value JSONB NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(post_id, reviewer_id)
-      );
+        UNIQUE(user_id, preference_key)
+      )
     `);
 
-    // Review responses table for post owners to respond to reviews
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS review_responses (
+    // Biometric authentication tokens
+    await query(`
+      CREATE TABLE IF NOT EXISTS biometric_tokens (
         id SERIAL PRIMARY KEY,
-        review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
-        responder_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        content TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // Deleted reviews table for tracking deleted reviews with reasons
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS deleted_reviews (
-        id SERIAL PRIMARY KEY,
-        original_review_id INTEGER, -- Keep reference to original review ID
-        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
-        reviewer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        rating INTEGER NOT NULL,
-        title VARCHAR(200),
-        content TEXT NOT NULL,
-        is_verified_customer BOOLEAN DEFAULT FALSE,
-        is_anonymous BOOLEAN DEFAULT FALSE,
-        deleted_by INTEGER REFERENCES users(id) ON DELETE SET NULL, -- Post owner who deleted it
-        deletion_reason TEXT NOT NULL, -- Required reason for deletion
-        deletion_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        original_created_at TIMESTAMP, -- When the review was originally created
-        original_updated_at TIMESTAMP -- When the review was last updated
-      );
-    `);
-
-    // Post interactions table for tracking user interactions (messages, shares, bookmarks, reposts)
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS post_interactions (
-        id SERIAL PRIMARY KEY,
-        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        interaction_type VARCHAR(20) NOT NULL CHECK (interaction_type IN ('message', 'share', 'bookmark', 'repost')),
+        device_id VARCHAR(255) NOT NULL,
+        encrypted_token TEXT NOT NULL,
+        biometric_type VARCHAR(20) NOT NULL CHECK (biometric_type IN ('touchid', 'faceid', 'fingerprint')),
+        is_active BOOLEAN DEFAULT TRUE,
+        last_used_at TIMESTAMP,
+        expires_at TIMESTAMP NOT NULL,
+        revoked_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(post_id, user_id, interaction_type)
-      );
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, device_id)
+      )
     `);
 
-    // Add scoring system fields
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS base_score DECIMAL(10, 2) DEFAULT 50.00;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS time_urgency_bonus DECIMAL(10, 2) DEFAULT 0.00;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS final_score DECIMAL(10, 2) DEFAULT 50.00;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS target_scope VARCHAR(20) DEFAULT 'single' CHECK (target_scope IN ('single', 'multi'));
-    `);
-
-    // Add review system fields to posts
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS review_count INTEGER DEFAULT 0;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS average_rating DECIMAL(3, 2) DEFAULT 0.00;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS review_score_bonus DECIMAL(10, 2) DEFAULT 0.00;
+    // Biometric audit log
+    await query(`
+      CREATE TABLE IF NOT EXISTS biometric_audit_log (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        device_id VARCHAR(255) NOT NULL,
+        event_type VARCHAR(50) NOT NULL,
+        metadata JSONB DEFAULT '{}',
+        ip_address INET,
+        user_agent TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
     `);
 
-    // Add engagement tracking columns to posts
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS message_count INTEGER DEFAULT 0;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS share_count INTEGER DEFAULT 0;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS bookmark_count INTEGER DEFAULT 0;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS repost_count INTEGER DEFAULT 0;
-    `);
-    await pool.query(`
-      ALTER TABLE posts ADD COLUMN IF NOT EXISTS engagement_score DECIMAL(10, 2) DEFAULT 0.00;
+    // Deep links table
+    await query(`
+      CREATE TABLE IF NOT EXISTS deep_links (
+        id SERIAL PRIMARY KEY,
+        link_id VARCHAR(32) UNIQUE NOT NULL,
+        link_type VARCHAR(50) NOT NULL,
+        link_data JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP NOT NULL
+      )
     `);
 
-    // Create indexes for better performance
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_university_id ON posts(university_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_post_type ON posts(post_type)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_expires_at ON posts(expires_at)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_is_active ON posts(is_active)');
-    
-    // Message system indexes
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_user1_id ON conversations(user1_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_user2_id ON conversations(user2_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_post_id ON conversations(post_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_last_message_at ON conversations(last_message_at)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_is_read ON messages(is_read)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_message_requests_from_user_id ON message_requests(from_user_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_message_requests_to_user_id ON message_requests(to_user_id)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_message_requests_status ON message_requests(status)');
+    // Deep link analytics
+    await query(`
+      CREATE TABLE IF NOT EXISTS deep_link_analytics (
+        id SERIAL PRIMARY KEY,
+        link_id VARCHAR(32) REFERENCES deep_links(link_id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        device_info JSONB DEFAULT '{}',
+        clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        share_clicked BOOLEAN DEFAULT FALSE,
+        share_clicked_at TIMESTAMP
+      )
+    `);
 
-    console.log('✅ Database tables created successfully');
+    // User referrals table
+    await query(`
+      CREATE TABLE IF NOT EXISTS user_referrals (
+        id SERIAL PRIMARY KEY,
+        referrer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        referred_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        referral_type VARCHAR(50) DEFAULT 'general',
+        metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(referrer_id, referred_id)
+      )
+    `);
+
+    // Campus locations table
+    await query(`
+      CREATE TABLE IF NOT EXISTS campus_locations (
+        id SERIAL PRIMARY KEY,
+        university_id INTEGER REFERENCES universities(id) ON DELETE CASCADE,
+        name VARCHAR(255) NOT NULL,
+        category VARCHAR(50) NOT NULL,
+        keywords TEXT[] DEFAULT '{}',
+        coordinates POINT,
+        metadata JSONB DEFAULT '{}',
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(university_id, name)
+      )
+    `);
+
+    // Create indexes for mobile optimization
+    await query(`CREATE INDEX IF NOT EXISTS idx_mobile_devices_user_id ON mobile_devices(user_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_mobile_devices_token ON mobile_devices(device_token)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_notification_logs_user_id ON notification_logs(user_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_notification_logs_created_at ON notification_logs(created_at)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_offline_sync_user_processed ON offline_sync_queue(user_id, processed)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_offline_sync_retry ON offline_sync_queue(retry_count, processed)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_mobile_analytics_user_event ON mobile_analytics(user_id, event_type)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_mobile_analytics_created_at ON mobile_analytics(created_at)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_camera_uploads_user_id ON camera_uploads(user_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_camera_uploads_post_id ON camera_uploads(post_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_mobile_preferences_user_key ON mobile_preferences(user_id, preference_key)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_biometric_tokens_user_device ON biometric_tokens(user_id, device_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_biometric_tokens_expires ON biometric_tokens(expires_at)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_biometric_audit_user_event ON biometric_audit_log(user_id, event_type)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_deep_links_id ON deep_links(link_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_deep_links_expires ON deep_links(expires_at)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_deep_link_analytics_link ON deep_link_analytics(link_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_deep_link_analytics_user ON deep_link_analytics(user_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_user_referrals_referrer ON user_referrals(referrer_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_user_referrals_referred ON user_referrals(referred_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_campus_locations_university ON campus_locations(university_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_campus_locations_category ON campus_locations(category)`);
+
+    // Create indexes for existing tables to optimize mobile queries
+    await query(`CREATE INDEX IF NOT EXISTS idx_posts_user_created ON posts(user_id, created_at DESC)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_posts_engagement_score ON posts(engagement_score DESC)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_post_interactions_user_post ON post_interactions(user_id, post_id)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_post_interactions_post_type ON post_interactions(post_id, interaction_type)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_messages_conversation_created ON messages(conversation_id, created_at DESC)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_conversations_users ON conversations(user1_id, user2_id)`);
+
+    console.log('✅ All database tables and indexes created successfully');
+
   } catch (error) {
     console.error('❌ Error creating tables:', error);
     throw error;
   }
 };
 
-// Initialize database
-const initDatabase = async () => {
+// Add columns to existing tables for mobile support
+const addMobileColumns = async () => {
   try {
-    await createTables();
+    // Add notification preferences to users table if not exists
+    await query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{}'
+    `);
+
+    // Add camera metadata to posts table if not exists
+    await query(`
+      ALTER TABLE posts 
+      ADD COLUMN IF NOT EXISTS camera_metadata JSONB DEFAULT '{}'
+    `);
+
+    // Add engagement metrics to posts table if not exists
+    await query(`
+      ALTER TABLE posts 
+      ADD COLUMN IF NOT EXISTS message_count INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS share_count INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS bookmark_count INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS repost_count INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS engagement_score DECIMAL(10,2) DEFAULT 0.0
+    `);
+
+    // Add metadata to post_images table if not exists
+    await query(`
+      ALTER TABLE post_images 
+      ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'
+    `);
+
+    console.log('✅ Mobile columns added successfully');
+
   } catch (error) {
-    console.error('❌ Database initialization failed:', error);
-    process.exit(1);
+    console.error('❌ Error adding mobile columns:', error);
+    // Don't throw error as columns might already exist
   }
 };
 
-// Run initialization if this file is run directly
-if (require.main === module) {
-  initDatabase();
-}
+// Initialize database
+const initializeDatabase = async () => {
+  try {
+    await createTables();
+    await addMobileColumns();
+    console.log('✅ Database initialization complete');
+  } catch (error) {
+    console.error('❌ Database initialization failed:', error);
+    throw error;
+  }
+};
 
-module.exports = {
-  pool,
-  query: (text, params) => pool.query(text, params),
-  initDatabase
+module.exports = { 
+  query, 
+  pool, 
+  createTables, 
+  addMobileColumns, 
+  initializeDatabase 
 }; 

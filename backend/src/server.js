@@ -29,6 +29,7 @@ const reviewRoutes = require('./routes/reviews');
 const gradingRoutes = require('./routes/grading');
 const reshuffleRoutes = require('./routes/reshuffle');
 const marketSizeRoutes = require('./routes/marketSize');
+const mobileRoutes = require('./routes/mobile'); // Add mobile routes
 const { UNIVERSITY_CONFIG } = require('./config/university');
 const { initializeCronJobs } = require('./services/cronService');
 
@@ -147,6 +148,7 @@ app.use(`/api/${process.env.API_VERSION || 'v1'}/reviews`, reviewRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/grading`, gradingRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/reshuffle`, reshuffleRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/market-size`, marketSizeRoutes);
+app.use(`/api/${process.env.API_VERSION || 'v1'}/mobile`, mobileRoutes); // Add mobile routes
 
 // Error handling middleware
 app.use(notFound);
