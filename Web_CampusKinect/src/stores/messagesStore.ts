@@ -18,6 +18,7 @@ interface MessagesActions {
   fetchMessages: (conversationId: string, page?: number) => Promise<void>;
   sendMessage: (conversationId: string, content: string) => Promise<void>;
   createConversation: (participantIds: string[]) => Promise<void>;
+  deleteConversation: (conversationId: string) => Promise<void>;
   createMessageRequest: (toUserId: string, content: string, postId?: string) => Promise<void>;
   fetchMessageRequests: () => Promise<void>;
   fetchSentMessageRequests: () => Promise<void>;
@@ -128,6 +129,27 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
     } catch (error: any) {
       set({ 
         error: error.message || 'Failed to create conversation', 
+        isLoading: false 
+      });
+      throw error;
+    }
+  },
+
+  deleteConversation: async (conversationId: string) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await apiService.deleteConversation(conversationId);
+      
+      set((state) => ({
+        conversations: state.conversations.filter(conv => conv.id !== conversationId),
+        currentConversation: state.currentConversation?.id === conversationId ? null : state.currentConversation,
+        messages: state.currentConversation?.id === conversationId ? [] : state.messages,
+        isLoading: false,
+      }));
+    } catch (error: any) {
+      set({ 
+        error: error.message || 'Failed to delete conversation', 
         isLoading: false 
       });
       throw error;

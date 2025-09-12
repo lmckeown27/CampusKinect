@@ -241,13 +241,15 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     if (!confirmDelete) return;
 
     try {
-      // Implement the delete conversation API call here
-      // For now, just navigate back to messages
-      alert('Conversation deleted successfully.');
+      // Use the messages store to delete the conversation
+      const { deleteConversation } = useMessagesStore.getState();
+      await deleteConversation(conversation.id);
+      
+      // Navigate back to messages after successful deletion
       router.push('/messages');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete conversation:', error);
-      alert('Failed to delete conversation. Please try again.');
+      alert(error.message || 'Failed to delete conversation. Please try again.');
     }
   };
 

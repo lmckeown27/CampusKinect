@@ -585,6 +585,15 @@ class ApiService {
     throw new Error(response.data.message || 'Failed to create conversation');
   }
 
+  public async deleteConversation(conversationId: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.delete(`/messages/conversations/${conversationId}`);
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to delete conversation');
+    }
+  }
+
   public async createMessageRequest(toUserId: string, content: string, postId?: string): Promise<any> {
     const requestData: any = { toUserId: parseInt(toUserId), content };
     if (postId) {
