@@ -23,10 +23,13 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Update current index when initialIndex changes
+  // Update current index when initialIndex changes or lightbox opens
   useEffect(() => {
-    setCurrentIndex(initialIndex);
-  }, [initialIndex]);
+    if (isOpen) {
+      setCurrentIndex(initialIndex);
+      setImageLoaded(false);
+    }
+  }, [initialIndex, isOpen]);
 
   // Handle visibility with animation
   useEffect(() => {
@@ -153,26 +156,24 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
       {/* Navigation buttons positioned relative to viewport center for stability */}
       {images.length > 1 && (
         <>
-          {/* Previous button - left of center */}
+          {/* Previous button - left side of screen */}
           <button
             onClick={goToPrevious}
-            className="fixed top-1/2 left-1/2 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            className="fixed top-1/2 left-8 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
             style={{ 
-              zIndex: 2147483648,
-              marginLeft: '-300px'
+              zIndex: 2147483648
             }}
             aria-label="Previous image"
           >
             <ChevronLeft size={24} />
           </button>
 
-          {/* Next button - right of center */}
+          {/* Next button - right side of screen */}
           <button
             onClick={goToNext}
-            className="fixed top-1/2 left-1/2 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            className="fixed top-1/2 right-8 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
             style={{ 
-              zIndex: 2147483648,
-              marginLeft: '250px'
+              zIndex: 2147483648
             }}
             aria-label="Next image"
           >
