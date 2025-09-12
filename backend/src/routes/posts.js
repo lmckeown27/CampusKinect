@@ -3974,6 +3974,7 @@ router.get('/user/bookmarks', [
 ], async (req, res) => {
   try {
     const userId = req.user.id;
+    console.log(`📚 Fetching bookmarks for user ${userId}`);
     const page = parseInt(req.query.page) || 1;
     const limit = Math.min(parseInt(req.query.limit) || 20, 50);
     const offset = (page - 1) * limit;
@@ -3985,13 +3986,10 @@ router.get('/user/bookmarks', [
         p.title,
         p.description,
         p.post_type,
-        p.duration,
+        p.duration_type,
         p.location,
-        p.tags,
-        p.images,
         p.user_id,
         p.university_id,
-        p.grade,
         p.is_active,
         p.message_count,
         p.share_count,
@@ -4010,15 +4008,23 @@ router.get('/user/bookmarks', [
         
         -- University info
         uni.name as university_name,
-        uni.domain as university_domain
+        uni.domain as university_domain,
+        
+        -- Get tags and images
+        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
+        ARRAY_AGG(pi_img.image_url ORDER BY pi_img.image_order) FILTER (WHERE pi_img.image_url IS NOT NULL) as images
         
       FROM post_interactions pi
       JOIN posts p ON pi.post_id = p.id
       JOIN users u ON p.user_id = u.id
       JOIN universities uni ON p.university_id = uni.id
+      LEFT JOIN post_tags pt ON p.id = pt.post_id
+      LEFT JOIN tags t ON pt.tag_id = t.id
+      LEFT JOIN post_images pi_img ON p.id = pi_img.post_id
       WHERE pi.user_id = $1 
         AND pi.interaction_type = 'bookmark'
         AND p.is_active = true
+      GROUP BY p.id, u.username, u.first_name, u.last_name, u.profile_picture, uni.name, uni.domain, pi.created_at
       ORDER BY pi.created_at DESC
       LIMIT $2 OFFSET $3
     `, [userId, limit, offset]);
@@ -4042,13 +4048,12 @@ router.get('/user/bookmarks', [
       title: row.title,
       description: row.description,
       postType: row.post_type,
-      duration: row.duration,
+      duration: row.duration_type,
       location: row.location,
       tags: row.tags || [],
       images: row.images || [],
       userId: row.user_id.toString(),
       universityId: row.university_id.toString(),
-      grade: row.grade,
       isActive: row.is_active,
       messageCount: row.message_count || 0,
       shareCount: row.share_count || 0,
@@ -4114,13 +4119,10 @@ router.get('/user/reposts', [
         p.title,
         p.description,
         p.post_type,
-        p.duration,
+        p.duration_type,
         p.location,
-        p.tags,
-        p.images,
         p.user_id,
         p.university_id,
-        p.grade,
         p.is_active,
         p.message_count,
         p.share_count,
@@ -4139,15 +4141,23 @@ router.get('/user/reposts', [
         
         -- University info
         uni.name as university_name,
-        uni.domain as university_domain
+        uni.domain as university_domain,
+        
+        -- Get tags and images
+        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
+        ARRAY_AGG(pi_img.image_url ORDER BY pi_img.image_order) FILTER (WHERE pi_img.image_url IS NOT NULL) as images
         
       FROM post_interactions pi
       JOIN posts p ON pi.post_id = p.id
       JOIN users u ON p.user_id = u.id
       JOIN universities uni ON p.university_id = uni.id
+      LEFT JOIN post_tags pt ON p.id = pt.post_id
+      LEFT JOIN tags t ON pt.tag_id = t.id
+      LEFT JOIN post_images pi_img ON p.id = pi_img.post_id
       WHERE pi.user_id = $1 
         AND pi.interaction_type = 'repost'
         AND p.is_active = true
+      GROUP BY p.id, u.username, u.first_name, u.last_name, u.profile_picture, uni.name, uni.domain, pi.created_at
       ORDER BY pi.created_at DESC
       LIMIT $2 OFFSET $3
     `, [userId, limit, offset]);
@@ -4171,13 +4181,12 @@ router.get('/user/reposts', [
       title: row.title,
       description: row.description,
       postType: row.post_type,
-      duration: row.duration,
+      duration: row.duration_type,
       location: row.location,
       tags: row.tags || [],
       images: row.images || [],
       userId: row.user_id.toString(),
       universityId: row.university_id.toString(),
-      grade: row.grade,
       isActive: row.is_active,
       messageCount: row.message_count || 0,
       shareCount: row.share_count || 0,

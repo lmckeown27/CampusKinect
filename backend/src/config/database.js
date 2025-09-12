@@ -336,6 +336,23 @@ const createTables = async () => {
       ALTER TABLE posts ADD COLUMN IF NOT EXISTS review_score_bonus DECIMAL(10, 2) DEFAULT 0.00;
     `);
 
+    // Add engagement tracking columns to posts
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS message_count INTEGER DEFAULT 0;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS share_count INTEGER DEFAULT 0;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS bookmark_count INTEGER DEFAULT 0;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS repost_count INTEGER DEFAULT 0;
+    `);
+    await pool.query(`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS engagement_score DECIMAL(10, 2) DEFAULT 0.00;
+    `);
+
     // Create indexes for better performance
     await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_posts_university_id ON posts(university_id)');
