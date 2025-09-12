@@ -459,9 +459,9 @@ const MessagesTab: React.FC = () => {
           {/* New Message Modal - positioned right under tabs */}
           {showNewMessageModal && (
             <div className="px-4 pb-4 flex justify-center">
-              <div className="bg-white rounded-lg p-4 border border-[#708d81] shadow-lg w-72">
+              <div className="rounded-lg p-4 border-2 border-[#708d81] shadow-lg w-72" style={{ backgroundColor: '#f8f9f6' }}>
                 <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-base font-medium text-[#708d81]">New Message</h3>
+                  <h3 className="text-lg font-semibold text-[#708d81]">New Message</h3>
                   <button
                     onClick={handleCloseNewMessageModal}
                     className="p-2 rounded-lg transition-all duration-200"
@@ -489,16 +489,24 @@ const MessagesTab: React.FC = () => {
                 <div className="space-y-4">
                   {/* Selected User Display */}
                   {selectedUser ? (
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                    <div className="flex items-center justify-between py-2 px-3 rounded-lg border-2" style={{ backgroundColor: '#f8f9f6', borderColor: '#708d81' }}>
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-[#708d81] rounded-full flex items-center justify-center">
-                          <User size={16} className="text-white" />
+                          {selectedUser.profilePicture ? (
+                            <img 
+                              src={selectedUser.profilePicture} 
+                              alt={selectedUser.firstName}
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <User size={16} className="text-white" />
+                          )}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium" style={{ color: '#708d81' }}>
                             {selectedUser.displayName || `${selectedUser.firstName} ${selectedUser.lastName}`}
                           </p>
-                          <p className="text-xs text-gray-500">@{selectedUser.username}</p>
+                          <p className="text-xs" style={{ color: '#5a7268' }}>@{selectedUser.username}</p>
                         </div>
                       </div>
                       <button
@@ -534,37 +542,80 @@ const MessagesTab: React.FC = () => {
                           value={userSearchQuery}
                           onChange={(e) => setUserSearchQuery(e.target.value)}
                           autoFocus
-                          className="w-full px-4 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-sm"
+                          className="w-full px-4 py-3 border-2 border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-[#708d81] text-sm transition-all duration-200"
+                          style={{ 
+                            backgroundColor: '#f8f9f6',
+                            color: '#708d81'
+                          }}
                         />
                       </div>
 
                       {/* Search Results */}
                       {userSearchQuery.trim() && (
-                        <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto mb-6">
+                        <div className="border border-[#708d81] rounded-lg max-h-48 overflow-y-auto mb-6" style={{ backgroundColor: '#f8f9f6' }}>
                           {isSearching ? (
-                            <div className="p-3 text-center text-sm text-gray-500">
+                            <div className="p-3 text-center text-sm text-[#708d81]">
                               Searching...
                             </div>
                           ) : searchResults.length > 0 ? (
-                            searchResults.map((user) => (
-                              <button
-                                key={user.id}
-                                onClick={() => handleUserSelect(user)}
-                                className="w-full p-3 text-left hover:bg-gray-50 hover:shadow-soft hover-lift flex items-center space-x-3 border-b border-gray-100 last:border-b-0 transition-fast rounded-lg"
-                              >
-                                <div className="w-8 h-8 bg-[#708d81] rounded-full flex items-center justify-center">
-                                  <User size={16} className="text-white" />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium text-gray-900">
-                                    {user.displayName || `${user.firstName} ${user.lastName}`}
-                                  </p>
-                                  <p className="text-xs text-gray-500">@{user.username}</p>
-                                </div>
-                              </button>
-                            ))
+                            <div className="space-y-3 p-2">
+                              {searchResults.map((user) => (
+                                <button
+                                  key={user.id}
+                                  onClick={() => handleUserSelect(user)}
+                                  className="w-full py-2 px-3 text-left flex items-center space-x-3 rounded-lg transition-all duration-200"
+                                  style={{ 
+                                    backgroundColor: 'white',
+                                    border: '1px solid #e5e7eb',
+                                    cursor: 'pointer'
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#708d81';
+                                    e.currentTarget.style.borderColor = '#708d81';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(112, 141, 129, 0.3)';
+                                    e.currentTarget.style.cursor = 'pointer';
+                                    // Change text colors on hover
+                                    const nameEl = e.currentTarget.querySelector('.user-name') as HTMLElement;
+                                    const usernameEl = e.currentTarget.querySelector('.user-username') as HTMLElement;
+                                    if (nameEl) nameEl.style.color = 'white';
+                                    if (usernameEl) usernameEl.style.color = '#f3f4f6';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'white';
+                                    e.currentTarget.style.borderColor = '#e5e7eb';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = 'none';
+                                    e.currentTarget.style.cursor = 'pointer';
+                                    // Reset text colors
+                                    const nameEl = e.currentTarget.querySelector('.user-name') as HTMLElement;
+                                    const usernameEl = e.currentTarget.querySelector('.user-username') as HTMLElement;
+                                    if (nameEl) nameEl.style.color = '#111827';
+                                    if (usernameEl) usernameEl.style.color = '#6b7280';
+                                  }}
+                                >
+                                  <div className="w-8 h-8 bg-[#708d81] rounded-full flex items-center justify-center">
+                                    {user.profilePicture ? (
+                                      <img 
+                                        src={user.profilePicture} 
+                                        alt={user.firstName}
+                                        className="w-8 h-8 rounded-full object-cover"
+                                      />
+                                    ) : (
+                                      <User size={16} className="text-white" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium user-name" style={{ color: '#111827' }}>
+                                      {user.displayName || `${user.firstName} ${user.lastName}`}
+                                    </p>
+                                    <p className="text-xs user-username" style={{ color: '#6b7280' }}>@{user.username}</p>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
                           ) : !isSearching ? (
-                            <div className="p-3 text-center text-sm text-gray-500">
+                            <div className="p-3 text-center text-sm text-[#708d81]">
                               No other users found
                             </div>
                           ) : null}
