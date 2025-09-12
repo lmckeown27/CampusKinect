@@ -170,6 +170,8 @@ const ProfileTab: React.FC = () => {
     try {
       setLoading(true);
       const response = await apiService.getUserReposts();
+      console.log('🔄 Fetched reposts:', response.data.length, 'posts');
+      console.log('🔄 First repost:', response.data[0]);
       setReposts(response.data);
       setRepostsLoaded(true);
     } catch (error) {
@@ -184,6 +186,8 @@ const ProfileTab: React.FC = () => {
     try {
       setLoading(true);
       const response = await apiService.getUserBookmarks();
+      console.log('📚 Fetched bookmarks:', response.data.length, 'posts');
+      console.log('📚 First bookmark:', response.data[0]);
       setBookmarks(response.data);
       setBookmarksLoaded(true);
     } catch (error) {
