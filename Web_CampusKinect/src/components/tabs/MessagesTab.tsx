@@ -552,14 +552,21 @@ const MessagesTab: React.FC = () => {
 
                       {/* Search Results */}
                       {userSearchQuery.trim() && (
-                        <div className="border border-[#708d81] rounded-lg max-h-48 overflow-y-auto mb-6" style={{ backgroundColor: '#f8f9f6' }}>
+                        <div 
+                          className="border border-[#708d81] rounded-lg mb-6" 
+                          style={{ 
+                            backgroundColor: '#f8f9f6',
+                            maxHeight: searchResults.length > 3 ? '210px' : 'auto',
+                            overflowY: searchResults.length > 3 ? 'auto' : 'visible'
+                          }}
+                        >
                           {isSearching ? (
                             <div className="p-3 text-center text-sm text-[#708d81]">
                               Searching...
                             </div>
                           ) : searchResults.length > 0 ? (
                             <div className="p-2">
-                              {searchResults.map((user) => (
+                              {searchResults.map((user, index) => (
                                 <button
                                   key={user.id}
                                   onClick={() => handleUserSelect(user)}
@@ -568,7 +575,7 @@ const MessagesTab: React.FC = () => {
                                     backgroundColor: 'white',
                                     border: '1px solid #e5e7eb',
                                     cursor: 'pointer',
-                                    marginBottom: '16px'
+                                    marginBottom: index === searchResults.length - 1 ? '0' : '16px'
                                   }}
                                   onMouseEnter={(e) => {
                                     e.currentTarget.style.backgroundColor = '#708d81';
@@ -614,6 +621,13 @@ const MessagesTab: React.FC = () => {
                                   </div>
                                 </button>
                               ))}
+                              {searchResults.length > 3 && (
+                                <div className="mt-2 py-2 text-center border-t border-[#708d81] bg-[#f8f9f6]">
+                                  <p className="text-xs text-[#5a7268] font-medium">
+                                    ↓ Scroll to see all {searchResults.length} users ↓
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           ) : !isSearching ? (
                             <div className="p-3 text-center text-sm text-[#708d81]">
