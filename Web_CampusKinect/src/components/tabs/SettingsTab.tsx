@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { User, Shield, Bell, Palette, Save, Cookie } from 'lucide-react';
+import { User, Shield, FileText, Palette, Save, Cookie, ScrollText, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
 
@@ -12,11 +12,8 @@ const SettingsTab: React.FC = () => {
   // Use real user data from auth store
   const user = authUser;
   
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: false,
-    marketing: false
-  });
+  // Add username state for editing
+  const [username, setUsername] = useState(user?.username || '');
 
   const [privacy, setPrivacy] = useState({
     profileVisibility: 'public',
@@ -27,13 +24,21 @@ const SettingsTab: React.FC = () => {
   const [theme, setTheme] = useState('light');
 
   const handleSave = () => {
-    // Save settings logic here
-    console.log('Settings saved:', { notifications, privacy, theme });
+    // Save settings logic here (username, privacy, theme)
+    console.log('Settings saved:', { username, privacy, theme });
     // You could add a toast notification here
   };
 
   const handleCookieSettings = () => {
     router.push('/cookie-settings');
+  };
+
+  const handleTermsAndConditions = () => {
+    router.push('/terms');
+  };
+
+  const handlePrivacyPolicy = () => {
+    router.push('/privacy');
   };
 
   return (
@@ -65,6 +70,18 @@ const SettingsTab: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your username"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email
                   </label>
                   <input
@@ -73,68 +90,101 @@ const SettingsTab: React.FC = () => {
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Email cannot be changed for security reasons</p>
                 </div>
               </div>
             </div>
 
-            {/* Notification Settings - 2nd Section */}
+            {/* Legal & Documents - 2nd Section (Replaces Notifications) */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 w-96">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
-                  <Bell size={20} className="text-[#708d81]" />
+                  <FileText size={20} className="text-[#708d81]" />
                   <div className="w-3"></div>
-                  <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">Legal & Documents</h2>
                 </div>
               </div>
               <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Email Notifications</h3>
-                    <p className="text-sm text-gray-500">Receive notifications via email</p>
+                {/* Cookie Settings Button */}
+                <button
+                  onClick={handleCookieSettings}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors cursor-pointer"
+                  style={{ 
+                    backgroundColor: '#708d81', 
+                    color: 'white', 
+                    border: '2px solid #708d81', 
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                >
+                  <div className="flex items-center">
+                    <Cookie size={18} className="text-white mr-3" />
+                    <div>
+                      <h3 className="text-sm font-medium text-white">Cookie Settings</h3>
+                      <p className="text-sm text-gray-200">Manage your cookie preferences</p>
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
-                    <input
-                      type="checkbox"
-                      checked={notifications.email}
-                      onChange={(e) => setNotifications(prev => ({ ...prev, email: e.target.checked }))}
-                      className="sr-only peer"
-                      style={{ cursor: 'pointer !important' }}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Push Notifications</h3>
-                    <p className="text-sm text-gray-500">Receive push notifications</p>
+                  <div className="text-white">→</div>
+                </button>
+
+                {/* Terms & Conditions Button */}
+                <button
+                  onClick={handleTermsAndConditions}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors cursor-pointer"
+                  style={{ 
+                    backgroundColor: '#708d81', 
+                    color: 'white', 
+                    border: '2px solid #708d81', 
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                >
+                  <div className="flex items-center">
+                    <ScrollText size={18} className="text-white mr-3" />
+                    <div>
+                      <h3 className="text-sm font-medium text-white">Terms & Conditions</h3>
+                      <p className="text-sm text-gray-200">View our terms of service</p>
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
-                    <input
-                      type="checkbox"
-                      checked={notifications.push}
-                      onChange={(e) => setNotifications(prev => ({ ...prev, push: e.target.checked }))}
-                      className="sr-only peer"
-                      style={{ cursor: 'pointer !important' }}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Marketing Emails</h3>
-                    <p className="text-sm text-gray-500">Receive promotional content</p>
+                  <div className="text-white">→</div>
+                </button>
+
+                {/* Privacy Policy Button */}
+                <button
+                  onClick={handlePrivacyPolicy}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors cursor-pointer"
+                  style={{ 
+                    backgroundColor: '#708d81', 
+                    color: 'white', 
+                    border: '2px solid #708d81', 
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                >
+                  <div className="flex items-center">
+                    <ShieldCheck size={18} className="text-white mr-3" />
+                    <div>
+                      <h3 className="text-sm font-medium text-white">Privacy Policy</h3>
+                      <p className="text-sm text-gray-200">View our privacy policy</p>
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer" style={{ cursor: 'pointer !important' }}>
-                    <input
-                      type="checkbox"
-                      checked={notifications.marketing}
-                      onChange={(e) => setNotifications(prev => ({ ...prev, marketing: e.target.checked }))}
-                      className="sr-only peer"
-                      style={{ cursor: 'pointer !important' }}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
-                  </label>
-                </div>
+                  <div className="text-white">→</div>
+                </button>
               </div>
             </div>
 
@@ -193,35 +243,6 @@ const SettingsTab: React.FC = () => {
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#708d81] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#708d81]" style={{ cursor: 'pointer !important' }}></div>
                   </label>
-                </div>
-                
-                {/* Cookie Settings Button */}
-                <div className="pt-4 border-t border-gray-200">
-                  <button
-                    onClick={handleCookieSettings}
-                    className="w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors cursor-pointer"
-                    style={{ 
-                      backgroundColor: '#708d81', 
-                      color: 'white', 
-                      border: '2px solid #708d81', 
-                      cursor: 'pointer',
-                      WebkitTapHighlightColor: 'transparent',
-                      WebkitTouchCallout: 'none',
-                      WebkitUserSelect: 'none',
-                      userSelect: 'none'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
-                  >
-                    <div className="flex items-center">
-                      <Cookie size={18} className="text-white mr-3" />
-                      <div>
-                        <h3 className="text-sm font-medium text-white">Cookie Settings</h3>
-                        <p className="text-sm text-gray-200">Manage your cookie preferences</p>
-                      </div>
-                    </div>
-                    <div className="text-white">→</div>
-                  </button>
                 </div>
               </div>
             </div>
