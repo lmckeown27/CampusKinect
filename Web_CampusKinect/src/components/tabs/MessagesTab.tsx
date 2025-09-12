@@ -558,7 +558,7 @@ const MessagesTab: React.FC = () => {
                               Searching...
                             </div>
                           ) : searchResults.length > 0 ? (
-                            <div className="space-y-3 p-2">
+                            <div className="p-2">
                               {searchResults.map((user) => (
                                 <button
                                   key={user.id}
@@ -567,7 +567,8 @@ const MessagesTab: React.FC = () => {
                                   style={{ 
                                     backgroundColor: 'white',
                                     border: '1px solid #e5e7eb',
-                                    cursor: 'pointer'
+                                    cursor: 'pointer',
+                                    marginBottom: '16px'
                                   }}
                                   onMouseEnter={(e) => {
                                     e.currentTarget.style.backgroundColor = '#708d81';
