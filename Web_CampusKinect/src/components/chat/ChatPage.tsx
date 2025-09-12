@@ -302,19 +302,36 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           <ArrowLeft size={20} />
         </button>
         
-        {/* Centered Profile Section */}
-        <div className="flex flex-col items-center space-y-2">
-          <div className="w-12 h-12 flex-shrink-0">
+        {/* Centered Profile Section - Clickable */}
+        <div 
+          className="flex flex-col items-center space-y-3 p-3 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-50"
+          onClick={() => router.push(`/user/${chatUser?.id}`)}
+          style={{ 
+            border: '2px solid transparent',
+            minWidth: '150px'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#f8f9f6';
+            e.currentTarget.style.border = '2px solid #708d81';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.border = '2px solid transparent';
+            e.currentTarget.style.transform = 'translateY(0px)';
+          }}
+        >
+          <div className="w-16 h-16 flex-shrink-0">
             {chatUser?.profilePicture ? (
               <img
                 src={chatUser.profilePicture}
                 alt={`${chatUser.firstName} ${chatUser.lastName}`}
-                className="w-12 h-12 rounded-full object-cover"
-                style={{ border: '2px solid #708d81' }}
+                className="w-16 h-16 rounded-full object-cover"
+                style={{ border: '3px solid #708d81' }}
               />
             ) : (
-              <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                <span className="text-white text-sm font-bold">
+              <div className="w-16 h-16 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '3px solid #708d81' }}>
+                <span className="text-white text-lg font-bold">
                   {chatUser ? `${chatUser.firstName?.charAt(0) || '?'}${chatUser.lastName?.charAt(0) || '?'}` : '?'}
                 </span>
               </div>
@@ -408,11 +425,15 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
                   <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-sm ${isCurrentUser ? 'ml-8' : 'mr-8'}`}>
                       <div
-                        className={`px-4 py-3 rounded-2xl ${
-                          isCurrentUser
-                            ? 'bg-green-600 text-white rounded-br-md shadow-sm'
-                            : 'bg-gray-700 text-white rounded-bl-md shadow-sm'
-                        }`}
+                        style={{
+                          backgroundColor: isCurrentUser ? '#22c55e' : '#4b5563',
+                          color: 'white',
+                          padding: '12px 16px',
+                          borderRadius: '16px',
+                          borderBottomRightRadius: isCurrentUser ? '4px' : '16px',
+                          borderBottomLeftRadius: isCurrentUser ? '16px' : '4px',
+                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                        }}
                       >
                         <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
                           {message.content}
