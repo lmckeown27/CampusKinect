@@ -159,13 +159,23 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
           {/* Previous button - left side of screen */}
           <button
             onClick={goToPrevious}
-            className="p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            className="p-3 text-white rounded-full transition-all duration-200 hover:scale-110"
             style={{ 
               position: 'fixed',
               top: '50%',
               left: '32px',
               transform: 'translateY(-50%)',
-              zIndex: 2147483648
+              zIndex: 2147483648,
+              backgroundColor: '#708d81',
+              border: '2px solid #708d81'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#5a7268';
+              e.currentTarget.style.border = '2px solid #5a7268';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#708d81';
+              e.currentTarget.style.border = '2px solid #708d81';
             }}
             aria-label="Previous image"
           >
@@ -175,13 +185,23 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
           {/* Next button - right side of screen */}
           <button
             onClick={goToNext}
-            className="p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all duration-200 hover:scale-110"
+            className="p-3 text-white rounded-full transition-all duration-200 hover:scale-110"
             style={{ 
               position: 'fixed',
               top: '50%',
               right: '32px',
               transform: 'translateY(-50%)',
-              zIndex: 2147483648
+              zIndex: 2147483648,
+              backgroundColor: '#708d81',
+              border: '2px solid #708d81'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#5a7268';
+              e.currentTarget.style.border = '2px solid #5a7268';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#708d81';
+              e.currentTarget.style.border = '2px solid #708d81';
             }}
             aria-label="Next image"
           >
