@@ -167,15 +167,18 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
               transform: 'translateY(-50%)',
               zIndex: 2147483648,
               backgroundColor: '#708d81',
-              border: '2px solid #708d81'
+              border: '2px solid #708d81',
+              cursor: 'pointer'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#5a7268';
               e.currentTarget.style.border = '2px solid #5a7268';
+              e.currentTarget.style.cursor = 'pointer';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
               e.currentTarget.style.border = '2px solid #708d81';
+              e.currentTarget.style.cursor = 'pointer';
             }}
             aria-label="Previous image"
           >
@@ -193,15 +196,18 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({
               transform: 'translateY(-50%)',
               zIndex: 2147483648,
               backgroundColor: '#708d81',
-              border: '2px solid #708d81'
+              border: '2px solid #708d81',
+              cursor: 'pointer'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#5a7268';
               e.currentTarget.style.border = '2px solid #5a7268';
+              e.currentTarget.style.cursor = 'pointer';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
               e.currentTarget.style.border = '2px solid #708d81';
+              e.currentTarget.style.cursor = 'pointer';
             }}
             aria-label="Next image"
           >
