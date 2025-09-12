@@ -11,7 +11,6 @@ interface ProfilebarProps {
     firstName: string;
     lastName: string;
     username: string;
-    profileImage?: string;
     profilePicture?: string;
   } | null;
 }
@@ -59,9 +58,9 @@ const Profilebar: React.FC<ProfilebarProps> = ({
           <div className="flex items-center space-x-3">
             {/* Profile Image */}
             <div className="flex-shrink-0">
-              {user?.profileImage || user?.profilePicture ? (
+              {user?.profilePicture ? (
                 <img
-                  src={user.profileImage || user.profilePicture}
+                  src={user.profilePicture}
                   alt={user.firstName}
                   className="w-12 h-12 rounded-full object-cover"
                 />

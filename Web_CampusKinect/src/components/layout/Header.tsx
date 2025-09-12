@@ -123,9 +123,9 @@ const Header: React.FC = () => {
               }}
             >
               <div className={`transition-all duration-300 ease-in-out transform ${showProfileDropdown ? 'rotate-12 scale-110' : 'rotate-0 scale-100'}`}>
-                {user?.profileImage ? (
+                {user?.profilePicture ? (
                   <img
-                    src={user.profileImage}
+                    src={user.profilePicture}
                     alt={user.firstName}
                     className="w-5 h-5 rounded-full object-cover"
                   />

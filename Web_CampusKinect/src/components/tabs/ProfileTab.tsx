@@ -74,7 +74,9 @@ const ProfileTab: React.FC = () => {
             id: authUser.id,
             username: authUser.username,
             email: authUser.email,
-            createdAt: authUser.createdAt
+            createdAt: authUser.createdAt,
+            // Always use profilePicture from authUser (most up-to-date)
+            profilePicture: authUser.profilePicture
           };
           setUser(updatedUser);
           
@@ -113,6 +115,18 @@ const ProfileTab: React.FC = () => {
       }
     }
   }, [authUser]);
+  
+  // Sync auth store changes to local user state (important for profile picture persistence)
+  useEffect(() => {
+    if (authUser) {
+      setUser(prevUser => ({
+        ...prevUser,
+        ...authUser,
+        // Preserve any local form edits but ensure profilePicture is from auth store
+        profilePicture: authUser.profilePicture
+      }));
+    }
+  }, [authUser?.profilePicture]);
   
   const [editForm, setEditForm] = useState({
     firstName: '',
@@ -223,7 +237,7 @@ const ProfileTab: React.FC = () => {
           lastName: authUser?.lastName || user?.lastName || '',
           username: authUser?.username || user?.username || 'username',
           email: authUser?.email || user?.email || '',
-          profileImage: authUser?.profileImage || user?.profileImage,
+          profilePicture: authUser?.profilePicture || user?.profilePicture,
           major: authUser?.major || user?.major,
           year: authUser?.year || user?.year,
           universityId: authUser?.universityId || 1,
@@ -410,8 +424,7 @@ const ProfileTab: React.FC = () => {
                 if (!prevUser) return null;
                 return {
                   ...prevUser,
-                  profileImage: croppedImageUrl, // Keep data URL for immediate display
-                  profilePicture: profilePictureUrl // Store backend URL
+                  profilePicture: profilePictureUrl // Use backend URL consistently
                 };
               });
               
@@ -433,7 +446,7 @@ const ProfileTab: React.FC = () => {
                 if (!prevUser) return null;
                 return {
                   ...prevUser,
-                  profileImage: croppedImageUrl
+                  profilePicture: croppedImageUrl
                 };
               });
             }
@@ -484,9 +497,9 @@ const ProfileTab: React.FC = () => {
                   e.currentTarget.style.cursor = 'pointer';
                 }}
               >
-                {user?.profileImage ? (
+                {user?.profilePicture ? (
                   <img 
-                    src={user.profileImage} 
+                    src={user.profilePicture} 
                     alt="Profile" 
                     className="w-full h-full object-cover transition-opacity duration-200"
                     style={{ opacity: 1 }}
