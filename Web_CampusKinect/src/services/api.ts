@@ -775,6 +775,139 @@ class ApiService {
       throw new Error(response.data.message || 'Failed to delete image');
     }
   }
+
+  // Post Interactions - Bookmark and Repost
+  public async toggleBookmark(postId: string): Promise<{ action: 'added' | 'removed' }> {
+    // First check if user already bookmarked this post
+    const interactions = await this.getUserInteractions(postId);
+    
+    if (interactions.hasBookmarked) {
+      // Remove bookmark
+      const response: AxiosResponse<ApiResponse<any>> = 
+        await this.api.delete(`/posts/${postId}/interact`, {
+          data: { interactionType: 'bookmark' }
+        });
+      
+      if (response.data.success) {
+        return { action: 'removed' };
+      }
+      throw new Error(response.data.message || 'Failed to remove bookmark');
+    } else {
+      // Add bookmark
+      const response: AxiosResponse<ApiResponse<any>> = 
+        await this.api.post(`/posts/${postId}/interact`, {
+          interactionType: 'bookmark'
+        });
+      
+      if (response.data.success) {
+        return { action: 'added' };
+      }
+      throw new Error(response.data.message || 'Failed to add bookmark');
+    }
+  }
+
+  public async toggleRepost(postId: string): Promise<{ action: 'added' | 'removed' }> {
+    // First check if user already reposted this post
+    const interactions = await this.getUserInteractions(postId);
+    
+    if (interactions.hasReposted) {
+      // Remove repost
+      const response: AxiosResponse<ApiResponse<any>> = 
+        await this.api.delete(`/posts/${postId}/interact`, {
+          data: { interactionType: 'repost' }
+        });
+      
+      if (response.data.success) {
+        return { action: 'removed' };
+      }
+      throw new Error(response.data.message || 'Failed to remove repost');
+    } else {
+      // Add repost
+      const response: AxiosResponse<ApiResponse<any>> = 
+        await this.api.post(`/posts/${postId}/interact`, {
+          interactionType: 'repost'
+        });
+      
+      if (response.data.success) {
+        return { action: 'added' };
+      }
+      throw new Error(response.data.message || 'Failed to add repost');
+    }
+  }
+
+  public async getUserInteractions(postId: string): Promise<{
+    hasBookmarked: boolean;
+    hasReposted: boolean;
+    hasShared: boolean;
+    hasMessaged: boolean;
+    bookmarkedAt: string | null;
+    repostedAt: string | null;
+    sharedAt: string | null;
+    messagedAt: string | null;
+  }> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get(`/posts/${postId}/user-interactions`);
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    
+    // Return default values if failed
+    return {
+      hasBookmarked: false,
+      hasReposted: false,
+      hasShared: false,
+      hasMessaged: false,
+      bookmarkedAt: null,
+      repostedAt: null,
+      sharedAt: null,
+      messagedAt: null
+    };
+  }
+
+  public async getUserBookmarks(page: number = 1, limit: number = 20): Promise<{
+    data: Post[];
+    pagination: any;
+  }> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    const response: AxiosResponse<ApiResponse<Post[]> & { pagination?: any }> = 
+      await this.api.get(`/posts/user/bookmarks?${params}`);
+    
+    if (response.data.success && response.data.data) {
+      return {
+        data: response.data.data,
+        pagination: response.data.pagination || {}
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch bookmarks');
+  }
+
+  public async getUserReposts(page: number = 1, limit: number = 20): Promise<{
+    data: Post[];
+    pagination: any;
+  }> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    const response: AxiosResponse<ApiResponse<Post[]> & { pagination?: any }> = 
+      await this.api.get(`/posts/user/reposts?${params}`);
+    
+    if (response.data.success && response.data.data) {
+      return {
+        data: response.data.data,
+        pagination: response.data.pagination || {}
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch reposts');
+  }
 }
 
 export const apiService = new ApiService();

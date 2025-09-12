@@ -32,6 +32,13 @@ const NEW_POST_BOOST = {
   BOOST_DURATION_HOURS: 24
 };
 
+const REPOST_BOOST = {
+  BASE_MULTIPLIER: 1.5,    // Base multiplier for posts with reposts
+  PER_REPOST_BONUS: 0.3,   // Additional bonus per repost (diminishing returns)
+  MAX_REPOST_BONUS: 10.0,  // Maximum additional points from reposts
+  RECENT_REPOST_HOURS: 72  // Reposts within this timeframe get extra weight
+};
+
 // Calculate base score (now always 25.0)
 const calculateBaseScore = (postData) => {
   return 25.0; // All posts start with 25 points
@@ -400,6 +407,68 @@ const calculateNewPostBoost = (postData) => {
   };
 };
 
+// Calculate repost boost - gives reposted content higher visibility in feeds
+const calculateRepostBoost = async (postData) => {
+  try {
+    // Get repost count and recent repost activity
+    const repostQuery = `
+      SELECT 
+        COUNT(*) as total_reposts,
+        COUNT(CASE WHEN pi.created_at >= NOW() - INTERVAL '${REPOST_BOOST.RECENT_REPOST_HOURS} hours' THEN 1 END) as recent_reposts
+      FROM post_interactions pi
+      WHERE pi.post_id = $1 AND pi.interaction_type = 'repost'
+    `;
+    
+    const result = await query(repostQuery, [postData.id]);
+    const totalReposts = parseInt(result.rows[0]?.total_reposts || 0);
+    const recentReposts = parseInt(result.rows[0]?.recent_reposts || 0);
+    
+    if (totalReposts === 0) {
+      return {
+        hasRepostBoost: false,
+        repostMultiplier: 1.0,
+        repostBonus: 0,
+        totalReposts: 0,
+        recentReposts: 0
+      };
+    }
+    
+    // Calculate boost: base multiplier + diminishing returns bonus
+    let repostMultiplier = REPOST_BOOST.BASE_MULTIPLIER;
+    
+    // Add bonus for each repost with diminishing returns
+    const logarithmicBonus = Math.log(totalReposts + 1) * REPOST_BOOST.PER_REPOST_BONUS;
+    
+    // Recent reposts get extra weight (20% bonus for recent activity)
+    const recentBonus = recentReposts > 0 ? (recentReposts / totalReposts) * 0.2 : 0;
+    
+    // Calculate final bonus points (capped at MAX_REPOST_BONUS)
+    const repostBonus = Math.min(
+      logarithmicBonus + recentBonus * 5, // Recent activity bonus
+      REPOST_BOOST.MAX_REPOST_BONUS
+    );
+    
+    return {
+      hasRepostBoost: true,
+      repostMultiplier,
+      repostBonus,
+      totalReposts,
+      recentReposts,
+      explanation: `Post has ${totalReposts} reposts (${recentReposts} recent). Boost: ${repostMultiplier}x multiplier + ${Math.round(repostBonus * 100) / 100} bonus points`
+    };
+    
+  } catch (error) {
+    console.error('Error calculating repost boost:', error);
+    return {
+      hasRepostBoost: false,
+      repostMultiplier: 1.0,
+      repostBonus: 0,
+      totalReposts: 0,
+      recentReposts: 0
+    };
+  }
+};
+
 // Calculate final score with new 0-100 scale and time-weighted engagement
 const calculateFinalScore = async (postData) => {
   const baseScore = postData.base_score || calculateBaseScore(postData);
@@ -415,6 +484,7 @@ const calculateFinalScore = async (postData) => {
   
   const zeroInteractionDecay = await calculateZeroInteractionDecay(postData);
   const newPostBoost = calculateNewPostBoost(postData);
+  const repostBoost = await calculateRepostBoost(postData);
 
   // Include review score bonus for recurring posts
   const reviewScoreBonus = postData.review_score_bonus || 0;
@@ -429,6 +499,24 @@ const calculateFinalScore = async (postData) => {
     finalScore += cappedReviewBonus;
   }
 
+  // Apply repost boost - multiply engagement and add bonus points
+  if (repostBoost.hasRepostBoost) {
+    // Multiply the engagement impact by the repost multiplier
+    finalScore = (baseScore + (engagementImpact.weightedImpact * repostBoost.repostMultiplier)) - zeroInteractionDecay.decayPenalty;
+    
+    // Add the repost bonus points
+    finalScore += repostBoost.repostBonus;
+    
+    // Re-add review bonus if applicable
+    if (isRecurring && reviewScoreBonus > 0) {
+      const maxReviewBonus = 5.0;
+      const cappedReviewBonus = Math.min(reviewScoreBonus, maxReviewBonus);
+      finalScore += cappedReviewBonus;
+    }
+    
+    console.log(`🚀 Repost boost applied to post ${postData.id}: ${repostBoost.explanation}`);
+  }
+
   if (newPostBoost.hasBoost) {
     finalScore = newPostBoost.boostScore;
   } else {
@@ -441,6 +529,7 @@ const calculateFinalScore = async (postData) => {
     engagementImpact,
     zeroInteractionDecay,
     newPostBoost,
+    repostBoost,
     reviewScoreBonus: isRecurring ? Math.min(reviewScoreBonus, 5.0) : 0
   };
 };
@@ -626,6 +715,7 @@ module.exports = {
   SCORE_RANGES,
   ENGAGEMENT_DECAY,
   NEW_POST_BOOST,
+  REPOST_BOOST,
   calculateBaseScore,
   calculateTimeUrgencyBonus,
   calculateEngagementImpact,
@@ -635,6 +725,7 @@ module.exports = {
   calculateDetailedEngagementImpact,
   calculateZeroInteractionDecay,
   calculateNewPostBoost,
+  calculateRepostBoost,
   calculateFinalScore,
   calculateFeedProbability,
   updatePostScores,

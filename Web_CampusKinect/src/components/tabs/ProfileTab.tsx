@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuthStore } from '../../stores/authStore';
-import { Edit2, Camera, X } from 'lucide-react';
+import { Edit2, Camera, X, Repeat, Bookmark } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { Post, CreatePostForm, User } from '../../types';
 import PostCard from '../ui/PostCard';
@@ -26,8 +26,12 @@ const ProfileTab: React.FC = () => {
   const { user: authUser, updateUser } = authStore;
   const [activeTab, setActiveTab] = useState<'posts' | 'reposts' | 'bookmarks'>('posts');
   const [posts, setPosts] = useState<Post[]>([]);
+  const [reposts, setReposts] = useState<Post[]>([]);
+  const [bookmarks, setBookmarks] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [postsLoaded, setPostsLoaded] = useState(false);
+  const [repostsLoaded, setRepostsLoaded] = useState(false);
+  const [bookmarksLoaded, setBookmarksLoaded] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
 
@@ -161,12 +165,46 @@ const ProfileTab: React.FC = () => {
     }
   };
 
-  // Fetch posts when user is available and activeTab is 'posts'
-  useEffect(() => {
-    if (authUser && activeTab === 'posts' && !postsLoaded) {
-      fetchUserPosts();
+  // Fetch user reposts
+  const fetchUserReposts = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getUserReposts();
+      setReposts(response.data);
+      setRepostsLoaded(true);
+    } catch (error) {
+      console.error('Failed to fetch user reposts:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [authUser, activeTab, postsLoaded]);
+  };
+
+  // Fetch user bookmarks
+  const fetchUserBookmarks = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getUserBookmarks();
+      setBookmarks(response.data);
+      setBookmarksLoaded(true);
+    } catch (error) {
+      console.error('Failed to fetch user bookmarks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch data based on active tab
+  useEffect(() => {
+    if (authUser) {
+      if (activeTab === 'posts' && !postsLoaded) {
+        fetchUserPosts();
+      } else if (activeTab === 'reposts' && !repostsLoaded) {
+        fetchUserReposts();
+      } else if (activeTab === 'bookmarks' && !bookmarksLoaded) {
+        fetchUserBookmarks();
+      }
+    }
+  }, [authUser, activeTab, postsLoaded, repostsLoaded, bookmarksLoaded]);
 
   // Refresh posts function to be called when new post is created
   const refreshPosts = () => {
@@ -792,16 +830,66 @@ const ProfileTab: React.FC = () => {
             )}
             
             {activeTab === 'reposts' && (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg mb-4">You haven't reposted anything yet.</p>
-                <p className="text-gray-400">Repost content you find interesting.</p>
+              <div>
+                {loading ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">Loading your reposts...</p>
+                  </div>
+                ) : reposts.length > 0 ? (
+                  <div className="space-y-6">
+                    {reposts.map((post, index) => (
+                      <div key={`repost-${post.id}-${index}`} className="relative">
+                        {/* Repost indicator */}
+                        <div className="flex items-center space-x-2 text-gray-500 text-sm mb-3">
+                          <Repeat size={16} />
+                          <span>You reposted</span>
+                        </div>
+                        <PostCard 
+                          post={post}
+                          showDeleteButton={false}
+                          showEditButton={false}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg mb-4">You haven't reposted anything yet.</p>
+                    <p className="text-gray-400">Repost content you find interesting.</p>
+                  </div>
+                )}
               </div>
             )}
             
             {activeTab === 'bookmarks' && (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg mb-4">You haven't bookmarked any posts yet.</p>
-                <p className="text-gray-400">Save posts you want to revisit later.</p>
+              <div>
+                {loading ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">Loading your bookmarks...</p>
+                  </div>
+                ) : bookmarks.length > 0 ? (
+                  <div className="space-y-6">
+                    {bookmarks.map((post, index) => (
+                      <div key={`bookmark-${post.id}-${index}`} className="relative">
+                        {/* Bookmark indicator */}
+                        <div className="flex items-center space-x-2 text-gray-500 text-sm mb-3">
+                          <Bookmark size={16} />
+                          <span>You bookmarked</span>
+                        </div>
+                        <PostCard 
+                          post={post}
+                          showDeleteButton={false}
+                          showEditButton={false}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg mb-4">You haven't bookmarked any posts yet.</p>
+                    <p className="text-gray-400">Save posts you want to revisit later.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -50,6 +50,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   const router = useRouter();
   const { user: currentUser } = useAuthStore();
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isReposted, setIsReposted] = useState(false);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+  const [repostCount, setRepostCount] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -80,6 +83,29 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       });
     };
   }, []);
+
+  // Load user interactions and engagement counts on mount
+  React.useEffect(() => {
+    const loadInteractions = async () => {
+      try {
+        if (currentUser) {
+          const interactions = await apiService.getUserInteractions(post.id);
+          setIsBookmarked(interactions.hasBookmarked);
+          setIsReposted(interactions.hasReposted);
+        }
+        
+        // Set engagement counts from post data
+        setBookmarkCount((post as any).bookmarkCount || 0);
+        setRepostCount((post as any).repostCount || 0);
+      } catch (error) {
+        console.error('Failed to load user interactions:', error);
+      }
+    };
+    
+    loadInteractions();
+  }, [post.id, currentUser?.id]);
+
+
 
   // Lightbox handlers
   const handleImageClick = (index: number) => {
@@ -141,8 +167,24 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
 
 
-  const handleBookmark = () => {
-    alert('Bookmarks are currently in development, hold on tight :)');
+  const handleBookmark = async () => {
+    if (!currentUser) {
+      alert('Please login to bookmark posts');
+      return;
+    }
+    
+    try {
+      const result = await apiService.toggleBookmark(post.id);
+      setIsBookmarked(result.action === 'added');
+      
+      // Update bookmark count
+      setBookmarkCount(prev => result.action === 'added' ? prev + 1 : Math.max(0, prev - 1));
+      
+      console.log(`Post ${result.action === 'added' ? 'bookmarked' : 'unbookmarked'} successfully`);
+    } catch (error) {
+      console.error('Failed to toggle bookmark:', error);
+      alert('Failed to update bookmark. Please try again.');
+    }
   };
 
   const handleMessage = () => {
@@ -154,8 +196,24 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
     alert('Share feature is currently in development, hold on tight :)');
   };
 
-  const handleRepost = () => {
-    alert('Reposts are currently in development, hold on tight :)');
+  const handleRepost = async () => {
+    if (!currentUser) {
+      alert('Please login to repost posts');
+      return;
+    }
+    
+    try {
+      const result = await apiService.toggleRepost(post.id);
+      setIsReposted(result.action === 'added');
+      
+      // Update repost count
+      setRepostCount(prev => result.action === 'added' ? prev + 1 : Math.max(0, prev - 1));
+      
+      console.log(`Post ${result.action === 'added' ? 'reposted' : 'unreposted'} successfully`);
+    } catch (error) {
+      console.error('Failed to toggle repost:', error);
+      alert('Failed to update repost. Please try again.');
+    }
   };
 
   const handleDelete = () => {
@@ -821,21 +879,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
           <div className="flex items-center" style={{ gap: '16px' }}>
             <button
               onClick={handleRepost}
-              className="p-2 rounded-lg transition-all duration-200"
-              style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
-            >
-              <Repeat size={18} />
-            </button>
-            
-            <button
-              onClick={handleBookmark}
-              className="p-2 rounded-lg transition-all duration-200"
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200"
               style={{ 
-                backgroundColor: '#708d81', 
+                backgroundColor: isReposted ? '#a8c4a2' : '#708d81', 
                 color: 'white', 
-                border: '2px solid #708d81', 
+                border: isReposted ? '2px solid #a8c4a2' : '2px solid #708d81', 
                 cursor: 'pointer' 
               }}
               onMouseEnter={(e) => { 
@@ -844,12 +892,39 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                 e.currentTarget.style.cursor = 'pointer'; 
               }}
               onMouseLeave={(e) => { 
-                e.currentTarget.style.backgroundColor = '#708d81'; 
-                e.currentTarget.style.border = '2px solid #708d81'; 
+                e.currentTarget.style.backgroundColor = isReposted ? '#a8c4a2' : '#708d81'; 
+                e.currentTarget.style.border = isReposted ? '2px solid #a8c4a2' : '2px solid #708d81'; 
                 e.currentTarget.style.cursor = 'pointer'; 
               }}
+              title={isReposted ? 'Remove repost' : 'Repost this'}
             >
-              <Bookmark size={18} fill="none" />
+              <Repeat size={18} />
+              {repostCount > 0 && <span className="text-sm font-medium">{repostCount}</span>}
+            </button>
+            
+            <button
+              onClick={handleBookmark}
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200"
+              style={{ 
+                backgroundColor: isBookmarked ? '#a8c4a2' : '#708d81', 
+                color: 'white', 
+                border: isBookmarked ? '2px solid #a8c4a2' : '2px solid #708d81', 
+                cursor: 'pointer' 
+              }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.backgroundColor = '#a8c4a2'; 
+                e.currentTarget.style.border = '2px solid #a8c4a2'; 
+                e.currentTarget.style.cursor = 'pointer'; 
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.backgroundColor = isBookmarked ? '#a8c4a2' : '#708d81'; 
+                e.currentTarget.style.border = isBookmarked ? '2px solid #a8c4a2' : '2px solid #708d81'; 
+                e.currentTarget.style.cursor = 'pointer'; 
+              }}
+              title={isBookmarked ? 'Remove bookmark' : 'Bookmark this post'}
+            >
+              <Bookmark size={18} fill={isBookmarked ? 'currentColor' : 'none'} />
+              {bookmarkCount > 0 && <span className="text-sm font-medium">{bookmarkCount}</span>}
             </button>
 
             {/* Edit button - only show if showEditButton is true */}

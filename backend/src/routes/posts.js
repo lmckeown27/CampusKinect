@@ -3964,4 +3964,329 @@ router.get('/create-tips', auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/v1/posts/user/bookmarks
+// @desc    Get current user's bookmarked posts
+// @access  Private
+router.get('/user/bookmarks', [
+  auth,
+  requireVerification,
+  validate
+], async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(parseInt(req.query.limit) || 20, 50);
+    const offset = (page - 1) * limit;
+
+    // Get user's bookmarked posts with full post details
+    const result = await query(`
+      SELECT DISTINCT
+        p.id,
+        p.title,
+        p.description,
+        p.post_type,
+        p.duration,
+        p.location,
+        p.tags,
+        p.images,
+        p.user_id,
+        p.university_id,
+        p.grade,
+        p.is_active,
+        p.message_count,
+        p.share_count,
+        p.bookmark_count,
+        p.repost_count,
+        p.engagement_score,
+        p.created_at,
+        p.updated_at,
+        pi.created_at as bookmarked_at,
+        
+        -- User info (poster)
+        u.username as poster_username,
+        u.first_name as poster_first_name,
+        u.last_name as poster_last_name,
+        u.profile_picture as poster_profile_picture,
+        
+        -- University info
+        uni.name as university_name,
+        uni.domain as university_domain
+        
+      FROM post_interactions pi
+      JOIN posts p ON pi.post_id = p.id
+      JOIN users u ON p.user_id = u.id
+      JOIN universities uni ON p.university_id = uni.id
+      WHERE pi.user_id = $1 
+        AND pi.interaction_type = 'bookmark'
+        AND p.is_active = true
+      ORDER BY pi.created_at DESC
+      LIMIT $2 OFFSET $3
+    `, [userId, limit, offset]);
+
+    // Get total count for pagination
+    const countResult = await query(`
+      SELECT COUNT(DISTINCT p.id) as total
+      FROM post_interactions pi
+      JOIN posts p ON pi.post_id = p.id
+      WHERE pi.user_id = $1 
+        AND pi.interaction_type = 'bookmark'
+        AND p.is_active = true
+    `, [userId]);
+
+    const total = parseInt(countResult.rows[0]?.total || 0);
+    const totalPages = Math.ceil(total / limit);
+
+    // Format the posts
+    const posts = result.rows.map(row => ({
+      id: row.id.toString(),
+      title: row.title,
+      description: row.description,
+      postType: row.post_type,
+      duration: row.duration,
+      location: row.location,
+      tags: row.tags || [],
+      images: row.images || [],
+      userId: row.user_id.toString(),
+      universityId: row.university_id.toString(),
+      grade: row.grade,
+      isActive: row.is_active,
+      messageCount: row.message_count || 0,
+      shareCount: row.share_count || 0,
+      bookmarkCount: row.bookmark_count || 0,
+      repostCount: row.repost_count || 0,
+      engagementScore: row.engagement_score || 0,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      bookmarkedAt: row.bookmarked_at,
+      poster: {
+        id: row.user_id.toString(),
+        username: row.poster_username,
+        firstName: row.poster_first_name,
+        lastName: row.poster_last_name,
+        profilePicture: row.poster_profile_picture
+      },
+      university: {
+        id: row.university_id.toString(),
+        name: row.university_name,
+        domain: row.university_domain
+      }
+    }));
+
+    res.json({
+      success: true,
+      data: posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages
+      }
+    });
+
+  } catch (error) {
+    console.error('Get user bookmarks error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve bookmarks',
+      error: error.message
+    });
+  }
+});
+
+// @route   GET /api/v1/posts/user/reposts
+// @desc    Get current user's reposted posts
+// @access  Private
+router.get('/user/reposts', [
+  auth,
+  requireVerification,
+  validate
+], async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(parseInt(req.query.limit) || 20, 50);
+    const offset = (page - 1) * limit;
+
+    // Get user's reposted posts with full post details
+    const result = await query(`
+      SELECT DISTINCT
+        p.id,
+        p.title,
+        p.description,
+        p.post_type,
+        p.duration,
+        p.location,
+        p.tags,
+        p.images,
+        p.user_id,
+        p.university_id,
+        p.grade,
+        p.is_active,
+        p.message_count,
+        p.share_count,
+        p.bookmark_count,
+        p.repost_count,
+        p.engagement_score,
+        p.created_at,
+        p.updated_at,
+        pi.created_at as reposted_at,
+        
+        -- User info (original poster)
+        u.username as poster_username,
+        u.first_name as poster_first_name,
+        u.last_name as poster_last_name,
+        u.profile_picture as poster_profile_picture,
+        
+        -- University info
+        uni.name as university_name,
+        uni.domain as university_domain
+        
+      FROM post_interactions pi
+      JOIN posts p ON pi.post_id = p.id
+      JOIN users u ON p.user_id = u.id
+      JOIN universities uni ON p.university_id = uni.id
+      WHERE pi.user_id = $1 
+        AND pi.interaction_type = 'repost'
+        AND p.is_active = true
+      ORDER BY pi.created_at DESC
+      LIMIT $2 OFFSET $3
+    `, [userId, limit, offset]);
+
+    // Get total count for pagination
+    const countResult = await query(`
+      SELECT COUNT(DISTINCT p.id) as total
+      FROM post_interactions pi
+      JOIN posts p ON pi.post_id = p.id
+      WHERE pi.user_id = $1 
+        AND pi.interaction_type = 'repost'
+        AND p.is_active = true
+    `, [userId]);
+
+    const total = parseInt(countResult.rows[0]?.total || 0);
+    const totalPages = Math.ceil(total / limit);
+
+    // Format the posts
+    const posts = result.rows.map(row => ({
+      id: row.id.toString(),
+      title: row.title,
+      description: row.description,
+      postType: row.post_type,
+      duration: row.duration,
+      location: row.location,
+      tags: row.tags || [],
+      images: row.images || [],
+      userId: row.user_id.toString(),
+      universityId: row.university_id.toString(),
+      grade: row.grade,
+      isActive: row.is_active,
+      messageCount: row.message_count || 0,
+      shareCount: row.share_count || 0,
+      bookmarkCount: row.bookmark_count || 0,
+      repostCount: row.repost_count || 0,
+      engagementScore: row.engagement_score || 0,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      repostedAt: row.reposted_at,
+      poster: {
+        id: row.user_id.toString(),
+        username: row.poster_username,
+        firstName: row.poster_first_name,
+        lastName: row.poster_last_name,
+        profilePicture: row.poster_profile_picture
+      },
+      university: {
+        id: row.university_id.toString(),
+        name: row.university_name,
+        domain: row.university_domain
+      }
+    }));
+
+    res.json({
+      success: true,
+      data: posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages
+      }
+    });
+
+  } catch (error) {
+    console.error('Get user reposts error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve reposts',
+      error: error.message
+    });
+  }
+});
+
+// @route   GET /api/v1/posts/:id/user-interactions
+// @desc    Get current user's interactions with a specific post
+// @access  Private
+router.get('/:id/user-interactions', [
+  auth,
+  requireVerification,
+  param('id').isInt().withMessage('Post ID must be an integer'),
+  validate
+], async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Get user's interactions with this specific post
+    const result = await query(`
+      SELECT interaction_type, created_at
+      FROM post_interactions 
+      WHERE post_id = $1 AND user_id = $2
+    `, [parseInt(id), userId]);
+
+    const interactions = {
+      hasBookmarked: false,
+      hasReposted: false,
+      hasShared: false,
+      hasMessaged: false,
+      bookmarkedAt: null,
+      repostedAt: null,
+      sharedAt: null,
+      messagedAt: null
+    };
+
+    result.rows.forEach(row => {
+      switch (row.interaction_type) {
+        case 'bookmark':
+          interactions.hasBookmarked = true;
+          interactions.bookmarkedAt = row.created_at;
+          break;
+        case 'repost':
+          interactions.hasReposted = true;
+          interactions.repostedAt = row.created_at;
+          break;
+        case 'share':
+          interactions.hasShared = true;
+          interactions.sharedAt = row.created_at;
+          break;
+        case 'message':
+          interactions.hasMessaged = true;
+          interactions.messagedAt = row.created_at;
+          break;
+      }
+    });
+
+    res.json({
+      success: true,
+      data: interactions
+    });
+
+  } catch (error) {
+    console.error('Get user interactions error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve user interactions',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router; 
