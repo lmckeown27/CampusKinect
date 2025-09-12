@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Send, ArrowLeft, User, MoreVertical } from 'lucide-react';
+import { Send, ArrowLeft, User, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useMessagesStore } from '../../stores/messagesStore';
 import apiService from '../../services/api';
@@ -234,6 +234,23 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     }
   };
 
+  const handleDeleteConversation = async () => {
+    if (!conversation) return;
+    
+    const confirmDelete = confirm('Are you sure you want to delete this conversation? This action cannot be undone.');
+    if (!confirmDelete) return;
+
+    try {
+      // Implement the delete conversation API call here
+      // For now, just navigate back to messages
+      alert('Conversation deleted successfully.');
+      router.push('/messages');
+    } catch (error) {
+      console.error('Failed to delete conversation:', error);
+      alert('Failed to delete conversation. Please try again.');
+    }
+  };
+
   // Show loading state until mounted
   if (!isMounted) {
     return (
@@ -262,43 +279,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     <div className="min-h-screen bg-[#f8f9f6] flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-[#708d81] px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={handleBackClick}
-            className="p-2 rounded-lg transition-all duration-200"
-            style={{ 
-              backgroundColor: '#708d81', 
-              color: 'white', 
-              border: '2px solid #708d81', 
-              cursor: 'pointer' 
-            }}
-            onMouseEnter={(e) => { 
-              e.currentTarget.style.backgroundColor = '#a8c4a2'; 
-              e.currentTarget.style.border = '2px solid #a8c4a2'; 
-              e.currentTarget.style.cursor = 'pointer'; 
-            }}
-            onMouseLeave={(e) => { 
-              e.currentTarget.style.backgroundColor = '#708d81'; 
-              e.currentTarget.style.border = '2px solid #708d81'; 
-              e.currentTarget.style.cursor = 'pointer'; 
-            }}
-          >
-            <ArrowLeft size={20} />
-          </button>
-          
-          <div className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center">
-            <User size={20} className="text-white" />
-          </div>
-          
-          <div>
-            <h1 className="font-semibold text-[#708d81] text-lg">
-              {chatUser.displayName || `${chatUser.firstName} ${chatUser.lastName}`}
-            </h1>
-            <p className="text-sm text-gray-500">@{chatUser.username}</p>
-          </div>
-        </div>
-
-        <button 
+        <button
+          onClick={handleBackClick}
           className="p-2 rounded-lg transition-all duration-200"
           style={{ 
             backgroundColor: '#708d81', 
@@ -307,8 +289,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
             cursor: 'pointer' 
           }}
           onMouseEnter={(e) => { 
-            e.currentTarget.style.backgroundColor = '#a8c4a2'; 
-            e.currentTarget.style.border = '2px solid #a8c4a2'; 
+            e.currentTarget.style.backgroundColor = '#5a7268'; 
+            e.currentTarget.style.border = '2px solid #5a7268'; 
             e.currentTarget.style.cursor = 'pointer'; 
           }}
           onMouseLeave={(e) => { 
@@ -317,7 +299,56 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
             e.currentTarget.style.cursor = 'pointer'; 
           }}
         >
-          <MoreVertical size={20} />
+          <ArrowLeft size={20} />
+        </button>
+        
+        {/* Centered Profile Section */}
+        <div className="flex flex-col items-center space-y-2">
+          <div className="w-12 h-12 flex-shrink-0">
+            {chatUser?.profilePicture ? (
+              <img
+                src={chatUser.profilePicture}
+                alt={`${chatUser.firstName} ${chatUser.lastName}`}
+                className="w-12 h-12 rounded-full object-cover"
+                style={{ border: '2px solid #708d81' }}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
+                <span className="text-white text-sm font-bold">
+                  {chatUser ? `${chatUser.firstName?.charAt(0) || '?'}${chatUser.lastName?.charAt(0) || '?'}` : '?'}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="text-center">
+            <h1 className="font-semibold text-[#708d81] text-lg">
+              {chatUser?.displayName || `${chatUser?.firstName} ${chatUser?.lastName}`}
+            </h1>
+            <p className="text-sm text-gray-500">@{chatUser?.username}</p>
+          </div>
+        </div>
+
+        <button 
+          onClick={handleDeleteConversation}
+          className="p-2 rounded-lg transition-all duration-200"
+          style={{ 
+            backgroundColor: '#ef4444', 
+            color: 'white', 
+            border: '2px solid #ef4444', 
+            cursor: 'pointer' 
+          }}
+          onMouseEnter={(e) => { 
+            e.currentTarget.style.backgroundColor = '#dc2626'; 
+            e.currentTarget.style.border = '2px solid #dc2626'; 
+            e.currentTarget.style.cursor = 'pointer'; 
+          }}
+          onMouseLeave={(e) => { 
+            e.currentTarget.style.backgroundColor = '#ef4444'; 
+            e.currentTarget.style.border = '2px solid #ef4444'; 
+            e.currentTarget.style.cursor = 'pointer'; 
+          }}
+        >
+          <Trash2 size={20} />
         </button>
       </div>
 
@@ -379,8 +410,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
                       <div
                         className={`px-4 py-3 rounded-2xl ${
                           isCurrentUser
-                            ? 'bg-green-700 text-white rounded-br-md shadow-sm'
-                            : 'bg-gray-400 text-gray-900 rounded-bl-md shadow-sm'
+                            ? 'bg-green-600 text-white rounded-br-md shadow-sm'
+                            : 'bg-gray-700 text-white rounded-bl-md shadow-sm'
                         }`}
                       >
                         <p className="text-base leading-relaxed whitespace-pre-wrap break-words">

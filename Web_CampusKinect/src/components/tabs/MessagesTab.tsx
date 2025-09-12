@@ -425,7 +425,7 @@ const MessagesTab: React.FC = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    Unread
+                    Incoming
                   </button>
                   
                   <button
@@ -437,7 +437,7 @@ const MessagesTab: React.FC = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    Primary
+                    Sent
                   </button>
                   
                   <button
