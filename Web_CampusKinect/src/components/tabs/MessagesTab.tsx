@@ -657,9 +657,9 @@ const MessagesTab: React.FC = () => {
                         <p className="text-sm mt-2">You're all caught up!</p>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-4 px-2">
                         {filteredRequests.map((request) => (
-                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81' }}>
+                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81', border: '2px solid #000000', width: '95%', margin: '0 auto' }}>
                             {/* Profile Picture */}
                             <div className="w-12 h-12 flex-shrink-0">
                               {request.fromUser.profilePicture ? (
@@ -751,9 +751,9 @@ const MessagesTab: React.FC = () => {
                         <p className="text-sm mt-2">Start a conversation to send a message!</p>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-4 px-2">
                         {filteredSentRequests.map((request) => (
-                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81' }}>
+                          <div key={request.id} className="flex items-center space-x-3 p-4 rounded-lg transition-colors" style={{ backgroundColor: '#708d81', border: '2px solid #000000', width: '95%', margin: '0 auto' }}>
                             {/* Profile Picture */}
                             <div className="w-12 h-12 flex-shrink-0">
                               {request.toUser?.profilePicture ? (
@@ -814,7 +814,7 @@ const MessagesTab: React.FC = () => {
               </div>
             ) : (
               // Primary/Unread Tabs - Show conversations
-              <div className="space-y-3">
+              <div className="space-y-4 px-2">
                 {filteredConversations.map((conversation) => (
                   <div
                     key={conversation.id}
@@ -825,7 +825,10 @@ const MessagesTab: React.FC = () => {
                     }`}
                     style={{ 
                       backgroundColor: currentConversation?.id === conversation.id ? '#5a7268' : '#708d81',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      border: '2px solid #000000',
+                      width: '95%',
+                      margin: '0 auto'
                     }}
                     onClick={() => handleConversationSelect(conversation)}
                   >
