@@ -45,6 +45,14 @@ const app = express();
 app.set('trust proxy', true);
 const server = createServer(app);
 
+// CORS configuration with multiple allowed origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://campuskinect.net',
+  'https://www.campuskinect.net',
+  'https://api.campuskinect.net'
+];
+
 // Socket.io setup
 const io = new Server(server, {
   cors: {
@@ -100,13 +108,6 @@ const limiter = rateLimit({
 
 // Middleware
 app.use(helmet());
-// CORS configuration with multiple allowed origins
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://campuskinect.net',
-  'https://www.campuskinect.net',
-  'https://api.campuskinect.net'
-];
 
 app.use(cors({
   origin: function (origin, callback) {
