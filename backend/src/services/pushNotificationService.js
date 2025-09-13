@@ -1,5 +1,17 @@
-const apn = require('apn');
-const admin = require('firebase-admin');
+// Optional mobile dependencies - gracefully handle if not installed
+let apn, admin;
+try {
+  apn = require('apn');
+} catch (error) {
+  console.log('📱 APN module not installed - mobile push notifications disabled');
+}
+
+try {
+  admin = require('firebase-admin');
+} catch (error) {
+  console.log('📱 Firebase Admin module not installed - mobile push notifications disabled');
+}
+
 const { query } = require('../config/database');
 
 class PushNotificationService {
@@ -11,7 +23,7 @@ class PushNotificationService {
 
   initializeServices() {
     // Initialize Apple Push Notification service
-    if (process.env.APN_KEY_ID && process.env.APN_TEAM_ID) {
+    if (apn && process.env.APN_KEY_ID && process.env.APN_TEAM_ID) {
       const apnOptions = {
         token: {
           key: process.env.APN_PRIVATE_KEY || './certs/AuthKey.p8',
@@ -26,7 +38,7 @@ class PushNotificationService {
     }
 
     // Initialize Firebase Cloud Messaging
-    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    if (admin && process.env.FIREBASE_SERVICE_ACCOUNT) {
       try {
         const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
         

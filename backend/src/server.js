@@ -29,7 +29,15 @@ const reviewRoutes = require('./routes/reviews');
 const gradingRoutes = require('./routes/grading');
 const reshuffleRoutes = require('./routes/reshuffle');
 const marketSizeRoutes = require('./routes/marketSize');
-const mobileRoutes = require('./routes/mobile'); // Add mobile routes
+// Optional mobile routes - only load if dependencies are available
+let mobileRoutes;
+try {
+  mobileRoutes = require('./routes/mobile');
+  console.log('📱 Mobile routes loaded successfully');
+} catch (error) {
+  console.log('📱 Mobile routes disabled - dependencies not available');
+  mobileRoutes = null;
+}
 const { UNIVERSITY_CONFIG } = require('./config/university');
 const { initializeCronJobs } = require('./services/cronService');
 
@@ -169,7 +177,10 @@ app.use(`/api/${process.env.API_VERSION || 'v1'}/reviews`, reviewRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/grading`, gradingRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/reshuffle`, reshuffleRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/market-size`, marketSizeRoutes);
-app.use(`/api/${process.env.API_VERSION || 'v1'}/mobile`, mobileRoutes); // Add mobile routes
+// Only register mobile routes if they loaded successfully
+if (mobileRoutes) {
+  app.use(`/api/${process.env.API_VERSION || 'v1'}/mobile`, mobileRoutes);
+}
 
 // Error handling middleware
 app.use(notFound);
