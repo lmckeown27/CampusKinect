@@ -30,19 +30,24 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		92D2D0F12E57F12000987919 /* CampusConnect_IOS */ = {
+		92D2D0F12E57F12000987919 /* CampusKinect_IOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CampusConnect_IOS;
+			path = CampusKinect_IOS;
 			sourceTree = "<group>";
 		};
-		92D2D1022E57F12100987919 /* CampusConnect_IOSTests */ = {
+		92D2D1022E57F12100987919 /* CampusKinect_IOSTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CampusConnect_IOSTests;
+			path = CampusKinect_IOSTests;
 			sourceTree = "<group>";
 		};
-		92D2D10C2E57F12100987919 /* CampusConnect_IOSUITests */ = {
+		92D2D10C2E57F12100987919 /* CampusKinect_IOSUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CampusConnect_IOSUITests;
+			path = CampusKinect_IOSUITests;
+			sourceTree = "<group>";
+		};
+		92E589152E74CBDB005A4E4A /* Frameworks */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +80,10 @@
 		92D2D0E62E57F12000987919 = {
 			isa = PBXGroup;
 			children = (
-				92D2D0F12E57F12000987919 /* CampusConnect_IOS */,
-				92D2D1022E57F12100987919 /* CampusConnect_IOSTests */,
-				92D2D10C2E57F12100987919 /* CampusConnect_IOSUITests */,
+				92D2D0F12E57F12000987919 /* CampusKinect_IOS */,
+				92D2D1022E57F12100987919 /* CampusKinect_IOSTests */,
+				92D2D10C2E57F12100987919 /* CampusKinect_IOSUITests */,
+				92E589152E74CBDB005A4E4A /* Frameworks */,
 				92D2D0F02E57F12000987919 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,7 +114,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				92D2D0F12E57F12000987919 /* CampusConnect_IOS */,
+				92D2D0F12E57F12000987919 /* CampusKinect_IOS */,
 			);
 			name = CampusKinect_IOS;
 			packageProductDependencies = (
@@ -131,7 +137,7 @@
 				92D2D1012E57F12100987919 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				92D2D1022E57F12100987919 /* CampusConnect_IOSTests */,
+				92D2D1022E57F12100987919 /* CampusKinect_IOSTests */,
 			);
 			name = CampusKinect_IOSTests;
 			packageProductDependencies = (
@@ -154,7 +160,8 @@
 				92D2D10B2E57F12100987919 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				92D2D10C2E57F12100987919 /* CampusConnect_IOSUITests */,
+				92D2D10C2E57F12100987919 /* CampusKinect_IOSUITests */,
+				92E589152E74CBDB005A4E4A /* Frameworks */,
 			);
 			name = CampusKinect_IOSUITests;
 			packageProductDependencies = (
