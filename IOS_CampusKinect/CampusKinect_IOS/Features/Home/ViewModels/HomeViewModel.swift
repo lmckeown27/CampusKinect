@@ -111,7 +111,7 @@ class HomeViewModel: ObservableObject {
     func toggleBookmark(for post: Post) async {
         // Implementation would call API to toggle bookmark
         // For now, just update local state
-        if let index = posts.firstIndex(where: { $0.id == post.id }) {
+        if posts.contains(where: { $0.id == post.id }) {
             // Update bookmark count locally
             print("Toggled bookmark for post \(post.id)")
         }
@@ -121,7 +121,7 @@ class HomeViewModel: ObservableObject {
     func toggleRepost(for post: Post) async {
         // Implementation would call API to toggle repost
         // For now, just update local state
-        if let index = posts.firstIndex(where: { $0.id == post.id }) {
+        if posts.contains(where: { $0.id == post.id }) {
             // Update repost count locally
             print("Toggled repost for post \(post.id)")
         }
