@@ -44,7 +44,6 @@
 				Resources/Data/Categories.json,
 				Resources/Data/Tags.json,
 				"Supporting Files/CampusKinect_IOS.entitlements",
-				"Supporting Files/GoogleService-Info.plist",
 			);
 			target = 92D2D0EE2E57F12000987919 /* CampusKinect_IOS */;
 		};
@@ -58,7 +57,6 @@
 				Resources/Data/CampusLocations.json,
 				Resources/Data/Categories.json,
 				Resources/Data/Tags.json,
-				"Supporting Files/GoogleService-Info.plist",
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -80,7 +78,6 @@
 				"Supporting Files/Configuration/Debug.xcconfig" = text;
 				"Supporting Files/Configuration/Release.xcconfig" = text;
 				"Supporting Files/Configuration/Shared.xcconfig" = text;
-				"Supporting Files/GoogleService-Info.plist" = text.xml;
 				"Supporting Files/LaunchScreen.storyboard" = text.xml;
 			};
 			path = CampusKinect_IOS;

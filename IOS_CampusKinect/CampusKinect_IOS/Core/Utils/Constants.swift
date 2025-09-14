@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - API Configuration
 struct APIConstants {
-    static let baseURL = "https://api.campuskinect.net"
+    static let baseURL = "http://192.168.1.205:3000"  // Changed to Mac's IP address for iPhone connection
     static let apiVersion = "v1"
     static let timeout: TimeInterval = 30.0
     

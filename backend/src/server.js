@@ -48,6 +48,7 @@ const server = createServer(app);
 // CORS configuration with multiple allowed origins
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://192.168.1.205:3000',  // Added for iPhone connection to Mac
   'https://campuskinect.net',
   'https://www.campuskinect.net',
   'https://api.campuskinect.net'
