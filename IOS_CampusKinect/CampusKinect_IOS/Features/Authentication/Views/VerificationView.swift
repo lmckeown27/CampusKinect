@@ -96,7 +96,7 @@ struct VerificationView: View {
     private func verifyEmail() async {
         guard !verificationCode.isEmpty else { return }
         
-        await authManager.verifyEmail(code: verificationCode)
+        await authManager.verifyEmail(email: email, code: verificationCode)
     }
     
     private func resendCode() async {

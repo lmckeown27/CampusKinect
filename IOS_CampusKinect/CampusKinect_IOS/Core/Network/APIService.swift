@@ -102,7 +102,7 @@ class APIService: ObservableObject {
         let loginRequest = LoginRequest(email: email, password: password)
         let body = try encoder.encode(loginRequest)
         
-        return try await performRequest<AuthResponse>(
+        return try await performRequest(
             endpoint: APIConstants.Endpoints.login,
             method: .POST,
             body: body,
@@ -126,7 +126,7 @@ class APIService: ObservableObject {
         )
         let body = try encoder.encode(registerRequest)
         
-        return try await performRequest<AuthResponse>(
+        return try await performRequest(
             endpoint: APIConstants.Endpoints.register,
             method: .POST,
             body: body,
@@ -138,7 +138,7 @@ class APIService: ObservableObject {
         let verifyRequest = VerifyEmailRequest(email: email, code: code)
         let body = try encoder.encode(verifyRequest)
         
-        return try await performRequest<AuthResponse>(
+        return try await performRequest(
             endpoint: APIConstants.Endpoints.verify,
             method: .POST,
             body: body,
@@ -150,7 +150,7 @@ class APIService: ObservableObject {
         let resendRequest = ResendCodeRequest(email: email)
         let body = try encoder.encode(resendRequest)
         
-        return try await performRequest<MessageResponse>(
+        return try await performRequest(
             endpoint: APIConstants.Endpoints.resendCode,
             method: .POST,
             body: body,
@@ -160,7 +160,7 @@ class APIService: ObservableObject {
     
     // MARK: - Posts Methods
     func fetchPosts(page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
-        return try await performRequest<PostsResponse>(
+        return try await performRequest(
             endpoint: "\(APIConstants.Endpoints.posts)?page=\(page)&limit=\(limit)",
             method: .GET,
             body: nil,
@@ -171,7 +171,7 @@ class APIService: ObservableObject {
     func createPost(_ post: CreatePostRequest) async throws -> Post {
         let body = try encoder.encode(post)
         
-        return try await performRequest<Post>(
+        return try await performRequest(
             endpoint: APIConstants.Endpoints.posts,
             method: .POST,
             body: body,
@@ -181,7 +181,7 @@ class APIService: ObservableObject {
     
     // MARK: - User Methods
     func getCurrentUser() async throws -> User {
-        return try await performRequest<User>(
+        return try await performRequest(
             endpoint: "\(APIConstants.Endpoints.users)/me",
             method: .GET,
             body: nil,
@@ -192,7 +192,7 @@ class APIService: ObservableObject {
     func updateProfile(_ profile: UpdateProfileRequest) async throws -> User {
         let body = try encoder.encode(profile)
         
-        return try await performRequest<User>(
+        return try await performRequest(
             endpoint: "\(APIConstants.Endpoints.users)/me",
             method: .PUT,
             body: body,
