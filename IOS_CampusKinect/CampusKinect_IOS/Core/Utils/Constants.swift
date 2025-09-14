@@ -1,12 +1,13 @@
 import Foundation
 
-// MARK: - API Configuration
+// MARK: - Production API Configuration
 struct APIConstants {
-    static let baseURL = "http://192.168.1.205:3000"  // Changed to Mac's IP address for iPhone connection
+    // Production backend URL (same as web frontend)
+    static let baseURL = "https://campuskinect.net"
     static let apiVersion = "v1"
     static let timeout: TimeInterval = 30.0
     
-    // Endpoints
+    // API Endpoints
     struct Endpoints {
         static let auth = "/auth"
         static let login = "/auth/login"
@@ -19,6 +20,7 @@ struct APIConstants {
         static let upload = "/upload"
     }
     
+    // Full API base URL for production
     static var fullBaseURL: String {
         return "\(baseURL)/api/\(apiVersion)"
     }
@@ -26,22 +28,23 @@ struct APIConstants {
 
 // MARK: - App Configuration
 struct AppConstants {
+    // File size limits
     static let maxImageSize = 50 * 1024 * 1024 // 50MB
     static let maxImagesPerPost = 10
     static let maxPostLength = 2000
     static let minPasswordLength = 6
     
-    // Image compression
+    // Image processing
     static let imageCompressionQuality: CGFloat = 0.8
     static let thumbnailSize = CGSize(width: 300, height: 300)
     
-    // Animation durations
+    // UI Animation durations
     static let shortAnimationDuration: Double = 0.2
     static let mediumAnimationDuration: Double = 0.3
     static let longAnimationDuration: Double = 0.5
 }
 
-// MARK: - Keychain Keys
+// MARK: - Secure Storage Keys
 struct KeychainKeys {
     static let accessToken = "campuskinect_access_token"
     static let refreshToken = "campuskinect_refresh_token"
@@ -49,7 +52,7 @@ struct KeychainKeys {
     static let biometricEnabled = "campuskinect_biometric_enabled"
 }
 
-// MARK: - UserDefaults Keys
+// MARK: - User Preferences Keys
 struct UserDefaultsKeys {
     static let hasSeenOnboarding = "has_seen_onboarding"
     static let preferredLanguage = "preferred_language"

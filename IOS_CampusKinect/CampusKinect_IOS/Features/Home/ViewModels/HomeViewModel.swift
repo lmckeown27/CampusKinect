@@ -35,44 +35,36 @@ class HomeViewModel: ObservableObject {
     // MARK: - Public Methods
     @MainActor
     func loadPosts() async {
-        guard !isLoading else { return }
-        
         isLoading = true
-        error = nil
-        currentPage = 1
-        
         do {
-            let response = try await apiService.fetchPosts(page: currentPage, limit: postsPerPage)
-            self.posts = response.posts
-            self.hasMorePosts = response.pagination.hasNext
-            print("Loaded \(response.posts.count) posts")
+            let response = try await apiService.fetchPosts()
+            await MainActor.run {
+                self.posts = response.posts
+                self.isLoading = false
+            }
         } catch {
-            self.error = error as? APIError ?? .unknown(0)
-            print("Failed to load posts: \(error.localizedDescription)")
+            await MainActor.run {
+                self.error = error as? APIError
+                self.isLoading = false
+            }
         }
-        
-        isLoading = false
     }
     
     @MainActor
     func refreshPosts() async {
-        guard !isRefreshing else { return }
-        
         isRefreshing = true
-        error = nil
-        currentPage = 1
-        
         do {
-            let response = try await apiService.fetchPosts(page: currentPage, limit: postsPerPage)
-            self.posts = response.posts
-            self.hasMorePosts = response.pagination.hasNext
-            print("Refreshed posts: \(response.posts.count)")
+            let response = try await apiService.fetchPosts()
+            await MainActor.run {
+                self.posts = response.posts
+                self.isRefreshing = false
+            }
         } catch {
-            self.error = error as? APIError ?? .unknown(0)
-            print("Failed to refresh posts: \(error.localizedDescription)")
+            await MainActor.run {
+                self.error = error as? APIError
+                self.isRefreshing = false
+            }
         }
-        
-        isRefreshing = false
     }
     
     @MainActor

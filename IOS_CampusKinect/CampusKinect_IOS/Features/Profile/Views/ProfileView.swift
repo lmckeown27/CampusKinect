@@ -114,7 +114,6 @@ struct ProfileHeader: View {
             // Edit Profile Button
             Button(action: {
                 // Navigate to edit profile
-                print("Edit profile tapped")
             }) {
                 Text("Edit Profile")
                     .foregroundColor(.primary)
@@ -178,7 +177,7 @@ struct PostsTabContent: View {
             systemImage: "doc.text",
             actionTitle: "Create Post"
         ) {
-            print("Create post from profile")
+                            // Navigate to create post
         }
     }
 }

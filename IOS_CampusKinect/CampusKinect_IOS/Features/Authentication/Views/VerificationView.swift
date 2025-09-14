@@ -94,9 +94,9 @@ struct VerificationView: View {
     }
     
     private func verifyEmail() async {
-        // This would call the API service to verify the email
-        // For now, we'll simulate the verification
-        print("Verifying email with code: \(verificationCode)")
+        guard !verificationCode.isEmpty else { return }
+        
+        await authManager.verifyEmail(code: verificationCode)
     }
     
     private func resendCode() async {
