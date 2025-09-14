@@ -26,25 +26,17 @@ struct AuthResponse: Codable {
 
 // MARK: - Login Request
 struct LoginRequest: Codable {
-    let email: String
+    let usernameOrEmail: String  // Backend expects "usernameOrEmail", not "email"
     let password: String
 }
 
 // MARK: - Register Request
 struct RegisterRequest: Codable {
+    let username: String
     let email: String
     let password: String
     let firstName: String
     let lastName: String
-    let displayName: String
-    
-    enum CodingKeys: String, CodingKey {
-        case email
-        case password
-        case firstName = "first_name"
-        case lastName = "last_name"
-        case displayName = "display_name"
-    }
 }
 
 // MARK: - Verification Models

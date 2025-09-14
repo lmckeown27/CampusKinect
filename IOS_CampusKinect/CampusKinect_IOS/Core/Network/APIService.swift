@@ -99,7 +99,7 @@ class APIService: ObservableObject {
     
     // MARK: - Authentication Methods
     func login(email: String, password: String) async throws -> AuthResponse {
-        let loginRequest = LoginRequest(email: email, password: password)
+        let loginRequest = LoginRequest(usernameOrEmail: email, password: password)
         let body = try encoder.encode(loginRequest)
         
         return try await performRequest(
@@ -111,18 +111,18 @@ class APIService: ObservableObject {
     }
     
     func register(
+        username: String,
         email: String,
         password: String,
         firstName: String,
-        lastName: String,
-        displayName: String
+        lastName: String
     ) async throws -> AuthResponse {
         let registerRequest = RegisterRequest(
+            username: username,
             email: email,
             password: password,
             firstName: firstName,
-            lastName: lastName,
-            displayName: displayName
+            lastName: lastName
         )
         let body = try encoder.encode(registerRequest)
         

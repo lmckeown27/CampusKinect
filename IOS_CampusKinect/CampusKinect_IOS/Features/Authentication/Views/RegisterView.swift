@@ -158,8 +158,7 @@ struct RegisterView: View {
                                     email: email,
                                     password: password,
                                     firstName: firstName,
-                                    lastName: lastName,
-                                    displayName: displayName
+                                    lastName: lastName
                                 )
                                 
                                 if success {

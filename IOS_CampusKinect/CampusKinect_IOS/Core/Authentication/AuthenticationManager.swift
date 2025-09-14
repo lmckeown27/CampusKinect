@@ -102,19 +102,18 @@ class AuthenticationManager: ObservableObject {
         email: String,
         password: String,
         firstName: String,
-        lastName: String,
-        displayName: String
+        lastName: String
     ) async -> Bool {
         isLoading = true
         authError = nil
         
         do {
             let response = try await apiService.register(
+                username: email.components(separatedBy: "@").first ?? "user", // Generate username from email
                 email: email,
                 password: password,
                 firstName: firstName,
-                lastName: lastName,
-                displayName: displayName
+                lastName: lastName
             )
             
             // For registration, we might need email verification
