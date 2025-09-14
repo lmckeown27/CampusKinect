@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'production') {
   require('dotenv').config();
 }
 
-const { initDatabase, pool } = require('./config/database');
+const { initializeDatabase, pool } = require('./config/database');
 const { connectRedis, redis } = require('./config/redis');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/notFound');
@@ -84,7 +84,7 @@ io.on('connection', (socket) => {
 });
 
 // Connect to databases
-initDatabase();
+initializeDatabase();
 connectRedis();
 
 // Initialize cron jobs for recurring posts
