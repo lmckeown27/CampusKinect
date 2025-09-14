@@ -112,15 +112,17 @@ struct ProfileHeader: View {
             }
             
             // Edit Profile Button
-            CustomButton(
-                title: "Edit Profile",
-                backgroundColor: Color(.systemGray6),
-                foregroundColor: .primary
-            ) {
+            Button(action: {
                 // Navigate to edit profile
                 print("Edit profile tapped")
+            }) {
+                Text("Edit Profile")
+                    .foregroundColor(.primary)
+                    .padding()
+                    .frame(width: 120)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
             }
-            .frame(width: 120)
         }
     }
 }

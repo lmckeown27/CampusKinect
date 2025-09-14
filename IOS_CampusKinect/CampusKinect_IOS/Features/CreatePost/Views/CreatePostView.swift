@@ -84,10 +84,8 @@ struct CreatePostView: View {
                             .font(.headline)
                             .fontWeight(.semibold)
                         
-                        CustomTextField(
-                            placeholder: "Add a location...",
-                            text: $location
-                        )
+                        TextField("Add a location...", text: $location)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                     
                     Spacer(minLength: 20)
@@ -98,13 +96,20 @@ struct CreatePostView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    CustomButton(
-                        title: "Post",
-                        isLoading: isPosting
-                    ) {
+                    Button(action: {
                         Task {
                             await createPost()
                         }
+                    }) {
+                        Text("Post")
+                            .fontWeight(.semibold)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                            .background(
+                                isPosting ? Color.gray : Color("PrimaryColor")
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
                     }
                     .disabled(!isValidPost || isPosting)
                 }

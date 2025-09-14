@@ -142,16 +142,12 @@ struct PostImage: Codable, Identifiable, Equatable {
 
 // MARK: - Posts Response
 struct PostsResponse: Codable {
-    let success: Bool
     let posts: [Post]
     let pagination: PaginationInfo
-    let totalCount: Int
     
     enum CodingKeys: String, CodingKey {
-        case success
-        case posts
+        case posts = "data"
         case pagination
-        case totalCount = "total_count"
     }
 }
 
@@ -171,21 +167,6 @@ struct CreatePostRequest: Codable {
         case location
         case tags
         case images
-    }
-}
-
-// MARK: - Pagination Info
-struct PaginationInfo: Codable {
-    let currentPage: Int
-    let totalPages: Int
-    let hasNext: Bool
-    let hasPrevious: Bool
-    
-    enum CodingKeys: String, CodingKey {
-        case currentPage = "current_page"
-        case totalPages = "total_pages"
-        case hasNext = "has_next"
-        case hasPrevious = "has_previous"
     }
 }
 

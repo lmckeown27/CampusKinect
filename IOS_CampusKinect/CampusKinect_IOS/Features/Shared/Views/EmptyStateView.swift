@@ -50,10 +50,14 @@ struct EmptyStateView: View {
             }
             
             if let actionTitle = actionTitle, let action = action {
-                CustomButton(
-                    title: actionTitle,
-                    action: action
-                )
+                Button(action: action) {
+                    Text(actionTitle)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                }
                 .padding(.horizontal, 40)
             }
             

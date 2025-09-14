@@ -37,10 +37,14 @@ struct ErrorView: View {
             }
             
             if let onRetry = onRetry, error.isRetryable {
-                CustomButton(
-                    title: "Try Again",
-                    action: onRetry
-                )
+                Button(action: onRetry) {
+                    Text("Try Again")
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                }
                 .padding(.horizontal, 40)
             }
             

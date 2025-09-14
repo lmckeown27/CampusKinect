@@ -36,14 +36,12 @@ struct VerificationView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(Color("AccentColor"))
             
-            CustomTextField(
-                placeholder: "Enter verification code",
-                text: $verificationCode,
-                keyboardType: .numberPad
-            )
-            .padding(.horizontal)
+            TextField("Enter verification code", text: $verificationCode)
+                .keyboardType(.numberPad)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
             
-            if let error = authManager.error {
+            if let error = authManager.authError {
                 Text(error.userFriendlyMessage)
                     .foregroundColor(.red)
                     .font(.caption)
@@ -51,16 +49,25 @@ struct VerificationView: View {
                     .padding(.horizontal)
             }
             
-            CustomButton(
-                title: "Verify Email",
-                isLoading: authManager.isLoading
-            ) {
+            Button(action: {
                 Task {
                     await verifyEmail()
                 }
+            }) {
+                if authManager.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Verify Email")
+                }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+            .disabled(authManager.isLoading || verificationCode.isEmpty)
             .padding(.horizontal)
-            .disabled(verificationCode.isEmpty || authManager.isLoading)
             
             HStack {
                 Text("Didn't receive the code?")

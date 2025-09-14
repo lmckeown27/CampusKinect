@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct CampusKinectApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var authManager = AuthenticationManager()
     @StateObject private var networkMonitor = NetworkMonitor()
     

@@ -28,12 +28,10 @@ struct ForgotPasswordView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             
-            CustomTextField(
-                placeholder: "Email",
-                text: $email,
-                keyboardType: .emailAddress
-            )
-            .padding(.horizontal)
+            TextField("Email", text: $email)
+                .keyboardType(.emailAddress)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
             
             if let errorMessage = errorMessage {
                 Text(errorMessage)
@@ -43,16 +41,25 @@ struct ForgotPasswordView: View {
                     .padding(.horizontal)
             }
             
-            CustomButton(
-                title: "Send Reset Link",
-                isLoading: isLoading
-            ) {
+            Button(action: {
                 Task {
                     await sendResetLink()
                 }
+            }) {
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Send Reset Link")
+                }
             }
-            .padding(.horizontal)
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(8)
             .disabled(email.isEmpty || isLoading)
+            .padding(.horizontal)
             
             Spacer()
         }

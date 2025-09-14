@@ -56,16 +56,20 @@ struct FilterView: View {
                 
                 // Actions
                 VStack(spacing: 12) {
-                    CustomButton(
-                        title: "Apply Filters",
-                        action: {
-                            viewModel.applyFilter(
-                                category: selectedCategory,
-                                subcategory: selectedSubcategory
-                            )
-                            dismiss()
-                        }
-                    )
+                    Button(action: {
+                        viewModel.applyFilter(
+                            category: selectedCategory,
+                            subcategory: selectedSubcategory
+                        )
+                        dismiss()
+                    }) {
+                        Text("Apply Filters")
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                    }
                     
                     Button("Clear All Filters") {
                         selectedCategory = nil

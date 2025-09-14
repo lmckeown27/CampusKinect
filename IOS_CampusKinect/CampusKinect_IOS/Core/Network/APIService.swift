@@ -161,7 +161,10 @@ class APIService: ObservableObject {
     // MARK: - Posts Methods
     func fetchPosts(page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
         return try await performRequest<PostsResponse>(
-            endpoint: "\(APIConstants.Endpoints.posts)?page=\(page)&limit=\(limit)"
+            endpoint: "\(APIConstants.Endpoints.posts)?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
         )
     }
     
@@ -171,14 +174,18 @@ class APIService: ObservableObject {
         return try await performRequest<Post>(
             endpoint: APIConstants.Endpoints.posts,
             method: .POST,
-            body: body
+            body: body,
+            requiresAuth: true
         )
     }
     
     // MARK: - User Methods
     func getCurrentUser() async throws -> User {
         return try await performRequest<User>(
-            endpoint: "\(APIConstants.Endpoints.users)/me"
+            endpoint: "\(APIConstants.Endpoints.users)/me",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
         )
     }
     
@@ -188,7 +195,8 @@ class APIService: ObservableObject {
         return try await performRequest<User>(
             endpoint: "\(APIConstants.Endpoints.users)/me",
             method: .PUT,
-            body: body
+            body: body,
+            requiresAuth: true
         )
     }
 }
@@ -208,11 +216,9 @@ private struct VerifyEmailRequest: Codable {
     let code: String
 }
 
-private struct ResendCodeRequest: Codable {
-    let email: String
-}
 
-private struct MessageResponse: Codable {
+
+struct MessageResponse: Codable {
     let success: Bool
     let message: String
 }
