@@ -70,12 +70,29 @@ class AuthenticationManager: ObservableObject {
         do {
             let response = try await apiService.login(email: email, password: password)
             
-            // Save tokens
-            await keychainManager.saveAccessToken(response.token)
-            if let refreshToken = response.refreshToken {
-                await keychainManager.saveRefreshToken(refreshToken)
+            // Save tokens with error handling
+            let tokenSaved = await keychainManager.saveAccessToken(response.token)
+            guard tokenSaved else {
+                authError = .keychainError
+                isLoading = false
+                return false
             }
-            await keychainManager.saveUserID(String(response.user.id))
+            
+            if let refreshToken = response.refreshToken {
+                let refreshTokenSaved = await keychainManager.saveRefreshToken(refreshToken)
+                guard refreshTokenSaved else {
+                    authError = .keychainError
+                    isLoading = false
+                    return false
+                }
+            }
+            
+            let userIDSaved = await keychainManager.saveUserID(String(response.user.id))
+            guard userIDSaved else {
+                authError = .keychainError
+                isLoading = false
+                return false
+            }
             
             // Update state
             currentUser = response.user
@@ -142,12 +159,29 @@ class AuthenticationManager: ObservableObject {
         do {
             let response = try await apiService.verifyEmail(email: email, code: code)
             
-            // Save tokens after successful verification
-            await keychainManager.saveAccessToken(response.token)
-            if let refreshToken = response.refreshToken {
-                await keychainManager.saveRefreshToken(refreshToken)
+            // Save tokens after successful verification with error handling
+            let tokenSaved = await keychainManager.saveAccessToken(response.token)
+            guard tokenSaved else {
+                authError = .keychainError
+                isLoading = false
+                return false
             }
-            await keychainManager.saveUserID(String(response.user.id))
+            
+            if let refreshToken = response.refreshToken {
+                let refreshTokenSaved = await keychainManager.saveRefreshToken(refreshToken)
+                guard refreshTokenSaved else {
+                    authError = .keychainError
+                    isLoading = false
+                    return false
+                }
+            }
+            
+            let userIDSaved = await keychainManager.saveUserID(String(response.user.id))
+            guard userIDSaved else {
+                authError = .keychainError
+                isLoading = false
+                return false
+            }
             
             // Update state
             currentUser = response.user
@@ -195,7 +229,11 @@ class AuthenticationManager: ObservableObject {
         isLoading = true
         
         // Clear tokens from keychain
-        await keychainManager.clearAllTokens()
+        let tokensCleared = await keychainManager.clearAllTokens()
+        if !tokensCleared {
+            // Log warning but continue with logout since we want to clear local state anyway
+            print("Warning: Failed to clear tokens from keychain")
+        }
         
         // Clear state
         isAuthenticated = false

@@ -96,7 +96,12 @@ struct VerificationView: View {
     private func verifyEmail() async {
         guard !verificationCode.isEmpty else { return }
         
-        await authManager.verifyEmail(email: email, code: verificationCode)
+        let success = await authManager.verifyEmail(email: email, code: verificationCode)
+        if success {
+            // Verification successful - AuthenticationManager will handle navigation
+        } else {
+            // Error will be displayed through authManager.authError
+        }
     }
     
     private func resendCode() async {

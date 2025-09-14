@@ -17,6 +17,7 @@ enum APIError: LocalizedError, Equatable {
     case serverError
     case networkError(String)
     case decodingError(String)
+    case keychainError
     case unknown(Int)
     
     var errorDescription: String? {
@@ -37,6 +38,8 @@ enum APIError: LocalizedError, Equatable {
             return "Network error: \(message)"
         case .decodingError(let message):
             return "Data parsing error: \(message)"
+        case .keychainError:
+            return "Authentication failed. Please log in again."
         case .unknown(let code):
             return "Unknown error (Code: \(code))"
         }
@@ -56,6 +59,8 @@ enum APIError: LocalizedError, Equatable {
             return "Our servers are experiencing issues. Please try again in a few minutes."
         case .networkError:
             return "Please check your internet connection and try again."
+        case .keychainError:
+            return "Authentication failed. Please log in again."
         case .unknown:
             return "An unexpected error occurred. Please try again."
         }
@@ -65,7 +70,7 @@ enum APIError: LocalizedError, Equatable {
         switch self {
         case .networkError, .serverError, .unknown:
             return true
-        case .invalidURL, .invalidResponse, .unauthorized, .badRequest, .notFound, .decodingError:
+        case .invalidURL, .invalidResponse, .unauthorized, .badRequest, .notFound, .decodingError, .keychainError:
             return false
         }
     }
