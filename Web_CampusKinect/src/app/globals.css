@@ -152,8 +152,8 @@ body {
 }
 
 body {
-  color: var(--color-neutral-200);
-  background: var(--color-neutral-800);
+  color: var(--color-neutral-100);
+  background: var(--color-neutral-600);
 }
 
 a {
@@ -183,12 +183,12 @@ a {
 .bg-dark { background-color: var(--color-dark); }
 
 /* Grey Theme Utilities */
-.bg-grey-light { background-color: var(--color-neutral-700); }
-.bg-grey-medium { background-color: var(--color-neutral-800); }
-.bg-grey-dark { background-color: var(--color-neutral-900); }
-.text-grey-light { color: var(--color-neutral-300); }
-.text-grey-medium { color: var(--color-neutral-400); }
-.border-grey { border-color: var(--color-neutral-600); }
+.bg-grey-light { background-color: var(--color-neutral-500); }
+.bg-grey-medium { background-color: var(--color-neutral-600); }
+.bg-grey-dark { background-color: var(--color-neutral-700); }
+.text-grey-light { color: var(--color-neutral-100); }
+.text-grey-medium { color: var(--color-neutral-200); }
+.border-grey { border-color: var(--color-neutral-400); }
 
 .border-primary { border-color: var(--color-neutral-300); }
 .border-secondary { border-color: var(--color-neutral-300); }
@@ -359,10 +359,10 @@ textarea.border-4 {
 
 /* Card Styles */
 .card {
-  background-color: var(--color-neutral-700);
+  background-color: var(--color-neutral-500);
   border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--color-neutral-600);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-neutral-400);
 }
 
 .card-hover:hover {
@@ -688,12 +688,12 @@ textarea.border-4 {
 .form-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid var(--color-neutral-600);
+  border: 2px solid var(--color-neutral-400);
   border-radius: 0.75rem;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background: var(--color-neutral-700);
-  color: var(--color-neutral-200);
+  background: var(--color-neutral-500);
+  color: var(--color-neutral-100);
 }
 
 .form-input:focus {
@@ -709,12 +709,12 @@ textarea.border-4 {
 .form-select {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid var(--color-neutral-600);
+  border: 2px solid var(--color-neutral-400);
   border-radius: 0.75rem;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background: var(--color-neutral-700);
-  color: var(--color-neutral-200);
+  background: var(--color-neutral-500);
+  color: var(--color-neutral-100);
   cursor: pointer;
 }
 
