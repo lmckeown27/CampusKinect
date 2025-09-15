@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthenticationManager
+    @StateObject private var viewModel = ProfileViewModel()
     @State private var showingSettings = false
     @State private var selectedTab: ProfileTab = .posts
     
@@ -29,7 +30,7 @@ struct ProfileView: View {
                     ProfileTabSelector(selectedTab: $selectedTab)
                     
                     // Content based on selected tab
-                    ProfileContent(selectedTab: selectedTab)
+                    ProfileContent(selectedTab: selectedTab, viewModel: viewModel, currentUser: authManager.currentUser)
                 }
                 .padding()
             }
@@ -46,6 +47,12 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+            }
+            .task {
+                // Load user posts when view appears
+                if let userId = authManager.currentUser?.id {
+                    await viewModel.loadUserPosts(userId: userId)
+                }
             }
         }
     }
@@ -153,16 +160,18 @@ struct ProfileTabSelector: View {
 // MARK: - Profile Content
 struct ProfileContent: View {
     let selectedTab: ProfileView.ProfileTab
+    @ObservedObject var viewModel: ProfileViewModel
+    let currentUser: User?
     
     var body: some View {
         VStack(spacing: 16) {
             switch selectedTab {
             case .posts:
-                PostsTabContent()
+                PostsTabContent(viewModel: viewModel, currentUser: currentUser)
             case .reposts:
-                RepostsTabContent()
+                RepostsTabContent(viewModel: viewModel, currentUser: currentUser)
             case .bookmarks:
-                BookmarksTabContent()
+                BookmarksTabContent(viewModel: viewModel, currentUser: currentUser)
             }
         }
     }
@@ -170,35 +179,103 @@ struct ProfileContent: View {
 
 // MARK: - Tab Content Views
 struct PostsTabContent: View {
+    @ObservedObject var viewModel: ProfileViewModel
+    let currentUser: User?
+    
     var body: some View {
-        EmptyStateView(
-            title: "No Posts Yet",
-            message: "Share something with your campus community!",
-            systemImage: "doc.text",
-            actionTitle: "Create Post"
-        ) {
-                            // Navigate to create post
+        VStack {
+            if viewModel.isLoading && viewModel.userPosts.isEmpty {
+                ProgressView("Loading posts...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.userPosts.isEmpty {
+                EmptyStateView(
+                    title: "No Posts Yet",
+                    message: "Share something with your campus community!",
+                    systemImage: "doc.text",
+                    actionTitle: "Create Post"
+                ) {
+                    // Navigate to create post
+                }
+            } else {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.userPosts) { post in
+                        PostCardView(post: post)
+                    }
+                    
+                    // Load more posts if available
+                    if viewModel.hasMorePosts {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .task {
+                                if let userId = currentUser?.id {
+                                    await viewModel.loadMoreUserPosts(userId: userId)
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        .refreshable {
+            if let userId = currentUser?.id {
+                await viewModel.refreshUserPosts(userId: userId)
+            }
         }
     }
 }
 
 struct RepostsTabContent: View {
+    @ObservedObject var viewModel: ProfileViewModel
+    let currentUser: User?
+    
     var body: some View {
-        EmptyStateView(
-            title: "No Reposts",
-            message: "Posts you repost will appear here",
-            systemImage: "arrow.2.squarepath"
-        )
+        VStack {
+            if viewModel.userReposts.isEmpty {
+                EmptyStateView(
+                    title: "No Reposts",
+                    message: "Posts you repost will appear here",
+                    systemImage: "arrow.2.squarepath"
+                )
+            } else {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.userReposts) { post in
+                        PostCardView(post: post)
+                    }
+                }
+            }
+        }
+        .task {
+            if let userId = currentUser?.id {
+                await viewModel.loadUserReposts(userId: userId)
+            }
+        }
     }
 }
 
 struct BookmarksTabContent: View {
+    @ObservedObject var viewModel: ProfileViewModel
+    let currentUser: User?
+    
     var body: some View {
-        EmptyStateView(
-            title: "No Bookmarks",
-            message: "Posts you bookmark will appear here",
-            systemImage: "bookmark"
-        )
+        VStack {
+            if viewModel.userBookmarks.isEmpty {
+                EmptyStateView(
+                    title: "No Bookmarks",
+                    message: "Posts you bookmark will appear here",
+                    systemImage: "bookmark"
+                )
+            } else {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.userBookmarks) { post in
+                        PostCardView(post: post)
+                    }
+                }
+            }
+        }
+        .task {
+            if let userId = currentUser?.id {
+                await viewModel.loadUserBookmarks(userId: userId)
+            }
+        }
     }
 }
 

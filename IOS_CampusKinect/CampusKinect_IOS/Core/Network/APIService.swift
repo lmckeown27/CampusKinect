@@ -236,6 +236,16 @@ class APIService: NSObject, ObservableObject {
             requiresAuth: true
         )
     }
+    
+    // MARK: - User Methods
+    func fetchUserPosts(userId: Int, page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.users)/\(userId)/posts?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: false
+        )
+    }
 
 }
 
