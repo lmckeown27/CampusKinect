@@ -319,65 +319,99 @@ struct ImageViewer: View {
     
     var body: some View {
         ZStack {
-            // Background - tap to dismiss
-            Color.black
-                .ignoresSafeArea()
-                .onTapGesture {
+            backgroundView
+            imageTabView
+            doneButtonOverlay
+        }
+    }
+    
+    // MARK: - View Components
+    private var backgroundView: some View {
+        Color.black
+            .ignoresSafeArea()
+            .onTapGesture {
+                dismiss()
+            }
+    }
+    
+    private var imageTabView: some View {
+        TabView(selection: $selectedIndex) {
+            ForEach(Array(images.enumerated()), id: \.offset) { index, imageURL in
+                imageView(for: imageURL, at: index)
+            }
+        }
+        .tabViewStyle(PageTabViewStyle())
+        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+        .opacity(tabViewOpacity)
+        .gesture(dragGesture)
+    }
+    
+    private func imageView(for imageURL: String, at index: Int) -> some View {
+        AsyncImage(url: URL(string: "\(APIConstants.baseURL)\(imageURL)")) { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .offset(y: dragOffset.height)
+                .scaleEffect(imageScale)
+                .animation(.interactiveSpring(), value: dragOffset)
+        } placeholder: {
+            ProgressView()
+                .tint(.white)
+        }
+        .tag(index)
+    }
+    
+    private var doneButtonOverlay: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button("Done") {
                     dismiss()
                 }
-            
-            TabView(selection: $selectedIndex) {
-                ForEach(Array(images.enumerated()), id: \.offset) { index, imageURL in
-                    AsyncImage(url: URL(string: "\(APIConstants.baseURL)\(imageURL)")) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .offset(y: dragOffset.height)
-                            .scaleEffect(isDragging ? max(0.7, 1 - abs(dragOffset.height) / 1000) : 1)
-                            .animation(.interactiveSpring(), value: dragOffset)
-                    } placeholder: {
-                        ProgressView()
-                            .tint(.white)
-                    }
-                    .tag(index)
-                }
+                .foregroundColor(.white)
+                .padding()
             }
-            .tabViewStyle(PageTabViewStyle())
-            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-            .opacity(isDragging ? max(0.5, 1 - abs(dragOffset.height) / 500) : 1)
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        // Only respond to vertical drags to avoid interfering with horizontal page swiping
-                        if abs(value.translation.y) > abs(value.translation.x) {
-                            isDragging = true
-                            dragOffset = value.translation
-                        }
-                    }
-                    .onEnded { value in
-                        isDragging = false
-                        // Dismiss if dragged far enough vertically
-                        if abs(value.translation.y) > 150 {
-                            dismiss()
-                        } else {
-                            // Snap back to original position
-                            withAnimation(.spring()) {
-                                dragOffset = .zero
-                            }
-                        }
-                    }
-            )
-            
-            VStack {
-                HStack {
-                    Spacer()
-                    Button("Done") {
-                        dismiss()
-                    }
-                    .foregroundColor(.white)
-                    .padding()
-                }
-                Spacer()
+            Spacer()
+        }
+    }
+    
+    // MARK: - Computed Properties
+    private var tabViewOpacity: Double {
+        isDragging ? max(0.5, 1 - abs(dragOffset.height) / 500) : 1
+    }
+    
+    private var imageScale: Double {
+        isDragging ? max(0.7, 1 - abs(dragOffset.height) / 1000) : 1
+    }
+    
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                handleDragChanged(value)
+            }
+            .onEnded { value in
+                handleDragEnded(value)
+            }
+    }
+    
+    // MARK: - Gesture Handlers
+    private func handleDragChanged(_ value: DragGesture.Value) {
+        // Only respond to vertical drags to avoid interfering with horizontal page swiping
+        if abs(value.translation.y) > abs(value.translation.x) {
+            isDragging = true
+            dragOffset = value.translation
+        }
+    }
+    
+    private func handleDragEnded(_ value: DragGesture.Value) {
+        isDragging = false
+        // Dismiss if dragged far enough vertically
+        if abs(value.translation.y) > 150 {
+            dismiss()
+        } else {
+            // Snap back to original position
+            withAnimation(.spring()) {
+                dragOffset = .zero
             }
         }
     }
