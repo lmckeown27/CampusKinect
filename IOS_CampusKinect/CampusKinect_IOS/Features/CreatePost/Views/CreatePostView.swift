@@ -16,6 +16,8 @@ struct CreatePostView: View {
     @State private var location = ""
     @State private var showingSuccess = false
     @State private var selectedImages: [LocalImage] = []
+    @State private var showingValidationAlert = false
+    @State private var validationMessage = ""
     
     // Offer/Request selection (required for Goods, Services, Housing)
     @State private var selectedOfferRequest: String? = nil
@@ -172,29 +174,33 @@ struct CreatePostView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
+                                    Button(action: {
+                    if isValidPost {
                         Task {
                             await createPost()
                         }
-                    }) {
-                        HStack {
-                            if viewModel.isLoading {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                                    .foregroundColor(.white)
-                            }
-                            Text(viewModel.isLoading ? "Posting..." : "Post")
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(.white)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 16)
-                        .background(
-                            viewModel.isLoading ? Color.gray : Color("BrandPrimary")
-                        )
-                        .cornerRadius(12)
+                    } else {
+                        validateAndShowErrors()
                     }
-                    .disabled(!isValidPost || viewModel.isLoading)
+                }) {
+                    HStack {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .foregroundColor(.white)
+                        }
+                        Text(viewModel.isLoading ? "Posting..." : "Post")
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.white)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+                    .background(
+                        viewModel.isLoading ? Color.gray : Color("BrandPrimary")
+                    )
+                    .cornerRadius(12)
+                }
+                .disabled(viewModel.isLoading)
                 }
             }
             .alert("Post Created!", isPresented: $showingSuccess) {
@@ -203,6 +209,13 @@ struct CreatePostView: View {
                 }
             } message: {
                 Text("Your post has been shared with the campus community!")
+            }
+            .alert("Post Requirements", isPresented: $showingValidationAlert) {
+                Button("OK") {
+                    showingValidationAlert = false
+                }
+            } message: {
+                Text(validationMessage)
             }
             .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
                 Button("OK") {
@@ -231,6 +244,47 @@ struct CreatePostView: View {
         }
         
         return hasValidTitle && hasValidContent && hasCategory
+    }
+    
+    private func getValidationErrors() -> [String] {
+        var errors: [String] = []
+        
+        // Check title
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedTitle.isEmpty {
+            errors.append("• Title is required")
+        } else if title.count > 100 {
+            errors.append("• Title must be 100 characters or less (currently \(title.count))")
+        }
+        
+        // Check content
+        let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedContent.count < 10 {
+            errors.append("• Description must be at least 10 characters (currently \(trimmedContent.count))")
+        } else if content.count > AppConstants.maxPostLength {
+            errors.append("• Description must be \(AppConstants.maxPostLength) characters or less (currently \(content.count))")
+        }
+        
+        // Check category
+        if selectedCategory == nil {
+            errors.append("• Please select a category")
+        }
+        
+        // Check offer/request if required
+        if requiresOfferRequestSelection && selectedOfferRequest == nil {
+            let categoryName = selectedCategory?.displayName ?? "this category"
+            errors.append("• Please select either 'Offer' or 'Request' for \(categoryName) posts")
+        }
+        
+        return errors
+    }
+    
+    private func validateAndShowErrors() {
+        let errors = getValidationErrors()
+        if !errors.isEmpty {
+            validationMessage = "Please fix the following issues:\n\n" + errors.joined(separator: "\n")
+            showingValidationAlert = true
+        }
     }
     
     private func createPost() async {
