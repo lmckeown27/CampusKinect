@@ -584,7 +584,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   return (
     <div className="bg-grey-light rounded-2xl shadow-lg border-2 border-gray-300 hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem' }}>
               {/* Post Header */}
-        <div className="p-4 border-b border-gray-100 rounded-t-2xl">
+        <div className="p-4 rounded-t-2xl bg-grey-light border-b border-gray-200">
         {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
         <div className="flex items-center justify-between mb-3">
           {/* Left side: Post Type Badge + Timestamp */}
@@ -860,7 +860,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       </div>
 
       {/* Post Actions */}
-              <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 rounded-b-2xl">
+              <div className="px-4 py-3 bg-grey-light rounded-b-2xl border-t border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
