@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CreatePostView: View {
+    @StateObject private var viewModel = CreatePostViewModel()
     @State private var content = ""
     @State private var selectedCategory: PostCategory?
     @State private var selectedSubcategory: PostSubcategory?
     @State private var location = ""
-    @State private var isPosting = false
     @State private var showingSuccess = false
     
     // Offer/Request selection (required for Goods, Services, Housing)
@@ -33,13 +33,8 @@ struct CreatePostView: View {
                             .padding(12)
                             .background(Color(.systemGray6))
                             .cornerRadius(12)
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                    }
-                                }
+                            .onTapGesture {
+                                // Helps with focus management
                             }
                         
                         HStack {
@@ -145,23 +140,38 @@ struct CreatePostView: View {
             .navigationTitle("Create Post")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        hideKeyboard()
+                    }
+                }
+            }
+            .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         Task {
                             await createPost()
                         }
                     }) {
-                        Text("Post")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(
-                                isPosting ? Color.gray : Color("BrandPrimary")
-                            )
-                            .cornerRadius(12)
+                        HStack {
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                    .foregroundColor(.white)
+                            }
+                            Text(viewModel.isLoading ? "Posting..." : "Post")
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.white)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .background(
+                            viewModel.isLoading ? Color.gray : Color("BrandPrimary")
+                        )
+                        .cornerRadius(12)
                     }
-                    .disabled(!isValidPost || isPosting)
+                    .disabled(!isValidPost || viewModel.isLoading)
                 }
             }
             .alert("Post Created!", isPresented: $showingSuccess) {
@@ -170,6 +180,13 @@ struct CreatePostView: View {
                 }
             } message: {
                 Text("Your post has been shared with the campus community!")
+            }
+            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+                Button("OK") {
+                    viewModel.errorMessage = nil
+                }
+            } message: {
+                Text(viewModel.errorMessage ?? "")
             }
         }
     }
@@ -193,15 +210,24 @@ struct CreatePostView: View {
     }
     
     private func createPost() async {
-        isPosting = true
+        guard let selectedCategory = selectedCategory else { return }
         
-        // TODO: Implement actual API call with offer/request tag
-        // The selectedOfferRequest value should be included in the post tags
-        // For now, simulate API call
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        // Extract title from content (first line or first 50 characters)
+        let title = content.components(separatedBy: .newlines).first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let finalTitle = title.isEmpty ? String(content.prefix(50)) : title
         
-        isPosting = false
-        showingSuccess = true
+        await viewModel.createPost(
+            title: finalTitle,
+            description: content,
+            category: selectedCategory,
+            subcategory: selectedSubcategory,
+            location: location,
+            offerRequest: selectedOfferRequest
+        )
+        
+        if viewModel.successMessage != nil {
+            showingSuccess = true
+        }
     }
     
     private func clearForm() {
@@ -210,6 +236,10 @@ struct CreatePostView: View {
         selectedSubcategory = nil
         location = ""
         selectedOfferRequest = nil
+    }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
