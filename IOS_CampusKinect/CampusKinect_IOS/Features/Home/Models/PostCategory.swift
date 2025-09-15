@@ -22,18 +22,14 @@ struct PostCategory: Codable, Identifiable, Equatable, Hashable {
     
     var systemIconName: String {
         switch id {
-        case "housing":
-            return "house.fill"
         case "goods":
             return "bag.fill"
         case "services":
             return "wrench.and.screwdriver.fill"
+        case "housing":
+            return "house.fill"
         case "events":
             return "calendar"
-        case "academic":
-            return "book.fill"
-        case "social":
-            return "person.3.fill"
         default:
             return "tag.fill"
         }
@@ -61,32 +57,25 @@ struct PostSubcategory: Codable, Identifiable, Equatable, Hashable {
 
 // MARK: - Predefined Categories
 extension PostCategory {
-    static let housing = PostCategory(
-        id: "housing",
-        name: "Housing",
-        icon: "house.fill",
-        color: "#3B82F6",
-        subcategories: [
-            PostSubcategory(id: "apartment", name: "Apartment", categoryId: "housing", isActive: true),
-            PostSubcategory(id: "dorm", name: "Dorm", categoryId: "housing", isActive: true),
-            PostSubcategory(id: "roommate", name: "Roommate", categoryId: "housing", isActive: true),
-            PostSubcategory(id: "sublease", name: "Sublease", categoryId: "housing", isActive: true)
-        ],
-        isActive: true
-    )
-    
     static let goods = PostCategory(
         id: "goods",
         name: "Goods",
         icon: "bag.fill",
         color: "#10B981",
         subcategories: [
-            PostSubcategory(id: "textbooks", name: "Textbooks", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "clothing", name: "Clothing", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "parking_permits", name: "Parking Permits", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "household_appliances", name: "Household Appliances", categoryId: "goods", isActive: true),
             PostSubcategory(id: "electronics", name: "Electronics", categoryId: "goods", isActive: true),
             PostSubcategory(id: "furniture", name: "Furniture", categoryId: "goods", isActive: true),
-            PostSubcategory(id: "clothing", name: "Clothing", categoryId: "goods", isActive: true),
-            PostSubcategory(id: "household_appliances", name: "Household Appliances", categoryId: "goods", isActive: true),
-            PostSubcategory(id: "parking_permits", name: "Parking Permits", categoryId: "goods", isActive: true)
+            PostSubcategory(id: "concert_tickets", name: "Concert Tickets", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "kitchen_items", name: "Kitchen Items", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "school_supplies", name: "School Supplies", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "sports_equipment", name: "Sports Equipment", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "automotive", name: "Automotive", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "pets", name: "Pets", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "pet_supplies", name: "Pet Supplies", categoryId: "goods", isActive: true),
+            PostSubcategory(id: "other", name: "Other", categoryId: "goods", isActive: true)
         ],
         isActive: true
     )
@@ -97,11 +86,34 @@ extension PostCategory {
         icon: "wrench.and.screwdriver.fill",
         color: "#F59E0B",
         subcategories: [
+            PostSubcategory(id: "transportation", name: "Transportation", categoryId: "services", isActive: true),
             PostSubcategory(id: "tutoring", name: "Tutoring", categoryId: "services", isActive: true),
-            PostSubcategory(id: "rides", name: "Rides", categoryId: "services", isActive: true),
-            PostSubcategory(id: "food_delivery", name: "Food Delivery", categoryId: "services", isActive: true),
+            PostSubcategory(id: "fitness_training", name: "Fitness Training", categoryId: "services", isActive: true),
+            PostSubcategory(id: "meal_delivery", name: "Meal Delivery", categoryId: "services", isActive: true),
             PostSubcategory(id: "cleaning", name: "Cleaning", categoryId: "services", isActive: true),
-            PostSubcategory(id: "tech_support", name: "Tech Support", categoryId: "services", isActive: true)
+            PostSubcategory(id: "photography", name: "Photography", categoryId: "services", isActive: true),
+            PostSubcategory(id: "graphic_design", name: "Graphic Design", categoryId: "services", isActive: true),
+            PostSubcategory(id: "tech_support", name: "Tech Support", categoryId: "services", isActive: true),
+            PostSubcategory(id: "web_development", name: "Web Development", categoryId: "services", isActive: true),
+            PostSubcategory(id: "writing_editing", name: "Writing & Editing", categoryId: "services", isActive: true),
+            PostSubcategory(id: "translation", name: "Translation", categoryId: "services", isActive: true),
+            PostSubcategory(id: "towing", name: "Towing", categoryId: "services", isActive: true),
+            PostSubcategory(id: "other", name: "Other", categoryId: "services", isActive: true)
+        ],
+        isActive: true
+    )
+    
+    static let housing = PostCategory(
+        id: "housing",
+        name: "Housing",
+        icon: "house.fill",
+        color: "#3B82F6",
+        subcategories: [
+            PostSubcategory(id: "leasing", name: "Leasing", categoryId: "housing", isActive: true),
+            PostSubcategory(id: "subleasing", name: "Subleasing", categoryId: "housing", isActive: true),
+            PostSubcategory(id: "roommate_search", name: "Roommate Search", categoryId: "housing", isActive: true),
+            PostSubcategory(id: "storage_space", name: "Storage Space", categoryId: "housing", isActive: true),
+            PostSubcategory(id: "other", name: "Other", categoryId: "housing", isActive: true)
         ],
         isActive: true
     )
@@ -112,44 +124,27 @@ extension PostCategory {
         icon: "calendar",
         color: "#8B5CF6",
         subcategories: [
-            PostSubcategory(id: "parties", name: "Parties", categoryId: "events", isActive: true),
+            PostSubcategory(id: "sports_events", name: "Sports Events", categoryId: "events", isActive: true),
             PostSubcategory(id: "study_groups", name: "Study Groups", categoryId: "events", isActive: true),
-            PostSubcategory(id: "sports", name: "Sports", categoryId: "events", isActive: true),
-            PostSubcategory(id: "clubs", name: "Clubs", categoryId: "events", isActive: true)
-        ],
-        isActive: true
-    )
-    
-    static let academic = PostCategory(
-        id: "academic",
-        name: "Academic",
-        icon: "book.fill",
-        color: "#EF4444",
-        subcategories: [
-            PostSubcategory(id: "homework_help", name: "Homework Help", categoryId: "academic", isActive: true),
-            PostSubcategory(id: "project_partners", name: "Project Partners", categoryId: "academic", isActive: true),
-            PostSubcategory(id: "internships", name: "Internships", categoryId: "academic", isActive: true),
-            PostSubcategory(id: "research", name: "Research", categoryId: "academic", isActive: true)
-        ],
-        isActive: true
-    )
-    
-    static let social = PostCategory(
-        id: "social",
-        name: "Social",
-        icon: "person.3.fill",
-        color: "#EC4899",
-        subcategories: [
-            PostSubcategory(id: "meetups", name: "Meetups", categoryId: "social", isActive: true),
-            PostSubcategory(id: "dating", name: "Dating", categoryId: "social", isActive: true),
-            PostSubcategory(id: "friendships", name: "Friendships", categoryId: "social", isActive: true),
-            PostSubcategory(id: "gaming", name: "Gaming", categoryId: "social", isActive: true)
+            PostSubcategory(id: "rush", name: "Rush", categoryId: "events", isActive: true),
+            PostSubcategory(id: "pickup_basketball", name: "Pickup Basketball", categoryId: "events", isActive: true),
+            PostSubcategory(id: "philanthropy", name: "Philanthropy", categoryId: "events", isActive: true),
+            PostSubcategory(id: "cultural_events", name: "Cultural Events", categoryId: "events", isActive: true),
+            PostSubcategory(id: "workshops", name: "Workshops", categoryId: "events", isActive: true),
+            PostSubcategory(id: "conferences", name: "Conferences", categoryId: "events", isActive: true),
+            PostSubcategory(id: "meetups", name: "Meetups", categoryId: "events", isActive: true),
+            PostSubcategory(id: "game_nights", name: "Game Nights", categoryId: "events", isActive: true),
+            PostSubcategory(id: "movie_nights", name: "Movie Nights", categoryId: "events", isActive: true),
+            PostSubcategory(id: "hiking_trips", name: "Hiking Trips", categoryId: "events", isActive: true),
+            PostSubcategory(id: "volunteer_events", name: "Volunteer Events", categoryId: "events", isActive: true),
+            PostSubcategory(id: "career_fairs", name: "Career Fairs", categoryId: "events", isActive: true),
+            PostSubcategory(id: "other", name: "Other", categoryId: "events", isActive: true)
         ],
         isActive: true
     )
     
     static let allCategories: [PostCategory] = [
-        .housing, .goods, .services, .events, .academic, .social
+        .goods, .services, .housing, .events
     ]
 }
 

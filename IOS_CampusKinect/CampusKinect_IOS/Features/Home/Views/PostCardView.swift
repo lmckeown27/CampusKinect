@@ -367,7 +367,7 @@ struct ImageViewer: View {
         userId: 1,
         title: "Study Partner Needed",
         description: "Looking for a study partner for CS 101! Anyone interested in forming a study group?",
-        postType: "academic",
+                    postType: "services",
         durationType: "one-time",
         location: "Library",
         repostFrequency: nil,
