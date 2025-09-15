@@ -14,12 +14,14 @@ struct ImagePickerView: View {
     @Binding var selectedImages: [LocalImage]
     @State private var showingImagePicker = false
     @State private var showingCamera = false
+    @State private var showingAdvancedCamera = false
     @State private var showingActionSheet = false
     @State private var photosPickerItems: [PhotosPickerItem] = []
     @State private var showingPermissionAlert = false
     @State private var permissionAlertMessage = ""
     
     let maxImages = 5
+    let useAdvancedCamera = true // Set to true for custom flash control
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -146,13 +148,28 @@ struct ImagePickerView: View {
             matching: .images
         )
         .fullScreenCover(isPresented: $showingCamera) {
-            CameraView { image in
-                addImage(image)
-            }
+            CameraView(
+                onImageCaptured: { image in
+                    addImage(image)
+                },
+                flashMode: .off, // Disable flash for faster capture
+                cameraDevice: .rear,
+                allowsEditing: true
+            )
         }
-        .onChange(of: photosPickerItems) { items in
+        .fullScreenCover(isPresented: $showingAdvancedCamera) {
+            AdvancedCameraView(
+                onImageCaptured: { image in
+                    addImage(image)
+                },
+                flashDuration: 0.08, // Very fast flash - 80ms
+                flashIntensity: 0.6, // Moderate intensity
+                enableCustomFlash: true
+            )
+        }
+        .onChange(of: photosPickerItems) { oldValue, newValue in
             Task {
-                await loadPhotosPickerItems(items)
+                await loadPhotosPickerItems(newValue)
             }
         }
     }
@@ -193,15 +210,23 @@ struct ImagePickerView: View {
     private func checkCameraPermissionAndOpen() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            showingCamera = true
+            if useAdvancedCamera {
+                showingAdvancedCamera = true
+            } else {
+                showingCamera = true
+            }
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { granted in
                 DispatchQueue.main.async {
                     if granted {
-                        showingCamera = true
+                        if self.useAdvancedCamera {
+                            self.showingAdvancedCamera = true
+                        } else {
+                            self.showingCamera = true
+                        }
                     } else {
-                        permissionAlertMessage = "Camera access is required to take photos for your posts. Please enable camera access in Settings."
-                        showingPermissionAlert = true
+                        self.permissionAlertMessage = "Camera access is required to take photos for your posts. Please enable camera access in Settings."
+                        self.showingPermissionAlert = true
                     }
                 }
             }
@@ -271,6 +296,11 @@ struct CameraView: UIViewControllerRepresentable {
     let onImageCaptured: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
     
+    // Camera configuration options
+    var flashMode: UIImagePickerController.CameraFlashMode = .auto
+    var cameraDevice: UIImagePickerController.CameraDevice = .rear
+    var allowsEditing: Bool = true
+    
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
@@ -285,9 +315,14 @@ struct CameraView: UIViewControllerRepresentable {
         }
         
         picker.sourceType = .camera
-        picker.allowsEditing = true
+        picker.allowsEditing = allowsEditing
         picker.cameraCaptureMode = .photo
-        picker.cameraDevice = .rear
+        picker.cameraDevice = cameraDevice
+        
+        // Configure flash mode for faster/reduced flash
+        if UIImagePickerController.isFlashAvailable(for: cameraDevice) {
+            picker.cameraFlashMode = flashMode
+        }
         
         return picker
     }
