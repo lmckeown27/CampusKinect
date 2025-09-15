@@ -364,28 +364,38 @@ struct ImageViewer: View {
 #Preview {
     PostCardView(post: Post(
         id: 1,
-        content: "Looking for a study partner for CS 101! Anyone interested in forming a study group?",
-        category: "academic",
-        subcategory: "study_groups",
-        location: "Library",
         userId: 1,
-        universityId: 1,
-        isActive: true,
+        title: "Study Partner Needed",
+        description: "Looking for a study partner for CS 101! Anyone interested in forming a study group?",
+        postType: "academic",
+        durationType: "one-time",
+        location: "Library",
+        repostFrequency: nil,
+        isRecurring: false,
+        originalPostId: nil,
+        expiresAt: nil,
+        eventStart: nil,
+        eventEnd: nil,
+        isFulfilled: false,
+        viewCount: 42,
         createdAt: Date(),
         updatedAt: Date(),
-        user: PostUser(
+        poster: PostUser(
             id: 1,
+            username: "johndoe",
+            firstName: "John",
+            lastName: "Doe",
             displayName: "John Doe",
-            profilePicture: nil,
-            year: "Junior",
-            major: "Computer Science"
+            profilePicture: nil
         ),
-        messageCount: 5,
-        shareCount: 2,
-        bookmarkCount: 8,
-        repostCount: 1,
-        engagementScore: 15.5,
+        university: PostUniversity(
+            id: 1,
+            name: "California Polytechnic State University, San Luis Obispo",
+            city: "San Luis Obispo",
+            state: "CA"
+        ),
         images: [],
+        imageCount: "0",
         tags: ["study", "cs101"]
     ))
     .padding()
