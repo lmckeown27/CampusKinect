@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Production API Configuration
 struct APIConstants {
     // Production backend URL (same as working web frontend)
-    static let baseURL = "https://api.campuskinect.net"
+    static let baseURL = "https://campuskinect.net"
     static let apiVersion = "v1"
     static let timeout: TimeInterval = 30.0
     
