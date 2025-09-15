@@ -40,9 +40,6 @@
 		92E58B992E7672AA005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect_IOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Resources/Data/CampusLocations.json,
-				Resources/Data/Categories.json,
-				Resources/Data/Tags.json,
 				"Supporting Files/CampusKinect_IOS.entitlements",
 			);
 			target = 92D2D0EE2E57F12000987919 /* CampusKinect_IOS */;
@@ -54,9 +51,6 @@
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 92D2D0EB2E57F12000987919 /* Sources */;
 			membershipExceptions = (
-				Resources/Data/CampusLocations.json,
-				Resources/Data/Categories.json,
-				Resources/Data/Tags.json,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -70,10 +64,7 @@
 				92E58B792E7663AC005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect_IOSUITests" target */,
 			);
 			explicitFileTypes = {
-				Resources/Data/CampusLocations.json = text.json;
-				Resources/Data/Categories.json = text.json;
-				Resources/Data/Tags.json = text.json;
-				Resources/Data/Universities.json = text.json;
+
 				"Supporting Files/CampusKinect_IOS.entitlements" = text.xml;
 				"Supporting Files/Configuration/Debug.xcconfig" = text;
 				"Supporting Files/Configuration/Release.xcconfig" = text;
