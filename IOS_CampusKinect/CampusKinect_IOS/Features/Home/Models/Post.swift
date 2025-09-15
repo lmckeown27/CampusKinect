@@ -35,7 +35,7 @@ struct Post: Codable, Identifiable, Equatable {
     
     // Post images
     let images: [String]
-    let imageCount: String
+    let imageCount: String?
     
     // Post tags
     let tags: [String]
@@ -47,6 +47,7 @@ struct Post: Codable, Identifiable, Equatable {
     var user: PostUser { poster }
     var isRecurringComputed: Bool { isRecurring ?? (durationType == "recurring") }
     var userIdComputed: Int { userId ?? poster.id }
+    var imageCountComputed: String { imageCount ?? String(images.count) }
     
     // MARK: - Computed Properties
     var timeAgo: String {
