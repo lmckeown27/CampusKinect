@@ -201,7 +201,13 @@ struct PostsTabContent: View {
             } else {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.userPosts) { post in
-                        PostCardView(post: post)
+                        SwipeablePostCard(
+                            post: post,
+                            swipeAction: .delete,
+                            onSwipeAction: { postId in
+                                await viewModel.deletePost(postId)
+                            }
+                        )
                     }
                     
                     // Load more posts if available
@@ -243,7 +249,13 @@ struct RepostsTabContent: View {
             } else {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.userReposts) { post in
-                        PostCardView(post: post)
+                        SwipeablePostCard(
+                            post: post,
+                            swipeAction: .removeRepost,
+                            onSwipeAction: { postId in
+                                await viewModel.removeRepost(postId)
+                            }
+                        )
                     }
                 }
             }
@@ -274,7 +286,13 @@ struct BookmarksTabContent: View {
             } else {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.userBookmarks) { post in
-                        PostCardView(post: post)
+                        SwipeablePostCard(
+                            post: post,
+                            swipeAction: .removeBookmark,
+                            onSwipeAction: { postId in
+                                await viewModel.removeBookmark(postId)
+                            }
+                        )
                     }
                 }
             }

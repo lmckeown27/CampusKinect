@@ -38,3 +38,19 @@ struct CreatePostData: Codable {
     let post: Post
 }
 
+// MARK: - API Response Models
+struct EmptyResponse: Codable {
+    let success: Bool
+    let message: String?
+}
+
+struct BookmarkToggleResponse: Codable {
+    let success: Bool
+    let action: String // "added" or "removed"
+}
+
+struct RepostToggleResponse: Codable {
+    let success: Bool
+    let action: String // "added" or "removed"
+}
+

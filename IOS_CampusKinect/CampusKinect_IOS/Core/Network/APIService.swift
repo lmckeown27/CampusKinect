@@ -208,6 +208,33 @@ class APIService: NSObject, ObservableObject {
         return response.data.post
     }
     
+    func deletePost(_ postId: Int) async throws {
+        let _: EmptyResponse = try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.posts)/\(postId)",
+            method: .DELETE,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
+    func toggleBookmark(_ postId: Int) async throws -> BookmarkToggleResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/bookmark",
+            method: .POST,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
+    func toggleRepost(_ postId: Int) async throws -> RepostToggleResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/repost",
+            method: .POST,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
     // MARK: - User Methods
     func getCurrentUser() async throws -> User {
         return try await performRequest(

@@ -107,5 +107,57 @@ class ProfileViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - Delete Actions
+    func deletePost(_ postId: Int) async -> Bool {
+        do {
+            try await apiService.deletePost(postId)
+            await MainActor.run {
+                self.userPosts.removeAll { $0.id == postId }
+            }
+            return true
+        } catch {
+            await MainActor.run {
+                self.error = error as? APIError
+            }
+            return false
+        }
+    }
+    
+    func removeRepost(_ postId: Int) async -> Bool {
+        do {
+            let response = try await apiService.toggleRepost(postId)
+            if response.action == "removed" {
+                await MainActor.run {
+                    self.userReposts.removeAll { $0.id == postId }
+                }
+                return true
+            }
+            return false
+        } catch {
+            await MainActor.run {
+                self.error = error as? APIError
+            }
+            return false
+        }
+    }
+    
+    func removeBookmark(_ postId: Int) async -> Bool {
+        do {
+            let response = try await apiService.toggleBookmark(postId)
+            if response.action == "removed" {
+                await MainActor.run {
+                    self.userBookmarks.removeAll { $0.id == postId }
+                }
+                return true
+            }
+            return false
+        } catch {
+            await MainActor.run {
+                self.error = error as? APIError
+            }
+            return false
+        }
+    }
 }
 
