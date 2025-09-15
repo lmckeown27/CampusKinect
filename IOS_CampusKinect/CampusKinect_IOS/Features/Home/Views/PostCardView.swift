@@ -314,10 +314,17 @@ struct ImageViewer: View {
     let images: [String]
     @State var selectedIndex: Int
     @Environment(\.dismiss) private var dismiss
+    @State private var dragOffset: CGSize = .zero
+    @State private var isDragging: Bool = false
     
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            // Background - tap to dismiss
+            Color.black
+                .ignoresSafeArea()
+                .onTapGesture {
+                    dismiss()
+                }
             
             TabView(selection: $selectedIndex) {
                 ForEach(Array(images.enumerated()), id: \.offset) { index, imageURL in
@@ -325,6 +332,9 @@ struct ImageViewer: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fit)
+                            .offset(y: dragOffset.height)
+                            .scaleEffect(isDragging ? max(0.7, 1 - abs(dragOffset.height) / 1000) : 1)
+                            .animation(.interactiveSpring(), value: dragOffset)
                     } placeholder: {
                         ProgressView()
                             .tint(.white)
@@ -334,6 +344,29 @@ struct ImageViewer: View {
             }
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+            .opacity(isDragging ? max(0.5, 1 - abs(dragOffset.height) / 500) : 1)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        // Only respond to vertical drags to avoid interfering with horizontal page swiping
+                        if abs(value.translation.y) > abs(value.translation.x) {
+                            isDragging = true
+                            dragOffset = value.translation
+                        }
+                    }
+                    .onEnded { value in
+                        isDragging = false
+                        // Dismiss if dragged far enough vertically
+                        if abs(value.translation.y) > 150 {
+                            dismiss()
+                        } else {
+                            // Snap back to original position
+                            withAnimation(.spring()) {
+                                dragOffset = .zero
+                            }
+                        }
+                    }
+            )
             
             VStack {
                 HStack {
