@@ -15,7 +15,7 @@ class APIService: NSObject, ObservableObject {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
     
-    private init() {
+    private override init() {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = APIConstants.timeout
         config.timeoutIntervalForResource = APIConstants.timeout * 2
