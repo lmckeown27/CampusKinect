@@ -32,6 +32,12 @@ struct HomeView: View {
             }
             .navigationTitle("CampusKinect")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    OfferRequestToggle()
+                        .environmentObject(viewModel)
+                }
+            }
             .refreshable {
                 await viewModel.refreshPosts()
             }
@@ -263,6 +269,55 @@ extension Color {
             green: Double(g) / 255,
             blue: Double(b) / 255,
             opacity: Double(a) / 255
+        )
+    }
+}
+
+// MARK: - Offer/Request Toggle
+struct OfferRequestToggle: View {
+    @EnvironmentObject var viewModel: HomeViewModel
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            // Offers Button
+            Button(action: {
+                if !viewModel.showingOffers {
+                    viewModel.togglePostType()
+                }
+            }) {
+                Text("Offers")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(viewModel.showingOffers ? .white : Color("BrandPrimary"))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        viewModel.showingOffers ? Color("BrandPrimary") : Color.clear
+                    )
+            }
+            
+            // Requests Button
+            Button(action: {
+                if viewModel.showingOffers {
+                    viewModel.togglePostType()
+                }
+            }) {
+                Text("Requests")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(!viewModel.showingOffers ? .white : Color("BrandPrimary"))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        !viewModel.showingOffers ? Color("BrandPrimary") : Color.clear
+                    )
+            }
+        }
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color("BrandPrimary"), lineWidth: 1)
         )
     }
 }

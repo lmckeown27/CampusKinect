@@ -24,6 +24,9 @@ class HomeViewModel: ObservableObject {
     @Published var selectedTags: Set<String> = []
     @Published var openCategories: Set<String> = []
     
+    // Post type toggle (Offers vs Requests)
+    @Published var showingOffers = true // Default to offers
+    
     private var cancellables = Set<AnyCancellable>()
     private let apiService = APIService.shared
     
@@ -117,11 +120,21 @@ class HomeViewModel: ObservableObject {
 // MARK: - Home View Model Extensions
 extension HomeViewModel {
     var filteredPosts: [Post] {
-        guard !selectedTags.isEmpty else {
-            return posts // Show all posts when no tags are selected
+        // First filter by offer/request toggle
+        let offerRequestFiltered = posts.filter { post in
+            if showingOffers {
+                return post.tags.contains { $0.lowercased() == "offer" }
+            } else {
+                return post.tags.contains { $0.lowercased() == "request" }
+            }
         }
         
-        return posts.filter { post in
+        // Then apply tag filtering if any tags are selected
+        guard !selectedTags.isEmpty else {
+            return offerRequestFiltered // Show filtered posts when no tags are selected
+        }
+        
+        return offerRequestFiltered.filter { post in
             // Check if post matches any selected tag
             return selectedTags.contains { selectedTag in
                 // Check if it's a category tag
@@ -161,6 +174,15 @@ extension HomeViewModel {
     func clearAllTags() {
         selectedTags.removeAll()
         openCategories.removeAll()
+    }
+    
+    // MARK: - Post Type Toggle Methods
+    func togglePostType() {
+        showingOffers.toggle()
+    }
+    
+    var currentPostTypeTitle: String {
+        return showingOffers ? "Offers" : "Requests"
     }
 }
 
