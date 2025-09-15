@@ -74,7 +74,6 @@ struct PostUser: Codable, Equatable {
     let lastName: String
     let displayName: String
     let profilePicture: String?
-}
     
     var profileImageURL: URL? {
         guard let profilePicture = profilePicture else { return nil }
