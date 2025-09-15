@@ -53,19 +53,16 @@ struct CreatePostView: View {
                             .font(.headline)
                             .fontWeight(.semibold)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(PostCategory.allCategories, id: \.id) { category in
-                                    CategoryButton(
-                                        category: category,
-                                        isSelected: selectedCategory?.id == category.id
-                                    ) {
-                                        selectedCategory = category
-                                        selectedSubcategory = nil
-                                    }
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: 12) {
+                            ForEach(PostCategory.allCategories, id: \.id) { category in
+                                CategoryButton(
+                                    category: category,
+                                    isSelected: selectedCategory?.id == category.id
+                                ) {
+                                    selectedCategory = category
+                                    selectedSubcategory = nil
                                 }
                             }
-                            .padding(.horizontal)
                         }
                         
                         // Subcategory Selection
