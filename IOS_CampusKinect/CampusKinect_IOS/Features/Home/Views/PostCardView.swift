@@ -88,17 +88,9 @@ struct PostHeader: View {
                     .fontWeight(.semibold)
                 
                 HStack(spacing: 4) {
-                    if let year = post.user.year {
-                        Text(year)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    if let major = post.user.major {
-                        Text("• \(major)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    Text("@\(post.user.username)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     
                     Text("• \(post.timeAgo)")
                         .font(.caption)
@@ -229,7 +221,7 @@ struct PostActions: View {
             // Message Count
             ActionButton(
                 systemImage: "message",
-                count: post.messageCount,
+                count: 0, // TODO: Backend doesn't provide message count yet
                 isActive: false,
                 action: {
                     // Navigate to post detail/comments
@@ -239,7 +231,7 @@ struct PostActions: View {
             // Repost
             ActionButton(
                 systemImage: "arrow.2.squarepath",
-                count: post.repostCount,
+                count: 0, // TODO: Backend doesn't provide repost count yet
                 isActive: isReposted,
                 activeColor: .green,
                 action: {
@@ -250,7 +242,7 @@ struct PostActions: View {
             // Bookmark
             ActionButton(
                 systemImage: isBookmarked ? "bookmark.fill" : "bookmark",
-                count: post.bookmarkCount,
+                count: 0, // TODO: Backend doesn't provide bookmark count yet
                 isActive: isBookmarked,
                 activeColor: Color("AccentColor"),
                 action: {
@@ -260,17 +252,15 @@ struct PostActions: View {
             
             Spacer()
             
-            // Engagement Score (optional)
-            if post.engagementScore > 0 {
-                HStack(spacing: 2) {
-                    Image(systemName: "flame")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                    
-                    Text("\(Int(post.engagementScore))")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                }
+            // View Count (from backend)
+            HStack(spacing: 2) {
+                Image(systemName: "eye")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text("\(post.viewCount)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
     }
