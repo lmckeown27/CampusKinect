@@ -516,7 +516,7 @@ const ProfileTab: React.FC = () => {
     <div className="min-h-screen" style={{ backgroundColor: '#f8f9f6', paddingTop: '20px', paddingBottom: '100px' }}>
       <div className="max-w-4xl mx-auto p-6">
         {/* Profile Header */}
-        <div className="bg-grey-light rounded-lg shadow-sm p-6 mb-6">
+        <div className="rounded-lg shadow-sm p-6 mb-6" style={{ backgroundColor: '#737373' }}>
           <div className="flex items-start space-x-6">
             {/* Profile Picture */}
             <div className="relative">
@@ -743,7 +743,7 @@ const ProfileTab: React.FC = () => {
         </div>
 
         {/* Navigation Buttons */}
-                  <div className="bg-grey-light rounded-lg shadow-sm">
+                  <div className="rounded-lg shadow-sm" style={{ backgroundColor: '#737373' }}>
           <div className="p-6">
             <nav className="flex justify-center space-x-4" key="nav-buttons">
               {['posts', 'reposts', 'bookmarks'].map((tab) => (
