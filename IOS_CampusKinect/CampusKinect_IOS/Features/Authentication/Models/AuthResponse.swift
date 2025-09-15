@@ -10,17 +10,17 @@ import Foundation
 // MARK: - Authentication Response
 struct AuthResponse: Codable {
     let success: Bool
-    let token: String
-    let refreshToken: String?
-    let user: User
     let message: String?
+    let data: AuthData
     
-    enum CodingKeys: String, CodingKey {
-        case success
-        case token
-        case refreshToken = "refresh_token"
-        case user
-        case message
+    struct AuthData: Codable {
+        let user: User
+        let tokens: AuthTokens
+    }
+    
+    struct AuthTokens: Codable {
+        let accessToken: String
+        let refreshToken: String
     }
 }
 

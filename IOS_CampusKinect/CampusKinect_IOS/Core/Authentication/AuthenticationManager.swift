@@ -71,23 +71,21 @@ class AuthenticationManager: ObservableObject {
             let response = try await apiService.login(email: email, password: password)
             
             // Save tokens with error handling
-            let tokenSaved = await keychainManager.saveAccessToken(response.token)
+            let tokenSaved = await keychainManager.saveAccessToken(response.data.tokens.accessToken)
             guard tokenSaved else {
                 authError = .keychainError
                 isLoading = false
                 return false
             }
             
-            if let refreshToken = response.refreshToken {
-                let refreshTokenSaved = await keychainManager.saveRefreshToken(refreshToken)
-                guard refreshTokenSaved else {
-                    authError = .keychainError
-                    isLoading = false
-                    return false
-                }
+            let refreshTokenSaved = await keychainManager.saveRefreshToken(response.data.tokens.refreshToken)
+            guard refreshTokenSaved else {
+                authError = .keychainError
+                isLoading = false
+                return false
             }
             
-            let userIDSaved = await keychainManager.saveUserID(String(response.user.id))
+            let userIDSaved = await keychainManager.saveUserID(String(response.data.user.id))
             guard userIDSaved else {
                 authError = .keychainError
                 isLoading = false
@@ -95,7 +93,7 @@ class AuthenticationManager: ObservableObject {
             }
             
             // Update state
-            currentUser = response.user
+            currentUser = response.data.user
             isAuthenticated = true
             
             NotificationCenter.default.post(name: .userDidLogin, object: nil)
@@ -160,23 +158,21 @@ class AuthenticationManager: ObservableObject {
             let response = try await apiService.verifyEmail(email: email, code: code)
             
             // Save tokens after successful verification with error handling
-            let tokenSaved = await keychainManager.saveAccessToken(response.token)
+            let tokenSaved = await keychainManager.saveAccessToken(response.data.tokens.accessToken)
             guard tokenSaved else {
                 authError = .keychainError
                 isLoading = false
                 return false
             }
             
-            if let refreshToken = response.refreshToken {
-                let refreshTokenSaved = await keychainManager.saveRefreshToken(refreshToken)
-                guard refreshTokenSaved else {
-                    authError = .keychainError
-                    isLoading = false
-                    return false
-                }
+            let refreshTokenSaved = await keychainManager.saveRefreshToken(response.data.tokens.refreshToken)
+            guard refreshTokenSaved else {
+                authError = .keychainError
+                isLoading = false
+                return false
             }
             
-            let userIDSaved = await keychainManager.saveUserID(String(response.user.id))
+            let userIDSaved = await keychainManager.saveUserID(String(response.data.user.id))
             guard userIDSaved else {
                 authError = .keychainError
                 isLoading = false
@@ -184,7 +180,7 @@ class AuthenticationManager: ObservableObject {
             }
             
             // Update state
-            currentUser = response.user
+            currentUser = response.data.user
             isAuthenticated = true
             
             NotificationCenter.default.post(name: .userDidLogin, object: nil)

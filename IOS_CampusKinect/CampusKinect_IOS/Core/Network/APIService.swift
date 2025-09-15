@@ -74,10 +74,26 @@ class APIService: NSObject, ObservableObject {
                 throw APIError.invalidResponse
             }
             
+            // Debug logging for response
+            print("🔍 HTTP Status Code: \(httpResponse.statusCode)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("🔍 Response Body: \(responseString)")
+            }
+            
             // Handle different status codes
             switch httpResponse.statusCode {
             case 200...299:
-                return try decoder.decode(T.self, from: data)
+                do {
+                    let result = try decoder.decode(T.self, from: data)
+                    print("✅ Successfully decoded response")
+                    return result
+                } catch {
+                    print("❌ Decoding error: \(error)")
+                    if let responseString = String(data: data, encoding: .utf8) {
+                        print("❌ Raw response: \(responseString)")
+                    }
+                    throw APIError.decodingError(error.localizedDescription)
+                }
             case 401:
                 // Token expired, try to refresh
                 throw APIError.unauthorized
