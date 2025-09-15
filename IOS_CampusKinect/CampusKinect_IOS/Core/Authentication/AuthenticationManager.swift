@@ -133,7 +133,7 @@ class AuthenticationManager: ObservableObject {
             
             // For registration, we might need email verification
             // So we don't automatically log in the user
-            currentUser = response.user
+            currentUser = response.data.user
             
             isLoading = false
             return true
