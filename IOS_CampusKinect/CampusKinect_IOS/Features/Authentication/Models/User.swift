@@ -104,3 +104,21 @@ struct University: Codable, Identifiable {
     }
 }
 
+// MARK: - Users Response
+struct UsersResponse: Codable {
+    let success: Bool
+    let data: [User]
+    let pagination: UsersPagination?
+}
+
+struct UsersPagination: Codable {
+    let page: Int
+    let limit: Int
+    let total: Int
+    let totalPages: Int
+    
+    var pages: Int { totalPages }
+    var hasNext: Bool { page < totalPages }
+    var hasPrevious: Bool { page > 1 }
+}
+

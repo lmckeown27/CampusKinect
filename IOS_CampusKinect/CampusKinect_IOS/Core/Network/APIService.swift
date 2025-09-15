@@ -264,6 +264,20 @@ class APIService: NSObject, ObservableObject {
             requiresAuth: true
         )
     }
+    
+    func fetchUsers(search: String? = nil) async throws -> UsersResponse {
+        var endpoint = APIConstants.Endpoints.users
+        if let search = search, !search.isEmpty {
+            endpoint += "?search=\(search.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+        }
+        
+        return try await performRequest(
+            endpoint: endpoint,
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
 
 }
 
