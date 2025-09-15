@@ -27,15 +27,21 @@ struct NewMessageView: View {
                     
                     TextField("Search users...", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
-                        .onChange(of: searchText) { newValue in
+                        .onChange(of: searchText) { oldValue, newValue in
+                            print("🔄 Search text changed from '\(oldValue)' to '\(newValue)'")
+                            
                             // Cancel previous search task
                             searchTask?.cancel()
                             
                             // Start new search with debouncing
                             searchTask = Task {
+                                print("⏱️ Starting debounced search for '\(newValue)'")
                                 try? await Task.sleep(nanoseconds: 300_000_000) // 300ms delay
                                 if !Task.isCancelled {
+                                    print("🚀 Executing search for '\(newValue)'")
                                     await searchUsers(query: newValue)
+                                } else {
+                                    print("❌ Search cancelled for '\(newValue)'")
                                 }
                             }
                         }
@@ -144,6 +150,7 @@ struct NewMessageView: View {
             print("🔍 Searching for users with query: '\(query)'")
             let response = try await apiService.fetchUsers(search: query)
             print("✅ Successfully found \(response.data.users.count) users")
+            print("📋 Users found: \(response.data.users.map { $0.displayName })")
             users = response.data.users
         } catch {
             self.error = error as? APIError ?? .unknown(0)
@@ -151,6 +158,8 @@ struct NewMessageView: View {
             if let apiError = error as? APIError {
                 print("❌ API Error details: \(apiError)")
             }
+            // Also print the raw error for more details
+            print("❌ Raw error: \(error.localizedDescription)")
         }
         
         isLoading = false
