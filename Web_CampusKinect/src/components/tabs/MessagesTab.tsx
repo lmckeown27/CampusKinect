@@ -420,7 +420,7 @@ const MessagesTab: React.FC = () => {
                     onClick={() => setActiveTab('unread')}
                     className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
                     style={{
-                      backgroundColor: activeTab === 'unread' ? 'white' : '#708d81',
+                      backgroundColor: activeTab === 'unread' ? '#737373' : '#708d81',
                       color: activeTab === 'unread' ? '#708d81' : 'white',
                       cursor: 'pointer'
                     }}
@@ -432,7 +432,7 @@ const MessagesTab: React.FC = () => {
                     onClick={() => setActiveTab('primary')}
                     className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
                     style={{
-                      backgroundColor: activeTab === 'primary' ? 'white' : '#708d81',
+                      backgroundColor: activeTab === 'primary' ? '#737373' : '#708d81',
                       color: activeTab === 'primary' ? '#708d81' : 'white',
                       cursor: 'pointer'
                     }}
@@ -444,7 +444,7 @@ const MessagesTab: React.FC = () => {
                     onClick={() => setActiveTab('requests')}
                     className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
                     style={{
-                      backgroundColor: activeTab === 'requests' ? 'white' : '#708d81',
+                      backgroundColor: activeTab === 'requests' ? '#737373' : '#708d81',
                       color: activeTab === 'requests' ? '#708d81' : 'white',
                       cursor: 'pointer'
                     }}
@@ -572,7 +572,7 @@ const MessagesTab: React.FC = () => {
                                   onClick={() => handleUserSelect(user)}
                                   className="w-full py-2 px-3 text-left flex items-center space-x-3 rounded-lg transition-all duration-200"
                                   style={{ 
-                                    backgroundColor: 'white',
+                                    backgroundColor: '#737373',
                                     border: '1px solid #e5e7eb',
                                     cursor: 'pointer',
                                     marginBottom: index === searchResults.length - 1 ? '0' : '16px'
@@ -691,7 +691,7 @@ const MessagesTab: React.FC = () => {
                         onClick={() => setRequestsSubTab('incoming')}
                         className={`relative z-10 flex-1 px-3 py-1 text-xs font-medium transition-colors rounded-md cursor-pointer`}
                         style={{
-                          backgroundColor: requestsSubTab === 'incoming' ? 'white' : '#708d81',
+                          backgroundColor: requestsSubTab === 'incoming' ? '#737373' : '#708d81',
                           color: requestsSubTab === 'incoming' ? '#708d81' : 'white',
                           cursor: 'pointer'
                         }}
@@ -702,7 +702,7 @@ const MessagesTab: React.FC = () => {
                         onClick={() => setRequestsSubTab('sent')}
                         className={`relative z-10 flex-1 px-3 py-1 text-xs font-medium transition-colors rounded-md cursor-pointer`}
                         style={{
-                          backgroundColor: requestsSubTab === 'sent' ? 'white' : '#708d81',
+                          backgroundColor: requestsSubTab === 'sent' ? '#737373' : '#708d81',
                           color: requestsSubTab === 'sent' ? '#708d81' : 'white',
                           cursor: 'pointer'
                         }}

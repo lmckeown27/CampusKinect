@@ -524,7 +524,7 @@ const ProfileTab: React.FC = () => {
                 className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden transition-all duration-200"
                 onClick={() => fileInputRef.current?.click()}
                 style={{
-                  backgroundColor: '#FFFFFF', // white background
+                  backgroundColor: '#737373', // white background
                   cursor: 'pointer',
                   border: '2px solid #e5e7eb' // add subtle border
                 }}
@@ -754,7 +754,7 @@ const ProfileTab: React.FC = () => {
                   style={
                     activeTab === tab
                       ? {
-                          backgroundColor: 'white',
+                          backgroundColor: '#737373',
                           color: '#708d81',
                           border: '2px solid #708d81',
                           cursor: 'pointer'
@@ -769,7 +769,7 @@ const ProfileTab: React.FC = () => {
                   onMouseEnter={(e) => {
                     if (activeTab === tab) {
                       // Selected button: turn complete white on hover
-                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.backgroundColor = '#737373';
                       e.currentTarget.style.color = '#708d81';
                       e.currentTarget.style.border = '2px solid #708d81';
                     } else {
@@ -783,7 +783,7 @@ const ProfileTab: React.FC = () => {
                   onMouseLeave={(e) => {
                     if (activeTab === tab) {
                       // Selected button: return to white background
-                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.backgroundColor = '#737373';
                       e.currentTarget.style.color = '#708d81';
                       e.currentTarget.style.border = '2px solid #708d81';
                     } else {
