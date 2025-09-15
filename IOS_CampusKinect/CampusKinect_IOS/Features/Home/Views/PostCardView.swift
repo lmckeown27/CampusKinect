@@ -128,12 +128,12 @@ struct PostContent: View {
 
 // MARK: - Post Images
 struct PostImages: View {
-    let images: [PostImage]
+    let images: [String]
     let onImageTap: (Int) -> Void
     
     var body: some View {
         if images.count == 1 {
-            SingleImageView(image: images[0]) {
+            SingleImageView(imageURL: images[0]) {
                 onImageTap(0)
             }
         } else {
@@ -144,11 +144,11 @@ struct PostImages: View {
 
 // MARK: - Single Image View
 struct SingleImageView: View {
-    let image: PostImage
+    let imageURL: String
     let onTap: () -> Void
     
     var body: some View {
-        AsyncImage(url: image.thumbnailImageURL) { image in
+        AsyncImage(url: URL(string: "\(APIConstants.baseURL)\(imageURL)")) { image in
             image
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -170,14 +170,14 @@ struct SingleImageView: View {
 
 // MARK: - Multiple Images View
 struct MultipleImagesView: View {
-    let images: [PostImage]
+    let images: [String]
     let onImageTap: (Int) -> Void
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(Array(images.enumerated()), id: \.element.id) { index, image in
-                    AsyncImage(url: image.thumbnailImageURL) { image in
+                ForEach(Array(images.enumerated()), id: \.offset) { index, imageURL in
+                    AsyncImage(url: URL(string: "\(APIConstants.baseURL)\(imageURL)")) { image in
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -332,7 +332,7 @@ struct CategoryBadge: View {
 
 // MARK: - Image Viewer
 struct ImageViewer: View {
-    let images: [PostImage]
+    let images: [String]
     @State var selectedIndex: Int
     @Environment(\.dismiss) private var dismiss
     
@@ -341,8 +341,8 @@ struct ImageViewer: View {
             Color.black.ignoresSafeArea()
             
             TabView(selection: $selectedIndex) {
-                ForEach(Array(images.enumerated()), id: \.element.id) { index, image in
-                    AsyncImage(url: image.fullImageURL) { image in
+                ForEach(Array(images.enumerated()), id: \.offset) { index, imageURL in
+                    AsyncImage(url: URL(string: "\(APIConstants.baseURL)\(imageURL)")) { image in
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fit)

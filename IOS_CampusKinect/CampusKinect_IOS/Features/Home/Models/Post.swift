@@ -45,14 +45,7 @@ struct Post: Codable, Identifiable, Equatable {
     var category: String { postType }
     var subcategory: String? { nil }
     var user: PostUser { poster }
-        case messageCount = "message_count"
-        case shareCount = "share_count"
-        case bookmarkCount = "bookmark_count"
-        case repostCount = "repost_count"
-        case engagementScore = "engagement_score"
-        case images
-        case tags
-    }
+}
     
     // MARK: - Computed Properties
     var timeAgo: String {
@@ -65,9 +58,7 @@ struct Post: Codable, Identifiable, Equatable {
         return !images.isEmpty
     }
     
-    var primaryImage: PostImage? {
-        return images.first
-    }
+
     
     var categoryDisplayName: String {
         return category.capitalized
@@ -109,33 +100,16 @@ struct PostUniversity: Codable, Equatable {
     let state: String
 }
 
-// MARK: - Post Image
-struct PostImage: Codable, Identifiable, Equatable {
-    let id: Int
-    let postId: Int
-    let imageUrl: String
-    let thumbnailUrl: String?
-    let altText: String?
-    let orderIndex: Int
-    let createdAt: Date
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case postId = "post_id"
-        case imageUrl = "image_url"
-        case thumbnailUrl = "thumbnail_url"
-        case altText = "alt_text"
-        case orderIndex = "order_index"
-        case createdAt = "created_at"
+// MARK: - Post Image Helper
+extension Post {
+    var imageURLs: [URL] {
+        return images.compactMap { imagePath in
+            URL(string: "\(APIConstants.baseURL)\(imagePath)")
+        }
     }
     
-    var fullImageURL: URL? {
-        return URL(string: "\(APIConstants.baseURL)/\(imageUrl)")
-    }
-    
-    var thumbnailImageURL: URL? {
-        guard let thumbnailUrl = thumbnailUrl else { return fullImageURL }
-        return URL(string: "\(APIConstants.baseURL)/\(thumbnailUrl)")
+    var primaryImageURL: URL? {
+        return imageURLs.first
     }
 }
 
