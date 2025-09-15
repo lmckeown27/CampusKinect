@@ -82,14 +82,24 @@ class CreatePostViewModel: ObservableObject {
                 switch apiError {
                 case .unauthorized:
                     errorMessage = "Please log in to create a post"
-                case .serverError(let message):
-                    errorMessage = message
-                case .networkError:
-                    errorMessage = "Network error. Please check your connection and try again."
-                case .decodingError:
-                    errorMessage = "Failed to process server response"
+                case .serverError:
+                    errorMessage = "Server error. Please try again later"
+                case .networkError(let message):
+                    errorMessage = "Network error: \(message)"
+                case .decodingError(let message):
+                    errorMessage = "Data parsing error: \(message)"
                 case .invalidResponse:
                     errorMessage = "Invalid server response"
+                case .badRequest(let message):
+                    errorMessage = message
+                case .invalidURL:
+                    errorMessage = "Invalid URL"
+                case .notFound:
+                    errorMessage = "Resource not found"
+                case .keychainError:
+                    errorMessage = "Authentication error"
+                case .unknown(let code):
+                    errorMessage = "Unknown error (code: \(code))"
                 }
             } else {
                 errorMessage = "Failed to create post. Please try again."
