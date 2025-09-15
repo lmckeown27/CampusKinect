@@ -377,11 +377,11 @@ struct ImageViewer: View {
     
     // MARK: - Computed Properties
     private var tabViewOpacity: Double {
-        isDragging ? max(0.5, 1 - abs(dragOffset.height) / 500) : 1
+        isDragging ? max(0.5, 1 - abs(dragOffset.height) / 500.0) : 1
     }
     
     private var imageScale: Double {
-        isDragging ? max(0.7, 1 - abs(dragOffset.height) / 1000) : 1
+        isDragging ? max(0.7, 1 - abs(dragOffset.height) / 1000.0) : 1
     }
     
     private var dragGesture: some Gesture {
