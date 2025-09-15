@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - API Service
-class APIService: ObservableObject {
+class APIService: NSObject, ObservableObject, URLSessionDelegate {
     static let shared = APIService()
     
     private let session: URLSession
@@ -21,7 +21,8 @@ class APIService: ObservableObject {
         config.timeoutIntervalForResource = APIConstants.timeout * 2
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
         
-        self.session = URLSession(configuration: config)
+        // TEMPORARY: Use self as delegate to handle SSL certificate issues
+        self.session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         self.decoder = JSONDecoder()
         self.encoder = JSONEncoder()
         
@@ -209,6 +210,20 @@ class APIService: ObservableObject {
             body: body,
             requiresAuth: true
         )
+    }
+    
+    // MARK: - URLSessionDelegate (TEMPORARY SSL Bypass)
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        // TEMPORARY: Accept all SSL certificates for testing
+        // TODO: Remove this in production and fix SSL certificate configuration
+        print("🔒 SSL Challenge: Accepting certificate for \(challenge.protectionSpace.host)")
+        
+        if let serverTrust = challenge.protectionSpace.serverTrust {
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
     }
 }
 
