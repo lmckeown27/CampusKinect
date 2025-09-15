@@ -316,22 +316,5 @@ struct RepostPagination: Codable {
     var hasPrevious: Bool { page > 1 }
 }
 
-// MARK: - Create Post Request
-struct CreatePostRequest: Codable {
-    let content: String
-    let category: String
-    let subcategory: String?
-    let location: String?
-    let tags: [String]
-    let images: [String]? // Base64 encoded images
-    
-    enum CodingKeys: String, CodingKey {
-        case content
-        case category
-        case subcategory
-        case location
-        case tags
-        case images
-    }
-}
+
 
