@@ -218,13 +218,13 @@ struct PostActions: View {
     
     var body: some View {
         HStack(spacing: 20) {
-            // Message Count
+            // Direct Message
             ActionButton(
-                systemImage: "message",
-                count: 0, // TODO: Backend doesn't provide message count yet
+                systemImage: "paperplane",
+                count: nil, // No count for direct messages
                 isActive: false,
                 action: {
-                    // Navigate to post detail/comments
+                    // Navigate to direct message with post author
                 }
             )
             
@@ -239,29 +239,18 @@ struct PostActions: View {
                 }
             )
             
-            // Bookmark
+            Spacer()
+            
+            // Bookmark (moved to right side)
             ActionButton(
                 systemImage: isBookmarked ? "bookmark.fill" : "bookmark",
-                count: 0, // TODO: Backend doesn't provide bookmark count yet
+                count: nil, // No count display for bookmarks
                 isActive: isBookmarked,
                 activeColor: Color("AccentColor"),
                 action: {
                     isBookmarked.toggle()
                 }
             )
-            
-            Spacer()
-            
-            // View Count (from backend)
-            HStack(spacing: 2) {
-                Image(systemName: "eye")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                Text("\(post.viewCount)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
         }
     }
 }
@@ -269,14 +258,14 @@ struct PostActions: View {
 // MARK: - Action Button
 struct ActionButton: View {
     let systemImage: String
-    let count: Int
+    let count: Int?
     let isActive: Bool
     let activeColor: Color
     let action: () -> Void
     
     init(
         systemImage: String,
-        count: Int,
+        count: Int? = nil,
         isActive: Bool,
         activeColor: Color = .blue,
         action: @escaping () -> Void
@@ -294,7 +283,7 @@ struct ActionButton: View {
                 Image(systemName: systemImage)
                     .font(.caption)
                 
-                if count > 0 {
+                if let count = count, count > 0 {
                     Text("\(count)")
                         .font(.caption)
                 }
