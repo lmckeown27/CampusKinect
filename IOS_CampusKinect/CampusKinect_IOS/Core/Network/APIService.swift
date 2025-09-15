@@ -41,7 +41,11 @@ class APIService: ObservableObject {
         requiresAuth: Bool = true
     ) async throws -> T {
         
-        guard let url = URL(string: APIConstants.fullBaseURL + endpoint) else {
+        let fullURL = APIConstants.fullBaseURL + endpoint
+        print("🔍 Full API URL: \(fullURL)")
+        print("🔍 Base URL: \(APIConstants.baseURL)")
+        
+        guard let url = URL(string: fullURL) else {
             throw APIError.invalidURL
         }
         
