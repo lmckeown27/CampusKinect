@@ -397,7 +397,7 @@ struct ImageViewer: View {
     // MARK: - Gesture Handlers
     private func handleDragChanged(_ value: DragGesture.Value) {
         // Only respond to vertical drags to avoid interfering with horizontal page swiping
-        if abs(value.translation.y) > abs(value.translation.x) {
+        if abs(value.translation.height) > abs(value.translation.width) {
             isDragging = true
             dragOffset = value.translation
         }
@@ -406,7 +406,7 @@ struct ImageViewer: View {
     private func handleDragEnded(_ value: DragGesture.Value) {
         isDragging = false
         // Dismiss if dragged far enough vertically
-        if abs(value.translation.y) > 150 {
+        if abs(value.translation.height) > 150 {
             dismiss()
         } else {
             // Snap back to original position
