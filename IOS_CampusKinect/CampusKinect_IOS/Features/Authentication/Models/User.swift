@@ -21,19 +21,19 @@ struct User: Codable, Identifiable, Equatable {
     enum CodingKeys: String, CodingKey {
         case id
         case email
-        case firstName = "first_name"
-        case lastName = "last_name"
-        case displayName = "display_name"
-        case profilePicture = "profile_picture"
+        case firstName
+        case lastName
+        case displayName
+        case profilePicture
         case year
         case major
         case hometown
         case bio
-        case universityId = "university_id"
-        case isVerified = "is_verified"
-        case isActive = "is_active"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+        case universityId
+        case isVerified
+        case isActive
+        case createdAt
+        case updatedAt
     }
     
     // MARK: - Computed Properties
