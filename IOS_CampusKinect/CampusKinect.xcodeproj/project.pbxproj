@@ -24,47 +24,36 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		92D2D0EF2E57F12000987919 /* CampusKinect_IOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampusKinect_IOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		92D2D0FF2E57F12100987919 /* CampusKinect_IOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CampusKinect_IOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		92D2D1092E57F12100987919 /* CampusKinect_IOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CampusKinect_IOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		92D2D0EF2E57F12000987919 /* CampusKinect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampusKinect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		92D2D0FF2E57F12100987919 /* CampusKinectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CampusKinectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		92D2D1092E57F12100987919 /* CampusKinectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CampusKinectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		92E58B792E7663AC005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect_IOSUITests" target */ = {
+		92E58B792E7663AC005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinectUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Resources/Assets.xcassets,
 			);
-			target = 92D2D1082E57F12100987919 /* CampusKinect_IOSUITests */;
+			target = 92D2D1082E57F12100987919 /* CampusKinectUITests */;
 		};
-		92E58B992E7672AA005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect_IOS" target */ = {
+		92E58B992E7672AA005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Supporting Files/CampusKinect_IOS.entitlements",
 			);
-			target = 92D2D0EE2E57F12000987919 /* CampusKinect_IOS */;
+			target = 92D2D0EE2E57F12000987919 /* CampusKinect */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		92E58B9A2E7672AA005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "Compile Sources" phase from "CampusKinect_IOS" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 92D2D0EB2E57F12000987919 /* Sources */;
-			membershipExceptions = (
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		92D2D0F12E57F12000987919 /* CampusKinect_IOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				92E58B992E7672AA005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect_IOS" target */,
-				92E58B9A2E7672AA005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "Compile Sources" phase from "CampusKinect_IOS" target */,
-				92E58B792E7663AC005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect_IOSUITests" target */,
+				92E58B992E7672AA005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinect" target */,
+				92E58B792E7663AC005A4E4A /* Exceptions for "CampusKinect_IOS" folder in "CampusKinectUITests" target */,
 			);
 			explicitFileTypes = {
-
 				"Supporting Files/CampusKinect_IOS.entitlements" = text.xml;
 				"Supporting Files/Configuration/Debug.xcconfig" = text;
 				"Supporting Files/Configuration/Release.xcconfig" = text;
@@ -130,9 +119,9 @@
 		92D2D0F02E57F12000987919 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				92D2D0EF2E57F12000987919 /* CampusKinect_IOS.app */,
-				92D2D0FF2E57F12100987919 /* CampusKinect_IOSTests.xctest */,
-				92D2D1092E57F12100987919 /* CampusKinect_IOSUITests.xctest */,
+				92D2D0EF2E57F12000987919 /* CampusKinect.app */,
+				92D2D0FF2E57F12100987919 /* CampusKinectTests.xctest */,
+				92D2D1092E57F12100987919 /* CampusKinectUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,9 +129,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		92D2D0EE2E57F12000987919 /* CampusKinect_IOS */ = {
+		92D2D0EE2E57F12000987919 /* CampusKinect */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 92D2D1132E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect_IOS" */;
+			buildConfigurationList = 92D2D1132E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect" */;
 			buildPhases = (
 				92D2D0EB2E57F12000987919 /* Sources */,
 				92D2D0EC2E57F12000987919 /* Frameworks */,
@@ -155,16 +144,16 @@
 			fileSystemSynchronizedGroups = (
 				92D2D0F12E57F12000987919 /* CampusKinect_IOS */,
 			);
-			name = CampusKinect_IOS;
+			name = CampusKinect;
 			packageProductDependencies = (
 			);
 			productName = CampusConnect_IOS;
-			productReference = 92D2D0EF2E57F12000987919 /* CampusKinect_IOS.app */;
+			productReference = 92D2D0EF2E57F12000987919 /* CampusKinect.app */;
 			productType = "com.apple.product-type.application";
 		};
-		92D2D0FE2E57F12100987919 /* CampusKinect_IOSTests */ = {
+		92D2D0FE2E57F12100987919 /* CampusKinectTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 92D2D1162E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect_IOSTests" */;
+			buildConfigurationList = 92D2D1162E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinectTests" */;
 			buildPhases = (
 				92D2D0FB2E57F12100987919 /* Sources */,
 				92D2D0FC2E57F12100987919 /* Frameworks */,
@@ -178,16 +167,16 @@
 			fileSystemSynchronizedGroups = (
 				92D2D1022E57F12100987919 /* CampusKinect_IOSTests */,
 			);
-			name = CampusKinect_IOSTests;
+			name = CampusKinectTests;
 			packageProductDependencies = (
 			);
 			productName = CampusConnect_IOSTests;
-			productReference = 92D2D0FF2E57F12100987919 /* CampusKinect_IOSTests.xctest */;
+			productReference = 92D2D0FF2E57F12100987919 /* CampusKinectTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		92D2D1082E57F12100987919 /* CampusKinect_IOSUITests */ = {
+		92D2D1082E57F12100987919 /* CampusKinectUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 92D2D1192E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect_IOSUITests" */;
+			buildConfigurationList = 92D2D1192E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinectUITests" */;
 			buildPhases = (
 				92D2D1052E57F12100987919 /* Sources */,
 				92D2D1062E57F12100987919 /* Frameworks */,
@@ -202,11 +191,11 @@
 				92D2D10C2E57F12100987919 /* CampusKinect_IOSUITests */,
 				92E589152E74CBDB005A4E4A /* Frameworks */,
 			);
-			name = CampusKinect_IOSUITests;
+			name = CampusKinectUITests;
 			packageProductDependencies = (
 			);
 			productName = CampusConnect_IOSUITests;
-			productReference = 92D2D1092E57F12100987919 /* CampusKinect_IOSUITests.xctest */;
+			productReference = 92D2D1092E57F12100987919 /* CampusKinectUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -233,7 +222,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 92D2D0EA2E57F12000987919 /* Build configuration list for PBXProject "CampusKinect_IOS" */;
+			buildConfigurationList = 92D2D0EA2E57F12000987919 /* Build configuration list for PBXProject "CampusKinect" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -253,9 +242,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				92D2D0EE2E57F12000987919 /* CampusKinect_IOS */,
-				92D2D0FE2E57F12100987919 /* CampusKinect_IOSTests */,
-				92D2D1082E57F12100987919 /* CampusKinect_IOSUITests */,
+				92D2D0EE2E57F12000987919 /* CampusKinect */,
+				92D2D0FE2E57F12100987919 /* CampusKinectTests */,
+				92D2D1082E57F12100987919 /* CampusKinectUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -311,12 +300,12 @@
 /* Begin PBXTargetDependency section */
 		92D2D1012E57F12100987919 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 92D2D0EE2E57F12000987919 /* CampusKinect_IOS */;
+			target = 92D2D0EE2E57F12000987919 /* CampusKinect */;
 			targetProxy = 92D2D1002E57F12100987919 /* PBXContainerItemProxy */;
 		};
 		92D2D10B2E57F12100987919 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 92D2D0EE2E57F12000987919 /* CampusKinect_IOS */;
+			target = 92D2D0EE2E57F12000987919 /* CampusKinect */;
 			targetProxy = 92D2D10A2E57F12100987919 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -535,7 +524,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CampusKinect_IOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CampusKinect_IOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CampusKinect.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CampusKinect";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Debug;
@@ -559,7 +548,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CampusKinect_IOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CampusKinect_IOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CampusKinect.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CampusKinect";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Release;
@@ -611,7 +600,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		92D2D0EA2E57F12000987919 /* Build configuration list for PBXProject "CampusKinect_IOS" */ = {
+		92D2D0EA2E57F12000987919 /* Build configuration list for PBXProject "CampusKinect" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				92D2D1112E57F12100987919 /* Debug */,
@@ -620,7 +609,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		92D2D1132E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect_IOS" */ = {
+		92D2D1132E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				92D2D1142E57F12100987919 /* Debug */,
@@ -629,7 +618,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		92D2D1162E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect_IOSTests" */ = {
+		92D2D1162E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinectTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				92D2D1172E57F12100987919 /* Debug */,
@@ -638,7 +627,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		92D2D1192E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinect_IOSUITests" */ = {
+		92D2D1192E57F12100987919 /* Build configuration list for PBXNativeTarget "CampusKinectUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				92D2D11A2E57F12100987919 /* Debug */,
