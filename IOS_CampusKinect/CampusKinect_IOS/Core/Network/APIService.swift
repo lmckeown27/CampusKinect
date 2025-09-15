@@ -227,6 +227,15 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    // MARK: - Messages Methods
+    func fetchConversations(page: Int = 1, limit: Int = 20) async throws -> ConversationsResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/conversations?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
 
 }
 

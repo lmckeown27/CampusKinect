@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct MessagesView: View {
-    @State private var conversations: [MockConversation] = []
+    @StateObject private var viewModel = MessagesViewModel()
     @State private var showingNewMessage = false
     
     var body: some View {
         NavigationView {
             VStack {
-                if conversations.isEmpty {
+                if viewModel.isLoading {
+                    ProgressView("Loading conversations...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if viewModel.conversations.isEmpty {
                     EmptyStateView(
                         title: "No Messages Yet",
                         message: "Start a conversation with someone from your campus!",
@@ -25,12 +28,15 @@ struct MessagesView: View {
                     }
                 } else {
                     List {
-                        ForEach(conversations) { conversation in
+                        ForEach(viewModel.conversations) { conversation in
                             ConversationRow(conversation: conversation)
                                 .listRowSeparator(.hidden)
                         }
                     }
                     .listStyle(PlainListStyle())
+                    .refreshable {
+                        await viewModel.refreshConversations()
+                    }
                 }
             }
             .navigationTitle("Messages")
@@ -48,76 +54,60 @@ struct MessagesView: View {
                 NewMessageView()
             }
             .onAppear {
-                loadMockConversations()
+                Task {
+                    await viewModel.loadConversations()
+                }
             }
         }
     }
     
-    private func loadMockConversations() {
-        // Mock data for demonstration
-        conversations = [
-            MockConversation(
-                id: 1,
-                userName: "Sarah Johnson",
-                lastMessage: "Hey! Are you still selling that textbook?",
-                timestamp: "2m ago",
-                hasUnread: true
-            ),
-            MockConversation(
-                id: 2,
-                userName: "Mike Chen",
-                lastMessage: "Thanks for the study group invite!",
-                timestamp: "1h ago",
-                hasUnread: false
-            ),
-            MockConversation(
-                id: 3,
-                userName: "Emma Davis",
-                lastMessage: "The apartment looks great! When can we meet?",
-                timestamp: "3h ago",
-                hasUnread: true
-            )
-        ]
-    }
+
 }
 
 // MARK: - Conversation Row
 struct ConversationRow: View {
-    let conversation: MockConversation
+    let conversation: Conversation
     
     var body: some View {
         HStack(spacing: 12) {
             // Profile Picture
-            Circle()
-                .fill(Color("BrandPrimary"))
-                .frame(width: 50, height: 50)
-                .overlay(
-                    Text(conversation.initials)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                )
+            AsyncImage(url: conversation.otherUser.profileImageURL) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Circle()
+                    .fill(Color("BrandPrimary"))
+                    .overlay(
+                        Text(conversation.otherUser.initials)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    )
+            }
+            .frame(width: 50, height: 50)
+            .clipShape(Circle())
             
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(conversation.userName)
+                    Text(conversation.otherUser.displayName)
                         .font(.headline)
-                        .fontWeight(conversation.hasUnread ? .semibold : .medium)
+                        .fontWeight(conversation.unreadCountInt > 0 ? .semibold : .medium)
                     
                     Spacer()
                     
-                    Text(conversation.timestamp)
+                    Text(conversation.timeAgo)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 
-                Text(conversation.lastMessage)
+                Text(conversation.lastMessage.content)
                     .font(.subheadline)
-                    .foregroundColor(conversation.hasUnread ? .primary : .secondary)
+                    .foregroundColor(conversation.unreadCountInt > 0 ? .primary : .secondary)
                     .lineLimit(2)
             }
             
-            if conversation.hasUnread {
+            if conversation.unreadCountInt > 0 {
                 Circle()
                     .fill(Color("AccentColor"))
                     .frame(width: 8, height: 8)

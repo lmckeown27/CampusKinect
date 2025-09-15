@@ -10,30 +10,31 @@ import Foundation
 // MARK: - Conversation Model
 struct Conversation: Codable, Identifiable, Equatable {
     let id: Int
-    let user1Id: Int
-    let user2Id: Int
-    let lastMessageId: Int?
-    let lastMessageAt: Date?
+    let postId: Int?
+    let postTitle: String?
+    let postType: String?
+    let otherUser: ConversationUser
+    let lastMessage: LastMessage
+    let lastMessageTime: Date
+    let unreadCount: String // Backend returns as string
     let createdAt: Date
-    let updatedAt: Date
     
-    // Related data
-    let lastMessage: Message?
-    let participants: [ConversationUser]
-    let unreadCount: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case user1Id = "user1_id"
-        case user2Id = "user2_id"
-        case lastMessageId = "last_message_id"
-        case lastMessageAt = "last_message_at"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-        case lastMessage = "last_message"
-        case participants
-        case unreadCount = "unread_count"
+    // Computed properties
+    var unreadCountInt: Int {
+        return Int(unreadCount) ?? 0
     }
+    
+    var timeAgo: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: lastMessageTime, relativeTo: Date())
+    }
+    
+    struct LastMessage: Codable, Equatable {
+        let content: String
+        let senderId: Int
+    }
+}
     
     // MARK: - Computed Properties
     var timeAgo: String? {
@@ -70,18 +71,12 @@ struct Conversation: Codable, Identifiable, Equatable {
 // MARK: - Conversation User
 struct ConversationUser: Codable, Identifiable, Equatable {
     let id: Int
+    let username: String
+    let firstName: String
+    let lastName: String
     let displayName: String
     let profilePicture: String?
-    let isOnline: Bool
-    let lastSeenAt: Date?
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case displayName = "display_name"
-        case profilePicture = "profile_picture"
-        case isOnline = "is_online"
-        case lastSeenAt = "last_seen_at"
-    }
+    let university: String
     
     var profileImageURL: URL? {
         guard let profilePicture = profilePicture else { return nil }
@@ -111,13 +106,11 @@ struct ConversationUser: Codable, Identifiable, Equatable {
 // MARK: - Conversations Response
 struct ConversationsResponse: Codable {
     let success: Bool
-    let conversations: [Conversation]
-    let pagination: PaginationInfo
+    let data: ConversationsData
     
-    enum CodingKeys: String, CodingKey {
-        case success
-        case conversations
-        case pagination
+    struct ConversationsData: Codable {
+        let conversations: [Conversation]
+        let pagination: PaginationInfo
     }
 }
 
