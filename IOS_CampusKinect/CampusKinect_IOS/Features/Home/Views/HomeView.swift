@@ -10,21 +10,11 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject var authManager: AuthenticationManager
-    @State private var showingSearch = false
     @State private var showingFilter = false
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Search Bar
-                if showingSearch {
-                    SearchBar(text: $viewModel.searchText, onCancel: {
-                        showingSearch = false
-                        viewModel.clearSearch()
-                    })
-                    .padding(.horizontal)
-                    .padding(.top, 8)
-                }
                 
                 // Filter Bar
                 if viewModel.hasFiltersApplied {
@@ -46,14 +36,6 @@ struct HomeView: View {
             .navigationTitle("CampusKinect")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        showingSearch.toggle()
-                    }) {
-                        Image(systemName: "magnifyingglass")
-                    }
-                }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         showingFilter = true
@@ -72,42 +54,10 @@ struct HomeView: View {
                 FilterView(viewModel: viewModel)
             }
         }
+        .dismissKeyboardOnTap()
     }
 }
 
-// MARK: - Search Bar
-struct SearchBar: View {
-    @Binding var text: String
-    let onCancel: () -> Void
-    
-    var body: some View {
-        HStack {
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.gray)
-                
-                TextField("Search posts...", text: $text)
-                    .textFieldStyle(PlainTextFieldStyle())
-                
-                if !text.isEmpty {
-                    Button(action: {
-                        text = ""
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
-                    }
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
-            
-            Button("Cancel", action: onCancel)
-                .foregroundColor(Color("AccentColor"))
-        }
-    }
-}
 
 // MARK: - Filter Bar
 struct FilterBar: View {

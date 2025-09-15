@@ -62,8 +62,13 @@ struct CreatePostView: View {
                         
                         // Subcategory Selection
                         if let selectedCategory = selectedCategory {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Subcategory")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.secondary)
+                                
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
                                     ForEach(selectedCategory.subcategories, id: \.id) { subcategory in
                                         SubcategoryButton(
                                             subcategory: subcategory,
@@ -73,8 +78,8 @@ struct CreatePostView: View {
                                         }
                                     }
                                 }
-                                .padding(.horizontal)
                             }
+                            .padding(.top, 8)
                         }
                     }
                     
@@ -122,6 +127,7 @@ struct CreatePostView: View {
                 Text("Your post has been shared with the campus community!")
             }
         }
+        .dismissKeyboardOnTap()
     }
     
     private var isValidPost: Bool {

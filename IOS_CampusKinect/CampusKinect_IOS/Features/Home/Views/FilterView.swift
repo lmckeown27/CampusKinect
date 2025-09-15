@@ -135,11 +135,7 @@ struct SubcategorySection: View {
                 .font(.headline)
                 .fontWeight(.semibold)
             
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 8) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 12) {
                 ForEach(category.subcategories, id: \.id) { subcategory in
                     SubcategoryChip(
                         subcategory: subcategory,
