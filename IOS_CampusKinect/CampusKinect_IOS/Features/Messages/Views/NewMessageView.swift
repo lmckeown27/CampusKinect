@@ -13,6 +13,7 @@ struct NewMessageView: View {
     @State private var users: [User] = []
     @State private var isLoading = false
     @State private var error: APIError?
+    @State private var searchTask: Task<Void, Never>?
     
     private let apiService = APIService.shared
     
@@ -26,6 +27,18 @@ struct NewMessageView: View {
                     
                     TextField("Search users...", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
+                        .onChange(of: searchText) { newValue in
+                            // Cancel previous search task
+                            searchTask?.cancel()
+                            
+                            // Start new search with debouncing
+                            searchTask = Task {
+                                try? await Task.sleep(nanoseconds: 300_000_000) // 300ms delay
+                                if !Task.isCancelled {
+                                    await searchUsers(query: newValue)
+                                }
+                            }
+                        }
                 }
                 .padding()
                 .background(Color(.systemGray6))
@@ -52,7 +65,7 @@ struct NewMessageView: View {
                             .multilineTextAlignment(.center)
                         Button("Retry") {
                             Task {
-                                await loadUsers()
+                                await searchUsers(query: searchText)
                             }
                         }
                         .padding(.top)
@@ -60,9 +73,9 @@ struct NewMessageView: View {
                     .padding()
                 } else if filteredUsers.isEmpty {
                     EmptyStateView(
-                        title: searchText.isEmpty ? "No Users Found" : "No Search Results",
-                        message: searchText.isEmpty ? "No users available from your campus" : "Try searching for someone else",
-                        systemImage: "person.2"
+                        title: searchText.isEmpty ? "Search for Users" : "No Search Results",
+                        message: searchText.isEmpty ? "Type a name to search for users from your campus" : "Try searching for someone else",
+                        systemImage: searchText.isEmpty ? "magnifyingglass" : "person.2"
                     )
                 } else {
                     List {
@@ -90,9 +103,8 @@ struct NewMessageView: View {
                 }
             }
             .onAppear {
-                Task {
-                    await loadUsers()
-                }
+                // Don't load users on appear - only when user searches
+                // The backend requires a non-empty search query
             }
         }
     }
@@ -111,18 +123,31 @@ struct NewMessageView: View {
     }
     
     @MainActor
-    private func loadUsers() async {
+    private func searchUsers(query: String) async {
+        // Clear users and error when search is empty
+        guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            users = []
+            error = nil
+            isLoading = false
+            return
+        }
+        
+        // Don't search for very short queries to avoid too many API calls
+        guard query.count >= 2 else {
+            return
+        }
+        
         isLoading = true
         error = nil
         
         do {
-            print("🔍 Attempting to fetch users...")
-            let response = try await apiService.fetchUsers()
-            print("✅ Successfully fetched \(response.data.users.count) users")
+            print("🔍 Searching for users with query: '\(query)'")
+            let response = try await apiService.fetchUsers(search: query)
+            print("✅ Successfully found \(response.data.users.count) users")
             users = response.data.users
         } catch {
             self.error = error as? APIError ?? .unknown(0)
-            print("❌ Failed to load users: \(error)")
+            print("❌ Failed to search users: \(error)")
             if let apiError = error as? APIError {
                 print("❌ API Error details: \(apiError)")
             }
