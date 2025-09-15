@@ -207,7 +207,7 @@ struct SubcategoryChip: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(
-                    isSelected ? Color("PrimaryColor") : Color(.systemGray6)
+                    isSelected ? Color("BrandPrimary") : Color(.systemGray6)
                 )
                 .foregroundColor(
                     isSelected ? .white : .primary

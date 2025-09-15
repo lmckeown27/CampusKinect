@@ -89,7 +89,7 @@ struct ConversationRow: View {
         HStack(spacing: 12) {
             // Profile Picture
             Circle()
-                .fill(Color("PrimaryColor"))
+                .fill(Color("BrandPrimary"))
                 .frame(width: 50, height: 50)
                 .overlay(
                     Text(conversation.initials)

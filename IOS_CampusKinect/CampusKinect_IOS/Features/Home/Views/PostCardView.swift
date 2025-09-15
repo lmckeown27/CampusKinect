@@ -71,7 +71,7 @@ struct PostHeader: View {
                     .aspectRatio(contentMode: .fill)
             } placeholder: {
                 Circle()
-                    .fill(Color("PrimaryColor"))
+                    .fill(Color("BrandPrimary"))
                     .overlay(
                         Text(post.user.initials)
                             .font(.caption)
@@ -324,8 +324,8 @@ struct CategoryBadge: View {
             .fontWeight(.medium)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(Color("PrimaryColor").opacity(0.1))
-            .foregroundColor(Color("PrimaryColor"))
+            .background(Color("BrandPrimary").opacity(0.1))
+            .foregroundColor(Color("BrandPrimary"))
             .cornerRadius(12)
     }
 }

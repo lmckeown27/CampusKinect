@@ -64,7 +64,7 @@ struct ProfileHeader: View {
                     .aspectRatio(contentMode: .fill)
             } placeholder: {
                 Circle()
-                    .fill(Color("PrimaryColor"))
+                                            .fill(Color("BrandPrimary"))
                     .overlay(
                         Text(user?.initials ?? "??")
                             .font(.title)
@@ -139,7 +139,7 @@ struct ProfileTabSelector: View {
                     Text(tab.rawValue)
                         .font(.headline)
                         .fontWeight(.medium)
-                        .foregroundColor(selectedTab == tab ? Color("PrimaryColor") : .secondary)
+                        .foregroundColor(selectedTab == tab ? Color("BrandPrimary") : .secondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                 }

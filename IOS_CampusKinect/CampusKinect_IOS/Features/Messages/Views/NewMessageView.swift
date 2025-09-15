@@ -98,7 +98,7 @@ struct UserRow: View {
             HStack(spacing: 12) {
                 // Profile Picture
                 Circle()
-                    .fill(Color("PrimaryColor"))
+                    .fill(Color("BrandPrimary"))
                     .frame(width: 40, height: 40)
                     .overlay(
                         Text(user.initials)

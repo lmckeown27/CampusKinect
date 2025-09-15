@@ -25,7 +25,7 @@ struct SettingsView: View {
                                     .aspectRatio(contentMode: .fill)
                             } placeholder: {
                                 Circle()
-                                    .fill(Color("PrimaryColor"))
+                                    .fill(Color("BrandPrimary"))
                                     .overlay(
                                         Text(user.initials)
                                             .font(.headline)
@@ -159,7 +159,7 @@ struct SettingsRow: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.title3)
-                    .foregroundColor(Color("PrimaryColor"))
+                    .foregroundColor(Color("BrandPrimary"))
                     .frame(width: 24, height: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {

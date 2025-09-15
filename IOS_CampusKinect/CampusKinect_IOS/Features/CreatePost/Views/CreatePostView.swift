@@ -106,7 +106,7 @@ struct CreatePostView: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 16)
                             .background(
-                                isPosting ? Color.gray : Color("PrimaryColor")
+                                isPosting ? Color.gray : Color("BrandPrimary")
                             )
                             .foregroundColor(.white)
                             .cornerRadius(12)
@@ -194,7 +194,7 @@ struct SubcategoryButton: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
-                    isSelected ? Color("PrimaryColor") : Color(.systemGray6)
+                    isSelected ? Color("BrandPrimary") : Color(.systemGray6)
                 )
                 .foregroundColor(
                     isSelected ? .white : .primary

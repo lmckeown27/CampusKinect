@@ -20,12 +20,12 @@ struct VerificationView: View {
             
             Image(systemName: "envelope.badge")
                 .font(.system(size: 60))
-                .foregroundColor(Color("PrimaryColor"))
+                .foregroundColor(Color("BrandPrimary"))
             
             Text("Check Your Email")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundColor(Color("PrimaryColor"))
+                .foregroundColor(Color("BrandPrimary"))
             
             Text("We've sent a verification code to:")
                 .font(.subheadline)

@@ -20,7 +20,7 @@ struct ForgotPasswordView: View {
             Text("Forgot Password?")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundColor(Color("PrimaryColor"))
+                .foregroundColor(Color("BrandPrimary"))
             
             Text("Enter your email address and we'll send you a link to reset your password.")
                 .font(.subheadline)
