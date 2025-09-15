@@ -36,7 +36,7 @@ const SettingsTab: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 p-6" style={{ backgroundColor: '#525252' }}>
+    <div className="flex-1 p-6 min-h-screen" style={{ backgroundColor: '#525252' }}>
       <div className="max-w-4xl mx-auto">
         <div className="space-y-6">
           {/* Settings Sections - Horizontal Layout */}

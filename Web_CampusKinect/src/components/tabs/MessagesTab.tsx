@@ -370,8 +370,8 @@ const MessagesTab: React.FC = () => {
   );
 
   return (
-    <div style={{ backgroundColor: '#525252' }}>
-      <div className="flex h-full">
+    <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
+      <div className="flex min-h-screen">
         {/* Left Sidebar - Conversations */}
         <div className="w-full sm:w-64 border-r border-[#708d81] flex flex-col" style={{ backgroundColor: '#737373' }}>
           {/* Header */}
