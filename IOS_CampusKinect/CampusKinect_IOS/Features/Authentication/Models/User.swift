@@ -3,6 +3,7 @@ import Foundation
 // MARK: - User Model
 struct User: Codable, Identifiable, Equatable {
     let id: Int
+    let username: String?
     let email: String
     let firstName: String
     let lastName: String
@@ -13,13 +14,16 @@ struct User: Codable, Identifiable, Equatable {
     let hometown: String?
     let bio: String?
     let universityId: Int
+    let universityName: String?
+    let universityDomain: String?
     let isVerified: Bool
     let isActive: Bool
     let createdAt: Date
-    let updatedAt: Date
+    let updatedAt: Date?
     
     enum CodingKeys: String, CodingKey {
         case id
+        case username
         case email
         case firstName
         case lastName
@@ -30,6 +34,8 @@ struct User: Codable, Identifiable, Equatable {
         case hometown
         case bio
         case universityId
+        case universityName
+        case universityDomain
         case isVerified
         case isActive
         case createdAt
