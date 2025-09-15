@@ -382,6 +382,23 @@ const CreatePostTab: React.FC = () => {
     return ['goods', 'services', 'housing'].includes(formData.postType);
   };
 
+  const canSubmitForm = () => {
+    // Check basic requirements
+    if (!formData.title.trim() || !formData.description.trim()) {
+      return false;
+    }
+
+    // Check offer/request requirement for specific post types
+    const requiresOfferRequest = ['goods', 'services', 'housing'].includes(formData.postType);
+    const hasOfferRequestTags = offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.length > 0;
+    
+    if (requiresOfferRequest && !hasOfferRequestTags) {
+      return false;
+    }
+
+    return true;
+  };
+
   const validateForm = () => {
     const errors: ValidationErrors = {};
 
@@ -393,11 +410,18 @@ const CreatePostTab: React.FC = () => {
       errors.description = 'Description is required';
     }
 
-    const hasRegularTags = formData.tags.length > 0;
+    // Check if offer/request selection is required for this post type
+    const requiresOfferRequest = ['goods', 'services', 'housing'].includes(formData.postType);
     const hasOfferRequestTags = offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.length > 0;
     
-    if (!hasRegularTags && !hasOfferRequestTags) {
-      errors.tags = 'Please select at least one category or offer/request tag';
+    if (requiresOfferRequest && !hasOfferRequestTags) {
+      errors.tags = `Please select either "Offer" or "Request" for ${formData.postType} posts`;
+    } else {
+      // For events or when offer/request is selected, check for regular tags
+      const hasRegularTags = formData.tags.length > 0;
+      if (!hasRegularTags && !hasOfferRequestTags) {
+        errors.tags = 'Please select at least one category tag';
+      }
     }
 
     setValidationErrors(errors);
@@ -624,6 +648,13 @@ const CreatePostTab: React.FC = () => {
                   </div>
                 )}
 
+                {/* Helper text for offer/request requirement */}
+                {areOfferRequestTagsAvailable() && !offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.length && (
+                  <div className="text-sm text-red-500 mt-2">
+                    * Please select either "Offer" or "Request" for {formData.postType} posts
+                  </div>
+                )}
+
                 {/* Spacer */}
                 <div className="w-3"></div>
 
@@ -837,16 +868,16 @@ const CreatePostTab: React.FC = () => {
                 <div className="w-fit">
                   <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || !canSubmitForm()}
                     className="py-4 px-8 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer text-lg"
                     style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
                     onMouseEnter={(e) => {
-                      if (!isLoading) {
+                      if (!isLoading && canSubmitForm()) {
                         e.currentTarget.style.backgroundColor = '#5a7268';
                       }
                     }}
                     onMouseLeave={(e) => {
-                      if (!isLoading) {
+                      if (!isLoading && canSubmitForm()) {
                         e.currentTarget.style.backgroundColor = '#708d81';
                       }
                     }}
