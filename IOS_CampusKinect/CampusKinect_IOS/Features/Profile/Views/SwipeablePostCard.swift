@@ -67,80 +67,126 @@ struct SwipeablePostCard: View {
     }
     
     var body: some View {
-        ZStack {
-            // Background action button
-            HStack {
-                Spacer()
-                
-                Button(action: {
-                    isShowingConfirmation = true
-                }) {
-                    VStack {
-                        Image(systemName: swipeAction.icon)
-                            .font(.title2)
-                            .foregroundColor(.white)
-                        
-                        Text(swipeAction.title)
-                            .font(.caption)
-                            .foregroundColor(.white)
-                    }
-                    .frame(width: 80)
-                    .frame(maxHeight: .infinity)
-                    .background(swipeAction.color)
-                }
-                .disabled(isPerformingAction)
+        mainContent
+            .clipped()
+            .alert(swipeAction.title, isPresented: $isShowingConfirmation) {
+                alertButtons
+            } message: {
+                Text(swipeAction.confirmationMessage)
             }
-            
-            // Main post card
-            PostCardView(post: post)
-                .offset(x: offset)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            // Only allow left swipe (negative translation)
-                            if value.translation.x < 0 {
-                                offset = max(value.translation.x, -80)
-                            }
-                        }
-                        .onEnded { value in
-                            withAnimation(.spring()) {
-                                if value.translation.x < -40 {
-                                    // Snap to show action button
-                                    offset = -80
-                                } else {
-                                    // Snap back to original position
-                                    offset = 0
-                                }
-                            }
-                        }
-                )
-                .onTapGesture {
-                    // Tap to close if swiped open
-                    if offset != 0 {
-                        withAnimation(.spring()) {
-                            offset = 0
-                        }
-                    }
-                }
+            .overlay(loadingOverlay)
+            .overlay(progressIndicator)
+    }
+    
+    private var mainContent: some View {
+        ZStack {
+            actionButton
+            swipeablePostCard
         }
-        .clipped()
-        .alert(swipeAction.title, isPresented: $isShowingConfirmation) {
+    }
+    
+    private var actionButton: some View {
+        HStack {
+            Spacer()
+            
+            Button(action: {
+                isShowingConfirmation = true
+            }) {
+                actionButtonContent
+            }
+            .disabled(isPerformingAction)
+        }
+    }
+    
+    private var actionButtonContent: some View {
+        VStack {
+            Image(systemName: swipeAction.icon)
+                .font(.title2)
+                .foregroundColor(.white)
+            
+            Text(swipeAction.title)
+                .font(.caption)
+                .foregroundColor(.white)
+        }
+        .frame(width: 80)
+        .frame(maxHeight: .infinity)
+        .background(swipeAction.color)
+    }
+    
+    private var swipeablePostCard: some View {
+        PostCardView(post: post)
+            .offset(x: offset)
+            .gesture(swipeGesture)
+            .onTapGesture {
+                handleTapGesture()
+            }
+    }
+    
+    private var swipeGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                handleSwipeChanged(value)
+            }
+            .onEnded { value in
+                handleSwipeEnded(value)
+            }
+    }
+    
+    private var alertButtons: some View {
+        Group {
             Button("Cancel", role: .cancel) { }
             Button(swipeAction.title, role: .destructive) {
                 performAction()
             }
-        } message: {
-            Text(swipeAction.confirmationMessage)
         }
-        .overlay(
-            // Loading overlay
-            isPerformingAction ? Color.black.opacity(0.3) : Color.clear
-        )
-        .overlay(
-            isPerformingAction ? ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .scaleEffect(1.2) : nil
-        )
+    }
+    
+    private var loadingOverlay: some View {
+        Group {
+            if isPerformingAction {
+                Color.black.opacity(0.3)
+            } else {
+                Color.clear
+            }
+        }
+    }
+    
+    private var progressIndicator: some View {
+        Group {
+            if isPerformingAction {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.2)
+            }
+        }
+    }
+    
+    private func handleSwipeChanged(_ value: DragGesture.Value) {
+        // Only allow left swipe (negative translation)
+        if value.translation.x < 0 {
+            offset = max(value.translation.x, -80)
+        }
+    }
+    
+    private func handleSwipeEnded(_ value: DragGesture.Value) {
+        withAnimation(.spring()) {
+            if value.translation.x < -40 {
+                // Snap to show action button
+                offset = -80
+            } else {
+                // Snap back to original position
+                offset = 0
+            }
+        }
+    }
+    
+    private func handleTapGesture() {
+        // Tap to close if swiped open
+        if offset != 0 {
+            withAnimation(.spring()) {
+                offset = 0
+            }
+        }
     }
     
     private func performAction() {
