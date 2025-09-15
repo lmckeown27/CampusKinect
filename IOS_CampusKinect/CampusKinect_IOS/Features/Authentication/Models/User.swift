@@ -123,6 +123,13 @@ struct UsersPagination: Codable {
     let total: Int
     let totalPages: Int
     
+    enum CodingKeys: String, CodingKey {
+        case page
+        case limit
+        case total
+        case totalPages = "pages"  // API returns "pages" but we want "totalPages"
+    }
+    
     var pages: Int { totalPages }
     var hasNext: Bool { page < totalPages }
     var hasPrevious: Bool { page > 1 }
