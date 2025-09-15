@@ -20,16 +20,15 @@ class HomeViewModel: ObservableObject {
     private var currentPage = 1
     private let postsPerPage = 20
     
-    // Search and Filter
-    @Published var searchText = ""
-    @Published var selectedCategory: PostCategory?
-    @Published var selectedSubcategory: PostSubcategory?
+    // Tag-based filtering
+    @Published var selectedTags: Set<String> = []
+    @Published var openCategories: Set<String> = []
     
     private var cancellables = Set<AnyCancellable>()
     private let apiService = APIService.shared
     
     init() {
-        setupSearchDebouncing()
+        // No need for search debouncing in tag-based system
     }
     
     // MARK: - Public Methods
@@ -180,27 +179,50 @@ class HomeViewModel: ObservableObject {
 // MARK: - Home View Model Extensions
 extension HomeViewModel {
     var filteredPosts: [Post] {
-        var filtered = posts
-        
-        // Apply category filter
-        if let selectedCategory = selectedCategory {
-            filtered = filtered.filter { $0.category == selectedCategory.id }
+        guard !selectedTags.isEmpty else {
+            return posts // Show all posts when no tags are selected
         }
         
-        // Apply subcategory filter
-        if let selectedSubcategory = selectedSubcategory {
-            filtered = filtered.filter { $0.subcategory == selectedSubcategory.id }
+        return posts.filter { post in
+            // Check if post matches any selected tag
+            return selectedTags.contains { selectedTag in
+                // Check if it's a category tag
+                if ["goods", "services", "housing", "events"].contains(selectedTag.lowercased()) {
+                    return post.postType.lowercased() == selectedTag.lowercased()
+                } else {
+                    // Check if it's a subcategory tag
+                    return post.tags.contains { postTag in
+                        postTag.lowercased() == selectedTag.lowercased()
+                    }
+                }
+            }
         }
-        
-        return filtered
     }
     
-    var isSearching: Bool {
-        return !searchText.isEmpty
+    var hasTagsSelected: Bool {
+        return !selectedTags.isEmpty
     }
     
-    var hasFiltersApplied: Bool {
-        return selectedCategory != nil || selectedSubcategory != nil
+    // MARK: - Tag Management Methods
+    func toggleTag(_ tag: String) {
+        if selectedTags.contains(tag) {
+            selectedTags.remove(tag)
+        } else {
+            selectedTags.insert(tag)
+        }
+    }
+    
+    func toggleCategory(_ category: String) {
+        if openCategories.contains(category) {
+            openCategories.remove(category)
+        } else {
+            openCategories.insert(category)
+        }
+    }
+    
+    func clearAllTags() {
+        selectedTags.removeAll()
+        openCategories.removeAll()
     }
 }
 

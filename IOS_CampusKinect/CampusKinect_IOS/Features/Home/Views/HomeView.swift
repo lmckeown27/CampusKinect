@@ -10,23 +10,20 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject var authManager: AuthenticationManager
-    @State private var showingFilter = false
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
+                // Tag Filter Section
+                TagFilterSection()
+                    .environmentObject(viewModel)
                 
-                // Filter Bar
-                if viewModel.hasFiltersApplied {
-                    FilterBar(
-                        selectedCategory: viewModel.selectedCategory,
-                        selectedSubcategory: viewModel.selectedSubcategory,
-                        onClear: {
-                            viewModel.clearSearch()
-                        }
-                    )
-                    .padding(.horizontal)
-                    .padding(.top, 8)
+                // Active Filter Bar (only shows when tags are selected)
+                if viewModel.hasTagsSelected {
+                    ActiveFilterBar()
+                        .environmentObject(viewModel)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                 }
                 
                 // Posts List
@@ -35,88 +32,148 @@ struct HomeView: View {
             }
             .navigationTitle("CampusKinect")
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingFilter = true
-                    }) {
-                        Image(systemName: viewModel.hasFiltersApplied ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-                    }
-                }
-            }
             .refreshable {
                 await viewModel.refreshPosts()
             }
             .task {
                 await viewModel.loadPosts()
             }
-            .sheet(isPresented: $showingFilter) {
-                FilterView(viewModel: viewModel)
-            }
         }
     }
 }
 
 
-// MARK: - Filter Bar
-struct FilterBar: View {
-    let selectedCategory: PostCategory?
-    let selectedSubcategory: PostSubcategory?
-    let onClear: () -> Void
+// MARK: - Tag Filter Section
+struct TagFilterSection: View {
+    @EnvironmentObject var viewModel: HomeViewModel
+    
+    let categories = [
+        ("goods", "Goods"),
+        ("services", "Services"), 
+        ("housing", "Housing"),
+        ("events", "Events")
+    ]
+    
+    let subcategories: [String: [String]] = [
+        "goods": ["Clothing", "Parking Permits", "Household Appliances", "Electronics", "Furniture", "Concert Tickets", "Kitchen Items", "School Supplies", "Sports Equipment", "Automotive", "Pets", "Pet Supplies", "Other"],
+        "services": ["Transportation", "Tutoring", "Fitness Training", "Meal Delivery", "Cleaning", "Photography", "Graphic Design", "Tech Support", "Web Development", "Writing & Editing", "Translation", "Towing", "Other"],
+        "events": ["Sports Events", "Study Groups", "Rush", "Pickup Basketball", "Philanthropy", "Cultural Events", "Workshops", "Conferences", "Meetups", "Game Nights", "Movie Nights", "Hiking Trips", "Volunteer Events", "Career Fairs", "Other"],
+        "housing": ["Leasing", "Subleasing", "Roommate Search", "Storage Space", "Other"]
+    ]
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            // Main Category Buttons
+            HStack(spacing: 12) {
+                ForEach(categories, id: \.0) { categoryId, categoryName in
+                    Button(action: {
+                        viewModel.toggleCategory(categoryId)
+                    }) {
+                        Text(categoryName)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                viewModel.openCategories.contains(categoryId) ? 
+                                Color("BrandPrimary") : Color(.systemGray6)
+                            )
+                            .foregroundColor(
+                                viewModel.openCategories.contains(categoryId) ? 
+                                .white : .primary
+                            )
+                            .cornerRadius(20)
+                    }
+                }
+            }
+            .padding(.horizontal)
+            
+            // Subcategory Tags (shown when category is open)
+            ForEach(categories, id: \.0) { categoryId, _ in
+                if viewModel.openCategories.contains(categoryId) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("\(categoryId.capitalized) Tags")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Spacer()
+                            
+                            Button("✕") {
+                                viewModel.toggleCategory(categoryId)
+                            }
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal)
+                        
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
+                            ForEach(subcategories[categoryId] ?? [], id: \.self) { tag in
+                                Button(action: {
+                                    viewModel.toggleTag(tag)
+                                }) {
+                                    Text(tag)
+                                        .font(.caption)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(
+                                            viewModel.selectedTags.contains(tag) ?
+                                            Color("BrandPrimary").opacity(0.2) : Color(.systemGray6)
+                                        )
+                                        .foregroundColor(
+                                            viewModel.selectedTags.contains(tag) ?
+                                            Color("BrandPrimary") : .secondary
+                                        )
+                                        .cornerRadius(12)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.openCategories)
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Active Filter Bar
+struct ActiveFilterBar: View {
+    @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
         HStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    if let category = selectedCategory {
-                        FilterChip(
-                            title: category.displayName,
-                            systemImage: category.systemIconName,
-                            color: Color(hex: category.color) ?? .blue
-                        )
-                    }
-                    
-                    if let subcategory = selectedSubcategory {
-                        FilterChip(
-                            title: subcategory.displayName,
-                            systemImage: "tag",
-                            color: .secondary
-                        )
+                    ForEach(Array(viewModel.selectedTags), id: \.self) { tag in
+                        HStack(spacing: 4) {
+                            Text(tag)
+                                .font(.caption)
+                                .foregroundColor(Color("BrandPrimary"))
+                            
+                            Button("✕") {
+                                viewModel.toggleTag(tag)
+                            }
+                            .font(.caption2)
+                            .foregroundColor(Color("BrandPrimary"))
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color("BrandPrimary").opacity(0.1))
+                        .cornerRadius(12)
                     }
                 }
                 .padding(.horizontal)
             }
             
-            Button("Clear", action: onClear)
-                .font(.caption)
-                .foregroundColor(Color("AccentColor"))
+            Button("Clear All") {
+                viewModel.clearAllTags()
+            }
+            .font(.caption)
+            .foregroundColor(Color("BrandPrimary"))
         }
-    }
-}
-
-// MARK: - Filter Chip
-struct FilterChip: View {
-    let title: String
-    let systemImage: String
-    let color: Color
-    
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: systemImage)
-                .font(.caption)
-            Text(title)
-                .font(.caption)
-                .fontWeight(.medium)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(color.opacity(0.1))
-        .foregroundColor(color)
-        .cornerRadius(16)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(color.opacity(0.3), lineWidth: 1)
-        )
     }
 }
 
