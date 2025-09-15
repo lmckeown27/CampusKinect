@@ -24,36 +24,24 @@ struct MessagesView: View {
             VStack(spacing: 0) {
                 // Search Bar
                 HStack {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                        
-                        TextField(searchPlaceholder, text: $searchText)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                    }
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    
+                    TextField(searchPlaceholder, text: $searchText)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Spacer()
+                                Button("Done") {
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                 }
                             }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(10)
-                    
-                    Button(action: {
-                        showingNewMessage = true
-                    }) {
-                        Image(systemName: "plus")
-                            .foregroundColor(Color("BrandPrimary"))
-                            .padding(8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
-                    }
+                        }
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
                 .padding(.horizontal)
                 .padding(.top, 8)
                 
