@@ -162,6 +162,7 @@ struct PostsList: View {
                     }
                 }
                 .listStyle(PlainListStyle())
+                .scrollIndicators(.hidden)
             }
         }
         .overlay(
