@@ -15,6 +15,9 @@ struct CreatePostView: View {
     @State private var isPosting = false
     @State private var showingSuccess = false
     
+    // Offer/Request selection (required for Goods, Services, Housing)
+    @State private var selectedOfferRequest: String? = nil
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -61,6 +64,8 @@ struct CreatePostView: View {
                                 ) {
                                     selectedCategory = category
                                     selectedSubcategory = nil
+                                    // Clear offer/request selection when changing categories
+                                    selectedOfferRequest = nil
                                 }
                             }
                         }
@@ -81,6 +86,33 @@ struct CreatePostView: View {
                                         ) {
                                             selectedSubcategory = subcategory
                                         }
+                                    }
+                                }
+                            }
+                            .padding(.top, 8)
+                        }
+                        
+                        // Offer/Request Selection (for Goods, Services, Housing only)
+                        if requiresOfferRequestSelection {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Type")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.secondary)
+                                
+                                HStack(spacing: 12) {
+                                    OfferRequestButton(
+                                        title: "Offer",
+                                        isSelected: selectedOfferRequest == "offer"
+                                    ) {
+                                        selectedOfferRequest = "offer"
+                                    }
+                                    
+                                    OfferRequestButton(
+                                        title: "Request",
+                                        isSelected: selectedOfferRequest == "request"
+                                    ) {
+                                        selectedOfferRequest = "request"
                                     }
                                 }
                             }
@@ -142,14 +174,30 @@ struct CreatePostView: View {
         }
     }
     
+    private var requiresOfferRequestSelection: Bool {
+        guard let category = selectedCategory else { return false }
+        return ["goods", "services", "housing"].contains(category.name.lowercased())
+    }
+    
     private var isValidPost: Bool {
-        return ValidationUtils.isValidPostContent(content) && selectedCategory != nil
+        let hasValidContent = ValidationUtils.isValidPostContent(content)
+        let hasCategory = selectedCategory != nil
+        
+        // If category requires offer/request selection, ensure it's selected
+        if requiresOfferRequestSelection {
+            let hasOfferRequest = selectedOfferRequest != nil
+            return hasValidContent && hasCategory && hasOfferRequest
+        }
+        
+        return hasValidContent && hasCategory
     }
     
     private func createPost() async {
         isPosting = true
         
-        // Simulate API call
+        // TODO: Implement actual API call with offer/request tag
+        // The selectedOfferRequest value should be included in the post tags
+        // For now, simulate API call
         try? await Task.sleep(nanoseconds: 2_000_000_000)
         
         isPosting = false
@@ -161,6 +209,7 @@ struct CreatePostView: View {
         selectedCategory = nil
         selectedSubcategory = nil
         location = ""
+        selectedOfferRequest = nil
     }
 }
 
@@ -220,6 +269,32 @@ struct SubcategoryButton: View {
                 .cornerRadius(20)
         }
         .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Offer/Request Button
+struct OfferRequestButton: View {
+    let title: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(isSelected ? .white : Color("BrandPrimary"))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(
+                    isSelected ? Color("BrandPrimary") : Color(.systemGray6)
+                )
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color("BrandPrimary"), lineWidth: isSelected ? 0 : 1)
+                )
+        }
     }
 }
 
