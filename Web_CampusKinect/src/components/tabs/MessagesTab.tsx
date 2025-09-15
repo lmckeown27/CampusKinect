@@ -373,7 +373,7 @@ const MessagesTab: React.FC = () => {
     <div style={{ backgroundColor: '#525252' }}>
       <div className="flex h-full">
         {/* Left Sidebar - Conversations */}
-        <div className="w-full sm:w-64 bg-grey-light border-r border-[#708d81] flex flex-col">
+        <div className="w-full sm:w-64 border-r border-[#708d81] flex flex-col" style={{ backgroundColor: '#737373' }}>
           {/* Header */}
           <div className="p-4 border-b border-[#708d81]">
             {/* Search and Plus Button */}
@@ -992,7 +992,7 @@ const MessagesTab: React.FC = () => {
           {currentConversation ? (
             <>
               {/* Chat Header */}
-              <div className="p-4 border-b border-[#708d81] bg-grey-medium">
+                              <div className="p-4 border-b border-[#708d81]" style={{ backgroundColor: '#737373' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     {/* Profile Picture */}
@@ -1024,7 +1024,7 @@ const MessagesTab: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#f0f2f0] rounded-lg transition-colors cursor-pointer">
+                  <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#525252] rounded-lg transition-colors cursor-pointer">
                     <MoreHorizontal size={20} />
                   </button>
                 </div>
@@ -1065,7 +1065,7 @@ const MessagesTab: React.FC = () => {
               </div>
 
               {/* Message Input */}
-                              <div className="p-4 border-t border-[#708d81] bg-grey-medium">
+                              <div className="p-4 border-t border-[#708d81]" style={{ backgroundColor: '#737373' }}>
                 <div className="flex items-center space-x-3">
                   <input
                     type="text"
@@ -1086,7 +1086,7 @@ const MessagesTab: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-grey-medium">
+            <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: '#737373' }}>
             </div>
           )}
         </div>

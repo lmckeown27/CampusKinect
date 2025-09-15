@@ -42,7 +42,7 @@ const SettingsTab: React.FC = () => {
           {/* Settings Sections - Horizontal Layout */}
           <div className="flex space-x-6 justify-center">
             {/* Account Settings - 1st Section */}
-            <div className="bg-grey-light rounded-lg shadow-sm border border-gray-200 w-96">
+            <div className="rounded-lg shadow-sm border border-gray-200 w-96" style={{ backgroundColor: '#737373' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
                   <User size={20} className="text-[#708d81]" />
@@ -84,7 +84,7 @@ const SettingsTab: React.FC = () => {
             </div>
 
             {/* Legal & Documents - 2nd Section */}
-            <div className="bg-grey-light rounded-lg shadow-sm border border-gray-200 w-96">
+            <div className="rounded-lg shadow-sm border border-gray-200 w-96" style={{ backgroundColor: '#737373' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
                   <FileText size={20} className="text-[#708d81]" />
@@ -159,7 +159,7 @@ const SettingsTab: React.FC = () => {
             </div>
 
             {/* Theme Settings - 3rd Section */}
-            <div className="bg-grey-light rounded-lg shadow-sm border border-gray-200 w-96">
+            <div className="rounded-lg shadow-sm border border-gray-200 w-96" style={{ backgroundColor: '#737373' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
                   <Palette size={20} className="text-[#708d81]" />
