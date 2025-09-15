@@ -235,6 +235,60 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    func uploadImages(_ images: [Data]) async throws -> [String] {
+        guard let url = URL(string: "\(baseURL)/upload/images") else {
+            throw APIError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        // Add auth token
+        if let token = KeychainManager.shared.getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        // Create multipart form data
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var body = Data()
+        
+        for (index, imageData) in images.enumerated() {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"images\"; filename=\"image\(index).jpg\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(imageData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        print("🔍 Image upload HTTP Status Code: \(httpResponse.statusCode)")
+        
+        guard 200...299 ~= httpResponse.statusCode else {
+            if httpResponse.statusCode == 401 {
+                throw APIError.unauthorized
+            }
+            throw APIError.serverError
+        }
+        
+        let uploadResponse = try decoder.decode(ImageUploadResponse.self, from: data)
+        
+        if uploadResponse.success, let imageData = uploadResponse.data {
+            return imageData.images.map { $0.url }
+        } else {
+            throw APIError.serverError
+        }
+    }
+    
     // MARK: - User Methods
     func getCurrentUser() async throws -> User {
         return try await performRequest(

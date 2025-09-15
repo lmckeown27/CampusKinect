@@ -14,6 +14,7 @@ struct CreatePostView: View {
     @State private var selectedSubcategory: PostSubcategory?
     @State private var location = ""
     @State private var showingSuccess = false
+    @State private var selectedImages: [LocalImage] = []
     
     // Offer/Request selection (required for Goods, Services, Housing)
     @State private var selectedOfferRequest: String? = nil
@@ -133,6 +134,9 @@ struct CreatePostView: View {
                             }
                     }
                     
+                    // Image Selection
+                    ImagePickerView(selectedImages: $selectedImages)
+                    
                     Spacer(minLength: 20)
                 }
                 .padding()
@@ -222,7 +226,8 @@ struct CreatePostView: View {
             category: selectedCategory,
             subcategory: selectedSubcategory,
             location: location,
-            offerRequest: selectedOfferRequest
+            offerRequest: selectedOfferRequest,
+            images: selectedImages
         )
         
         if viewModel.successMessage != nil {
@@ -236,6 +241,7 @@ struct CreatePostView: View {
         selectedSubcategory = nil
         location = ""
         selectedOfferRequest = nil
+        selectedImages = []
     }
     
     private func hideKeyboard() {

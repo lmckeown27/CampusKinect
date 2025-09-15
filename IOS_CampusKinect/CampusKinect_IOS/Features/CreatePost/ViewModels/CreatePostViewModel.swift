@@ -22,13 +22,24 @@ class CreatePostViewModel: ObservableObject {
         category: PostCategory,
         subcategory: PostSubcategory?,
         location: String,
-        offerRequest: String?
+        offerRequest: String?,
+        images: [LocalImage] = []
     ) async {
         isLoading = true
         errorMessage = nil
         successMessage = nil
         
         do {
+            var imageUrls: [String] = []
+            
+            // Upload images first if any
+            if !images.isEmpty {
+                print("🖼️ Uploading \(images.count) images...")
+                let imageDataArray = images.map { $0.data }
+                imageUrls = try await apiService.uploadImages(imageDataArray)
+                print("✅ Images uploaded successfully: \(imageUrls)")
+            }
+            
             // Build tags array
             var tags: [String] = []
             
@@ -64,7 +75,8 @@ class CreatePostViewModel: ObservableObject {
                 postType: postType,
                 durationType: "recurring", // Default to recurring for now
                 location: location,
-                tags: tags
+                tags: tags,
+                images: imageUrls.isEmpty ? nil : imageUrls
             )
             
             print("🔍 Creating post with request: \(request)")
