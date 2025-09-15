@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CreatePostView: View {
     @StateObject private var viewModel = CreatePostViewModel()
+    @State private var title = ""
     @State private var content = ""
     @State private var selectedCategory: PostCategory?
     @State private var selectedSubcategory: PostSubcategory?
@@ -23,9 +24,27 @@ struct CreatePostView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
+                    // Title Input
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Post Title")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                        
+                        TextField("Enter a catchy title for your post", text: $title)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .font(.body)
+                        
+                        HStack {
+                            Spacer()
+                            Text("\(title.count)/100")
+                                .font(.caption)
+                                .foregroundColor(title.count > 100 ? .red : .secondary)
+                        }
+                    }
+                    
                     // Content Input
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("What's happening on campus?")
+                        Text("Description")
                             .font(.headline)
                             .fontWeight(.semibold)
                         
@@ -201,27 +220,24 @@ struct CreatePostView: View {
     }
     
     private var isValidPost: Bool {
+        let hasValidTitle = !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && title.count <= 100
         let hasValidContent = ValidationUtils.isValidPostContent(content)
         let hasCategory = selectedCategory != nil
         
         // If category requires offer/request selection, ensure it's selected
         if requiresOfferRequestSelection {
             let hasOfferRequest = selectedOfferRequest != nil
-            return hasValidContent && hasCategory && hasOfferRequest
+            return hasValidTitle && hasValidContent && hasCategory && hasOfferRequest
         }
         
-        return hasValidContent && hasCategory
+        return hasValidTitle && hasValidContent && hasCategory
     }
     
     private func createPost() async {
         guard let selectedCategory = selectedCategory else { return }
         
-        // Extract title from content (first line or first 50 characters)
-        let title = content.components(separatedBy: .newlines).first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let finalTitle = title.isEmpty ? String(content.prefix(50)) : title
-        
         await viewModel.createPost(
-            title: finalTitle,
+            title: title.trimmingCharacters(in: .whitespacesAndNewlines),
             description: content,
             category: selectedCategory,
             subcategory: selectedSubcategory,
@@ -236,6 +252,7 @@ struct CreatePostView: View {
     }
     
     private func clearForm() {
+        title = ""
         content = ""
         selectedCategory = nil
         selectedSubcategory = nil

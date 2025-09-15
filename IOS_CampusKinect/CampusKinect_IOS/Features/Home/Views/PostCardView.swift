@@ -111,10 +111,22 @@ struct PostContent: View {
     let post: Post
     
     var body: some View {
-        Text(post.content)
-            .font(.body)
-            .multilineTextAlignment(.leading)
-            .fixedSize(horizontal: false, vertical: true)
+        VStack(alignment: .leading, spacing: 8) {
+            // Post Title
+            if !post.title.isEmpty {
+                Text(post.title)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            // Post Description
+            Text(post.content)
+                .font(.body)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 
