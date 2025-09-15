@@ -39,13 +39,13 @@ struct LoginView: View {
                     VStack(spacing: 20) {
                         // Email Field
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Email")
+                            Text("Username or Email")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            TextField("Enter your email", text: $email)
+                            TextField("Enter your username or email", text: $email)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .keyboardType(.emailAddress)
+                                .keyboardType(.default)
                                 .autocapitalization(.none)
                                 .disableAutocorrection(true)
                         }
