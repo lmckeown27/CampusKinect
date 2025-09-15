@@ -1170,8 +1170,10 @@ const HomeTab: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {getFilteredPostsBySubtags().map((post) => (
-                  <PostCard key={post.id} post={post} />
+                {getFilteredPostsBySubtags().map((post, index) => (
+                  <div key={post.id} className={index === 0 ? 'mt-6' : ''}>
+                    <PostCard post={post} />
+                  </div>
                 ))}
                 
                 {hasMore && (
