@@ -124,12 +124,12 @@ struct CreatePostView: View {
                     }) {
                         Text("Post")
                             .fontWeight(.semibold)
+                            .foregroundColor(.white)
                             .padding(.vertical, 8)
                             .padding(.horizontal, 16)
                             .background(
                                 isPosting ? Color.gray : Color("BrandPrimary")
                             )
-                            .foregroundColor(.white)
                             .cornerRadius(12)
                     }
                     .disabled(!isValidPost || isPosting)
