@@ -71,17 +71,21 @@ class AdvancedCameraViewController: UIViewController {
     private var photoOutput: AVCapturePhotoOutput!
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var captureDevice: AVCaptureDevice!
+    private var currentCameraInput: AVCaptureDeviceInput!
+    private var currentCameraPosition: AVCaptureDevice.Position = .back
     
     // UI Components
     private var captureButton: UIButton!
     private var cancelButton: UIButton!
     private var flashButton: UIButton!
+    private var flipButton: UIButton!
     private var isFlashEnabled = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCamera()
         setupUI()
+        updateFlashButtonVisibility()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -98,23 +102,8 @@ class AdvancedCameraViewController: UIViewController {
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = .photo
         
-        // Setup camera input
-        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
-            print("❌ Failed to get camera device")
-            return
-        }
-        
-        captureDevice = camera
-        
-        do {
-            let input = try AVCaptureDeviceInput(device: camera)
-            if captureSession.canAddInput(input) {
-                captureSession.addInput(input)
-            }
-        } catch {
-            print("❌ Failed to create camera input: \(error)")
-            return
-        }
+        // Setup initial camera input
+        setupCameraInput(for: currentCameraPosition)
         
         // Setup photo output
         photoOutput = AVCapturePhotoOutput()
@@ -127,6 +116,33 @@ class AdvancedCameraViewController: UIViewController {
         previewLayer.videoGravity = .resizeAspectFill
         previewLayer.frame = view.bounds
         view.layer.addSublayer(previewLayer)
+    }
+    
+    private func setupCameraInput(for position: AVCaptureDevice.Position) {
+        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
+            print("❌ Failed to get camera device for position: \(position)")
+            return
+        }
+        
+        captureDevice = camera
+        
+        do {
+            let input = try AVCaptureDeviceInput(device: camera)
+            
+            // Remove existing input if any
+            if let currentInput = currentCameraInput {
+                captureSession.removeInput(currentInput)
+            }
+            
+            // Add new input
+            if captureSession.canAddInput(input) {
+                captureSession.addInput(input)
+                currentCameraInput = input
+            }
+        } catch {
+            print("❌ Failed to create camera input: \(error)")
+            return
+        }
     }
     
     private func setupUI() {
@@ -153,8 +169,16 @@ class AdvancedCameraViewController: UIViewController {
         flashButton.layer.cornerRadius = 20
         flashButton.addTarget(self, action: #selector(toggleFlash), for: .touchUpInside)
         
+        // Camera flip button
+        flipButton = UIButton(type: .system)
+        flipButton.setImage(UIImage(systemName: "camera.rotate"), for: .normal)
+        flipButton.tintColor = .white
+        flipButton.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        flipButton.layer.cornerRadius = 20
+        flipButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
+        
         // Add buttons to view
-        [captureButton, cancelButton, flashButton].forEach {
+        [captureButton, cancelButton, flashButton, flipButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -175,8 +199,24 @@ class AdvancedCameraViewController: UIViewController {
             flashButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             flashButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             flashButton.widthAnchor.constraint(equalToConstant: 40),
-            flashButton.heightAnchor.constraint(equalToConstant: 40)
+            flashButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            // Flip button - top left
+            flipButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            flipButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            flipButton.widthAnchor.constraint(equalToConstant: 40),
+            flipButton.heightAnchor.constraint(equalToConstant: 40)
         ])
+        
+        // Setup gestures
+        setupGestures()
+    }
+    
+    private func setupGestures() {
+        // Double tap to flip camera
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(flipCamera))
+        doubleTapGesture.numberOfTapsRequired = 2
+        view.addGestureRecognizer(doubleTapGesture)
     }
     
     private func startSession() {
@@ -228,6 +268,47 @@ class AdvancedCameraViewController: UIViewController {
             }
         } catch {
             print("❌ Failed to configure flash: \(error)")
+        }
+    }
+    
+    @objc private func flipCamera() {
+        // Toggle camera position
+        let newPosition: AVCaptureDevice.Position = (currentCameraPosition == .back) ? .front : .back
+        
+        // Check if the new camera position is available
+        guard AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: newPosition) != nil else {
+            print("⚠️ Camera position not available: \(newPosition)")
+            return
+        }
+        
+        // Stop session temporarily
+        captureSession.beginConfiguration()
+        
+        // Setup new camera input
+        setupCameraInput(for: newPosition)
+        currentCameraPosition = newPosition
+        
+        // Commit configuration
+        captureSession.commitConfiguration()
+        
+        // Update flash button visibility based on camera capabilities
+        updateFlashButtonVisibility()
+        
+        // Animate button rotation
+        UIView.animate(withDuration: 0.3) {
+            self.flipButton.transform = self.flipButton.transform.rotated(by: .pi)
+        }
+    }
+    
+    private func updateFlashButtonVisibility() {
+        // Front camera typically doesn't have flash
+        let hasFlash = captureDevice.hasTorch
+        flashButton.isHidden = !hasFlash
+        
+        // Reset flash state if no flash available
+        if !hasFlash {
+            isFlashEnabled = false
+            flashButton.setImage(UIImage(systemName: "bolt.slash"), for: .normal)
         }
     }
     

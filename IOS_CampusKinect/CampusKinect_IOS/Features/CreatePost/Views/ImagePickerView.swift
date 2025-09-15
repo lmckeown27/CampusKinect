@@ -301,55 +301,160 @@ struct CameraView: UIViewControllerRepresentable {
     var cameraDevice: UIImagePickerController.CameraDevice = .rear
     var allowsEditing: Bool = true
     
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        
-        // Check if camera is available
-        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
-            // If camera is not available, dismiss and show error
-            DispatchQueue.main.async {
-                dismiss()
-            }
-            return picker
-        }
-        
-        picker.sourceType = .camera
-        picker.allowsEditing = allowsEditing
-        picker.cameraCaptureMode = .photo
-        picker.cameraDevice = cameraDevice
-        
-        // Configure flash mode for faster/reduced flash
-        if UIImagePickerController.isFlashAvailable(for: cameraDevice) {
-            picker.cameraFlashMode = flashMode
-        }
-        
-        return picker
+    func makeUIViewController(context: Context) -> CameraViewController {
+        let controller = CameraViewController()
+        controller.delegate = context.coordinator
+        controller.flashMode = flashMode
+        controller.initialCameraDevice = cameraDevice
+        controller.allowsEditing = allowsEditing
+        return controller
     }
     
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    class Coordinator: NSObject, CameraViewDelegate {
         let parent: CameraView
         
         init(_ parent: CameraView) {
             self.parent = parent
         }
         
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
-                parent.onImageCaptured(image)
-            }
+        func didCaptureImage(_ image: UIImage) {
+            parent.onImageCaptured(image)
             parent.dismiss()
         }
         
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        func didCancel() {
             parent.dismiss()
         }
+    }
+}
+
+// MARK: - Camera View Delegate
+protocol CameraViewDelegate: AnyObject {
+    func didCaptureImage(_ image: UIImage)
+    func didCancel()
+}
+
+// MARK: - Camera View Controller with Switching
+class CameraViewController: UIViewController {
+    weak var delegate: CameraViewDelegate?
+    
+    // Camera configuration
+    var flashMode: UIImagePickerController.CameraFlashMode = .auto
+    var initialCameraDevice: UIImagePickerController.CameraDevice = .rear
+    var allowsEditing: Bool = true
+    
+    private var imagePicker: UIImagePickerController!
+    private var currentCameraDevice: UIImagePickerController.CameraDevice = .rear
+    private var flipButton: UIButton!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        currentCameraDevice = initialCameraDevice
+        setupImagePicker()
+        setupUI()
+        setupGestures()
+    }
+    
+    private func setupImagePicker() {
+        imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            delegate?.didCancel()
+            return
+        }
+        
+        imagePicker.sourceType = .camera
+        imagePicker.allowsEditing = allowsEditing
+        imagePicker.cameraCaptureMode = .photo
+        imagePicker.cameraDevice = currentCameraDevice
+        
+        // Configure flash mode
+        if UIImagePickerController.isFlashAvailable(for: currentCameraDevice) {
+            imagePicker.cameraFlashMode = flashMode
+        }
+        
+        // Add image picker as child view controller
+        addChild(imagePicker)
+        view.addSubview(imagePicker.view)
+        imagePicker.view.frame = view.bounds
+        imagePicker.didMove(toParent: self)
+    }
+    
+    private func setupUI() {
+        // Camera flip button
+        flipButton = UIButton(type: .system)
+        flipButton.setImage(UIImage(systemName: "camera.rotate"), for: .normal)
+        flipButton.tintColor = .white
+        flipButton.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        flipButton.layer.cornerRadius = 20
+        flipButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
+        
+        flipButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(flipButton)
+        
+        // Setup constraints
+        NSLayoutConstraint.activate([
+            // Flip button - top left
+            flipButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            flipButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            flipButton.widthAnchor.constraint(equalToConstant: 40),
+            flipButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
+    private func setupGestures() {
+        // Double tap to flip camera
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(flipCamera))
+        doubleTapGesture.numberOfTapsRequired = 2
+        view.addGestureRecognizer(doubleTapGesture)
+    }
+    
+    @objc private func flipCamera() {
+        // Toggle camera device
+        let newDevice: UIImagePickerController.CameraDevice = (currentCameraDevice == .rear) ? .front : .rear
+        
+        // Check if the new camera device is available
+        guard UIImagePickerController.isCameraDeviceAvailable(newDevice) else {
+            print("⚠️ Camera device not available: \(newDevice)")
+            return
+        }
+        
+        currentCameraDevice = newDevice
+        imagePicker.cameraDevice = currentCameraDevice
+        
+        // Update flash availability for new camera
+        if UIImagePickerController.isFlashAvailable(for: currentCameraDevice) {
+            imagePicker.cameraFlashMode = flashMode
+        } else {
+            imagePicker.cameraFlashMode = .off
+        }
+        
+        // Animate button rotation
+        UIView.animate(withDuration: 0.3) {
+            self.flipButton.transform = self.flipButton.transform.rotated(by: .pi)
+        }
+    }
+}
+
+// MARK: - Image Picker Delegate
+extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
+            delegate?.didCaptureImage(image)
+        } else {
+            delegate?.didCancel()
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        delegate?.didCancel()
     }
 }
 
