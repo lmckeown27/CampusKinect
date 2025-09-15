@@ -247,7 +247,7 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
-    func fetchUserBookmarks(page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
+    func fetchUserBookmarks(page: Int = 1, limit: Int = 20) async throws -> BookmarksResponse {
         return try await performRequest(
             endpoint: "\(APIConstants.Endpoints.posts)/user/bookmarks?page=\(page)&limit=\(limit)",
             method: .GET,
@@ -256,7 +256,7 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
-    func fetchUserReposts(page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
+    func fetchUserReposts(page: Int = 1, limit: Int = 20) async throws -> RepostsResponse {
         return try await performRequest(
             endpoint: "\(APIConstants.Endpoints.posts)/user/reposts?page=\(page)&limit=\(limit)",
             method: .GET,

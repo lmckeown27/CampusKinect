@@ -78,7 +78,7 @@ class ProfileViewModel: ObservableObject {
         do {
             let response = try await apiService.fetchUserReposts()
             await MainActor.run {
-                self.userReposts = response.data.posts
+                self.userReposts = response.data.map { $0.asPost }
                 self.isLoading = false
             }
         } catch {
@@ -97,7 +97,7 @@ class ProfileViewModel: ObservableObject {
         do {
             let response = try await apiService.fetchUserBookmarks()
             await MainActor.run {
-                self.userBookmarks = response.data.posts
+                self.userBookmarks = response.data.map { $0.asPost }
                 self.isLoading = false
             }
         } catch {

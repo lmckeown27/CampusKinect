@@ -121,6 +121,201 @@ struct PostsResponse: Codable {
     }
 }
 
+// MARK: - Bookmarks/Reposts Response (different structure)
+struct BookmarksResponse: Codable {
+    let success: Bool
+    let data: [BookmarkPost]
+    let pagination: BookmarkPagination
+}
+
+struct RepostsResponse: Codable {
+    let success: Bool
+    let data: [RepostPost]
+    let pagination: RepostPagination
+}
+
+// MARK: - Bookmark/Repost Post Models
+struct BookmarkPost: Codable, Identifiable, Equatable {
+    let id: String
+    let title: String
+    let description: String
+    let postType: String
+    let duration: String
+    let location: String?
+    let tags: [String]
+    let images: [String]
+    let userId: String
+    let universityId: String
+    let isActive: Bool
+    let messageCount: Int
+    let shareCount: Int
+    let bookmarkCount: Int
+    let repostCount: Int
+    let engagementScore: String
+    let createdAt: Date
+    let updatedAt: Date
+    let bookmarkedAt: Date?
+    let poster: BookmarkPoster
+    let university: BookmarkUniversity
+    
+    // Convert to regular Post for UI compatibility
+    var asPost: Post {
+        return Post(
+            id: Int(id) ?? 0,
+            userId: Int(userId) ?? 0,
+            title: title,
+            description: description,
+            postType: postType,
+            durationType: duration,
+            location: location,
+            repostFrequency: nil,
+            isRecurring: duration == "recurring" ? true : nil,
+            originalPostId: nil,
+            expiresAt: nil,
+            eventStart: nil,
+            eventEnd: nil,
+            isFulfilled: false,
+            viewCount: 0,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            poster: PostUser(
+                id: Int(poster.id) ?? 0,
+                username: poster.username,
+                firstName: poster.firstName,
+                lastName: poster.lastName,
+                displayName: "\(poster.firstName) \(poster.lastName)",
+                profilePicture: poster.profilePicture
+            ),
+            university: PostUniversity(
+                id: Int(university.id) ?? 0,
+                name: university.name,
+                city: nil,
+                state: nil
+            ),
+            images: images,
+            imageCount: String(images.count),
+            tags: tags
+        )
+    }
+}
+
+struct RepostPost: Codable, Identifiable, Equatable {
+    let id: String
+    let title: String
+    let description: String
+    let postType: String
+    let duration: String
+    let location: String?
+    let tags: [String]
+    let images: [String]
+    let userId: String
+    let universityId: String
+    let isActive: Bool
+    let messageCount: Int
+    let shareCount: Int
+    let bookmarkCount: Int
+    let repostCount: Int
+    let engagementScore: String
+    let createdAt: Date
+    let updatedAt: Date
+    let repostedAt: Date?
+    let poster: RepostPoster
+    let university: RepostUniversity
+    
+    // Convert to regular Post for UI compatibility
+    var asPost: Post {
+        return Post(
+            id: Int(id) ?? 0,
+            userId: Int(userId) ?? 0,
+            title: title,
+            description: description,
+            postType: postType,
+            durationType: duration,
+            location: location,
+            repostFrequency: nil,
+            isRecurring: duration == "recurring" ? true : nil,
+            originalPostId: nil,
+            expiresAt: nil,
+            eventStart: nil,
+            eventEnd: nil,
+            isFulfilled: false,
+            viewCount: 0,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            poster: PostUser(
+                id: Int(poster.id) ?? 0,
+                username: poster.username,
+                firstName: poster.firstName,
+                lastName: poster.lastName,
+                displayName: "\(poster.firstName) \(poster.lastName)",
+                profilePicture: poster.profilePicture
+            ),
+            university: PostUniversity(
+                id: Int(university.id) ?? 0,
+                name: university.name,
+                city: nil,
+                state: nil
+            ),
+            images: images,
+            imageCount: String(images.count),
+            tags: tags
+        )
+    }
+}
+
+// MARK: - Bookmark/Repost Supporting Models
+struct BookmarkPoster: Codable, Equatable {
+    let id: String
+    let username: String
+    let firstName: String
+    let lastName: String
+    let profilePicture: String?
+}
+
+struct RepostPoster: Codable, Equatable {
+    let id: String
+    let username: String
+    let firstName: String
+    let lastName: String
+    let profilePicture: String?
+}
+
+struct BookmarkUniversity: Codable, Equatable {
+    let id: String
+    let name: String
+    let domain: String?
+}
+
+struct RepostUniversity: Codable, Equatable {
+    let id: String
+    let name: String
+    let domain: String?
+}
+
+struct BookmarkPagination: Codable {
+    let page: Int
+    let limit: Int
+    let total: Int
+    let totalPages: Int
+    
+    // Computed properties for compatibility
+    var pages: Int { totalPages }
+    var hasNext: Bool { page < totalPages }
+    var hasPrevious: Bool { page > 1 }
+}
+
+struct RepostPagination: Codable {
+    let page: Int
+    let limit: Int
+    let total: Int
+    let totalPages: Int
+    
+    // Computed properties for compatibility
+    var pages: Int { totalPages }
+    var hasNext: Bool { page < totalPages }
+    var hasPrevious: Bool { page > 1 }
+}
+
 // MARK: - Create Post Request
 struct CreatePostRequest: Codable {
     let content: String
