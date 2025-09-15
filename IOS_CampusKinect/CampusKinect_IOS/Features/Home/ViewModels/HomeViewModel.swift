@@ -39,7 +39,7 @@ class HomeViewModel: ObservableObject {
         do {
             let response = try await apiService.fetchPosts()
             await MainActor.run {
-                self.posts = response.posts
+                self.posts = response.data.posts
                 self.isLoading = false
             }
         } catch {
@@ -56,7 +56,7 @@ class HomeViewModel: ObservableObject {
         do {
             let response = try await apiService.fetchPosts()
             await MainActor.run {
-                self.posts = response.posts
+                self.posts = response.data.posts
                 self.isRefreshing = false
             }
         } catch {
@@ -76,9 +76,9 @@ class HomeViewModel: ObservableObject {
         
         do {
             let response = try await apiService.fetchPosts(page: currentPage, limit: postsPerPage)
-            self.posts.append(contentsOf: response.posts)
-            self.hasMorePosts = response.pagination.hasNext
-            print("Loaded \(response.posts.count) more posts. Total: \(self.posts.count)")
+            self.posts.append(contentsOf: response.data.posts)
+            self.hasMorePosts = response.data.pagination.hasNext
+            print("Loaded \(response.data.posts.count) more posts. Total: \(self.posts.count)")
         } catch {
             self.error = error as? APIError ?? .unknown(0)
             currentPage -= 1 // Revert page increment on error
@@ -159,7 +159,7 @@ class HomeViewModel: ObservableObject {
             let response = try await apiService.fetchPosts(page: currentPage, limit: postsPerPage)
             
             // Filter posts locally for now (in real app, this would be server-side)
-            let filteredPosts = response.posts.filter { post in
+            let filteredPosts = response.data.posts.filter { post in
                 post.content.localizedCaseInsensitiveContains(query) ||
                 post.category.localizedCaseInsensitiveContains(query) ||
                 (post.subcategory?.localizedCaseInsensitiveContains(query) ?? false)

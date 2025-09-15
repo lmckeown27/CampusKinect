@@ -10,44 +10,41 @@ import Foundation
 // MARK: - Post Model
 struct Post: Codable, Identifiable, Equatable {
     let id: Int
-    let content: String
-    let category: String
-    let subcategory: String?
-    let location: String?
     let userId: Int
-    let universityId: Int
-    let isActive: Bool
+    let title: String
+    let description: String
+    let postType: String
+    let durationType: String
+    let location: String?
+    let repostFrequency: String?
+    let isRecurring: Bool
+    let originalPostId: Int?
+    let expiresAt: String?
+    let eventStart: String?
+    let eventEnd: String?
+    let isFulfilled: Bool
+    let viewCount: Int
     let createdAt: Date
     let updatedAt: Date
     
     // User information
-    let user: PostUser
+    let poster: PostUser
     
-    // Post statistics
-    let messageCount: Int
-    let shareCount: Int
-    let bookmarkCount: Int
-    let repostCount: Int
-    let engagementScore: Double
+    // University information
+    let university: PostUniversity
     
     // Post images
-    let images: [PostImage]
+    let images: [String]
+    let imageCount: String
     
     // Post tags
     let tags: [String]
     
-    enum CodingKeys: String, CodingKey {
-        case id
-        case content
-        case category
-        case subcategory
-        case location
-        case userId = "user_id"
-        case universityId = "university_id"
-        case isActive = "is_active"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-        case user
+    // Computed properties for compatibility
+    var content: String { description }
+    var category: String { postType }
+    var subcategory: String? { nil }
+    var user: PostUser { poster }
         case messageCount = "message_count"
         case shareCount = "share_count"
         case bookmarkCount = "bookmark_count"
@@ -84,18 +81,12 @@ struct Post: Codable, Identifiable, Equatable {
 // MARK: - Post User
 struct PostUser: Codable, Equatable {
     let id: Int
+    let username: String
+    let firstName: String
+    let lastName: String
     let displayName: String
     let profilePicture: String?
-    let year: String?
-    let major: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case displayName = "display_name"
-        case profilePicture = "profile_picture"
-        case year
-        case major
-    }
+}
     
     var profileImageURL: URL? {
         guard let profilePicture = profilePicture else { return nil }
@@ -108,6 +99,14 @@ struct PostUser: Codable, Equatable {
         let lastInitial = components.count > 1 ? components.last?.first?.uppercased() ?? "" : ""
         return "\(firstInitial)\(lastInitial)"
     }
+}
+
+// MARK: - Post University
+struct PostUniversity: Codable, Equatable {
+    let id: Int
+    let name: String
+    let city: String
+    let state: String
 }
 
 // MARK: - Post Image
@@ -142,12 +141,12 @@ struct PostImage: Codable, Identifiable, Equatable {
 
 // MARK: - Posts Response
 struct PostsResponse: Codable {
-    let posts: [Post]
-    let pagination: PaginationInfo
+    let success: Bool
+    let data: PostsData
     
-    enum CodingKeys: String, CodingKey {
-        case posts = "data"
-        case pagination
+    struct PostsData: Codable {
+        let posts: [Post]
+        let pagination: PaginationInfo
     }
 }
 
