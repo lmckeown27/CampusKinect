@@ -246,6 +246,24 @@ class APIService: NSObject, ObservableObject {
             requiresAuth: false
         )
     }
+    
+    func fetchUserBookmarks(page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.posts)/user/bookmarks?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
+    func fetchUserReposts(page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.posts)/user/reposts?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
 
 }
 

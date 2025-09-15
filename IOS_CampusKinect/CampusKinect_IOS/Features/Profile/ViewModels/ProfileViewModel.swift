@@ -70,16 +70,42 @@ class ProfileViewModel: ObservableObject {
         await loadUserPosts(userId: userId)
     }
     
-    // MARK: - Load Reposts (placeholder for future implementation)
+    // MARK: - Load Reposts
     func loadUserReposts(userId: Int) async {
-        // TODO: Implement when backend has repost endpoint
-        userReposts = []
+        isLoading = true
+        error = nil
+        
+        do {
+            let response = try await apiService.fetchUserReposts()
+            await MainActor.run {
+                self.userReposts = response.data.posts
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error as? APIError
+                self.isLoading = false
+            }
+        }
     }
     
-    // MARK: - Load Bookmarks (placeholder for future implementation)
+    // MARK: - Load Bookmarks
     func loadUserBookmarks(userId: Int) async {
-        // TODO: Implement when backend has bookmarks endpoint
-        userBookmarks = []
+        isLoading = true
+        error = nil
+        
+        do {
+            let response = try await apiService.fetchUserBookmarks()
+            await MainActor.run {
+                self.userBookmarks = response.data.posts
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error as? APIError
+                self.isLoading = false
+            }
+        }
     }
 }
 

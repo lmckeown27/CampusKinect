@@ -49,9 +49,11 @@ struct ProfileView: View {
                 SettingsView()
             }
             .task {
-                // Load user posts when view appears
+                // Load user data when view appears
                 if let userId = authManager.currentUser?.id {
                     await viewModel.loadUserPosts(userId: userId)
+                    await viewModel.loadUserReposts(userId: userId)
+                    await viewModel.loadUserBookmarks(userId: userId)
                 }
             }
         }
@@ -229,7 +231,10 @@ struct RepostsTabContent: View {
     
     var body: some View {
         VStack {
-            if viewModel.userReposts.isEmpty {
+            if viewModel.isLoading && viewModel.userReposts.isEmpty {
+                ProgressView("Loading reposts...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.userReposts.isEmpty {
                 EmptyStateView(
                     title: "No Reposts",
                     message: "Posts you repost will appear here",
@@ -243,7 +248,7 @@ struct RepostsTabContent: View {
                 }
             }
         }
-        .task {
+        .refreshable {
             if let userId = currentUser?.id {
                 await viewModel.loadUserReposts(userId: userId)
             }
@@ -257,7 +262,10 @@ struct BookmarksTabContent: View {
     
     var body: some View {
         VStack {
-            if viewModel.userBookmarks.isEmpty {
+            if viewModel.isLoading && viewModel.userBookmarks.isEmpty {
+                ProgressView("Loading bookmarks...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.userBookmarks.isEmpty {
                 EmptyStateView(
                     title: "No Bookmarks",
                     message: "Posts you bookmark will appear here",
@@ -271,7 +279,7 @@ struct BookmarksTabContent: View {
                 }
             }
         }
-        .task {
+        .refreshable {
             if let userId = currentUser?.id {
                 await viewModel.loadUserBookmarks(userId: userId)
             }
