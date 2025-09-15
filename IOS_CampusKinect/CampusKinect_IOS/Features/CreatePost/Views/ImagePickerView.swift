@@ -8,6 +8,7 @@
 import SwiftUI
 import PhotosUI
 import UIKit
+import AVFoundation
 
 struct ImagePickerView: View {
     @Binding var selectedImages: [LocalImage]
@@ -15,6 +16,8 @@ struct ImagePickerView: View {
     @State private var showingCamera = false
     @State private var showingActionSheet = false
     @State private var photosPickerItems: [PhotosPickerItem] = []
+    @State private var showingPermissionAlert = false
+    @State private var permissionAlertMessage = ""
     
     let maxImages = 5
     
@@ -119,7 +122,7 @@ struct ImagePickerView: View {
         }
         .confirmationDialog("Add Photo", isPresented: $showingActionSheet) {
             Button("Take Photo") {
-                showingCamera = true
+                checkCameraPermissionAndOpen()
             }
             
             Button("Choose from Library") {
@@ -127,6 +130,14 @@ struct ImagePickerView: View {
             }
             
             Button("Cancel", role: .cancel) { }
+        }
+        .alert("Permission Required", isPresented: $showingPermissionAlert) {
+            Button("Settings") {
+                openAppSettings()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text(permissionAlertMessage)
         }
         .photosPicker(
             isPresented: $showingImagePicker,
@@ -176,6 +187,36 @@ struct ImagePickerView: View {
         
         await MainActor.run {
             photosPickerItems = []
+        }
+    }
+    
+    private func checkCameraPermissionAndOpen() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            showingCamera = true
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async {
+                    if granted {
+                        showingCamera = true
+                    } else {
+                        permissionAlertMessage = "Camera access is required to take photos for your posts. Please enable camera access in Settings."
+                        showingPermissionAlert = true
+                    }
+                }
+            }
+        case .denied, .restricted:
+            permissionAlertMessage = "Camera access is required to take photos for your posts. Please enable camera access in Settings."
+            showingPermissionAlert = true
+        @unknown default:
+            permissionAlertMessage = "Camera access is required to take photos for your posts. Please enable camera access in Settings."
+            showingPermissionAlert = true
+        }
+    }
+    
+    private func openAppSettings() {
+        if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(settingsUrl)
         }
     }
 }
@@ -233,8 +274,21 @@ struct CameraView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
+        
+        // Check if camera is available
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            // If camera is not available, dismiss and show error
+            DispatchQueue.main.async {
+                dismiss()
+            }
+            return picker
+        }
+        
         picker.sourceType = .camera
         picker.allowsEditing = true
+        picker.cameraCaptureMode = .photo
+        picker.cameraDevice = .rear
+        
         return picker
     }
     
