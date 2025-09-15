@@ -671,7 +671,7 @@ const CreatePostTab: React.FC = () => {
                     />
                     <label 
                       htmlFor="image-upload-top"
-                      className={`relative p-3 hover:bg-gray-50 rounded-lg transition-all duration-200 inline-block ${
+                      className={`relative p-3 hover:bg-grey-medium rounded-lg transition-all duration-200 inline-block ${
                         isUploadingImages ? 'cursor-wait opacity-50' : 'cursor-pointer hover:shadow-md'
                       }`}
                       title={isUploadingImages ? "Processing images..." : `Upload images (${imageFiles.length}/4)`}
@@ -770,7 +770,7 @@ const CreatePostTab: React.FC = () => {
               {/* Bottom Section: Category Tags and Post Button */}
               <div className="flex items-start justify-between mt-8">
                 {/* Category Tags Section - Expanded Width */}
-                <div className="flex-1 p-4 bg-gray-50 rounded-lg border mr-6">
+                <div className="flex-1 p-4 bg-grey-medium rounded-lg border mr-6">
 
                   
                   {/* Category Box for selected Post Type */}
@@ -815,7 +815,7 @@ const CreatePostTab: React.FC = () => {
                       </div>
 
                       {/* Footer with actions for this post type */}
-                      <div className="p-3 border-t border-gray-200 bg-gray-50">
+                      <div className="p-3 border-t border-gray-200 bg-grey-medium">
                         <div className="flex justify-center space-x-2">
                           {formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length > 0 && (
                             <>

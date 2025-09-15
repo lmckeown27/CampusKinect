@@ -503,7 +503,7 @@ const ProfileTab: React.FC = () => {
   // Show loading state if no user data
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8f9f6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#525252' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#708d81] mx-auto mb-4"></div>
           <p className="text-[#708d81]">Loading profile...</p>
@@ -513,7 +513,7 @@ const ProfileTab: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8f9f6', paddingTop: '20px', paddingBottom: '100px' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#525252', paddingTop: '20px', paddingBottom: '100px' }}>
       <div className="max-w-4xl mx-auto p-6">
         {/* Profile Header */}
         <div className="rounded-lg shadow-sm p-6 mb-6" style={{ backgroundColor: '#737373' }}>

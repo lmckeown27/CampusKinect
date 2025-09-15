@@ -36,7 +36,7 @@ const SettingsTab: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 p-6 bg-gray-50">
+    <div className="flex-1 p-6" style={{ backgroundColor: '#525252' }}>
       <div className="max-w-4xl mx-auto">
         <div className="space-y-6">
           {/* Settings Sections - Horizontal Layout */}
@@ -59,7 +59,7 @@ const SettingsTab: React.FC = () => {
                     type="text"
                     value={user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'Loading...'}
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-grey-medium text-gray-600"
                   />
                 </div>
                 <div>
@@ -96,7 +96,7 @@ const SettingsTab: React.FC = () => {
                 {/* Cookie Settings Button */}
                 <button
                   onClick={handleCookieSettings}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-gray-50"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-grey-medium"
                   style={{ 
                     backgroundColor: '#737373', 
                     color: 'black', 
@@ -117,7 +117,7 @@ const SettingsTab: React.FC = () => {
                 {/* Terms & Conditions Button */}
                 <button
                   onClick={handleTermsAndConditions}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-gray-50"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-grey-medium"
                   style={{ 
                     backgroundColor: '#737373', 
                     color: 'black', 
@@ -138,7 +138,7 @@ const SettingsTab: React.FC = () => {
                 {/* Privacy Policy Button */}
                 <button
                   onClick={handlePrivacyPolicy}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-gray-50"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-grey-medium"
                   style={{ 
                     backgroundColor: '#737373', 
                     color: 'black', 

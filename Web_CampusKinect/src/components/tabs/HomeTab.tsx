@@ -677,7 +677,7 @@ const HomeTab: React.FC = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#f8f9f6' }}>
+    <div style={{ backgroundColor: '#525252' }}>
       {/* Clear All button - positioned above Search bar */}
       {(() => {
         const hasSelectedTags = selectedTags.length > 0;

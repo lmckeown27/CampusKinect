@@ -370,7 +370,7 @@ const MessagesTab: React.FC = () => {
   );
 
   return (
-    <div style={{ backgroundColor: '#f8f9f6' }}>
+    <div style={{ backgroundColor: '#525252' }}>
       <div className="flex h-full">
         {/* Left Sidebar - Conversations */}
         <div className="w-full sm:w-64 bg-grey-light border-r border-[#708d81] flex flex-col">
@@ -396,7 +396,7 @@ const MessagesTab: React.FC = () => {
                   onClick={() => setShowNewMessageModal(true)}
                   className="px-4 py-2 text-[#708d81] border border-[#708d81] rounded-md transition-colors cursor-pointer"
                   style={{ 
-                    backgroundColor: '#f8f9f6', 
+                    backgroundColor: '#525252', 
                     cursor: 'pointer',
                     color: '#708d81',
                     WebkitTapHighlightColor: 'transparent',
@@ -405,7 +405,7 @@ const MessagesTab: React.FC = () => {
                     userSelect: 'none'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f8f9f6'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#525252'}
                 >
                   <Plus size={20} />
                 </button>
@@ -459,7 +459,7 @@ const MessagesTab: React.FC = () => {
           {/* New Message Modal - positioned right under tabs */}
           {showNewMessageModal && (
             <div className="px-4 pb-4 flex justify-center">
-              <div className="rounded-lg p-4 border-2 border-[#708d81] shadow-lg w-72" style={{ backgroundColor: '#f8f9f6' }}>
+              <div className="rounded-lg p-4 border-2 border-[#708d81] shadow-lg w-72" style={{ backgroundColor: '#525252' }}>
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-lg font-semibold text-[#708d81]">New Message</h3>
                   <button
@@ -489,7 +489,7 @@ const MessagesTab: React.FC = () => {
                 <div className="space-y-4">
                   {/* Selected User Display */}
                   {selectedUser ? (
-                    <div className="flex items-center justify-between py-2 px-3 rounded-lg border-2" style={{ backgroundColor: '#f8f9f6', borderColor: '#708d81' }}>
+                    <div className="flex items-center justify-between py-2 px-3 rounded-lg border-2" style={{ backgroundColor: '#525252', borderColor: '#708d81' }}>
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-[#708d81] rounded-full flex items-center justify-center">
                           {selectedUser.profilePicture ? (
@@ -544,7 +544,7 @@ const MessagesTab: React.FC = () => {
                           autoFocus
                           className="w-full px-4 py-3 border-2 border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-[#708d81] text-sm transition-all duration-200"
                           style={{ 
-                            backgroundColor: '#f8f9f6',
+                            backgroundColor: '#525252',
                             color: '#708d81'
                           }}
                         />
@@ -555,7 +555,7 @@ const MessagesTab: React.FC = () => {
                         <div 
                           className="border border-[#708d81] rounded-lg mb-6" 
                           style={{ 
-                            backgroundColor: '#f8f9f6',
+                            backgroundColor: '#525252',
                             maxHeight: searchResults.length > 3 ? '210px' : 'auto',
                             overflowY: searchResults.length > 3 ? 'auto' : 'visible'
                           }}
@@ -622,7 +622,7 @@ const MessagesTab: React.FC = () => {
                                 </button>
                               ))}
                               {searchResults.length > 3 && (
-                                <div className="mt-2 py-2 text-center border-t border-[#708d81] bg-[#f8f9f6]">
+                                <div className="mt-2 py-2 text-center border-t border-[#708d81] bg-[#525252]">
                                   <p className="text-xs text-[#5a7268] font-medium">
                                     ↓ Scroll to see all {searchResults.length} users ↓
                                   </p>
@@ -907,7 +907,7 @@ const MessagesTab: React.FC = () => {
                     className={`p-4 transition-all duration-200 rounded-lg ${
                       currentConversation?.id === conversation.id
                         ? 'bg-[#e8f5e8]'
-                        : 'hover:bg-[#f8f9f6]'
+                        : 'hover:bg-[#525252]'
                     }`}
                     style={{ 
                       backgroundColor: currentConversation?.id === conversation.id ? '#5a7268' : '#708d81',
@@ -1086,7 +1086,7 @@ const MessagesTab: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-gray-50">
+            <div className="flex-1 flex items-center justify-center bg-grey-medium">
             </div>
           )}
         </div>
