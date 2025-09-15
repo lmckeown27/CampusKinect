@@ -582,7 +582,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   return (
-    <div className="bg-grey-light rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem' }}>
+    <div className="bg-grey-light rounded-2xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem' }}>
       {/* Post Header */}
       <div className="p-4 border-b border-gray-100">
         {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
@@ -702,30 +702,30 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
         <div className="flex items-start" style={{ gap: '20px' }}>
           {/* User Info with Profile Picture Inside - Reduced Width */}
           <div 
-            className="min-w-0 flex items-start space-x-3 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+            className="min-w-0 flex items-start space-x-3 cursor-pointer hover:bg-grey-medium transition-colors duration-200"
             onClick={handleProfileClick}
             style={{ 
-              border: '2px solid #d1d5db', 
+              border: '2px solid #708d81', 
               borderRadius: '12px', 
               paddingTop: '8px',
               paddingBottom: '12px',
               paddingLeft: '12px',
               paddingRight: '12px',
-              backgroundColor: '#f9fafb',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+              backgroundColor: 'var(--color-neutral-500)',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
               width: '280px',
               flexShrink: 0,
               cursor: 'pointer'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.cursor = 'pointer';
-              e.currentTarget.style.backgroundColor = '#f3f4f6';
-              e.currentTarget.style.borderColor = '#708d81';
+              e.currentTarget.style.backgroundColor = 'var(--color-neutral-600)';
+              e.currentTarget.style.borderColor = '#5a7268';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.cursor = 'pointer';
-              e.currentTarget.style.backgroundColor = '#f9fafb';
-              e.currentTarget.style.borderColor = '#d1d5db';
+              e.currentTarget.style.backgroundColor = 'var(--color-neutral-500)';
+              e.currentTarget.style.borderColor = '#708d81';
             }}
           >
             {/* Profile Picture */}
@@ -750,7 +750,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             {/* Display Name - Large and Bold */}
             <div className="flex items-center space-x-2 mb-0">
               <p 
-                className="font-bold text-gray-900 truncate cursor-pointer"
+                className="font-bold text-grey-light truncate cursor-pointer"
                 style={{ fontSize: '18px', lineHeight: '20px', cursor: 'pointer' }}
               >
                 {post.poster?.firstName && post.poster?.lastName 
@@ -763,7 +763,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             {/* Username - Small and Separate */}
             {post.poster?.username && post.poster?.firstName && (
               <p 
-                className="text-gray-400 truncate cursor-pointer"
+                className="text-grey-medium truncate cursor-pointer"
                 style={{ fontSize: '10px', lineHeight: '12px', marginTop: '-2px', cursor: 'pointer' }}
               >
                 @{post.poster.username}
@@ -772,7 +772,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
             
             {/* Major and Year */}
             {post.poster?.major && (
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-grey-medium truncate">
                   {post.poster?.major} • {post.poster?.year ? getYearLabel(post.poster.year) : 'Not specified'}
               </p>
             )}

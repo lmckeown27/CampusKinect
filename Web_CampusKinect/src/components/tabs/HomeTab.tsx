@@ -990,7 +990,7 @@ const HomeTab: React.FC = () => {
                     <button
                       key={subTag}
                       onClick={() => handleTagSelect(subTag)}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left ${
+                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-left ${
                         selectedTags.includes(subTag)
                           ? 'text-white shadow-sm'
                           : 'text-[#708d81] hover:text-[#5a7268]'
@@ -1003,11 +1003,15 @@ const HomeTab: React.FC = () => {
                       onMouseEnter={(e) => {
                         if (!selectedTags.includes(subTag)) {
                           e.currentTarget.style.backgroundColor = '#e8ebe8';
+                          e.currentTarget.style.transform = 'scale(1.05)';
+                          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!selectedTags.includes(subTag)) {
                           e.currentTarget.style.backgroundColor = selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0';
+                          e.currentTarget.style.transform = 'scale(1)';
+                          e.currentTarget.style.boxShadow = 'none';
                         }
                       }}
                     >
@@ -1148,7 +1152,7 @@ const HomeTab: React.FC = () => {
           )}
 
           {/* Center - Posts Feed */}
-          <div className="flex-1">
+          <div className="flex-1 mt-8">
             {error && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-red-700">{error}</p>
