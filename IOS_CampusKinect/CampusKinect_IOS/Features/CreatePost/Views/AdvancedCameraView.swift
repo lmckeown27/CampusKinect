@@ -80,6 +80,7 @@ class AdvancedCameraViewController: UIViewController {
     private var flashButton: UIButton!
     private var flipButton: UIButton!
     private var isFlashEnabled = false
+    private var isCapturing = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -146,13 +147,17 @@ class AdvancedCameraViewController: UIViewController {
     }
     
     private func setupUI() {
-        // Capture button
+        // Capture button with larger tap area
         captureButton = UIButton(type: .custom)
         captureButton.backgroundColor = .white
-        captureButton.layer.cornerRadius = 35
-        captureButton.layer.borderWidth = 4
-        captureButton.layer.borderColor = UIColor.systemBlue.cgColor
+        captureButton.layer.cornerRadius = 40 // Updated for 80x80 button
+        captureButton.layer.borderWidth = 5 // Slightly thicker border
+        captureButton.layer.borderColor = UIColor(red: 0.44, green: 0.55, blue: 0.51, alpha: 1.0).cgColor // Olive Green
         captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
+        
+        // Make the button more sensitive by adding touch events
+        captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchDown)
+        captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchDragInside)
         
         // Cancel button
         cancelButton = UIButton(type: .system)
@@ -185,11 +190,11 @@ class AdvancedCameraViewController: UIViewController {
         
         // Setup constraints
         NSLayoutConstraint.activate([
-            // Capture button - bottom center
+            // Capture button - bottom center (larger and more accessible)
             captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             captureButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            captureButton.widthAnchor.constraint(equalToConstant: 70),
-            captureButton.heightAnchor.constraint(equalToConstant: 70),
+            captureButton.widthAnchor.constraint(equalToConstant: 80),
+            captureButton.heightAnchor.constraint(equalToConstant: 80),
             
             // Cancel button - bottom left
             cancelButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
@@ -232,6 +237,23 @@ class AdvancedCameraViewController: UIViewController {
     }
     
     @objc private func capturePhoto() {
+        // Prevent multiple rapid captures
+        guard !isCapturing else { return }
+        isCapturing = true
+        
+        // Add haptic feedback
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+        
+        // Visual feedback - briefly change button appearance
+        UIView.animate(withDuration: 0.1, animations: {
+            self.captureButton.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.captureButton.transform = CGAffineTransform.identity
+            }
+        }
+        
         let settings = AVCapturePhotoSettings()
         
         // Configure flash with custom duration and intensity
@@ -242,6 +264,11 @@ class AdvancedCameraViewController: UIViewController {
         }
         
         photoOutput.capturePhoto(with: settings, delegate: self)
+        
+        // Reset capture flag after a short delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.isCapturing = false
+        }
     }
     
     private func configureCustomFlash() {
@@ -342,7 +369,9 @@ extension AdvancedCameraViewController: AVCapturePhotoCaptureDelegate {
             return
         }
         
-        delegate?.didCaptureImage(image)
+        // Fix image orientation to ensure proper display
+        let orientedImage = image.fixedOrientation()
+        delegate?.didCaptureImage(orientedImage)
     }
 }
 

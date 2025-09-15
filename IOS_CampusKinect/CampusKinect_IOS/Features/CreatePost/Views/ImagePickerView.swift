@@ -447,7 +447,9 @@ class CameraViewController: UIViewController {
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
-            delegate?.didCaptureImage(image)
+            // Fix image orientation to ensure proper display
+            let orientedImage = image.fixedOrientation()
+            delegate?.didCaptureImage(orientedImage)
         } else {
             delegate?.didCancel()
         }
