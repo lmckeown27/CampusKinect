@@ -71,7 +71,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onChange }) 
                           </button>
                           
                           {/* Duration Details Display - Always Visible */}
-                          <div className="bg-[#f8f9f6] border border-[#708d81] rounded-lg p-4 max-w-md">
+                          <div className="bg-[#525252] border border-[#708d81] rounded-lg p-4 max-w-md">
                             {option.value === 'one-time' && (
                               <div className="space-y-3">
                                 <div className="flex items-center space-x-2">

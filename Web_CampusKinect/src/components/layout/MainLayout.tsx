@@ -23,7 +23,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8f9f6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#525252' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#708d81] mx-auto mb-4"></div>
           <p className="text-[#708d81]">Loading CampusKinect...</p>
@@ -34,14 +34,14 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#f8f9f6' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
         {children}
       </div>
     );
   }
 
   return (
-    <div style={{ backgroundColor: '#f8f9f6', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#525252', minHeight: '100vh' }}>
       <Header />
       <div className="flex pt-16">
         {/* Left Sidebar - Navigation */}

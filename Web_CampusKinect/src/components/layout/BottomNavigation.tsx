@@ -50,7 +50,7 @@ const BottomNavigation: React.FC = () => {
               className={`flex flex-col items-center justify-center w-full py-2 px-3 rounded-lg transition-colors ${
                 item.current
                   ? 'text-[#708d81] bg-[#f0f2f0]'
-                  : 'text-[#708d81] hover:text-[#5a7268] hover:bg-[#f8f9f6]'
+                  : 'text-[#708d81] hover:text-[#5a7268] hover:bg-[#525252]'
               }`}
               style={{ 
                 color: '#708d81',

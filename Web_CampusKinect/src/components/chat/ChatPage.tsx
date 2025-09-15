@@ -256,7 +256,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   // Show loading state until mounted
   if (!isMounted) {
     return (
-      <div className="min-h-screen bg-[#f8f9f6] flex items-center justify-center">
+      <div className="min-h-screen bg-[#525252] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
       </div>
     );
@@ -271,14 +271,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
 
   if (!chatUser) {
     return (
-      <div className="min-h-screen bg-[#f8f9f6] flex items-center justify-center">
+      <div className="min-h-screen bg-[#525252] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#708d81]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9f6] flex flex-col">
+    <div className="min-h-screen bg-[#525252] flex flex-col">
       {/* Header */}
       <div className="bg-grey-medium border-b border-[#708d81] px-4 py-3 flex items-center justify-between">
         <button
@@ -313,7 +313,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
             minWidth: '150px'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#f8f9f6';
+            e.currentTarget.style.backgroundColor = '#525252';
             e.currentTarget.style.border = '2px solid #708d81';
             e.currentTarget.style.transform = 'translateY(-1px)';
           }}
