@@ -99,8 +99,15 @@ class APIService: ObservableObject {
     
     // MARK: - Authentication Methods
     func login(email: String, password: String) async throws -> AuthResponse {
-        let loginRequest = LoginRequest(usernameOrEmail: email, password: password)
-        let body = try encoder.encode(loginRequest)
+        // TEMPORARY FIX: Use manual dictionary to ensure correct field names
+        let loginDict = ["usernameOrEmail": email, "password": password]
+        let body = try JSONSerialization.data(withJSONObject: loginDict)
+        
+        // Debug logging to see what's being sent
+        if let jsonString = String(data: body, encoding: .utf8) {
+            print("🔍 Login request JSON: \(jsonString)")
+        }
+        print("🔍 Login request: usernameOrEmail=\(email), password=***")
         
         return try await performRequest(
             endpoint: APIConstants.Endpoints.login,
