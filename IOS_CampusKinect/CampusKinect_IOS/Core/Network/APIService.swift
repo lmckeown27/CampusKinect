@@ -244,7 +244,7 @@ class APIService: NSObject, ObservableObject {
         request.httpMethod = "POST"
         
         // Add auth token
-        if let token = KeychainManager.shared.getAccessToken() {
+        if let token = await KeychainManager.shared.getAccessToken() {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         
