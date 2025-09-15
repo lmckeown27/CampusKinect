@@ -582,9 +582,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   return (
-    <div className="shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem', backgroundColor: 'var(--color-neutral-500)', borderRadius: '1rem' }}>
+    <div className="shadow-lg border-2 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem', backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81' }}>
               {/* Post Header */}
-        <div className="p-4 border-b border-gray-200" style={{ backgroundColor: 'var(--color-neutral-500)' }}>
+        <div className="p-4 border-b border-gray-200" style={{ backgroundColor: '#737373' }}>
         {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
         <div className="flex items-center justify-between mb-3">
           {/* Left side: Post Type Badge + Timestamp */}
@@ -860,7 +860,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
       </div>
 
       {/* Post Actions */}
-              <div className="px-4 py-3 border-t border-gray-200" style={{ backgroundColor: 'var(--color-neutral-500)' }}>
+              <div className="px-4 py-3 border-t border-gray-200" style={{ backgroundColor: '#737373' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
