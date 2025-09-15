@@ -27,3 +27,14 @@ struct CreatePostRequest: Codable {
     }
 }
 
+// MARK: - Create Post Response
+struct CreatePostResponse: Codable {
+    let success: Bool
+    let message: String
+    let data: CreatePostData
+}
+
+struct CreatePostData: Codable {
+    let post: Post
+}
+

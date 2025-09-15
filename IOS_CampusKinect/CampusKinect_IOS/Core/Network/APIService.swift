@@ -198,12 +198,14 @@ class APIService: NSObject, ObservableObject {
     func createPost(_ post: CreatePostRequest) async throws -> Post {
         let body = try encoder.encode(post)
         
-        return try await performRequest(
+        let response: CreatePostResponse = try await performRequest(
             endpoint: APIConstants.Endpoints.posts,
             method: .POST,
             body: body,
             requiresAuth: true
         )
+        
+        return response.data.post
     }
     
     // MARK: - User Methods
