@@ -30,6 +30,14 @@ struct CreatePostView: View {
                             .padding(12)
                             .background(Color(.systemGray6))
                             .cornerRadius(12)
+                            .toolbar {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+                                    Button("Done") {
+                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                    }
+                                }
+                            }
                         
                         HStack {
                             Spacer()
@@ -91,6 +99,14 @@ struct CreatePostView: View {
                         
                         TextField("Add a location...", text: $location)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .toolbar {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+                                    Button("Done") {
+                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                    }
+                                }
+                            }
                     }
                     
                     Spacer(minLength: 20)
@@ -127,7 +143,6 @@ struct CreatePostView: View {
                 Text("Your post has been shared with the campus community!")
             }
         }
-        .dismissKeyboardOnTap()
     }
     
     private var isValidPost: Bool {

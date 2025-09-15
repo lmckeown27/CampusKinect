@@ -30,6 +30,14 @@ struct MessagesView: View {
                         
                         TextField(searchPlaceholder, text: $searchText)
                             .textFieldStyle(PlainTextFieldStyle())
+                            .toolbar {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+                                    Button("Done") {
+                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                    }
+                                }
+                            }
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
@@ -118,7 +126,6 @@ struct MessagesView: View {
                 }
             }
         }
-        .dismissKeyboardOnTap()
     }
     
     // MARK: - Computed Properties

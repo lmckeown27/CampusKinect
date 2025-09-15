@@ -4,9 +4,13 @@ import SwiftUI
 struct KeyboardDismissModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .onTapGesture {
-                hideKeyboard()
-            }
+            .background(
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        hideKeyboard()
+                    }
+            )
     }
     
     private func hideKeyboard() {
