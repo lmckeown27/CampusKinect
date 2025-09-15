@@ -52,7 +52,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
 
   return (
     <div className="absolute right-0 top-0 z-50" ref={profileRef}>
-      <div className="w-80 bg-white rounded-lg shadow-2xl border border-gray-200 transition-all duration-300 ease-in-out transform hover:shadow-3xl">
+      <div className="w-80 rounded-lg shadow-2xl border border-gray-200 transition-all duration-300 ease-in-out transform hover:shadow-3xl" style={{ backgroundColor: '#708d81' }}>
         {/* User Info Section */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">

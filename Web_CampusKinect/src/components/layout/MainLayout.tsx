@@ -62,7 +62,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
 
         {/* Right Sidebar - Profile Dropdown (when open) */}
         {showProfileDropdown && (
-          <div className="w-80 flex-shrink-0 bg-grey-light border-l border-gray-200 h-screen overflow-y-auto pt-4">
+          <div className="w-80 flex-shrink-0 bg-grey-medium border-l border-gray-200 h-screen overflow-y-auto pt-4">
             <div className="p-6">
               <Profilebar 
                 showProfileDropdown={showProfileDropdown} 
