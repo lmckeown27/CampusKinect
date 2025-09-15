@@ -87,23 +87,7 @@ class HomeViewModel: ObservableObject {
         isLoading = false
     }
     
-    // MARK: - Search and Filter
-    func clearSearch() {
-        searchText = ""
-        selectedCategory = nil
-        selectedSubcategory = nil
-        Task {
-            await loadPosts()
-        }
-    }
-    
-    func applyFilter(category: PostCategory?, subcategory: PostSubcategory?) {
-        selectedCategory = category
-        selectedSubcategory = subcategory
-        Task {
-            await loadPosts()
-        }
-    }
+    // MARK: - Filter Management (now handled by tag methods in extension)
     
     // MARK: - Post Interactions
     @MainActor
@@ -127,53 +111,7 @@ class HomeViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
-    private func setupSearchDebouncing() {
-        $searchText
-            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-            .removeDuplicates()
-            .sink { [weak self] searchText in
-                if !searchText.isEmpty {
-                    Task {
-                        await self?.searchPosts(query: searchText)
-                    }
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    @MainActor
-    private func searchPosts(query: String) async {
-        guard !query.isEmpty else {
-            await loadPosts()
-            return
-        }
-        
-        isLoading = true
-        error = nil
-        currentPage = 1
-        
-        do {
-            // For now, we'll use the regular fetchPosts method
-            // In a real implementation, you'd have a separate search endpoint
-            let response = try await apiService.fetchPosts(page: currentPage, limit: postsPerPage)
-            
-            // Filter posts locally for now (in real app, this would be server-side)
-            let filteredPosts = response.data.posts.filter { post in
-                post.content.localizedCaseInsensitiveContains(query) ||
-                post.category.localizedCaseInsensitiveContains(query) ||
-                (post.subcategory?.localizedCaseInsensitiveContains(query) ?? false)
-            }
-            
-            self.posts = filteredPosts
-            self.hasMorePosts = false // Disable pagination for search results
-            print("Found \(filteredPosts.count) posts matching '\(query)'")
-        } catch {
-            self.error = error as? APIError ?? .unknown(0)
-            print("Failed to search posts: \(error.localizedDescription)")
-        }
-        
-        isLoading = false
-    }
+    // Search functionality removed - now using tag-based filtering
 }
 
 // MARK: - Home View Model Extensions
