@@ -17,7 +17,7 @@ struct Post: Codable, Identifiable, Equatable {
     let durationType: String
     let location: String?
     let repostFrequency: String?
-    let isRecurring: Bool
+    let isRecurring: Bool?
     let originalPostId: Int?
     let expiresAt: String?
     let eventStart: String?
@@ -45,6 +45,7 @@ struct Post: Codable, Identifiable, Equatable {
     var category: String { postType }
     var subcategory: String? { nil }
     var user: PostUser { poster }
+    var isRecurringComputed: Bool { isRecurring ?? (durationType == "recurring") }
     
     // MARK: - Computed Properties
     var timeAgo: String {
@@ -90,10 +91,10 @@ struct PostUser: Codable, Equatable {
 
 // MARK: - Post University
 struct PostUniversity: Codable, Equatable {
-    let id: Int
+    let id: Int?
     let name: String
-    let city: String
-    let state: String
+    let city: String?
+    let state: String?
 }
 
 // MARK: - Post Image Helper
