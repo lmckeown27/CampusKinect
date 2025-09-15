@@ -383,16 +383,8 @@ const CreatePostTab: React.FC = () => {
   };
 
   const canSubmitForm = () => {
-    // Check basic requirements
+    // Check basic requirements only (offer/request validation moved to popup)
     if (!formData.title.trim() || !formData.description.trim()) {
-      return false;
-    }
-
-    // Check offer/request requirement for specific post types
-    const requiresOfferRequest = ['goods', 'services', 'housing'].includes(formData.postType);
-    const hasOfferRequestTags = offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.length > 0;
-    
-    if (requiresOfferRequest && !hasOfferRequestTags) {
       return false;
     }
 
@@ -410,18 +402,12 @@ const CreatePostTab: React.FC = () => {
       errors.description = 'Description is required';
     }
 
-    // Check if offer/request selection is required for this post type
-    const requiresOfferRequest = ['goods', 'services', 'housing'].includes(formData.postType);
+    // Check for regular tags (offer/request validation is handled separately with popup)
+    const hasRegularTags = formData.tags.length > 0;
     const hasOfferRequestTags = offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.length > 0;
     
-    if (requiresOfferRequest && !hasOfferRequestTags) {
-      errors.tags = `Please select either "Offer" or "Request" for ${formData.postType} posts`;
-    } else {
-      // For events or when offer/request is selected, check for regular tags
-      const hasRegularTags = formData.tags.length > 0;
-      if (!hasRegularTags && !hasOfferRequestTags) {
-        errors.tags = 'Please select at least one category tag';
-      }
+    if (!hasRegularTags && !hasOfferRequestTags) {
+      errors.tags = 'Please select at least one category tag';
     }
 
     setValidationErrors(errors);
@@ -430,6 +416,15 @@ const CreatePostTab: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    
+    // Check offer/request requirement first and show popup if missing
+    const requiresOfferRequest = ['goods', 'services', 'housing'].includes(formData.postType);
+    const hasOfferRequestTags = offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.length > 0;
+    
+    if (requiresOfferRequest && !hasOfferRequestTags) {
+      alert(`Please select either "Offer" or "Request" for ${formData.postType} posts`);
+      return;
+    }
     
     if (!validateForm()) {
       return;
@@ -648,12 +643,7 @@ const CreatePostTab: React.FC = () => {
                   </div>
                 )}
 
-                {/* Helper text for offer/request requirement */}
-                {areOfferRequestTagsAvailable() && !offerRequestTags[formData.postType as keyof typeof offerRequestTags]?.length && (
-                  <div className="text-sm text-red-500 mt-2">
-                    * Please select either "Offer" or "Request" for {formData.postType} posts
-                  </div>
-                )}
+
 
                 {/* Spacer */}
                 <div className="w-3"></div>
