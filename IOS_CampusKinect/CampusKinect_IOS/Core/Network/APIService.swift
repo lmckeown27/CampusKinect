@@ -236,7 +236,7 @@ class APIService: NSObject, ObservableObject {
     }
     
     func uploadImages(_ images: [Data]) async throws -> [String] {
-        guard let url = URL(string: "\(baseURL)/upload/images") else {
+        guard let url = URL(string: "\(APIConstants.fullBaseURL)/upload/images") else {
             throw APIError.invalidURL
         }
         
