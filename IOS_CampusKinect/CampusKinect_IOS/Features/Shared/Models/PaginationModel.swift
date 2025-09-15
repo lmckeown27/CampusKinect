@@ -9,19 +9,17 @@ import Foundation
 
 // MARK: - Pagination Info
 struct PaginationInfo: Codable {
-    let currentPage: Int
-    let totalPages: Int
-    let hasNext: Bool
-    let hasPrevious: Bool
-    let totalCount: Int
+    let page: Int
+    let limit: Int
+    let total: Int
+    let pages: Int
     
-    enum CodingKeys: String, CodingKey {
-        case currentPage = "current_page"
-        case totalPages = "total_pages"
-        case hasNext = "has_next"
-        case hasPrevious = "has_previous"
-        case totalCount = "total_count"
-    }
+    // Computed properties for backward compatibility
+    var currentPage: Int { page }
+    var totalPages: Int { pages }
+    var totalCount: Int { total }
+    var hasNext: Bool { page < pages }
+    var hasPrevious: Bool { page > 1 }
 }
 
 // MARK: - Paginated Response
