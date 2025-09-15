@@ -375,7 +375,7 @@ const MessagesTab: React.FC = () => {
         {/* Left Sidebar - Conversations */}
         <div className="w-full sm:w-64 border-r border-[#708d81] flex flex-col" style={{ backgroundColor: '#737373' }}>
           {/* Header */}
-          <div className="p-4 border-b border-[#708d81]">
+          <div className="p-4 border-b border-[#708d81] rounded-t-lg">
             {/* Search and Plus Button */}
             <div className="mt-4 flex justify-center">
               <div className="flex items-center space-x-2">
@@ -675,7 +675,7 @@ const MessagesTab: React.FC = () => {
           )}
 
           {/* Conversations List */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto" style={{ backgroundColor: '#525252' }}>
             {isLoading ? (
               <div className="p-4 text-center">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
