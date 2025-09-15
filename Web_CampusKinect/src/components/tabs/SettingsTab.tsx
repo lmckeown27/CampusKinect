@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { User, FileText, Palette, Save, Cookie, ScrollText, ShieldCheck } from 'lucide-react';
+import { User, FileText, Save, Cookie, ScrollText, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
 
@@ -15,11 +15,9 @@ const SettingsTab: React.FC = () => {
   // Add username state for editing
   const [username, setUsername] = useState(user?.username || '');
 
-  const [theme, setTheme] = useState('light');
-
   const handleSave = () => {
-    // Save settings logic here (username, theme)
-    console.log('Settings saved:', { username, theme });
+    // Save settings logic here (username)
+    console.log('Settings saved:', { username });
     // You could add a toast notification here
   };
 
@@ -39,10 +37,10 @@ const SettingsTab: React.FC = () => {
     <div className="flex-1 p-6 min-h-screen" style={{ backgroundColor: '#525252' }}>
       <div className="max-w-4xl mx-auto">
         <div className="space-y-6">
-          {/* Settings Sections - Horizontal Layout */}
-          <div className="flex space-x-6 justify-center">
+          {/* Settings Sections - Horizontal Layout with spacing */}
+          <div className="flex space-x-8 justify-center">
             {/* Account Settings - 1st Section */}
-            <div className="rounded-lg shadow-sm border border-gray-200 w-96" style={{ backgroundColor: '#737373' }}>
+            <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-96" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
                   <User size={20} className="text-[#708d81]" />
@@ -84,7 +82,7 @@ const SettingsTab: React.FC = () => {
             </div>
 
             {/* Legal & Documents - 2nd Section */}
-            <div className="rounded-lg shadow-sm border border-gray-200 w-96" style={{ backgroundColor: '#737373' }}>
+            <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-96" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
                   <FileText size={20} className="text-[#708d81]" />
@@ -96,138 +94,133 @@ const SettingsTab: React.FC = () => {
                 {/* Cookie Settings Button */}
                 <button
                   onClick={handleCookieSettings}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-grey-medium"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
                   style={{ 
-                    backgroundColor: '#737373', 
-                    color: 'black', 
+                    backgroundColor: '#525252',
                     cursor: 'pointer',
                     WebkitTapHighlightColor: 'transparent',
                     WebkitTouchCallout: 'none',
                     WebkitUserSelect: 'none',
                     userSelect: 'none'
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'scale(0.98)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }}
                 >
-                  <Cookie size={18} className="text-gray-600 mr-3" />
+                  <Cookie size={18} className="text-white mr-3" />
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900">Cookie Settings</h3>
-                    <p className="text-sm text-gray-500">Manage your cookie preferences</p>
+                    <h3 className="text-sm font-medium text-white">Cookie Settings</h3>
+                    <p className="text-sm text-gray-300">Manage your cookie preferences</p>
                   </div>
                 </button>
 
                 {/* Terms & Conditions Button */}
                 <button
                   onClick={handleTermsAndConditions}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-grey-medium"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
                   style={{ 
-                    backgroundColor: '#737373', 
-                    color: 'black', 
+                    backgroundColor: '#525252',
                     cursor: 'pointer',
                     WebkitTapHighlightColor: 'transparent',
                     WebkitTouchCallout: 'none',
                     WebkitUserSelect: 'none',
                     userSelect: 'none'
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'scale(0.98)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }}
                 >
-                  <ScrollText size={18} className="text-gray-600 mr-3" />
+                  <ScrollText size={18} className="text-white mr-3" />
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900">Terms & Conditions</h3>
-                    <p className="text-sm text-gray-500">View our terms of service</p>
+                    <h3 className="text-sm font-medium text-white">Terms & Conditions</h3>
+                    <p className="text-sm text-gray-300">View our terms of service</p>
                   </div>
                 </button>
 
                 {/* Privacy Policy Button */}
                 <button
                   onClick={handlePrivacyPolicy}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors cursor-pointer border border-gray-300 hover:bg-grey-medium"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
                   style={{ 
-                    backgroundColor: '#737373', 
-                    color: 'black', 
+                    backgroundColor: '#525252',
                     cursor: 'pointer',
                     WebkitTapHighlightColor: 'transparent',
                     WebkitTouchCallout: 'none',
                     WebkitUserSelect: 'none',
                     userSelect: 'none'
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'scale(0.98)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }}
                 >
-                  <ShieldCheck size={18} className="text-gray-600 mr-3" />
+                  <ShieldCheck size={18} className="text-white mr-3" />
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900">Privacy Policy</h3>
-                    <p className="text-sm text-gray-500">View our privacy policy</p>
+                    <h3 className="text-sm font-medium text-white">Privacy Policy</h3>
+                    <p className="text-sm text-gray-300">View our privacy policy</p>
                   </div>
                 </button>
-              </div>
-            </div>
-
-            {/* Theme Settings - 3rd Section */}
-            <div className="rounded-lg shadow-sm border border-gray-200 w-96" style={{ backgroundColor: '#737373' }}>
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center">
-                  <Palette size={20} className="text-[#708d81]" />
-                  <div className="w-3"></div>
-                  <h2 className="text-lg font-semibold text-gray-900">Appearance</h2>
-                </div>
-              </div>
-              <div className="p-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Theme
-                  </label>
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => setTheme('light')}
-                      className="px-4 py-2 text-white rounded-lg transition-colors cursor-pointer"
-                      style={{ 
-                        backgroundColor: theme === 'light' ? '#708d81' : '#f0f2f0', 
-                        cursor: 'pointer',
-                        WebkitTapHighlightColor: 'transparent',
-                        WebkitTouchCallout: 'none',
-                        WebkitUserSelect: 'none',
-                        userSelect: 'none'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme === 'light' ? '#5a7268' : '#e8ebe8'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme === 'light' ? '#708d81' : '#f0f2f0'}
-                    >
-                      <span style={{ color: theme === 'light' ? 'white' : '#708d81' }}>Light</span>
-                    </button>
-                    <button
-                      onClick={() => alert('Dark mode coming soon :)')}
-                      className="px-4 py-2 text-white rounded-lg transition-colors cursor-pointer"
-                      style={{ 
-                        backgroundColor: '#f0f2f0', 
-                        cursor: 'pointer',
-                        WebkitTapHighlightColor: 'transparent',
-                        WebkitTouchCallout: 'none',
-                        WebkitUserSelect: 'none',
-                        userSelect: 'none'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8ebe8'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
-                    >
-                      <span style={{ color: '#708d81' }}>Dark</span>
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
 
           {/* Save Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-center mt-8">
             <button
               onClick={handleSave}
-              className="px-6 py-3 text-white rounded-lg transition-colors cursor-pointer"
+              className="flex items-center px-6 py-3 rounded-lg transition-all duration-200 cursor-pointer transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
               style={{ 
-                backgroundColor: '#708d81', 
-                cursor: 'pointer',
+                backgroundColor: '#708d81',
                 color: 'white',
+                border: '2px solid #708d81',
+                cursor: 'pointer',
                 WebkitTapHighlightColor: 'transparent',
                 WebkitTouchCallout: 'none',
                 WebkitUserSelect: 'none',
                 userSelect: 'none'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#5a7268';
+                e.currentTarget.style.borderColor = '#5a7268';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#708d81';
+                e.currentTarget.style.borderColor = '#708d81';
+              }}
             >
+              <Save size={18} className="mr-2" />
               Save Settings
             </button>
           </div>
