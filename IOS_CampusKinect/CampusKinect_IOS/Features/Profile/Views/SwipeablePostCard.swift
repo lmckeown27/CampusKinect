@@ -163,14 +163,14 @@ struct SwipeablePostCard: View {
     
     private func handleSwipeChanged(_ value: DragGesture.Value) {
         // Only allow left swipe (negative translation)
-        if value.translation.x < 0 {
-            offset = max(value.translation.x, -80)
+        if value.translation.width < 0 {
+            offset = max(value.translation.width, -80)
         }
     }
     
     private func handleSwipeEnded(_ value: DragGesture.Value) {
         withAnimation(.spring()) {
-            if value.translation.x < -40 {
+            if value.translation.width < -40 {
                 // Snap to show action button
                 offset = -80
             } else {
