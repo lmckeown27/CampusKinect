@@ -70,27 +70,63 @@ struct MessagesView: View {
                 
                 // Content
                 if viewModel.isLoading {
-                    ProgressView("Loading conversations...")
+                    ProgressView("Loading...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if filteredConversations.isEmpty {
-                    EmptyStateView(
-                        title: emptyStateTitle,
-                        message: emptyStateMessage,
-                        systemImage: "message",
-                        actionTitle: "New Message"
-                    ) {
-                        showingNewMessage = true
-                    }
                 } else {
-                    List {
-                        ForEach(filteredConversations) { conversation in
-                            ConversationRow(conversation: conversation)
-                                .listRowSeparator(.hidden)
+                    switch activeTab {
+                    case .incoming:
+                        if filteredConversations.isEmpty {
+                            EmptyStateView(
+                                title: emptyStateTitle,
+                                message: emptyStateMessage,
+                                systemImage: "message",
+                                actionTitle: "New Message"
+                            ) {
+                                showingNewMessage = true
+                            }
+                        } else {
+                            List {
+                                ForEach(filteredConversations) { conversation in
+                                    ConversationRow(conversation: conversation)
+                                        .listRowSeparator(.hidden)
+                                }
+                            }
+                            .listStyle(PlainListStyle())
+                            .refreshable {
+                                await viewModel.refreshConversations()
+                            }
                         }
-                    }
-                    .listStyle(PlainListStyle())
-                    .refreshable {
-                        await viewModel.refreshConversations()
+                    case .sent:
+                        EmptyStateView(
+                            title: "Sent Messages",
+                            message: "Sent messages feature coming soon",
+                            systemImage: "paperplane",
+                            actionTitle: "New Message"
+                        ) {
+                            showingNewMessage = true
+                        }
+                    case .requests:
+                        if filteredMessageRequests.isEmpty {
+                            EmptyStateView(
+                                title: emptyStateTitle,
+                                message: emptyStateMessage,
+                                systemImage: "person.2",
+                                actionTitle: "New Message"
+                            ) {
+                                showingNewMessage = true
+                            }
+                        } else {
+                            List {
+                                ForEach(filteredMessageRequests) { request in
+                                    MessageRequestRow(request: request)
+                                        .listRowSeparator(.hidden)
+                                }
+                            }
+                            .listStyle(PlainListStyle())
+                            .refreshable {
+                                await viewModel.refreshMessageRequests()
+                            }
+                        }
                     }
                 }
             }
@@ -110,7 +146,28 @@ struct MessagesView: View {
             }
             .onAppear {
                 Task {
-                    await viewModel.loadConversations()
+                    switch activeTab {
+                    case .incoming:
+                        await viewModel.loadConversations()
+                    case .sent:
+                        // Sent messages not implemented yet
+                        break
+                    case .requests:
+                        await viewModel.loadMessageRequests()
+                    }
+                }
+            }
+            .onChange(of: activeTab) { oldValue, newValue in
+                Task {
+                    switch newValue {
+                    case .incoming:
+                        await viewModel.loadConversations()
+                    case .sent:
+                        // Sent messages not implemented yet
+                        break
+                    case .requests:
+                        await viewModel.loadMessageRequests()
+                    }
                 }
             }
         }
@@ -151,16 +208,36 @@ struct MessagesView: View {
     }
     
     private var filteredConversations: [Conversation] {
-        let filtered = viewModel.conversations.filter { conversation in
-            // Search filter
-            let matchesSearch = searchText.isEmpty || 
-                conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText)
-            
-            // Tab filter (simplified for now - would need backend support for proper filtering)
-            return matchesSearch
+        switch activeTab {
+        case .incoming:
+            // Show regular conversations (messages received)
+            return viewModel.conversations.filter { conversation in
+                let matchesSearch = searchText.isEmpty || 
+                    conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText)
+                return matchesSearch
+            }
+        case .sent:
+            // For sent messages, we would ideally need a different endpoint
+            // For now, show empty since conversations represent both directions
+            return []
+        case .requests:
+            // This will be handled separately with message requests
+            return []
         }
-        
-        return filtered
+    }
+    
+    private var filteredMessageRequests: [MessageRequest] {
+        return viewModel.messageRequests.filter { request in
+            searchText.isEmpty || 
+                request.fromUser.displayName.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+    
+    private var filteredSentMessageRequests: [MessageRequest] {
+        return viewModel.sentMessageRequests.filter { request in
+            searchText.isEmpty || 
+                request.toUser.displayName.localizedCaseInsensitiveContains(searchText)
+        }
     }
 }
 
@@ -218,6 +295,72 @@ struct ConversationRow: View {
         .onTapGesture {
             // Navigate to chat view
             print("Tapped conversation with \(conversation.otherUser.displayName)")
+        }
+    }
+}
+
+// MARK: - Message Request Row
+struct MessageRequestRow: View {
+    let request: MessageRequest
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Profile Picture
+            AsyncImage(url: request.fromUser.profileImageURL) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Circle()
+                    .fill(Color("BrandPrimary"))
+                    .overlay(
+                        Text(request.fromUser.initials)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    )
+            }
+            .frame(width: 50, height: 50)
+            .clipShape(Circle())
+            
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(request.fromUser.displayName)
+                        .font(.headline)
+                        .fontWeight(.medium)
+                    
+                    Spacer()
+                    
+                    Text(request.timeAgo)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Text(request.content)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                
+                if let postTitle = request.postTitle {
+                    Text("Re: \(postTitle)")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                        .padding(.top, 2)
+                }
+            }
+            
+            // Status indicator
+            if request.status == "pending" {
+                Circle()
+                    .fill(Color.orange)
+                    .frame(width: 8, height: 8)
+            }
+        }
+        .padding(.vertical, 8)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            // Handle message request tap
+            print("Tapped message request from \(request.fromUser.displayName)")
         }
     }
 }

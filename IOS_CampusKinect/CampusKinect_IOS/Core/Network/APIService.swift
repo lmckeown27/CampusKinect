@@ -237,6 +237,24 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    func fetchMessageRequests(page: Int = 1, limit: Int = 20) async throws -> MessageRequestsResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/requests?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
+    func fetchSentMessageRequests(page: Int = 1, limit: Int = 20) async throws -> MessageRequestsResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/requests/sent?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
     // MARK: - User Methods
     func fetchUserPosts(userId: Int, page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
         return try await performRequest(

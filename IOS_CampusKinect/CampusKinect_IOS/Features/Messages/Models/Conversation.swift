@@ -81,3 +81,33 @@ struct CreateConversationRequest: Codable {
     }
 }
 
+// MARK: - Message Request Models
+struct MessageRequest: Codable, Identifiable, Equatable {
+    let id: Int
+    let fromUser: ConversationUser
+    let toUser: ConversationUser
+    let content: String
+    let postId: Int?
+    let postTitle: String?
+    let postType: String?
+    let status: String // "pending", "accepted", "rejected", "ignored"
+    let createdAt: Date
+    
+    var timeAgo: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: createdAt, relativeTo: Date())
+    }
+}
+
+// MARK: - Message Requests Response
+struct MessageRequestsResponse: Codable {
+    let success: Bool
+    let data: MessageRequestsData
+    
+    struct MessageRequestsData: Codable {
+        let requests: [MessageRequest]
+        let pagination: PaginationInfo
+    }
+}
+
