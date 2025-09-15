@@ -117,24 +117,8 @@ struct ConversationRow: View {
         .contentShape(Rectangle())
         .onTapGesture {
             // Navigate to chat view
-            print("Tapped conversation with \(conversation.userName)")
+            print("Tapped conversation with \(conversation.otherUser.displayName)")
         }
-    }
-}
-
-// MARK: - Mock Conversation Model
-struct MockConversation: Identifiable {
-    let id: Int
-    let userName: String
-    let lastMessage: String
-    let timestamp: String
-    let hasUnread: Bool
-    
-    var initials: String {
-        let components = userName.components(separatedBy: " ")
-        let firstInitial = components.first?.first?.uppercased() ?? ""
-        let lastInitial = components.count > 1 ? components.last?.first?.uppercased() ?? "" : ""
-        return "\(firstInitial)\(lastInitial)"
     }
 }
 
