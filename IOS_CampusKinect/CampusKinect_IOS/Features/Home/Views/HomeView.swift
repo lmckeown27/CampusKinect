@@ -34,8 +34,10 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    OfferRequestToggle()
-                        .environmentObject(viewModel)
+                    if viewModel.shouldShowOfferRequestToggle {
+                        OfferRequestToggle()
+                            .environmentObject(viewModel)
+                    }
                 }
             }
             .refreshable {

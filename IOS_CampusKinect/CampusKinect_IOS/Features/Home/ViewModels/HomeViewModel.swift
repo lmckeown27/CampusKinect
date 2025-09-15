@@ -120,38 +120,51 @@ class HomeViewModel: ObservableObject {
 // MARK: - Home View Model Extensions
 extension HomeViewModel {
     var filteredPosts: [Post] {
-        // First filter by offer/request toggle
-        let offerRequestFiltered = posts.filter { post in
-            if showingOffers {
-                return post.tags.contains { $0.lowercased() == "offer" }
-            } else {
-                return post.tags.contains { $0.lowercased() == "request" }
-            }
-        }
+        // Start with all posts
+        var filtered = posts
         
-        // Then apply tag filtering if any tags are selected
-        guard !selectedTags.isEmpty else {
-            return offerRequestFiltered // Show filtered posts when no tags are selected
-        }
-        
-        return offerRequestFiltered.filter { post in
-            // Check if post matches any selected tag
-            return selectedTags.contains { selectedTag in
-                // Check if it's a category tag
-                if ["goods", "services", "housing", "events"].contains(selectedTag.lowercased()) {
-                    return post.postType.lowercased() == selectedTag.lowercased()
-                } else {
-                    // Check if it's a subcategory tag
-                    return post.tags.contains { postTag in
-                        postTag.lowercased() == selectedTag.lowercased()
+        // Apply tag filtering if any tags are selected
+        if !selectedTags.isEmpty {
+            filtered = filtered.filter { post in
+                // Check if post matches any selected tag
+                return selectedTags.contains { selectedTag in
+                    // Check if it's a category tag
+                    if ["goods", "services", "housing", "events"].contains(selectedTag.lowercased()) {
+                        return post.postType.lowercased() == selectedTag.lowercased()
+                    } else {
+                        // Check if it's a subcategory tag
+                        return post.tags.contains { postTag in
+                            postTag.lowercased() == selectedTag.lowercased()
+                        }
                     }
                 }
             }
         }
+        
+        // Apply offer/request filtering only if relevant categories are selected
+        if shouldShowOfferRequestToggle {
+            filtered = filtered.filter { post in
+                if showingOffers {
+                    return post.tags.contains { $0.lowercased() == "offer" }
+                } else {
+                    return post.tags.contains { $0.lowercased() == "request" }
+                }
+            }
+        }
+        
+        return filtered
     }
     
     var hasTagsSelected: Bool {
         return !selectedTags.isEmpty
+    }
+    
+    var shouldShowOfferRequestToggle: Bool {
+        // Only show toggle when goods, services, or housing categories are selected
+        let offerRequestCategories = ["goods", "services", "housing"]
+        return selectedTags.contains { tag in
+            offerRequestCategories.contains(tag.lowercased())
+        }
     }
     
     // MARK: - Tag Management Methods
