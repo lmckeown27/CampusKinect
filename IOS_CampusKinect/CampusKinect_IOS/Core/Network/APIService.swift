@@ -266,10 +266,15 @@ class APIService: NSObject, ObservableObject {
     }
     
     func fetchUsers(search: String? = nil) async throws -> UsersResponse {
-        var endpoint = APIConstants.Endpoints.users
+        var endpoint = "/search/users"
         if let search = search, !search.isEmpty {
-            endpoint += "?search=\(search.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+            endpoint += "?query=\(search.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+        } else {
+            // For empty search, get all users (or we might need a different endpoint)
+            endpoint += "?query="
         }
+        
+        print("🔍 Fetching users from endpoint: \(APIConstants.fullBaseURL)\(endpoint)")
         
         return try await performRequest(
             endpoint: endpoint,

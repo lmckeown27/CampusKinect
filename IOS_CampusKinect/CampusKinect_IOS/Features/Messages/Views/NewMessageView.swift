@@ -116,11 +116,16 @@ struct NewMessageView: View {
         error = nil
         
         do {
+            print("🔍 Attempting to fetch users...")
             let response = try await apiService.fetchUsers()
-            users = response.data
+            print("✅ Successfully fetched \(response.data.users.count) users")
+            users = response.data.users
         } catch {
             self.error = error as? APIError ?? .unknown(0)
-            print("Failed to load users: \(error.localizedDescription)")
+            print("❌ Failed to load users: \(error)")
+            if let apiError = error as? APIError {
+                print("❌ API Error details: \(apiError)")
+            }
         }
         
         isLoading = false
@@ -178,7 +183,7 @@ struct UserRow: View {
                                 .foregroundColor(.secondary)
                         }
                         
-                        if let major = user.major, let year = user.year {
+                        if user.major != nil && user.year != nil {
                             Text("•")
                                 .font(.caption)
                                 .foregroundColor(.secondary)

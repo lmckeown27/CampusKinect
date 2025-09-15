@@ -107,8 +107,14 @@ struct University: Codable, Identifiable {
 // MARK: - Users Response
 struct UsersResponse: Codable {
     let success: Bool
-    let data: [User]
+    let data: UsersData
+    let message: String?
+}
+
+struct UsersData: Codable {
+    let users: [User]
     let pagination: UsersPagination?
+    let searchQuery: String?
 }
 
 struct UsersPagination: Codable {
