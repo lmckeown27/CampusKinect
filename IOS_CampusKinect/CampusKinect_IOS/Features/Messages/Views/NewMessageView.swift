@@ -151,7 +151,7 @@ struct NewMessageView: View {
             let response = try await apiService.fetchUsers(search: query)
             print("✅ Successfully found \(response.data.users.count) users")
             print("📋 Users found: \(response.data.users.map { $0.displayName })")
-            users = response.data.users
+            users = response.data.users.map { $0.asUser }
         } catch {
             self.error = error as? APIError ?? .unknown(0)
             print("❌ Failed to search users: \(error)")

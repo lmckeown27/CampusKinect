@@ -112,7 +112,7 @@ struct UsersResponse: Codable {
 }
 
 struct UsersData: Codable {
-    let users: [User]
+    let users: [SearchUser]
     let pagination: UsersPagination?
     let searchQuery: String?
 }
@@ -126,5 +126,61 @@ struct UsersPagination: Codable {
     var pages: Int { totalPages }
     var hasNext: Bool { page < totalPages }
     var hasPrevious: Bool { page > 1 }
+}
+
+// MARK: - Search User Model (for search API responses)
+struct SearchUser: Codable, Identifiable, Equatable {
+    let id: Int
+    let username: String?
+    let firstName: String
+    let lastName: String
+    let displayName: String
+    let profilePicture: String?
+    let year: String?
+    let major: String?
+    let hometown: String?
+    let createdAt: Date
+    let university: SearchUniversity?
+    let postCount: String?
+    let relevance: Int?
+    
+    // Convert to User for compatibility
+    var asUser: User {
+        return User(
+            id: id,
+            username: username,
+            email: "", // Search results don't include email for privacy
+            firstName: firstName,
+            lastName: lastName,
+            displayName: displayName,
+            profilePicture: profilePicture,
+            year: year,
+            major: major,
+            hometown: hometown,
+            bio: nil,
+            universityId: university?.id ?? 0,
+            universityName: university?.name,
+            universityDomain: nil,
+            isVerified: false, // Not provided in search results
+            isActive: true, // Assume active if in search results
+            createdAt: createdAt,
+            updatedAt: nil
+        )
+    }
+    
+    // Computed properties for UI compatibility
+    var initials: String {
+        let firstInitial = firstName.first?.uppercased() ?? ""
+        let lastInitial = lastName.first?.uppercased() ?? ""
+        return "\(firstInitial)\(lastInitial)"
+    }
+}
+
+struct SearchUniversity: Codable, Equatable {
+    let name: String
+    let city: String?
+    let state: String?
+    
+    var id: Int { 0 } // Not provided in search results
 }
 
