@@ -36,7 +36,7 @@ struct NewMessageView: View {
                             // Start new search with debouncing
                             searchTask = Task {
                                 print("⏱️ Starting debounced search for '\(newValue)'")
-                                try? await Task.sleep(nanoseconds: 300_000_000) // 300ms delay
+                                try? await Task.sleep(nanoseconds: 150_000_000) // 150ms delay for faster response
                                 if !Task.isCancelled {
                                     print("🚀 Executing search for '\(newValue)'")
                                     await searchUsers(query: newValue)
@@ -80,7 +80,7 @@ struct NewMessageView: View {
                 } else if filteredUsers.isEmpty {
                     EmptyStateView(
                         title: searchText.isEmpty ? "Search for Users" : "No Search Results",
-                        message: searchText.isEmpty ? "Type a name to search for users from your campus" : "Try searching for someone else",
+                        message: searchText.isEmpty ? "Start typing a name to find users from your campus" : "No users found matching '\(searchText)'",
                         systemImage: searchText.isEmpty ? "magnifyingglass" : "person.2"
                     )
                 } else {
@@ -138,10 +138,8 @@ struct NewMessageView: View {
             return
         }
         
-        // Don't search for very short queries to avoid too many API calls
-        guard query.count >= 2 else {
-            return
-        }
+        // Search immediately when user types any character
+        // This provides better UX with immediate feedback
         
         isLoading = true
         error = nil
