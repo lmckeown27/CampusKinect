@@ -28,7 +28,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-[#708d81] z-50">
+    <header className="fixed top-0 left-0 right-0 bg-grey-medium border-b border-[#708d81] z-50">
 
       
       <div className="px-4 py-3 flex items-center justify-between">

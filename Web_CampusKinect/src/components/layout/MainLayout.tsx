@@ -46,7 +46,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
       <div className="flex pt-16">
         {/* Left Sidebar - Navigation */}
         {showNavigation && (
-          <div className="w-80 flex-shrink-0 bg-white border-r border-gray-200 h-screen overflow-y-auto pt-4">
+          <div className="w-80 flex-shrink-0 bg-grey-light border-r border-gray-200 h-screen overflow-y-auto pt-4">
             <div className="p-6">
               <Navigationbar />
             </div>
@@ -62,7 +62,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
 
         {/* Right Sidebar - Profile Dropdown (when open) */}
         {showProfileDropdown && (
-          <div className="w-80 flex-shrink-0 bg-white border-l border-gray-200 h-screen overflow-y-auto pt-4">
+          <div className="w-80 flex-shrink-0 bg-grey-light border-l border-gray-200 h-screen overflow-y-auto pt-4">
             <div className="p-6">
               <Profilebar 
                 showProfileDropdown={showProfileDropdown} 

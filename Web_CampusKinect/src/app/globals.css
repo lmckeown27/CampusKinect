@@ -152,8 +152,18 @@ body {
 }
 
 body {
-  color: var(--color-neutral-100);
-  background: var(--color-neutral-600);
+  color: var(--color-neutral-100) !important;
+  background: var(--color-neutral-600) !important;
+}
+
+/* Ensure all main containers use grey theme */
+html, body, #__next, main {
+  background-color: var(--color-neutral-600) !important;
+}
+
+/* Override any white backgrounds that might be applied by default */
+div:not(.bg-white):not([class*="bg-"]) {
+  background-color: inherit;
 }
 
 a {
@@ -183,12 +193,12 @@ a {
 .bg-dark { background-color: var(--color-dark); }
 
 /* Grey Theme Utilities */
-.bg-grey-light { background-color: var(--color-neutral-500); }
-.bg-grey-medium { background-color: var(--color-neutral-600); }
-.bg-grey-dark { background-color: var(--color-neutral-700); }
-.text-grey-light { color: var(--color-neutral-100); }
-.text-grey-medium { color: var(--color-neutral-200); }
-.border-grey { border-color: var(--color-neutral-400); }
+.bg-grey-light { background-color: var(--color-neutral-500) !important; }
+.bg-grey-medium { background-color: var(--color-neutral-600) !important; }
+.bg-grey-dark { background-color: var(--color-neutral-700) !important; }
+.text-grey-light { color: var(--color-neutral-100) !important; }
+.text-grey-medium { color: var(--color-neutral-200) !important; }
+.border-grey { border-color: var(--color-neutral-400) !important; }
 
 .border-primary { border-color: var(--color-neutral-300); }
 .border-secondary { border-color: var(--color-neutral-300); }

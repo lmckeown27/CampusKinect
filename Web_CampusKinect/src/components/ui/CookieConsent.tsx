@@ -59,7 +59,7 @@ export default function CookieConsent() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 shadow-2xl z-50 p-6">
+    <div className="fixed bottom-0 left-0 right-0 bg-grey-medium border-t border-neutral-200 shadow-2xl z-50 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="bg-[#708d81] rounded-lg p-6 shadow-lg" style={{ backgroundColor: '#708d81', width: 'fit-content', margin: '0 auto' }}>
           <div className="flex flex-col items-center justify-center gap-6">

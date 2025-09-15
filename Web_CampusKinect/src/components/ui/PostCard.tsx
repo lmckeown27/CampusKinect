@@ -582,7 +582,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem' }}>
+    <div className="bg-grey-light rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8" style={{ marginBottom: '2rem' }}>
       {/* Post Header */}
       <div className="p-4 border-b border-gray-100">
         {/* Top Row: Post Type Badge (left) and Action Icons (right) */}

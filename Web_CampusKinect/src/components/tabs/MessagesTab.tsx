@@ -373,7 +373,7 @@ const MessagesTab: React.FC = () => {
     <div style={{ backgroundColor: '#f8f9f6' }}>
       <div className="flex h-full">
         {/* Left Sidebar - Conversations */}
-        <div className="w-full sm:w-64 bg-white border-r border-[#708d81] flex flex-col">
+        <div className="w-full sm:w-64 bg-grey-light border-r border-[#708d81] flex flex-col">
           {/* Header */}
           <div className="p-4 border-b border-[#708d81]">
             {/* Search and Plus Button */}
@@ -992,7 +992,7 @@ const MessagesTab: React.FC = () => {
           {currentConversation ? (
             <>
               {/* Chat Header */}
-              <div className="p-4 border-b border-[#708d81] bg-white">
+              <div className="p-4 border-b border-[#708d81] bg-grey-medium">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     {/* Profile Picture */}
@@ -1065,7 +1065,7 @@ const MessagesTab: React.FC = () => {
               </div>
 
               {/* Message Input */}
-              <div className="p-4 border-t border-[#708d81] bg-white">
+                              <div className="p-4 border-t border-[#708d81] bg-grey-medium">
                 <div className="flex items-center space-x-3">
                   <input
                     type="text"

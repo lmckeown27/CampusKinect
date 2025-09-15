@@ -280,7 +280,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   return (
     <div className="min-h-screen bg-[#f8f9f6] flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-[#708d81] px-4 py-3 flex items-center justify-between">
+      <div className="bg-grey-medium border-b border-[#708d81] px-4 py-3 flex items-center justify-between">
         <button
           onClick={handleBackClick}
           className="p-2 rounded-lg transition-all duration-200"
@@ -463,7 +463,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       </div>
 
       {/* Message Input - Centered and Reduced Width */}
-      <div className="bg-white border-t border-[#708d81] p-4">
+              <div className="bg-grey-medium border-t border-[#708d81] p-4">
         <div className="max-w-sm mx-auto flex items-end space-x-3">
           <textarea
             value={newMessage}

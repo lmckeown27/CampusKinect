@@ -513,10 +513,10 @@ const CreatePostTab: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-grey-medium">
       <div className="max-w-6xl mx-auto">
         {/* Post Type Buttons - Same row space as Search bar */}
-        <div className="sticky top-0 bg-white border-b border-[#708d81] pr-8 pl-0 py-4 z-30">
+        <div className="sticky top-0 bg-grey-medium border-b border-[#708d81] pr-8 pl-0 py-4 z-30">
           <div className="flex justify-start">
                                   <div className="flex gap-6" style={{ marginLeft: '16px' }}>
               {postTypes.map((type, index) => (
@@ -558,7 +558,7 @@ const CreatePostTab: React.FC = () => {
         <div className="px-4 -mt-2">
           <form onSubmit={handleSubmit} className="space-y-1">
             {/* Main Description Box Container */}
-            <div className="bg-white rounded-lg border-2 border-gray-200 pr-4 pt-4 pb-4 relative">
+            <div className="bg-grey-light rounded-lg border-2 border-gray-200 pr-4 pt-4 pb-4 relative">
                             {/* Top Section: Title, Icons, Offer/Request, and Location */}
               <div className="flex items-start gap-6 mb-6">
                 {/* Title Section */}

@@ -704,7 +704,7 @@ const HomeTab: React.FC = () => {
       })()}
 
       {/* Search and Filter Header */}
-      <div className="sticky top-16 bg-white border-b border-[#708d81] px-4 py-4 z-30">
+              <div className="sticky top-16 bg-grey-medium border-b border-[#708d81] px-4 py-4 z-30">
         <div className="flex items-center justify-center space-x-3 relative">
           {/* Search Bar - COMMENTED OUT - User will fix locally */}
           {/* 
@@ -936,7 +936,7 @@ const HomeTab: React.FC = () => {
               {openCategoryBoxes.map((category) => (
                 <div 
                   key={category} 
-                  className="bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden mx-4" 
+                  className="bg-grey-light rounded-lg shadow-2xl flex flex-col overflow-hidden mx-4" 
                   style={{ 
                     width: '200px', 
                     height: '400px',
@@ -967,7 +967,7 @@ const HomeTab: React.FC = () => {
                           setOpenCategoryBoxes(newOpenBoxes);
                         }
                       }}
-                      className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer border border-gray-300 bg-white"
+                      className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer border border-gray-300 bg-grey-light"
                       style={{ 
                         minWidth: '32px', 
                         minHeight: '32px',
@@ -1017,7 +1017,7 @@ const HomeTab: React.FC = () => {
                 </div>
 
                 {/* Footer with actions for this category */}
-                <div className="p-3 border-t border-gray-200 bg-gray-50">
+                <div className="p-3 border-t border-gray-200 bg-grey-medium">
                   <div className="flex justify-center space-x-2">
                     {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length > 0 && (
                       <>
@@ -1100,7 +1100,7 @@ const HomeTab: React.FC = () => {
         <div className="flex">
           {/* Left Panel - Filters */}
           {showLeftPanel && (
-            <div className="w-60 bg-white border-r border-[#708d81] p-4 mr-4">
+            <div className="w-60 bg-grey-light border-r border-[#708d81] p-4 mr-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-[#708d81]">Filters</h3>
                 <button
