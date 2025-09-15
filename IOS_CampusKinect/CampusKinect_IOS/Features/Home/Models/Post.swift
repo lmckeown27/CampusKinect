@@ -45,7 +45,6 @@ struct Post: Codable, Identifiable, Equatable {
     var category: String { postType }
     var subcategory: String? { nil }
     var user: PostUser { poster }
-}
     
     // MARK: - Computed Properties
     var timeAgo: String {
@@ -57,8 +56,6 @@ struct Post: Codable, Identifiable, Equatable {
     var hasImages: Bool {
         return !images.isEmpty
     }
-    
-
     
     var categoryDisplayName: String {
         return category.capitalized
