@@ -1101,7 +1101,7 @@ const HomeTab: React.FC = () => {
       )}
 
         {/* Main Content */}
-        <div className="flex mt-8">
+        <div className="flex mt-16">
           {/* Left Panel - Filters */}
           {showLeftPanel && (
             <div className="w-60 bg-grey-light border-r border-[#708d81] p-4 mr-4">
@@ -1171,7 +1171,7 @@ const HomeTab: React.FC = () => {
             ) : (
               <div className="space-y-4">
                 {getFilteredPostsBySubtags().map((post, index) => (
-                  <div key={post.id} className={index === 0 ? 'mt-12' : ''}>
+                  <div key={post.id} className={index === 0 ? 'mt-20' : ''}>
                     <PostCard post={post} />
                   </div>
                 ))}
