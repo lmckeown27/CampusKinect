@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Post Model
 struct Post: Codable, Identifiable, Equatable {
     let id: Int
-    let userId: Int
+    let userId: Int?
     let title: String
     let description: String
     let postType: String
@@ -46,6 +46,7 @@ struct Post: Codable, Identifiable, Equatable {
     var subcategory: String? { nil }
     var user: PostUser { poster }
     var isRecurringComputed: Bool { isRecurring ?? (durationType == "recurring") }
+    var userIdComputed: Int { userId ?? poster.id }
     
     // MARK: - Computed Properties
     var timeAgo: String {
