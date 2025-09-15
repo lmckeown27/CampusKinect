@@ -116,14 +116,14 @@ struct SwipeablePostCard: View {
     private var swipeablePostCard: some View {
         PostCardView(post: post)
             .offset(x: offset)
-            .gesture(swipeGesture)
+            .simultaneousGesture(swipeGesture)
             .onTapGesture {
                 handleTapGesture()
             }
     }
     
     private var swipeGesture: some Gesture {
-        DragGesture()
+        DragGesture(minimumDistance: 20)
             .onChanged { value in
                 handleSwipeChanged(value)
             }
@@ -162,6 +162,13 @@ struct SwipeablePostCard: View {
     }
     
     private func handleSwipeChanged(_ value: DragGesture.Value) {
+        // Only respond to primarily horizontal gestures
+        let horizontalMovement = abs(value.translation.width)
+        let verticalMovement = abs(value.translation.height)
+        
+        // Only handle if gesture is more horizontal than vertical
+        guard horizontalMovement > verticalMovement else { return }
+        
         // Only allow left swipe (negative translation)
         if value.translation.width < 0 {
             offset = max(value.translation.width, -80)
@@ -169,6 +176,13 @@ struct SwipeablePostCard: View {
     }
     
     private func handleSwipeEnded(_ value: DragGesture.Value) {
+        // Only respond to primarily horizontal gestures
+        let horizontalMovement = abs(value.translation.width)
+        let verticalMovement = abs(value.translation.height)
+        
+        // Only handle if gesture is more horizontal than vertical
+        guard horizontalMovement > verticalMovement else { return }
+        
         withAnimation(.spring()) {
             if value.translation.width < -40 {
                 // Snap to show action button
