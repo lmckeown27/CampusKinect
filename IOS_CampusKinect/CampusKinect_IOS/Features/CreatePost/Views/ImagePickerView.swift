@@ -31,24 +31,6 @@ struct ImagePickerView: View {
                     .fontWeight(.semibold)
                 
                 Spacer()
-                
-                if selectedImages.count < maxImages {
-                    Button(action: {
-                        showingActionSheet = true
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 14, weight: .medium))
-                            Text("Add Photo")
-                                .font(.system(size: 14, weight: .medium))
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color("BrandPrimary"))
-                        .cornerRadius(8)
-                    }
-                }
             }
             
             if selectedImages.isEmpty {
