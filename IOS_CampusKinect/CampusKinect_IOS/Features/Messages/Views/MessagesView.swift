@@ -162,8 +162,11 @@ struct MessagesView: View {
                         } else {
                             List {
                                 ForEach(filteredMessageRequests) { request in
-                                    MessageRequestRow(request: request)
-                                        .listRowSeparator(.hidden)
+                                    MessageRequestRow(request: request) {
+                                        // Handle message request tap
+                                        handleMessageRequestTap(request)
+                                    }
+                                    .listRowSeparator(.hidden)
                                 }
                             }
                             .listStyle(PlainListStyle())
@@ -222,6 +225,48 @@ struct MessagesView: View {
                     }
                 }
             }
+        }
+    }
+    
+    // MARK: - Methods
+    private func handleMessageRequestTap(_ request: MessageRequest) {
+        print("Tapped message request from \(request.fromUser.displayName)")
+        
+        // Check if this is a post report (contains "REPORTED POST")
+        if request.content.contains("🚨 REPORTED POST") {
+            // This is a post report, not a regular message request
+            // For now, we'll show an alert. In the future, this could navigate to a report details view
+            // TODO: Implement proper post report handling
+            return
+        }
+        
+        // For regular message requests, we can either:
+        // 1. Navigate to chat with the user
+        // 2. Show a request details view with accept/reject options
+        
+        // Option 1: Navigate to chat (simpler approach)
+        if let userId = request.fromUser.id {
+            selectedUser = User(
+                id: userId,
+                username: request.fromUser.username,
+                email: nil,
+                firstName: request.fromUser.firstName,
+                lastName: request.fromUser.lastName,
+                displayName: request.fromUser.displayName,
+                profilePicture: request.fromUser.profilePicture,
+                year: nil,
+                major: nil,
+                hometown: nil,
+                bio: nil,
+                universityId: nil,
+                universityName: request.fromUser.university,
+                universityDomain: nil,
+                isVerified: false,
+                isActive: true,
+                createdAt: Date(),
+                updatedAt: nil
+            )
+            shouldNavigateToChat = true
         }
     }
     
@@ -365,6 +410,7 @@ struct ConversationRow: View {
 // MARK: - Message Request Row
 struct MessageRequestRow: View {
     let request: MessageRequest
+    let onTap: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
@@ -422,8 +468,7 @@ struct MessageRequestRow: View {
         .padding(.vertical, 8)
         .contentShape(Rectangle())
         .onTapGesture {
-            // Handle message request tap
-            print("Tapped message request from \(request.fromUser.displayName)")
+            onTap()
         }
     }
 }
