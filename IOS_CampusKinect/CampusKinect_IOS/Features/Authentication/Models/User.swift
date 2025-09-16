@@ -177,6 +177,17 @@ struct UpdateProfilePictureRequest: Codable {
     let profilePictureUrl: String
 }
 
+// MARK: - Profile Update Response Models
+struct ProfileUpdateResponse: Codable {
+    let success: Bool
+    let message: String
+    let data: ProfileUpdateData
+}
+
+struct ProfileUpdateData: Codable {
+    let user: User
+}
+
 // MARK: - University Model
 struct University: Codable, Identifiable {
     let id: Int
