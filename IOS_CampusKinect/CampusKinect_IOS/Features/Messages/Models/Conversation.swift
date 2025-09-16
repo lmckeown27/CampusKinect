@@ -49,7 +49,7 @@ struct ConversationUser: Codable, Identifiable, Equatable {
     let lastName: String
     let displayName: String
     let profilePicture: String?
-    let university: String
+    let university: String?
     
     var profileImageURL: URL? {
         guard let profilePicture = profilePicture else { return nil }

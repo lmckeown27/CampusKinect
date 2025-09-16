@@ -338,12 +338,13 @@ class APIService: NSObject, ObservableObject {
     
     // MARK: - User Methods
     func getCurrentUser() async throws -> User {
-        return try await performRequest(
+        let response: UserResponse = try await performRequest(
             endpoint: "\(APIConstants.Endpoints.auth)/me",
             method: .GET,
             body: nil,
             requiresAuth: true
         )
+        return response.data.user
     }
     
     func updateProfile(_ profile: UpdateProfileRequest, currentUser: User) async throws -> User {
@@ -535,6 +536,15 @@ struct MessageResponse: Codable {
 struct UserByIdResponse: Codable {
     let success: Bool
     let data: User
+}
+
+struct UserResponse: Codable {
+    let success: Bool
+    let data: UserData
+    
+    struct UserData: Codable {
+        let user: User
+    }
 }
 
 struct SendMessageToConversationRequest: Codable {
