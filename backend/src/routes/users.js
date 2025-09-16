@@ -107,6 +107,8 @@ router.get('/profile', auth, async (req, res) => {
 router.put('/profile', [
   auth,
   requireVerification,
+  body('username').optional().isLength({ min: 3, max: 30 }).matches(/^[a-zA-Z0-9_]+$/).withMessage('Username must be 3-30 characters and contain only letters, numbers, and underscores'),
+  body('displayName').optional().isLength({ min: 1, max: 100 }).withMessage('Display name must be 1-100 characters'),
   body('firstName').optional().isLength({ min: 1, max: 100 }).isAlpha().withMessage('First name must be 1-100 letters'),
   body('lastName').optional().isLength({ min: 1, max: 100 }).isAlpha().withMessage('Last name must be 1-100 letters'),
   body('year').optional().isInt({ min: 1, max: 10 }).withMessage('Year must be 1-10'),
@@ -117,12 +119,34 @@ router.put('/profile', [
 ], async (req, res) => {
   try {
     const userId = req.user.id;
-    const { firstName, lastName, year, major, hometown, bio } = req.body;
+    const { username, displayName, firstName, lastName, year, major, hometown, bio } = req.body;
 
     // Build update query dynamically
     const updateFields = [];
     const queryParams = [];
     let paramCount = 0;
+
+    // Check username uniqueness if provided
+    if (username !== undefined) {
+      const existingUser = await query('SELECT id FROM users WHERE username = $1 AND id != $2', [username, userId]);
+      if (existingUser.rows.length > 0) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Username is already taken'
+          }
+        });
+      }
+      paramCount++;
+      updateFields.push(`username = $${paramCount}`);
+      queryParams.push(username);
+    }
+
+    if (displayName !== undefined) {
+      paramCount++;
+      updateFields.push(`display_name = $${paramCount}`);
+      queryParams.push(displayName);
+    }
 
     if (firstName !== undefined) {
       paramCount++;
@@ -178,7 +202,7 @@ router.put('/profile', [
       UPDATE users 
       SET ${updateFields.join(', ')}
       WHERE id = $${paramCount}
-      RETURNING id, first_name, last_name, display_name, year, major, hometown, bio, updated_at
+      RETURNING id, username, first_name, last_name, display_name, year, major, hometown, bio, updated_at
     `, queryParams);
 
     if (result.rows.length === 0) {

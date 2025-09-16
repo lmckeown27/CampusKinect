@@ -303,7 +303,19 @@ class APIService: NSObject, ObservableObject {
         let body = try encoder.encode(profile)
         
         return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.users)/me",
+            endpoint: "\(APIConstants.Endpoints.users)/profile",
+            method: .PUT,
+            body: body,
+            requiresAuth: true
+        )
+    }
+    
+    func updateProfilePicture(_ imageUrl: String) async throws -> User {
+        let request = UpdateProfilePictureRequest(profilePictureUrl: imageUrl)
+        let body = try encoder.encode(request)
+        
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.users)/profile-picture",
             method: .PUT,
             body: body,
             requiresAuth: true

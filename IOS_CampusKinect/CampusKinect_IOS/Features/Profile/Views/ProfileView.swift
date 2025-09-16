@@ -63,32 +63,49 @@ struct ProfileView: View {
 // MARK: - Profile Header
 struct ProfileHeader: View {
     let user: User?
+    @State private var showingEditProfile = false
     
     var body: some View {
         VStack(spacing: 16) {
             // Profile Picture
-            AsyncImage(url: user?.profileImageURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Circle()
-                                            .fill(Color("BrandPrimary"))
-                    .overlay(
-                        Text(user?.initials ?? "??")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                    )
+            Button(action: {
+                showingEditProfile = true
+            }) {
+                AsyncImage(url: user?.profileImageURL) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Circle()
+                        .fill(Color("BrandPrimary"))
+                        .overlay(
+                            Text(user?.initials ?? "??")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                        )
+                }
+                .frame(width: 100, height: 100)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(Color("BrandPrimary"), lineWidth: 3)
+                )
             }
-            .frame(width: 100, height: 100)
-            .clipShape(Circle())
+            .buttonStyle(PlainButtonStyle())
             
             // User Info
             VStack(spacing: 8) {
                 Text(user?.displayName ?? "Unknown User")
                     .font(.title2)
                     .fontWeight(.bold)
+                
+                // Username
+                if let username = user?.username, !username.isEmpty {
+                    Text("@\(username)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
                 
                 if let user = user {
                     HStack(spacing: 16) {
@@ -122,7 +139,7 @@ struct ProfileHeader: View {
             
             // Edit Profile Button
             Button(action: {
-                // Navigate to edit profile
+                showingEditProfile = true
             }) {
                 Text("Edit Profile")
                     .foregroundColor(.primary)
@@ -131,6 +148,9 @@ struct ProfileHeader: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
             }
+        }
+        .sheet(isPresented: $showingEditProfile) {
+            EditProfileView()
         }
     }
 }

@@ -151,23 +151,30 @@ struct User: Codable, Identifiable, Equatable {
 
 // MARK: - Update Profile Request
 struct UpdateProfileRequest: Codable {
+    let username: String?
+    let displayName: String?
     let firstName: String?
     let lastName: String?
-    let displayName: String?
     let year: String?
     let major: String?
     let hometown: String?
     let bio: String?
     
     enum CodingKeys: String, CodingKey {
-        case firstName = "first_name"
-        case lastName = "last_name"
-        case displayName = "display_name"
+        case username
+        case displayName
+        case firstName
+        case lastName
         case year
         case major
         case hometown
         case bio
     }
+}
+
+// MARK: - Update Profile Picture Request
+struct UpdateProfilePictureRequest: Codable {
+    let profilePictureUrl: String
 }
 
 // MARK: - University Model

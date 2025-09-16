@@ -271,6 +271,13 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
+    // MARK: - Update Current User
+    func updateCurrentUser(_ user: User) async {
+        await MainActor.run {
+            self.currentUser = user
+        }
+    }
+    
     // MARK: - Clear Error
     func clearError() {
         authError = nil
