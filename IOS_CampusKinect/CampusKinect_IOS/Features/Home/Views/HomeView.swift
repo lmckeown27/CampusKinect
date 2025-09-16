@@ -14,8 +14,8 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Tag Filter Section
-                TagFilterSection()
+                // Category Button Section
+                CategoryButtonSection()
                     .environmentObject(viewModel)
                 
                 // Active Filter Bar (only shows when tags are selected)
@@ -34,15 +34,10 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    HStack {
-                        Image("Logo")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 32)
-                        Text("CampusKinect")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                    }
+                    Image("Logo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 32)
                 }
             }
             .toolbar {
@@ -64,64 +59,39 @@ struct HomeView: View {
 }
 
 
-// MARK: - Tag Filter Section
-struct TagFilterSection: View {
+// MARK: - Category Button Section
+struct CategoryButtonSection: View {
     @EnvironmentObject var viewModel: HomeViewModel
     
-    let categories = [
-        ("goods", "Goods"),
-        ("services", "Services"), 
-        ("housing", "Housing"),
-        ("events", "Events")
-    ]
-    
-    let subcategories: [String: [String]] = [
-        "goods": ["Clothing", "Parking Permits", "Household Appliances", "Electronics", "Furniture", "Concert Tickets", "Kitchen Items", "School Supplies", "Sports Equipment", "Automotive", "Pets", "Pet Supplies", "Other"],
-        "services": ["Transportation", "Tutoring", "Fitness Training", "Meal Delivery", "Cleaning", "Photography", "Graphic Design", "Tech Support", "Web Development", "Writing & Editing", "Translation", "Towing", "Other"],
-        "events": ["Sports Events", "Study Groups", "Rush", "Pickup Basketball", "Philanthropy", "Cultural Events", "Workshops", "Conferences", "Meetups", "Game Nights", "Movie Nights", "Hiking Trips", "Volunteer Events", "Career Fairs", "Other"],
-        "housing": ["Leasing", "Subleasing", "Roommate Search", "Storage Space", "Other"]
-    ]
-    
     var body: some View {
-        VStack(spacing: 12) {
-            // Main Category Buttons
-            HStack(spacing: 12) {
-                ForEach(categories, id: \.0) { categoryId, categoryName in
-                    Button(action: {
-                        viewModel.toggleCategory(categoryId)
-                    }) {
-                        Text(categoryName)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                viewModel.openCategories.contains(categoryId) ? 
-                                Color("BrandPrimary") : Color(.systemGray6)
-                            )
-                            .foregroundColor(
-                                viewModel.openCategories.contains(categoryId) ? 
-                                .white : .primary
-                            )
-                            .cornerRadius(20)
-                    }
+        VStack(spacing: 16) {
+            // Main Category Buttons (Visual Style from CreatePost)
+            HStack(spacing: 16) {
+                ForEach(PostCategory.allCategories) { category in
+                    CategoryButton(
+                        category: category,
+                        isSelected: viewModel.selectedCategories.contains(category.id),
+                        onTap: {
+                            viewModel.toggleCategory(category.id)
+                        }
+                    )
                 }
             }
             .padding(.horizontal)
             
-            // Subcategory Tags (shown when category is open)
-            ForEach(categories, id: \.0) { categoryId, _ in
-                if viewModel.openCategories.contains(categoryId) {
+            // Subcategory Tags (shown when category is selected)
+            ForEach(PostCategory.allCategories) { category in
+                if viewModel.selectedCategories.contains(category.id) {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("\(categoryId.capitalized) Tags")
+                            Text("\(category.displayName) Tags")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
                             Spacer()
                             
                             Button("✕") {
-                                viewModel.toggleCategory(categoryId)
+                                viewModel.toggleCategory(category.id)
                             }
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -129,20 +99,20 @@ struct TagFilterSection: View {
                         .padding(.horizontal)
                         
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
-                            ForEach(subcategories[categoryId] ?? [], id: \.self) { tag in
+                            ForEach(category.subcategories) { subcategory in
                                 Button(action: {
-                                    viewModel.toggleTag(tag)
+                                    viewModel.toggleTag(subcategory.name)
                                 }) {
-                                    Text(tag)
+                                    Text(subcategory.name)
                                         .font(.caption)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
                                         .background(
-                                            viewModel.selectedTags.contains(tag) ?
+                                            viewModel.selectedTags.contains(subcategory.name) ?
                                             Color("BrandPrimary").opacity(0.2) : Color(.systemGray6)
                                         )
                                         .foregroundColor(
-                                            viewModel.selectedTags.contains(tag) ?
+                                            viewModel.selectedTags.contains(subcategory.name) ?
                                             Color("BrandPrimary") : .secondary
                                         )
                                         .cornerRadius(12)
@@ -155,7 +125,7 @@ struct TagFilterSection: View {
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.openCategories)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategories)
         .padding(.vertical, 8)
     }
 }
@@ -287,6 +257,8 @@ extension Color {
         )
     }
 }
+
+
 
 // MARK: - Offer/Request Toggle
 struct OfferRequestToggle: View {

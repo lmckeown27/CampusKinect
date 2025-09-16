@@ -22,7 +22,7 @@ class HomeViewModel: ObservableObject {
     
     // Tag-based filtering
     @Published var selectedTags: Set<String> = []
-    @Published var openCategories: Set<String> = []
+    @Published var selectedCategories: Set<String> = []
     
     // Post type toggle (Offers vs Requests)
     @Published var showingOffers = true // Default to offers
@@ -177,16 +177,16 @@ extension HomeViewModel {
     }
     
     func toggleCategory(_ category: String) {
-        if openCategories.contains(category) {
-            openCategories.remove(category)
+        if selectedCategories.contains(category) {
+            selectedCategories.remove(category)
         } else {
-            openCategories.insert(category)
+            selectedCategories.insert(category)
         }
     }
     
     func clearAllTags() {
         selectedTags.removeAll()
-        openCategories.removeAll()
+        selectedCategories.removeAll()
     }
     
     // MARK: - Post Type Toggle Methods
