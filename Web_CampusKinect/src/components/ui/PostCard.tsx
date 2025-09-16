@@ -546,6 +546,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   // Fixed text sizing - no dynamic sizing based on content length
 
   const handleReport = async () => {
+    // Confirm the user wants to report this post
+    const confirmReport = confirm(
+      `Are you sure you want to report this post?\n\n` +
+      `Title: "${post.title}"\n` +
+      `By: ${post.poster?.displayName || 'Unknown User'}\n\n` +
+      `This will send a report to the administrators for review.`
+    );
+    
+    if (!confirmReport) {
+      return;
+    }
+
     try {
       // Search for liam_mckeown38 user
       const users = await apiService.searchUsers('liam_mckeown38');
@@ -674,15 +686,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                     gap: '12px'
                   }}
                 >
-                  <button 
-                    onClick={handleReport}
-                    className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
-                    style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
-                  >
-                    Report Post
-                  </button>
+                  {/* Only show Report Post button for posts not owned by current user */}
+                  {!isCurrentUserPost && (
+                    <button 
+                      onClick={handleReport}
+                      className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                      style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                    >
+                      Report Post
+                    </button>
+                  )}
                   <button 
                     onClick={handleShare}
                     className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
