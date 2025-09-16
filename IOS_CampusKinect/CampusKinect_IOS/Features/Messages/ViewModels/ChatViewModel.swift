@@ -108,10 +108,8 @@ class ChatViewModel: ObservableObject {
                 startPolling()
             }
             
-            // Refresh messages to get the actual message from server
-            if let conversation = conversation {
-                await loadMessages(for: conversation.id)
-            }
+            // Don't immediately reload - let polling handle it
+            // This prevents the optimistic message from disappearing before server processes it
             
         } catch {
             // Remove optimistic message on error
@@ -148,9 +146,10 @@ class ChatViewModel: ObservableObject {
             let response = try await apiService.fetchMessages(conversationId: conversationId)
             
             // Update messages with current user context
-            let updatedMessages = response.data.messages
+            let serverMessages = response.data.messages.sorted { $0.createdAt < $1.createdAt }
             
-            messages = updatedMessages.sorted { $0.createdAt < $1.createdAt }
+            // Merge with existing messages, removing optimistic messages that now have server versions
+            mergeMessages(serverMessages)
         } catch {
             self.error = error as? APIError ?? .unknown(0)
             print("❌ Failed to load messages: \(error)")
@@ -177,12 +176,10 @@ class ChatViewModel: ObservableObject {
         
         do {
             let response = try await apiService.fetchMessages(conversationId: conversation.id)
-            let newMessages = response.data.messages.sorted { $0.createdAt < $1.createdAt }
+            let serverMessages = response.data.messages.sorted { $0.createdAt < $1.createdAt }
             
-            // Only update if we have more messages
-            if newMessages.count > messages.count {
-                messages = newMessages
-            }
+            // Always merge messages to handle updates and new messages
+            mergeMessages(serverMessages)
         } catch {
             // Silently fail polling to avoid spamming errors
             print("⚠️ Polling failed: \(error)")
@@ -190,6 +187,36 @@ class ChatViewModel: ObservableObject {
     }
     
     // MARK: - Helper Methods
+    
+    private func mergeMessages(_ serverMessages: [Message]) {
+        
+        // Remove optimistic messages that now have server versions
+        // (optimistic messages have temporary IDs >= 1000000)
+        let nonOptimisticMessages = messages.filter { message in
+            if message.id >= 1000000 {
+                // This is an optimistic message - check if server has a real version
+                return !serverMessages.contains { serverMessage in
+                    serverMessage.content == message.content &&
+                    serverMessage.senderId == message.senderId &&
+                    abs(serverMessage.createdAt.timeIntervalSince(message.createdAt)) < 10 // Within 10 seconds
+                }
+            }
+            return true
+        }
+        
+        // Combine non-optimistic local messages with server messages
+        var allMessages = nonOptimisticMessages
+        
+        // Add server messages that aren't already in our local messages
+        for serverMessage in serverMessages {
+            if !allMessages.contains(where: { $0.id == serverMessage.id }) {
+                allMessages.append(serverMessage)
+            }
+        }
+        
+        // Sort by creation date and update
+        messages = allMessages.sorted { $0.createdAt < $1.createdAt }
+    }
     
     func isMessageFromCurrentUser(_ message: Message) -> Bool {
         return message.senderId == currentUserId
