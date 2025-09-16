@@ -12,27 +12,77 @@ struct Message: Codable, Identifiable, Equatable {
     let id: Int
     let conversationId: Int
     let senderId: Int
-    let receiverId: Int
+    let receiverId: Int?
     let content: String
     let messageType: MessageType
     let isRead: Bool
     let createdAt: Date
-    let updatedAt: Date
+    let updatedAt: Date?
     
     // Optional metadata
     let metadata: MessageMetadata?
     
     enum CodingKeys: String, CodingKey {
         case id
-        case conversationId = "conversation_id"
-        case senderId = "sender_id"
-        case receiverId = "receiver_id"
+        case conversationId
+        case senderId
+        case receiverId
         case content
-        case messageType = "message_type"
-        case isRead = "is_read"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+        case messageType
+        case isRead
+        case createdAt
+        case updatedAt
         case metadata
+    }
+    
+    // Regular initializer for creating messages in code
+    init(id: Int, conversationId: Int, senderId: Int, receiverId: Int? = nil, content: String, messageType: MessageType, isRead: Bool, createdAt: Date, updatedAt: Date? = nil, metadata: MessageMetadata? = nil) {
+        self.id = id
+        self.conversationId = conversationId
+        self.senderId = senderId
+        self.receiverId = receiverId
+        self.content = content
+        self.messageType = messageType
+        self.isRead = isRead
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.metadata = metadata
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        id = try container.decode(Int.self, forKey: .id)
+        senderId = try container.decode(Int.self, forKey: .senderId)
+        receiverId = try container.decodeIfPresent(Int.self, forKey: .receiverId)
+        content = try container.decode(String.self, forKey: .content)
+        messageType = try container.decode(MessageType.self, forKey: .messageType)
+        isRead = try container.decode(Bool.self, forKey: .isRead)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        metadata = try container.decodeIfPresent(MessageMetadata.self, forKey: .metadata)
+        
+        // Handle conversationId as either String or Int
+        if let conversationIdString = try? container.decode(String.self, forKey: .conversationId) {
+            conversationId = Int(conversationIdString) ?? 0
+        } else {
+            conversationId = try container.decode(Int.self, forKey: .conversationId)
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(id, forKey: .id)
+        try container.encode(conversationId, forKey: .conversationId)
+        try container.encode(senderId, forKey: .senderId)
+        try container.encodeIfPresent(receiverId, forKey: .receiverId)
+        try container.encode(content, forKey: .content)
+        try container.encode(messageType, forKey: .messageType)
+        try container.encode(isRead, forKey: .isRead)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
     }
     
     // MARK: - Computed Properties

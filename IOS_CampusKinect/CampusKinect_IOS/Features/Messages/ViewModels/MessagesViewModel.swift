@@ -8,6 +8,10 @@
 import Foundation
 import Combine
 
+extension Notification.Name {
+    static let messageSent = Notification.Name("messageSent")
+}
+
 @MainActor
 class MessagesViewModel: ObservableObject {
     @Published var conversations: [Conversation] = []
@@ -18,6 +22,24 @@ class MessagesViewModel: ObservableObject {
     
     private let apiService = APIService.shared
     private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        // Listen for message sent notifications
+        NotificationCenter.default.publisher(for: .messageSent)
+            .sink { [weak self] notification in
+                if let userInfo = notification.userInfo,
+                   let conversationId = userInfo["conversationId"] as? Int,
+                   let message = userInfo["message"] as? String,
+                   let senderId = userInfo["senderId"] as? Int {
+                    self?.updateConversationWithNewMessage(
+                        conversationId: conversationId,
+                        lastMessage: message,
+                        senderId: senderId
+                    )
+                }
+            }
+            .store(in: &cancellables)
+    }
     
     // MARK: - Public Methods
     func loadConversations() async {
@@ -40,6 +62,33 @@ class MessagesViewModel: ObservableObject {
     
     func refreshConversations() async {
         await loadConversations()
+    }
+    
+    func updateConversationWithNewMessage(conversationId: Int, lastMessage: String, senderId: Int) {
+        // Find and update the conversation
+        if let index = conversations.firstIndex(where: { $0.id == conversationId }) {
+            var updatedConversation = conversations[index]
+            
+            // Create new last message
+            let newLastMessage = LastMessage(content: lastMessage, senderId: senderId)
+            
+            // Update conversation with new message info
+            let updatedConversationData = Conversation(
+                id: updatedConversation.id,
+                postId: updatedConversation.postId,
+                postTitle: updatedConversation.postTitle,
+                postType: updatedConversation.postType,
+                otherUser: updatedConversation.otherUser,
+                lastMessage: newLastMessage,
+                lastMessageTime: Date(),
+                unreadCount: updatedConversation.unreadCount,
+                createdAt: updatedConversation.createdAt
+            )
+            
+            // Remove from current position and add to top
+            conversations.remove(at: index)
+            conversations.insert(updatedConversationData, at: 0)
+        }
     }
     
     func loadMessageRequests() async {

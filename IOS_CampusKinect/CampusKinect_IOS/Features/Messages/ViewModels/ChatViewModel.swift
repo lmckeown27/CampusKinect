@@ -96,6 +96,17 @@ class ChatViewModel: ObservableObject {
                     conversationId: conversation.id,
                     content: messageContent
                 )
+                
+                // Notify MessagesViewModel about the new message
+                NotificationCenter.default.post(
+                    name: .messageSent,
+                    object: nil,
+                    userInfo: [
+                        "conversationId": conversation.id,
+                        "message": messageContent,
+                        "senderId": currentUserId ?? 0
+                    ]
+                )
             } else {
                 // Create new conversation with initial message
                 let response = try await apiService.createConversation(
@@ -106,6 +117,19 @@ class ChatViewModel: ObservableObject {
                 // Set the newly created conversation
                 self.conversation = response.data.conversation
                 startPolling()
+                
+                // Notify MessagesViewModel about the new conversation and message
+                if let newConversation = self.conversation {
+                    NotificationCenter.default.post(
+                        name: .messageSent,
+                        object: nil,
+                        userInfo: [
+                            "conversationId": newConversation.id,
+                            "message": messageContent,
+                            "senderId": currentUserId ?? 0
+                        ]
+                    )
+                }
             }
             
             // Don't immediately reload - let polling handle it
