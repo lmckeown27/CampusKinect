@@ -28,10 +28,14 @@ class EditProfileViewModel: ObservableObject {
     @Published var showingImageSourceActionSheet = false
     
     private let apiService = APIService.shared
-    private let authManager = AuthenticationManager.shared
+    private var authManager: AuthenticationManager?
+    
+    func setAuthManager(_ authManager: AuthenticationManager) {
+        self.authManager = authManager
+    }
     
     func loadCurrentUserData() {
-        guard let user = authManager.currentUser else { return }
+        guard let user = authManager?.currentUser else { return }
         
         username = user.username ?? ""
         displayName = user.displayName
@@ -69,7 +73,7 @@ class EditProfileViewModel: ObservableObject {
             let updatedUser = try await apiService.updateProfile(updateRequest)
             
             // Update the auth manager with new user data
-            await authManager.updateCurrentUser(updatedUser)
+            await authManager?.updateCurrentUser(updatedUser)
             
             isLoading = false
         } catch {
@@ -92,7 +96,7 @@ class EditProfileViewModel: ObservableObject {
             
             // Update profile picture
             let updatedUser = try await apiService.updateProfilePicture(imageUrl)
-            await authManager.updateCurrentUser(updatedUser)
+            await authManager?.updateCurrentUser(updatedUser)
             
         } catch {
             self.error = error as? APIError ?? APIError.unknown

@@ -10,6 +10,7 @@ import UIKit
 
 struct EditProfileView: View {
     @StateObject private var viewModel = EditProfileViewModel()
+    @EnvironmentObject var authManager: AuthenticationManager
     @Environment(\.dismiss) private var dismiss
     @State private var showingSuccessAlert = false
     
@@ -152,6 +153,7 @@ struct EditProfileView: View {
                 }
             }
             .onAppear {
+                viewModel.setAuthManager(authManager)
                 viewModel.loadCurrentUserData()
             }
             .alert("Profile Updated", isPresented: $showingSuccessAlert) {
@@ -339,5 +341,6 @@ struct CameraPicker: UIViewControllerRepresentable {
 
 #Preview {
     EditProfileView()
+        .environmentObject(AuthenticationManager())
 }
 
