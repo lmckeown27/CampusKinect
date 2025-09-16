@@ -23,133 +23,80 @@ struct MessagesView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Search Bar
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.gray)
-                
-                TextField(searchPlaceholder, text: $searchText)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") {
-                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Search Bar
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    
+                    TextField(searchPlaceholder, text: $searchText)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Spacer()
+                                Button("Done") {
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                }
                             }
                         }
-                    }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
-            .padding(.horizontal)
-            .padding(.top, 8)
-            
-            // Tab Navigation
-            HStack(spacing: 0) {
-                ForEach(MessageTab.allCases, id: \.self) { tab in
-                    Button(action: {
-                        activeTab = tab
-                    }) {
-                        Text(tab.rawValue)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(activeTab == tab ? .white : Color("BrandPrimary"))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(
-                                activeTab == tab ? Color("BrandPrimary") : Color.clear
-                            )
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+                .padding(.horizontal)
+                .padding(.top, 8)
+                
+                // Tab Navigation
+                HStack(spacing: 0) {
+                    ForEach(MessageTab.allCases, id: \.self) { tab in
+                        Button(action: {
+                            activeTab = tab
+                        }) {
+                            Text(tab.rawValue)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(activeTab == tab ? .white : Color("BrandPrimary"))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(
+                                    activeTab == tab ? Color("BrandPrimary") : Color.clear
+                                )
+                        }
                     }
                 }
-            }
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
-            .padding(.horizontal)
-            .padding(.top, 16)
-            
-            // Content
-            if viewModel.isLoading {
-                ProgressView("Loading...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                switch activeTab {
-                case .incoming:
-                    if filteredConversations.isEmpty {
-                        EmptyStateView(
-                            title: emptyStateTitle,
-                            message: emptyStateMessage,
-                            systemImage: "message",
-                            actionTitle: "New Message"
-                        ) {
-                            showingNewMessage = true
-                        }
-                    } else {
-                        List {
-                            ForEach(filteredConversations) { conversation in
-                                NavigationLink(destination: ChatView(
-                                    userId: conversation.otherUser.id,
-                                    userName: conversation.otherUser.displayName
-                                )) {
-                                    ConversationRow(conversation: conversation)
-                                }
-                                .listRowSeparator(.hidden)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        Task {
-                                            await viewModel.deleteConversation(conversationId: conversation.id)
-                                        }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .padding(.horizontal)
+                .padding(.top, 16)
+                
+                // Content
+                if viewModel.isLoading {
+                    ProgressView("Loading...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    switch activeTab {
+                    case .incoming:
+                        if filteredConversations.isEmpty {
+                            EmptyStateView(
+                                title: emptyStateTitle,
+                                message: emptyStateMessage,
+                                systemImage: "message",
+                                actionTitle: "New Message"
+                            ) {
+                                showingNewMessage = true
                             }
-                        }
-                        .listStyle(PlainListStyle())
-                        .refreshable {
-                            await viewModel.refreshConversations()
-                        }
-                    }
-                case .sent:
-                    if filteredConversations.isEmpty {
-                        EmptyStateView(
-                            title: emptyStateTitle,
-                            message: emptyStateMessage,
-                            systemImage: "paperplane",
-                            actionTitle: "New Message"
-                        ) {
-                            showingNewMessage = true
-                        }
-                    } else {
-                        List {
-                            ForEach(filteredConversations) { conversation in
-                                ConversationRow(conversation: conversation)
-                                    .listRowSeparator(.hidden)
-                                    .onTapGesture {
-                                        selectedUser = User(
-                                            id: conversation.otherUser.id,
-                                            username: conversation.otherUser.username,
-                                            email: nil,
-                                            firstName: conversation.otherUser.firstName,
-                                            lastName: conversation.otherUser.lastName,
-                                            displayName: conversation.otherUser.displayName,
-                                            profilePicture: conversation.otherUser.profilePicture,
-                                            year: nil,
-                                            major: nil,
-                                            hometown: nil,
-                                            bio: nil,
-                                            universityId: 0,
-                                            universityName: conversation.otherUser.university,
-                                            universityDomain: nil,
-                                            isVerified: false,
-                                            isActive: true,
-                                            createdAt: Date(),
-                                            updatedAt: nil
-                                        )
-                                        shouldNavigateToChat = true
+                        } else {
+                            List {
+                                ForEach(filteredConversations) { conversation in
+                                    NavigationLink(destination: ChatView(
+                                        userId: conversation.otherUser.id,
+                                        userName: conversation.otherUser.displayName
+                                    )) {
+                                        ConversationRow(conversation: conversation)
                                     }
+                                    .listRowSeparator(.hidden)
                                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
                                             Task {
@@ -159,86 +106,169 @@ struct MessagesView: View {
                                             Label("Delete", systemImage: "trash")
                                         }
                                     }
-                            }
-                        }
-                        .listStyle(PlainListStyle())
-                        .refreshable {
-                            await viewModel.refreshConversations()
-                        }
-                    }
-                case .requests:
-                    if filteredMessageRequests.isEmpty {
-                        EmptyStateView(
-                            title: emptyStateTitle,
-                            message: emptyStateMessage,
-                            systemImage: "person.2",
-                            actionTitle: "New Message"
-                        ) {
-                            showingNewMessage = true
-                        }
-                    } else {
-                        List {
-                            ForEach(filteredMessageRequests) { request in
-                                MessageRequestRow(request: request) {
-                                    // Handle message request tap
-                                    handleMessageRequestTap(request)
                                 }
-                                .listRowSeparator(.hidden)
+                            }
+                            .listStyle(PlainListStyle())
+                            .refreshable {
+                                await viewModel.refreshConversations()
                             }
                         }
-                        .listStyle(PlainListStyle())
-                        .refreshable {
-                            await viewModel.refreshMessageRequests()
+                    case .sent:
+                        if filteredConversations.isEmpty {
+                            EmptyStateView(
+                                title: emptyStateTitle,
+                                message: emptyStateMessage,
+                                systemImage: "paperplane",
+                                actionTitle: "New Message"
+                            ) {
+                                showingNewMessage = true
+                            }
+                        } else {
+                            List {
+                                ForEach(filteredConversations) { conversation in
+                                    ConversationRow(conversation: conversation)
+                                        .listRowSeparator(.hidden)
+                                        .onTapGesture {
+                                            selectedUser = User(
+                                                id: conversation.otherUser.id,
+                                                username: conversation.otherUser.username,
+                                                email: nil,
+                                                firstName: conversation.otherUser.firstName,
+                                                lastName: conversation.otherUser.lastName,
+                                                displayName: conversation.otherUser.displayName,
+                                                profilePicture: conversation.otherUser.profilePicture,
+                                                year: nil,
+                                                major: nil,
+                                                hometown: nil,
+                                                bio: nil,
+                                                universityId: 0,
+                                                universityName: conversation.otherUser.university,
+                                                universityDomain: nil,
+                                                isVerified: false,
+                                                isActive: true,
+                                                createdAt: Date(),
+                                                updatedAt: nil
+                                            )
+                                            shouldNavigateToChat = true
+                                        }
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                            Button(role: .destructive) {
+                                                Task {
+                                                    await viewModel.deleteConversation(conversationId: conversation.id)
+                                                }
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        }
+                                }
+                            }
+                            .listStyle(PlainListStyle())
+                            .refreshable {
+                                await viewModel.refreshConversations()
+                            }
+                        }
+                    case .requests:
+                        if filteredMessageRequests.isEmpty {
+                            EmptyStateView(
+                                title: emptyStateTitle,
+                                message: emptyStateMessage,
+                                systemImage: "person.2",
+                                actionTitle: "New Message"
+                            ) {
+                                showingNewMessage = true
+                            }
+                        } else {
+                            List {
+                                ForEach(filteredMessageRequests) { request in
+                                    MessageRequestRow(request: request) {
+                                        // Handle message request tap
+                                        handleMessageRequestTap(request)
+                                    }
+                                    .listRowSeparator(.hidden)
+                                }
+                            }
+                            .listStyle(PlainListStyle())
+                            .refreshable {
+                                await viewModel.refreshMessageRequests()
+                            }
                         }
                     }
                 }
             }
-        }
-        .navigationTitle("Messages")
-        .navigationBarTitleDisplayMode(.large)
-        .toolbar(content: {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    showingNewMessage = true
-                }) {
-                    Image(systemName: "square.and.pencil")
+            .navigationTitle("Messages")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingNewMessage = true
+                    }) {
+                        Image(systemName: "square.and.pencil")
+                    }
+                }
+            })
+            .sheet(isPresented: $showingNewMessage) {
+                NewMessageView { user in
+                    selectedUser = user
+                    shouldNavigateToChat = true
                 }
             }
-        })
-        .sheet(isPresented: $showingNewMessage) {
-            NewMessageView { user in
-                selectedUser = user
-                shouldNavigateToChat = true
-            }
-        }
-        .navigationDestination(isPresented: $shouldNavigateToChat) {
-            if let selectedUser = selectedUser {
-                ChatView(userId: selectedUser.id, userName: selectedUser.displayName)
-            }
-        }
-        .onAppear {
-            Task {
-                switch activeTab {
-                case .incoming:
-                    await viewModel.loadConversations()
-                case .sent:
-                    // Sent messages not implemented yet
-                    break
-                case .requests:
-                    await viewModel.loadMessageRequests()
+            .navigationDestination(isPresented: $shouldNavigateToChat) {
+                if let selectedUser = selectedUser {
+                    ChatView(userId: selectedUser.id, userName: selectedUser.displayName)
                 }
             }
-        }
-        .onChange(of: activeTab) { oldValue, newValue in
-            Task {
-                switch newValue {
-                case .incoming:
-                    await viewModel.loadConversations()
-                case .sent:
-                    // Sent messages not implemented yet
-                    break
-                case .requests:
-                    await viewModel.loadMessageRequests()
+            .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
+                if let userId = notification.userInfo?["userId"] as? Int,
+                   let userName = notification.userInfo?["userName"] as? String {
+                    // Create a user object for navigation
+                    let user = User(
+                        id: userId,
+                        username: userName,
+                        email: "",
+                        firstName: "",
+                        lastName: "",
+                        displayName: userName,
+                        profilePicture: nil,
+                        year: nil,
+                        major: nil,
+                        hometown: nil,
+                        bio: nil,
+                        universityId: 0,
+                        universityName: "",
+                        universityDomain: "",
+                        isVerified: nil,
+                        isActive: true,
+                        createdAt: Date(),
+                        updatedAt: nil
+                    )
+                    selectedUser = user
+                    shouldNavigateToChat = true
+                }
+            }
+            .onAppear {
+                Task {
+                    switch activeTab {
+                    case .incoming:
+                        await viewModel.loadConversations()
+                    case .sent:
+                        // Sent messages not implemented yet
+                        break
+                    case .requests:
+                        await viewModel.loadMessageRequests()
+                    }
+                }
+            }
+            .onChange(of: activeTab) { oldValue, newValue in
+                Task {
+                    switch newValue {
+                    case .incoming:
+                        await viewModel.loadConversations()
+                    case .sent:
+                        // Sent messages not implemented yet
+                        break
+                    case .requests:
+                        await viewModel.loadMessageRequests()
+                    }
                 }
             }
         }
