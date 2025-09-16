@@ -67,7 +67,7 @@ class MessagesViewModel: ObservableObject {
     func updateConversationWithNewMessage(conversationId: Int, lastMessage: String, senderId: Int) {
         // Find and update the conversation
         if let index = conversations.firstIndex(where: { $0.id == conversationId }) {
-            var updatedConversation = conversations[index]
+            let updatedConversation = conversations[index]
             
             // Create new last message
             let newLastMessage = Conversation.LastMessage(content: lastMessage, senderId: senderId)
