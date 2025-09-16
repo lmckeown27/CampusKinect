@@ -381,12 +381,13 @@ class APIService: NSObject, ObservableObject {
     }
     
     func getUserById(userId: Int) async throws -> User {
-        return try await performRequest(
+        let response: UserByIdResponse = try await performRequest(
             endpoint: "\(APIConstants.Endpoints.users)/\(userId)",
             method: .GET,
             body: nil,
             requiresAuth: true
         )
+        return response.data
     }
     
     // MARK: - User Methods
@@ -458,5 +459,10 @@ private struct VerifyEmailRequest: Codable {
 struct MessageResponse: Codable {
     let success: Bool
     let message: String
+}
+
+struct UserByIdResponse: Codable {
+    let success: Bool
+    let data: User
 }
 

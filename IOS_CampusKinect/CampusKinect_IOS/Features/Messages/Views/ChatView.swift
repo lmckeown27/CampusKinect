@@ -11,9 +11,16 @@ struct ChatView: View {
     let userId: Int
     let userName: String
     
-    @StateObject private var viewModel = ChatViewModel()
+    @EnvironmentObject var authManager: AuthenticationManager
+    @StateObject private var viewModel: ChatViewModel
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isTextFieldFocused: Bool
+    
+    init(userId: Int, userName: String) {
+        self.userId = userId
+        self.userName = userName
+        self._viewModel = StateObject(wrappedValue: ChatViewModel())
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -61,6 +68,9 @@ struct ChatView: View {
             }
         }
         .task {
+            if let currentUser = authManager.currentUser {
+                viewModel.setCurrentUserId(currentUser.id)
+            }
             await viewModel.loadChat(with: userId)
         }
         .alert("Error", isPresented: .constant(viewModel.error != nil)) {

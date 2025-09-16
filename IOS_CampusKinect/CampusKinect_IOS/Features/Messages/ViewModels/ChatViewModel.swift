@@ -21,16 +21,8 @@ class ChatViewModel: ObservableObject {
     private var currentUserId: Int?
     private var pollTimer: Timer?
     
-    init() {
-        // Get current user ID from authentication
-        Task {
-            do {
-                let currentUser = try await apiService.getCurrentUser()
-                self.currentUserId = currentUser.id
-            } catch {
-                print("❌ Failed to get current user: \(error)")
-            }
-        }
+    init(currentUserId: Int? = nil) {
+        self.currentUserId = currentUserId
     }
     
     deinit {
@@ -39,6 +31,10 @@ class ChatViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
+    func setCurrentUserId(_ userId: Int) {
+        self.currentUserId = userId
+    }
     
     func loadChat(with userId: Int) async {
         isLoading = true
