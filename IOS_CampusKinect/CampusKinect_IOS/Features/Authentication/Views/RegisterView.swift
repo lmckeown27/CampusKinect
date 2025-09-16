@@ -16,7 +16,7 @@ struct RegisterView: View {
     @State private var confirmPassword = ""
     @State private var firstName = ""
     @State private var lastName = ""
-    @State private var displayName = ""
+    @State private var username = ""
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var isPasswordVisible = false
@@ -24,7 +24,7 @@ struct RegisterView: View {
     @FocusState private var focusedField: RegisterField?
     
     enum RegisterField {
-        case firstName, lastName, displayName, email, password, confirmPassword
+        case username, firstName, lastName, email, password, confirmPassword
     }
     
     var body: some View {
@@ -61,6 +61,24 @@ struct RegisterView: View {
                     // Registration Form Card
                     VStack(spacing: 0) {
                         VStack(spacing: 20) {
+                            // Username Field
+                            CustomTextFieldWithPlaceholder(
+                                title: "Username",
+                                text: $username,
+                                isSecure: false,
+                                isFocused: focusedField == .username,
+                                keyboardType: .default,
+                                onFocusChange: { focused in
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        if focused {
+                                            focusedField = .username
+                                        }
+                                    }
+                                },
+                                placeholder: "your_username"
+                            )
+                            .focused($focusedField, equals: .username)
+                            
                             // Name Fields Row
                             HStack(spacing: 12) {
                                 // First Name
@@ -97,24 +115,6 @@ struct RegisterView: View {
                                 )
                                 .focused($focusedField, equals: .lastName)
                             }
-                            
-                            // Display Name Field
-                            CustomTextFieldWithPlaceholder(
-                                title: "Display Name",
-                                text: $displayName,
-                                isSecure: false,
-                                isFocused: focusedField == .displayName,
-                                keyboardType: .default,
-                                onFocusChange: { focused in
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        if focused {
-                                            focusedField = .displayName
-                                        }
-                                    }
-                                },
-                                placeholder: "How others will see you"
-                            )
-                            .focused($focusedField, equals: .displayName)
                             
                             // University Email Field
                             VStack(alignment: .leading, spacing: 8) {
@@ -231,6 +231,7 @@ struct RegisterView: View {
                                 
                                 Task {
                                     let success = await authManager.register(
+                                        username: username,
                                         email: email,
                                         password: password,
                                         firstName: firstName,
@@ -337,9 +338,10 @@ struct RegisterView: View {
     }
     
     private var isFormValid: Bool {
+        !username.isEmpty &&
+        username.count >= 3 &&
         !firstName.isEmpty &&
         !lastName.isEmpty &&
-        !displayName.isEmpty &&
         isValidUniversityEmail &&
         password.count >= AppConstants.minPasswordLength &&
         password == confirmPassword

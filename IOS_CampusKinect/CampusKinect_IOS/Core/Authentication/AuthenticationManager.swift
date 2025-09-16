@@ -124,6 +124,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Register
     func register(
+        username: String,
         email: String,
         password: String,
         firstName: String,
@@ -134,7 +135,7 @@ class AuthenticationManager: ObservableObject {
         
         do {
             let response = try await apiService.register(
-                username: email.components(separatedBy: "@").first ?? "user", // Generate username from email
+                username: username,
                 email: email,
                 password: password,
                 firstName: firstName,
