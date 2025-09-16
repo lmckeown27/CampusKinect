@@ -54,3 +54,19 @@ struct RepostToggleResponse: Codable {
     let action: String // "added" or "removed"
 }
 
+struct UserInteractionsResponse: Codable {
+    let success: Bool
+    let data: UserInteractions
+}
+
+struct UserInteractions: Codable {
+    let hasBookmarked: Bool
+    let hasReposted: Bool
+    let hasShared: Bool
+    let hasMessaged: Bool
+    let bookmarkedAt: String?
+    let repostedAt: String?
+    let sharedAt: String?
+    let messagedAt: String?
+}
+

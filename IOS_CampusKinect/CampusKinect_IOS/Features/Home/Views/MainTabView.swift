@@ -2,6 +2,8 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
+    @State private var shouldNavigateToChat = false
+    @State private var targetUserId: Int = 0
     
     enum Tab: String {
         case home = "Home"
@@ -11,31 +13,48 @@ struct MainTabView: View {
     }
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
+        NavigationStack {
+            TabView(selection: $selectedTab) {
+                HomeView()
+                    .tabItem {
+                        Label("Home", systemImage: "house.fill")
+                    }
+                    .tag(Tab.home)
+                
+                CreatePostView()
+                    .tabItem {
+                        Label("Create", systemImage: "plus.circle.fill")
+                    }
+                    .tag(Tab.createPost)
+                
+                MessagesView()
+                    .tabItem {
+                        Label("Messages", systemImage: "message.fill")
+                    }
+                    .tag(Tab.messages)
+                
+                ProfileView()
+                    .tabItem {
+                        Label("Profile", systemImage: "person.fill")
+                    }
+                    .tag(Tab.profile)
+            }
+            .accentColor(Color("AccentColor"))
+            .navigationDestination(isPresented: $shouldNavigateToChat) {
+                if targetUserId > 0 {
+                    ChatView(
+                        userId: targetUserId,
+                        userName: "user_\(targetUserId)"
+                    )
                 }
-                .tag(Tab.home)
-            
-            CreatePostView()
-                .tabItem {
-                    Label("Create", systemImage: "plus.circle.fill")
-                }
-                .tag(Tab.createPost)
-            
-            MessagesView()
-                .tabItem {
-                    Label("Messages", systemImage: "message.fill")
-                }
-                .tag(Tab.messages)
-            
-            ProfileView()
-                .tabItem {
-                    Label("Profile", systemImage: "person.fill")
-                }
-                .tag(Tab.profile)
+            }
         }
-        .accentColor(Color("AccentColor"))
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
+            if let userId = notification.userInfo?["userId"] as? Int {
+                targetUserId = userId
+                selectedTab = .messages // Switch to messages tab
+                shouldNavigateToChat = true
+            }
+        }
     }
 } 

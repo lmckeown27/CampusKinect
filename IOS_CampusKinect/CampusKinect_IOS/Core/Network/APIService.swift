@@ -235,6 +235,15 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    func getUserInteractions(_ postId: Int) async throws -> UserInteractionsResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/user-interactions",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
     func uploadImages(_ images: [Data]) async throws -> [String] {
         guard let url = URL(string: "\(APIConstants.fullBaseURL)/upload/images") else {
             throw APIError.invalidURL

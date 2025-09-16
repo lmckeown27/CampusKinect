@@ -11,13 +11,19 @@ struct PostCardView: View {
     let post: Post
     @State private var isBookmarked = false
     @State private var isReposted = false
+    @State private var bookmarkCount = 0
+    @State private var repostCount = 0
     @State private var showingImageViewer = false
     @State private var selectedImageIndex = 0
+    @State private var isLoading = false
+    @EnvironmentObject var authManager: AuthenticationManager
+    
+    private let apiService = APIService.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            PostHeader(post: post)
+            PostHeader(post: post, onProfileTap: handleProfileTap)
             
             // Content
             PostContent(post: post)
@@ -41,8 +47,14 @@ struct PostCardView: View {
             // Actions
             PostActions(
                 post: post,
-                isBookmarked: $isBookmarked,
-                isReposted: $isReposted
+                isBookmarked: isBookmarked,
+                isReposted: isReposted,
+                bookmarkCount: bookmarkCount,
+                repostCount: repostCount,
+                isLoading: isLoading,
+                onBookmark: handleBookmark,
+                onRepost: handleRepost,
+                onMessage: handleMessage
             )
         }
         .padding()
@@ -55,48 +67,174 @@ struct PostCardView: View {
                 selectedIndex: selectedImageIndex
             )
         }
+        .task {
+            await loadUserInteractions()
+        }
+    }
+    
+    // MARK: - Action Handlers
+    
+    private func loadUserInteractions() async {
+        guard authManager.currentUser != nil else { return }
+        
+        do {
+            let response = try await apiService.getUserInteractions(post.id)
+            await MainActor.run {
+                isBookmarked = response.data.hasBookmarked
+                isReposted = response.data.hasReposted
+                // Note: API doesn't provide counts yet, so we keep them at 0
+                // In the future, these could be loaded from post data or separate endpoint
+            }
+        } catch {
+            print("Failed to load user interactions: \(error)")
+        }
+    }
+    
+    private func handleBookmark() {
+        guard authManager.currentUser != nil else {
+            // Show login prompt
+            return
+        }
+        
+        guard !isLoading else { return }
+        
+        Task {
+            await MainActor.run {
+                isLoading = true
+            }
+            
+            do {
+                let response = try await apiService.toggleBookmark(post.id)
+                await MainActor.run {
+                    isBookmarked = response.action == "added"
+                    // Update count based on action
+                    if response.action == "added" {
+                        bookmarkCount += 1
+                    } else {
+                        bookmarkCount = max(0, bookmarkCount - 1)
+                    }
+                    isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    isLoading = false
+                }
+                print("Failed to toggle bookmark: \(error)")
+            }
+        }
+    }
+    
+    private func handleRepost() {
+        guard authManager.currentUser != nil else {
+            // Show login prompt
+            return
+        }
+        
+        guard !isLoading else { return }
+        
+        Task {
+            await MainActor.run {
+                isLoading = true
+            }
+            
+            do {
+                let response = try await apiService.toggleRepost(post.id)
+                await MainActor.run {
+                    isReposted = response.action == "added"
+                    // Update count based on action
+                    if response.action == "added" {
+                        repostCount += 1
+                    } else {
+                        repostCount = max(0, repostCount - 1)
+                    }
+                    isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    isLoading = false
+                }
+                print("Failed to toggle repost: \(error)")
+            }
+        }
+    }
+    
+    private func handleMessage() {
+        guard let currentUser = authManager.currentUser else {
+            // Show login prompt
+            return
+        }
+        
+        // Don't allow messaging yourself
+        guard currentUser.id != post.userId else {
+            return
+        }
+        
+        // Navigate to chat with the post author
+        // This would typically be handled by a navigation coordinator
+        // For now, we'll use a notification to trigger navigation
+        NotificationCenter.default.post(
+            name: .navigateToChat,
+            object: nil,
+            userInfo: ["userId": post.userId as Any]
+        )
+    }
+    
+    private func handleProfileTap() {
+        // Navigate to user profile
+        NotificationCenter.default.post(
+            name: .navigateToProfile,
+            object: nil,
+            userInfo: ["userId": post.userId as Any]
+        )
     }
 }
 
 // MARK: - Post Header
 struct PostHeader: View {
     let post: Post
+    let onProfileTap: () -> Void
     
     var body: some View {
         HStack {
             // Profile Picture
-            AsyncImage(url: post.user.profileImageURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Circle()
-                    .fill(Color("BrandPrimary"))
-                    .overlay(
-                        Text(post.user.initials)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                    )
+            Button(action: onProfileTap) {
+                AsyncImage(url: post.user.profileImageURL) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Circle()
+                        .fill(Color("BrandPrimary"))
+                        .overlay(
+                            Text(post.user.initials)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                        )
+                }
+                .frame(width: 40, height: 40)
+                .clipShape(Circle())
             }
-            .frame(width: 40, height: 40)
-            .clipShape(Circle())
             
-            VStack(alignment: .leading, spacing: 2) {
-                Text(post.user.displayName)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                HStack(spacing: 4) {
-                    Text("@\(post.user.username)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            Button(action: onProfileTap) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(post.user.displayName)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
                     
-                    Text("• \(post.timeAgo)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 4) {
+                        Text("@\(post.user.username)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Text("• \(post.timeAgo)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
+            .buttonStyle(PlainButtonStyle())
             
             Spacer()
             
@@ -225,44 +363,46 @@ struct PostLocation: View {
 // MARK: - Post Actions
 struct PostActions: View {
     let post: Post
-    @Binding var isBookmarked: Bool
-    @Binding var isReposted: Bool
+    let isBookmarked: Bool
+    let isReposted: Bool
+    let bookmarkCount: Int
+    let repostCount: Int
+    let isLoading: Bool
+    let onBookmark: () -> Void
+    let onRepost: () -> Void
+    let onMessage: () -> Void
     
     var body: some View {
         HStack(spacing: 20) {
             // Direct Message
             ActionButton(
                 systemImage: "paperplane",
-                count: nil, // No count for direct messages
+                count: nil,
                 isActive: false,
-                action: {
-                    // Navigate to direct message with post author
-                }
+                action: onMessage
             )
             
             // Repost
             ActionButton(
                 systemImage: "arrow.2.squarepath",
-                count: 0, // TODO: Backend doesn't provide repost count yet
+                count: repostCount > 0 ? repostCount : nil,
                 isActive: isReposted,
                 activeColor: .green,
-                action: {
-                    isReposted.toggle()
-                }
+                action: onRepost
             )
+            .disabled(isLoading)
             
             Spacer()
             
             // Bookmark (moved to right side)
             ActionButton(
                 systemImage: isBookmarked ? "bookmark.fill" : "bookmark",
-                count: nil, // No count display for bookmarks
+                count: bookmarkCount > 0 ? bookmarkCount : nil,
                 isActive: isBookmarked,
-                activeColor: Color("AccentColor"),
-                action: {
-                    isBookmarked.toggle()
-                }
+                activeColor: Color("BrandPrimary"),
+                action: onBookmark
             )
+            .disabled(isLoading)
         }
     }
 }
@@ -429,6 +569,12 @@ struct ImageViewer: View {
     }
 }
 
+// MARK: - Notification Extensions
+extension Notification.Name {
+    static let navigateToChat = Notification.Name("navigateToChat")
+    static let navigateToProfile = Notification.Name("navigateToProfile")
+}
+
 #Preview {
     PostCardView(post: Post(
         id: 1,
@@ -466,6 +612,7 @@ struct ImageViewer: View {
         imageCount: "0",
         tags: ["study", "cs101"]
     ))
+    .environmentObject(AuthenticationManager())
     .padding()
 }
 
