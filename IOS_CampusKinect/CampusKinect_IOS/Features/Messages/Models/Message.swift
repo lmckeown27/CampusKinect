@@ -107,13 +107,11 @@ struct SendMessageRequest: Codable {
 // MARK: - Messages Response
 struct MessagesResponse: Codable {
     let success: Bool
-    let messages: [Message]
-    let pagination: PaginationInfo
+    let data: MessagesData
     
-    enum CodingKeys: String, CodingKey {
-        case success
-        case messages
-        case pagination
+    struct MessagesData: Codable {
+        let messages: [Message]
+        let pagination: PaginationInfo
     }
 }
 

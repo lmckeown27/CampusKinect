@@ -148,7 +148,7 @@ class ChatViewModel: ObservableObject {
             let response = try await apiService.fetchMessages(conversationId: conversationId)
             
             // Update messages with current user context
-            let updatedMessages = response.messages
+            let updatedMessages = response.data.messages
             
             messages = updatedMessages.sorted { $0.createdAt < $1.createdAt }
         } catch {
@@ -177,7 +177,7 @@ class ChatViewModel: ObservableObject {
         
         do {
             let response = try await apiService.fetchMessages(conversationId: conversation.id)
-            let newMessages = response.messages.sorted { $0.createdAt < $1.createdAt }
+            let newMessages = response.data.messages.sorted { $0.createdAt < $1.createdAt }
             
             // Only update if we have more messages
             if newMessages.count > messages.count {
