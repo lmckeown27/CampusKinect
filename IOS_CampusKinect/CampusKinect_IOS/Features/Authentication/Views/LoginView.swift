@@ -13,6 +13,13 @@ struct LoginView: View {
     @State private var password = ""
     @State private var showingAlert = false
     @State private var isPasswordVisible = false
+    @State private var isEmailFocused = false
+    @State private var isPasswordFocused = false
+    @FocusState private var focusedField: LoginField?
+    
+    enum LoginField {
+        case email, password
+    }
     
     var body: some View {
         NavigationView {
@@ -49,87 +56,53 @@ struct LoginView: View {
                     VStack(spacing: 0) {
                         VStack(spacing: 24) {
                             // Email Field
-                            VStack(alignment: .leading, spacing: 8) {
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                        .frame(height: 56)
-                                    
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        HStack {
-                                            Text("Username or University Email")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                                .padding(.horizontal, 4)
-                                                .background(Color(.systemBackground))
-                                            Spacer()
+                            CustomTextField(
+                                title: "Username or University Email",
+                                text: $email,
+                                isSecure: false,
+                                isFocused: focusedField == .email,
+                                keyboardType: .default,
+                                onFocusChange: { focused in
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isEmailFocused = focused
+                                        if focused {
+                                            focusedField = .email
                                         }
-                                        .offset(y: -8)
-                                        .padding(.leading, 12)
-                                        
-                                        TextField("", text: $email)
-                                            .font(.system(size: 16))
-                                            .textFieldStyle(PlainTextFieldStyle())
-                                            .keyboardType(.default)
-                                            .autocapitalization(.none)
-                                            .disableAutocorrection(true)
-                                            .padding(.horizontal, 16)
-                                            .padding(.top, -8)
                                     }
                                 }
-                            }
+                            )
+                            .focused($focusedField, equals: .email)
                             
                             // Password Field
-                            VStack(alignment: .leading, spacing: 8) {
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                        .frame(height: 56)
-                                    
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        HStack {
-                                            Text("Password")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                                .padding(.horizontal, 4)
-                                                .background(Color(.systemBackground))
-                                            Spacer()
+                            CustomSecureField(
+                                title: "Password",
+                                text: $password,
+                                isVisible: isPasswordVisible,
+                                isFocused: focusedField == .password,
+                                onVisibilityToggle: {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isPasswordVisible.toggle()
+                                    }
+                                },
+                                onFocusChange: { focused in
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isPasswordFocused = focused
+                                        if focused {
+                                            focusedField = .password
                                         }
-                                        .offset(y: -8)
-                                        .padding(.leading, 12)
-                                        
-                                        HStack {
-                                            if isPasswordVisible {
-                                                TextField("", text: $password)
-                                                    .font(.system(size: 16))
-                                                    .textFieldStyle(PlainTextFieldStyle())
-                                            } else {
-                                                SecureField("", text: $password)
-                                                    .font(.system(size: 16))
-                                                    .textFieldStyle(PlainTextFieldStyle())
-                                            }
-                                            
-                                            Button(action: {
-                                                isPasswordVisible.toggle()
-                                            }) {
-                                                Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
-                                                    .foregroundColor(Color("BrandPrimary"))
-                                                    .font(.system(size: 16))
-                                            }
-                                        }
-                                        .padding(.horizontal, 16)
-                                        .padding(.top, -8)
                                     }
                                 }
-                            }
+                            )
+                            .focused($focusedField, equals: .password)
                             
                             // Login Button
                             LoadingButton(
                                 title: "Sign In",
                                 isLoading: authManager.isLoading
                             ) {
+                                // Dismiss keyboard before login
+                                focusedField = nil
+                                
                                 Task {
                                     let success = await authManager.login(
                                         email: email,
@@ -204,6 +177,10 @@ struct LoginView: View {
                 )
             )
             .navigationBarHidden(true)
+            .onTapGesture {
+                // Dismiss keyboard when tapping outside
+                focusedField = nil
+            }
         }
         .alert("Login Failed", isPresented: $showingAlert) {
             Button("OK") {
@@ -211,6 +188,126 @@ struct LoginView: View {
             }
         } message: {
             Text(authManager.authError?.userFriendlyMessage ?? "An error occurred")
+        }
+    }
+}
+
+// MARK: - Custom Text Field
+struct CustomTextField: View {
+    let title: String
+    @Binding var text: String
+    let isSecure: Bool
+    let isFocused: Bool
+    let keyboardType: UIKeyboardType
+    let onFocusChange: (Bool) -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isFocused ? Color("BrandPrimary") : Color("BrandPrimary").opacity(0.3),
+                        lineWidth: isFocused ? 2 : 1
+                    )
+                    .frame(height: 56)
+                    .animation(.easeInOut(duration: 0.2), value: isFocused)
+                
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text(title)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(isFocused ? Color("BrandPrimary") : .primary)
+                            .padding(.horizontal, 4)
+                            .background(Color(.systemBackground))
+                            .scaleEffect(isFocused || !text.isEmpty ? 1.0 : 0.9)
+                            .animation(.easeInOut(duration: 0.2), value: isFocused || !text.isEmpty)
+                        Spacer()
+                    }
+                    .offset(y: -8)
+                    .padding(.leading, 12)
+                    
+                    TextField("", text: $text)
+                        .font(.system(size: 16))
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .keyboardType(keyboardType)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .padding(.horizontal, 16)
+                        .padding(.top, -8)
+                        .onTapGesture {
+                            onFocusChange(true)
+                        }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Custom Secure Field
+struct CustomSecureField: View {
+    let title: String
+    @Binding var text: String
+    let isVisible: Bool
+    let isFocused: Bool
+    let onVisibilityToggle: () -> Void
+    let onFocusChange: (Bool) -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isFocused ? Color("BrandPrimary") : Color("BrandPrimary").opacity(0.3),
+                        lineWidth: isFocused ? 2 : 1
+                    )
+                    .frame(height: 56)
+                    .animation(.easeInOut(duration: 0.2), value: isFocused)
+                
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text(title)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(isFocused ? Color("BrandPrimary") : .primary)
+                            .padding(.horizontal, 4)
+                            .background(Color(.systemBackground))
+                            .scaleEffect(isFocused || !text.isEmpty ? 1.0 : 0.9)
+                            .animation(.easeInOut(duration: 0.2), value: isFocused || !text.isEmpty)
+                        Spacer()
+                    }
+                    .offset(y: -8)
+                    .padding(.leading, 12)
+                    
+                    HStack {
+                        if isVisible {
+                            TextField("", text: $text)
+                                .font(.system(size: 16))
+                                .textFieldStyle(PlainTextFieldStyle())
+                                .onTapGesture {
+                                    onFocusChange(true)
+                                }
+                        } else {
+                            SecureField("", text: $text)
+                                .font(.system(size: 16))
+                                .textFieldStyle(PlainTextFieldStyle())
+                                .onTapGesture {
+                                    onFocusChange(true)
+                                }
+                        }
+                        
+                        Button(action: onVisibilityToggle) {
+                            Image(systemName: isVisible ? "eye.slash" : "eye")
+                                .foregroundColor(Color("BrandPrimary"))
+                                .font(.system(size: 16))
+                                .scaleEffect(isFocused ? 1.1 : 1.0)
+                                .animation(.easeInOut(duration: 0.2), value: isFocused)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, -8)
+                }
+            }
         }
     }
 }

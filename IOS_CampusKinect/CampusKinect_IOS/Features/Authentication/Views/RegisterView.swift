@@ -21,6 +21,11 @@ struct RegisterView: View {
     @State private var alertMessage = ""
     @State private var isPasswordVisible = false
     @State private var isConfirmPasswordVisible = false
+    @FocusState private var focusedField: RegisterField?
+    
+    enum RegisterField {
+        case firstName, lastName, displayName, email, password, confirmPassword
+    }
     
     var body: some View {
         NavigationView {
@@ -59,242 +64,160 @@ struct RegisterView: View {
                             // Name Fields Row
                             HStack(spacing: 12) {
                                 // First Name
-                                VStack(alignment: .leading, spacing: 8) {
-                                    ZStack(alignment: .leading) {
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                            .frame(height: 56)
-                                        
-                                        VStack(alignment: .leading, spacing: 0) {
-                                            HStack {
-                                                Text("First Name")
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
-                                                    .foregroundColor(.primary)
-                                                    .padding(.horizontal, 4)
-                                                    .background(Color(.systemBackground))
-                                                Spacer()
+                                CustomTextField(
+                                    title: "First Name",
+                                    text: $firstName,
+                                    isSecure: false,
+                                    isFocused: focusedField == .firstName,
+                                    keyboardType: .default,
+                                    onFocusChange: { focused in
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            if focused {
+                                                focusedField = .firstName
                                             }
-                                            .offset(y: -8)
-                                            .padding(.leading, 12)
-                                            
-                                            TextField("", text: $firstName)
-                                                .font(.system(size: 16))
-                                                .textFieldStyle(PlainTextFieldStyle())
-                                                .padding(.horizontal, 16)
-                                                .padding(.top, -8)
                                         }
                                     }
-                                }
+                                )
+                                .focused($focusedField, equals: .firstName)
                                 
                                 // Last Name
-                                VStack(alignment: .leading, spacing: 8) {
-                                    ZStack(alignment: .leading) {
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                            .frame(height: 56)
-                                        
-                                        VStack(alignment: .leading, spacing: 0) {
-                                            HStack {
-                                                Text("Last Name")
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
-                                                    .foregroundColor(.primary)
-                                                    .padding(.horizontal, 4)
-                                                    .background(Color(.systemBackground))
-                                                Spacer()
+                                CustomTextField(
+                                    title: "Last Name",
+                                    text: $lastName,
+                                    isSecure: false,
+                                    isFocused: focusedField == .lastName,
+                                    keyboardType: .default,
+                                    onFocusChange: { focused in
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            if focused {
+                                                focusedField = .lastName
                                             }
-                                            .offset(y: -8)
-                                            .padding(.leading, 12)
-                                            
-                                            TextField("", text: $lastName)
-                                                .font(.system(size: 16))
-                                                .textFieldStyle(PlainTextFieldStyle())
-                                                .padding(.horizontal, 16)
-                                                .padding(.top, -8)
                                         }
                                     }
-                                }
+                                )
+                                .focused($focusedField, equals: .lastName)
                             }
                             
                             // Display Name Field
-                            VStack(alignment: .leading, spacing: 8) {
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                        .frame(height: 56)
-                                    
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        HStack {
-                                            Text("Display Name")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                                .padding(.horizontal, 4)
-                                                .background(Color(.systemBackground))
-                                            Spacer()
+                            CustomTextFieldWithPlaceholder(
+                                title: "Display Name",
+                                text: $displayName,
+                                isSecure: false,
+                                isFocused: focusedField == .displayName,
+                                keyboardType: .default,
+                                onFocusChange: { focused in
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        if focused {
+                                            focusedField = .displayName
                                         }
-                                        .offset(y: -8)
-                                        .padding(.leading, 12)
-                                        
-                                        TextField("How others will see you", text: $displayName)
-                                            .font(.system(size: 16))
-                                            .textFieldStyle(PlainTextFieldStyle())
-                                            .padding(.horizontal, 16)
-                                            .padding(.top, -8)
                                     }
-                                }
-                            }
+                                },
+                                placeholder: "How others will see you"
+                            )
+                            .focused($focusedField, equals: .displayName)
                             
                             // University Email Field
                             VStack(alignment: .leading, spacing: 8) {
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                        .frame(height: 56)
-                                    
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        HStack {
-                                            Text("University Email")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                                .padding(.horizontal, 4)
-                                                .background(Color(.systemBackground))
-                                            Spacer()
-                                        }
-                                        .offset(y: -8)
-                                        .padding(.leading, 12)
-                                        
-                                        HStack {
-                                            TextField("yourname@yourcollege.edu", text: $email)
-                                                .font(.system(size: 16))
-                                                .textFieldStyle(PlainTextFieldStyle())
-                                                .keyboardType(.emailAddress)
-                                                .autocapitalization(.none)
-                                                .disableAutocorrection(true)
-                                            
-                                            if !email.isEmpty && !isValidUniversityEmail {
-                                                Text("Use university email")
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
-                                                    .foregroundColor(.red)
+                                CustomTextFieldWithPlaceholder(
+                                    title: "University Email",
+                                    text: $email,
+                                    isSecure: false,
+                                    isFocused: focusedField == .email,
+                                    keyboardType: .emailAddress,
+                                    onFocusChange: { focused in
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            if focused {
+                                                focusedField = .email
                                             }
                                         }
-                                        .padding(.horizontal, 16)
-                                        .padding(.top, -8)
+                                    },
+                                    placeholder: "yourname@yourcollege.edu"
+                                )
+                                .focused($focusedField, equals: .email)
+                                
+                                if !email.isEmpty && !isValidUniversityEmail {
+                                    HStack {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundColor(.red)
+                                            .font(.caption)
+                                        Text("Please use your university email address")
+                                            .font(.caption)
+                                            .foregroundColor(.red)
                                     }
+                                    .padding(.leading, 4)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
                                 }
                             }
                             
                             // Password Field
                             VStack(alignment: .leading, spacing: 8) {
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                        .frame(height: 56)
-                                    
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        HStack {
-                                            Text("Password")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                                .padding(.horizontal, 4)
-                                                .background(Color(.systemBackground))
-                                            Spacer()
+                                CustomSecureField(
+                                    title: "Password",
+                                    text: $password,
+                                    isVisible: isPasswordVisible,
+                                    isFocused: focusedField == .password,
+                                    onVisibilityToggle: {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            isPasswordVisible.toggle()
                                         }
-                                        .offset(y: -8)
-                                        .padding(.leading, 12)
-                                        
-                                        HStack {
-                                            if isPasswordVisible {
-                                                TextField("", text: $password)
-                                                    .font(.system(size: 16))
-                                                    .textFieldStyle(PlainTextFieldStyle())
-                                            } else {
-                                                SecureField("", text: $password)
-                                                    .font(.system(size: 16))
-                                                    .textFieldStyle(PlainTextFieldStyle())
-                                            }
-                                            
-                                            Button(action: {
-                                                isPasswordVisible.toggle()
-                                            }) {
-                                                Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
-                                                    .foregroundColor(Color("BrandPrimary"))
-                                                    .font(.system(size: 16))
+                                    },
+                                    onFocusChange: { focused in
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            if focused {
+                                                focusedField = .password
                                             }
                                         }
-                                        .padding(.horizontal, 16)
-                                        .padding(.top, -8)
                                     }
-                                }
+                                )
+                                .focused($focusedField, equals: .password)
                                 
                                 if !password.isEmpty && password.count < AppConstants.minPasswordLength {
-                                    Text("Password must be at least \(AppConstants.minPasswordLength) characters")
-                                        .font(.caption)
-                                        .foregroundColor(.red)
-                                        .padding(.leading, 4)
+                                    HStack {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundColor(.red)
+                                            .font(.caption)
+                                        Text("Password must be at least \(AppConstants.minPasswordLength) characters")
+                                            .font(.caption)
+                                            .foregroundColor(.red)
+                                    }
+                                    .padding(.leading, 4)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
                                 }
                             }
                             
                             // Confirm Password Field
                             VStack(alignment: .leading, spacing: 8) {
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("BrandPrimary"), lineWidth: 2)
-                                        .frame(height: 56)
-                                    
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        HStack {
-                                            Text("Confirm Password")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                                .padding(.horizontal, 4)
-                                                .background(Color(.systemBackground))
-                                            Spacer()
+                                CustomSecureField(
+                                    title: "Confirm Password",
+                                    text: $confirmPassword,
+                                    isVisible: isConfirmPasswordVisible,
+                                    isFocused: focusedField == .confirmPassword,
+                                    onVisibilityToggle: {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            isConfirmPasswordVisible.toggle()
                                         }
-                                        .offset(y: -8)
-                                        .padding(.leading, 12)
-                                        
-                                        HStack {
-                                            if isConfirmPasswordVisible {
-                                                TextField("", text: $confirmPassword)
-                                                    .font(.system(size: 16))
-                                                    .textFieldStyle(PlainTextFieldStyle())
-                                            } else {
-                                                SecureField("", text: $confirmPassword)
-                                                    .font(.system(size: 16))
-                                                    .textFieldStyle(PlainTextFieldStyle())
-                                            }
-                                            
-                                            Button(action: {
-                                                isConfirmPasswordVisible.toggle()
-                                            }) {
-                                                Image(systemName: isConfirmPasswordVisible ? "eye.slash" : "eye")
-                                                    .foregroundColor(Color("BrandPrimary"))
-                                                    .font(.system(size: 16))
-                                            }
-                                            
-                                            if !confirmPassword.isEmpty && password != confirmPassword {
-                                                Text("Passwords must match")
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
-                                                    .foregroundColor(.red)
+                                    },
+                                    onFocusChange: { focused in
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            if focused {
+                                                focusedField = .confirmPassword
                                             }
                                         }
-                                        .padding(.horizontal, 16)
-                                        .padding(.top, -8)
                                     }
-                                }
+                                )
+                                .focused($focusedField, equals: .confirmPassword)
                                 
                                 if !confirmPassword.isEmpty && password != confirmPassword {
-                                    Text("Passwords do not match")
-                                        .font(.caption)
-                                        .foregroundColor(.red)
-                                        .padding(.leading, 4)
+                                    HStack {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundColor(.red)
+                                            .font(.caption)
+                                        Text("Passwords do not match")
+                                            .font(.caption)
+                                            .foregroundColor(.red)
+                                    }
+                                    .padding(.leading, 4)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
                                 }
                             }
                             
@@ -303,6 +226,9 @@ struct RegisterView: View {
                                 title: "Create Account",
                                 isLoading: authManager.isLoading
                             ) {
+                                // Dismiss keyboard before registration
+                                focusedField = nil
+                                
                                 Task {
                                     let success = await authManager.register(
                                         email: email,
@@ -391,6 +317,10 @@ struct RegisterView: View {
                     .foregroundColor(Color("BrandPrimary"))
                 }
             }
+            .onTapGesture {
+                // Dismiss keyboard when tapping outside
+                focusedField = nil
+            }
         }
         .alert("Registration Failed", isPresented: $showingAlert) {
             Button("OK") {
@@ -413,6 +343,59 @@ struct RegisterView: View {
         isValidUniversityEmail &&
         password.count >= AppConstants.minPasswordLength &&
         password == confirmPassword
+    }
+}
+
+// MARK: - Enhanced Custom Text Field with Placeholder Support
+struct CustomTextFieldWithPlaceholder: View {
+    let title: String
+    @Binding var text: String
+    let isSecure: Bool
+    let isFocused: Bool
+    let keyboardType: UIKeyboardType
+    let onFocusChange: (Bool) -> Void
+    let placeholder: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isFocused ? Color("BrandPrimary") : Color("BrandPrimary").opacity(0.3),
+                        lineWidth: isFocused ? 2 : 1
+                    )
+                    .frame(height: 56)
+                    .animation(.easeInOut(duration: 0.2), value: isFocused)
+                
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text(title)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(isFocused ? Color("BrandPrimary") : .primary)
+                            .padding(.horizontal, 4)
+                            .background(Color(.systemBackground))
+                            .scaleEffect(isFocused || !text.isEmpty ? 1.0 : 0.9)
+                            .animation(.easeInOut(duration: 0.2), value: isFocused || !text.isEmpty)
+                        Spacer()
+                    }
+                    .offset(y: -8)
+                    .padding(.leading, 12)
+                    
+                    TextField(placeholder, text: $text)
+                        .font(.system(size: 16))
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .keyboardType(keyboardType)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(keyboardType != .emailAddress)
+                        .padding(.horizontal, 16)
+                        .padding(.top, -8)
+                        .onTapGesture {
+                            onFocusChange(true)
+                        }
+                }
+            }
+        }
     }
 }
 
