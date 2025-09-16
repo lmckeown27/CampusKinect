@@ -20,7 +20,7 @@ struct ImagePickerView: View {
     @State private var showingPermissionAlert = false
     @State private var permissionAlertMessage = ""
     
-    let maxImages = 5
+    let maxImages = 4
     let useAdvancedCamera = true // Set to true for custom flash control
     
     var body: some View {
