@@ -4,6 +4,7 @@ struct MainTabView: View {
     @State private var selectedTab: Tab = .home
     @State private var shouldNavigateToChat = false
     @State private var targetUserId: Int = 0
+    @State private var targetUserName: String = ""
     
     enum Tab: String {
         case home = "Home"
@@ -44,7 +45,7 @@ struct MainTabView: View {
                 if targetUserId > 0 {
                     ChatView(
                         userId: targetUserId,
-                        userName: "user_\(targetUserId)"
+                        userName: targetUserName
                     )
                 }
             }
@@ -52,6 +53,9 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
             if let userId = notification.userInfo?["userId"] as? Int {
                 targetUserId = userId
+                if let userName = notification.userInfo?["userName"] as? String {
+                    targetUserName = userName
+                }
                 selectedTab = .messages // Switch to messages tab
                 shouldNavigateToChat = true
             }

@@ -175,7 +175,10 @@ struct PostCardView: View {
         NotificationCenter.default.post(
             name: .navigateToChat,
             object: nil,
-            userInfo: ["userId": post.userId as Any]
+            userInfo: [
+                "userId": post.userId as Any,
+                "userName": post.poster.displayName
+            ]
         )
     }
     
