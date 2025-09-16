@@ -249,7 +249,7 @@ struct SearchUser: Codable, Identifiable, Equatable {
     let year: String?
     let major: String?
     let hometown: String?
-    let createdAt: Date
+    let createdAt: Date?
     let university: SearchUniversity?
     let postCount: String?
     let relevance: Double?
@@ -273,7 +273,7 @@ struct SearchUser: Codable, Identifiable, Equatable {
             universityDomain: nil,
             isVerified: false, // Not provided in search results
             isActive: true, // Assume active if in search results
-            createdAt: createdAt,
+            createdAt: createdAt ?? Date(), // Use current date if not provided
             updatedAt: nil
         )
     }
