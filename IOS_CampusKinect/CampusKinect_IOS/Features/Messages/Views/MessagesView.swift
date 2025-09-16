@@ -17,8 +17,8 @@ struct MessagesView: View {
     @State private var shouldNavigateToChat = false
     
     enum MessageTab: String, CaseIterable {
-        case incoming = "Unread"
-        case sent = "Primary"
+        case incoming = "Incoming"
+        case sent = "Sent"
         case requests = "Requests"
     }
     
@@ -251,8 +251,7 @@ struct MessagesView: View {
                     case .incoming:
                         await viewModel.loadConversations()
                     case .sent:
-                        // Sent messages not implemented yet
-                        break
+                        await viewModel.loadConversations()
                     case .requests:
                         await viewModel.loadMessageRequests()
                     }
@@ -264,8 +263,7 @@ struct MessagesView: View {
                     case .incoming:
                         await viewModel.loadConversations()
                     case .sent:
-                        // Sent messages not implemented yet
-                        break
+                        await viewModel.loadConversations()
                     case .requests:
                         await viewModel.loadMessageRequests()
                     }
