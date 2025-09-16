@@ -77,7 +77,7 @@ class EditProfileViewModel: ObservableObject {
             
             isLoading = false
         } catch {
-            self.error = error as? APIError ?? APIError.unknown
+            self.error = error as? APIError ?? APIError.unknown(0)
             isLoading = false
         }
     }
@@ -85,13 +85,13 @@ class EditProfileViewModel: ObservableObject {
     private func uploadProfileImage(_ image: UIImage) async {
         do {
             guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-                throw APIError.invalidData
+                throw APIError.decodingError("Failed to convert image to JPEG data")
             }
             
             // Upload the image
             let uploadedUrls = try await apiService.uploadImages([imageData])
             guard let imageUrl = uploadedUrls.first else {
-                throw APIError.invalidData
+                throw APIError.decodingError("No image URL returned from upload")
             }
             
             // Update profile picture
@@ -99,7 +99,7 @@ class EditProfileViewModel: ObservableObject {
             await authManager?.updateCurrentUser(updatedUser)
             
         } catch {
-            self.error = error as? APIError ?? APIError.unknown
+            self.error = error as? APIError ?? APIError.unknown(0)
         }
     }
     
