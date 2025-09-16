@@ -149,7 +149,7 @@ struct SearchUser: Codable, Identifiable, Equatable {
     let createdAt: Date
     let university: SearchUniversity?
     let postCount: String?
-    let relevance: Int?
+    let relevance: Double?
     
     // Convert to User for compatibility
     var asUser: User {
