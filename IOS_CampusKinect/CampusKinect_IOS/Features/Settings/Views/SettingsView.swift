@@ -41,7 +41,7 @@ struct SettingsView: View {
                                     .font(.headline)
                                     .fontWeight(.semibold)
                                 
-                                Text(user.email)
+                                Text(user.email ?? "No email available")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
