@@ -60,7 +60,7 @@ struct LoadingButton: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(isLoading ? Color.gray : Color.blue)
+            .background(isLoading ? Color("BrandPrimary").opacity(0.7) : Color("BrandPrimary"))
             .foregroundColor(.white)
             .cornerRadius(10)
         }
