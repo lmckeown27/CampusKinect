@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct NewMessageView: View {
+    let onUserSelected: ((User) -> Void)?
+    
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
     @State private var users: [User] = []
@@ -16,6 +18,10 @@ struct NewMessageView: View {
     @State private var searchTask: Task<Void, Never>?
     
     private let apiService = APIService.shared
+    
+    init(onUserSelected: ((User) -> Void)? = nil) {
+        self.onUserSelected = onUserSelected
+    }
     
     var body: some View {
         NavigationView {
@@ -88,7 +94,7 @@ struct NewMessageView: View {
                         ForEach(filteredUsers) { user in
                             UserRow(user: user) {
                                 // Start conversation
-                                print("Starting conversation with \(user.displayName)")
+                                onUserSelected?(user)
                                 dismiss()
                             }
                             .listRowSeparator(.hidden)

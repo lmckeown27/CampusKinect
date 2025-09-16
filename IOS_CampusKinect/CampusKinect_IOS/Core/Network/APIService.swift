@@ -338,6 +338,57 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    // MARK: - Chat Methods
+    func fetchMessages(conversationId: Int, page: Int = 1, limit: Int = 50) async throws -> MessagesResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/\(conversationId)?page=\(page)&limit=\(limit)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
+    func sendMessage(receiverId: Int, content: String, messageType: MessageType = .text) async throws -> MessageResponse {
+        let request = SendMessageRequest(
+            receiverId: receiverId,
+            content: content,
+            messageType: messageType,
+            metadata: nil
+        )
+        let body = try encoder.encode(request)
+        
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/send",
+            method: .POST,
+            body: body,
+            requiresAuth: true
+        )
+    }
+    
+    func createConversation(receiverId: Int, initialMessage: String) async throws -> ConversationsResponse {
+        let request = CreateConversationRequest(
+            receiverId: receiverId,
+            initialMessage: initialMessage
+        )
+        let body = try encoder.encode(request)
+        
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/conversations",
+            method: .POST,
+            body: body,
+            requiresAuth: true
+        )
+    }
+    
+    func getUserById(userId: Int) async throws -> User {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.users)/\(userId)",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
     // MARK: - User Methods
     func fetchUserPosts(userId: Int, page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
         return try await performRequest(

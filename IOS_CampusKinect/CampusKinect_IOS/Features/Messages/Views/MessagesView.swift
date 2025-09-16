@@ -12,6 +12,8 @@ struct MessagesView: View {
     @State private var showingNewMessage = false
     @State private var activeTab: MessageTab = .incoming
     @State private var searchText = ""
+    @State private var selectedUser: User?
+    @State private var shouldNavigateToChat = false
     
     enum MessageTab: String, CaseIterable {
         case incoming = "Incoming"
@@ -87,8 +89,13 @@ struct MessagesView: View {
                         } else {
                             List {
                                 ForEach(filteredConversations) { conversation in
-                                    ConversationRow(conversation: conversation)
-                                        .listRowSeparator(.hidden)
+                                    NavigationLink(destination: ChatView(
+                                        userId: conversation.otherUser.id,
+                                        userName: conversation.otherUser.displayName
+                                    )) {
+                                        ConversationRow(conversation: conversation)
+                                    }
+                                    .listRowSeparator(.hidden)
                                 }
                             }
                             .listStyle(PlainListStyle())
@@ -142,8 +149,22 @@ struct MessagesView: View {
                 }
             }
             .sheet(isPresented: $showingNewMessage) {
-                NewMessageView()
+                NewMessageView { user in
+                    selectedUser = user
+                    shouldNavigateToChat = true
+                }
             }
+            .background(
+                NavigationLink(
+                    destination: selectedUser.map { user in
+                        ChatView(userId: user.id, userName: user.displayName)
+                    },
+                    isActive: $shouldNavigateToChat
+                ) {
+                    EmptyView()
+                }
+                .hidden()
+            )
             .onAppear {
                 Task {
                     switch activeTab {
@@ -292,10 +313,6 @@ struct ConversationRow: View {
         }
         .padding(.vertical, 8)
         .contentShape(Rectangle())
-        .onTapGesture {
-            // Navigate to chat view
-            print("Tapped conversation with \(conversation.otherUser.displayName)")
-        }
     }
 }
 
