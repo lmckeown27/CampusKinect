@@ -367,7 +367,7 @@ class APIService: NSObject, ObservableObject {
     
     func createConversation(receiverId: Int, initialMessage: String) async throws -> ConversationsResponse {
         let request = CreateConversationRequest(
-            receiverId: receiverId,
+            otherUserId: receiverId,
             initialMessage: initialMessage
         )
         let body = try encoder.encode(request)

@@ -72,12 +72,12 @@ struct ConversationsResponse: Codable {
 
 // MARK: - Create Conversation Request
 struct CreateConversationRequest: Codable {
-    let receiverId: Int
-    let initialMessage: String
+    let otherUserId: Int
+    let initialMessage: String?
     
     enum CodingKeys: String, CodingKey {
-        case receiverId = "receiver_id"
-        case initialMessage = "initial_message"
+        case otherUserId
+        case initialMessage
     }
 }
 
