@@ -70,7 +70,7 @@ class MessagesViewModel: ObservableObject {
             var updatedConversation = conversations[index]
             
             // Create new last message
-            let newLastMessage = LastMessage(content: lastMessage, senderId: senderId)
+            let newLastMessage = Conversation.LastMessage(content: lastMessage, senderId: senderId)
             
             // Update conversation with new message info
             let updatedConversationData = Conversation(
