@@ -12,7 +12,7 @@ struct APIConstants {
         static let auth = "/auth"
         static let login = "/auth/login"
         static let register = "/auth/register"
-        static let verify = "/auth/verify"
+        static let verify = "/auth/verify-email"
         static let resendCode = "/auth/resend-code"
         static let posts = "/posts"
         static let messages = "/messages"

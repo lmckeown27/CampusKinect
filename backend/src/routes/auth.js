@@ -1320,7 +1320,95 @@ router.post('/admin/clear-pending', async (req, res) => {
     console.error('Clear pending registrations error:', error);
     res.status(500).json({
       success: false,
-      error: { message: 'Failed to clear pending registrations' }
+      error: {
+        message: 'Failed to clear pending registrations. Please try again.'
+      }
+    });
+  }
+});
+
+// @route   DELETE /api/v1/auth/admin/delete-user
+// @desc    Delete a user by email (admin only, for testing)
+// @access  Admin
+router.delete('/admin/delete-user', async (req, res) => {
+  try {
+    // Simple admin check - only allow in development or with specific header
+    if (process.env.NODE_ENV !== 'development' && req.headers['x-admin-secret'] !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'Access denied' }
+      });
+    }
+
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Email is required' }
+      });
+    }
+
+    console.log(`🔍 ADMIN: Looking for user with email: ${email}`);
+    
+    // First, find the user
+    const findUserQuery = `
+      SELECT id, username, email, first_name, last_name, created_at
+      FROM users 
+      WHERE email = $1
+    `;
+    
+    const userResult = await query(findUserQuery, [email]);
+    
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { message: `No user found with email: ${email}` }
+      });
+    }
+    
+    const user = userResult.rows[0];
+    console.log(`✅ ADMIN: Found user:`, {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      name: `${user.first_name} ${user.last_name}`,
+      created_at: user.created_at
+    });
+    
+    // Delete the user (this will cascade delete related records)
+    const deleteQuery = `
+      DELETE FROM users 
+      WHERE email = $1
+      RETURNING id, username, email
+    `;
+    
+    const deleteResult = await query(deleteQuery, [email]);
+    
+    if (deleteResult.rows.length > 0) {
+      console.log(`🗑️ ADMIN: Successfully deleted user:`, deleteResult.rows[0]);
+      
+      res.json({
+        success: true,
+        message: `Successfully deleted user: ${email}`,
+        data: {
+          deletedUser: deleteResult.rows[0]
+        }
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: { message: `Failed to delete user with email: ${email}` }
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ ADMIN: Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to delete user. Please try again.'
+      }
     });
   }
 });
