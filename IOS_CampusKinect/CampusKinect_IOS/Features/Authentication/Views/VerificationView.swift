@@ -47,6 +47,33 @@ struct VerificationView: View {
                             .cornerRadius(8)
                     }
                     
+                    // Email Guidance
+                    VStack(spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "info.circle.fill")
+                                .foregroundColor(Color("BrandPrimary"))
+                                .font(.caption)
+                            
+                            Text("Can't find the email?")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                        
+                        Text("Check your spam or junk folder if you don't see the verification email in your primary inbox.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                    .padding(.horizontal, 32)
+                    
                     // Verification Form Card
                     VStack(spacing: 24) {
                         VStack(alignment: .leading, spacing: 8) {
