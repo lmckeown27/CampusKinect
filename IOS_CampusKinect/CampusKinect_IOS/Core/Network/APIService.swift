@@ -341,24 +341,23 @@ class APIService: NSObject, ObservableObject {
     // MARK: - Chat Methods
     func fetchMessages(conversationId: Int, page: Int = 1, limit: Int = 50) async throws -> MessagesResponse {
         return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.messages)/\(conversationId)?page=\(page)&limit=\(limit)",
+            endpoint: "\(APIConstants.Endpoints.messages)/conversations/\(conversationId)/messages?page=\(page)&limit=\(limit)",
             method: .GET,
             body: nil,
             requiresAuth: true
         )
     }
     
-    func sendMessage(receiverId: Int, content: String, messageType: MessageType = .text) async throws -> MessageResponse {
-        let request = SendMessageRequest(
-            receiverId: receiverId,
+    func sendMessage(conversationId: Int, content: String, messageType: MessageType = .text) async throws -> MessageResponse {
+        let request = SendMessageToConversationRequest(
             content: content,
             messageType: messageType,
-            metadata: nil
+            mediaUrl: nil
         )
         let body = try encoder.encode(request)
         
         return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.messages)/send",
+            endpoint: "\(APIConstants.Endpoints.messages)/conversations/\(conversationId)/messages",
             method: .POST,
             body: body,
             requiresAuth: true
@@ -464,5 +463,11 @@ struct MessageResponse: Codable {
 struct UserByIdResponse: Codable {
     let success: Bool
     let data: User
+}
+
+struct SendMessageToConversationRequest: Codable {
+    let content: String
+    let messageType: MessageType
+    let mediaUrl: String?
 }
 

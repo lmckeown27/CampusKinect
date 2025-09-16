@@ -251,7 +251,7 @@ struct MessagesView: View {
     private var filteredSentMessageRequests: [MessageRequest] {
         return viewModel.sentMessageRequests.filter { request in
             searchText.isEmpty || 
-                request.toUser.displayName.localizedCaseInsensitiveContains(searchText)
+                request.toUser?.displayName.localizedCaseInsensitiveContains(searchText) == true
         }
     }
 }
