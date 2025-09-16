@@ -1,16 +1,204 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Send, User, MoreHorizontal, Plus, Search, Check, X, MoreVertical, MessageCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Send, User, MoreHorizontal, Plus, Search, Check, X, MoreVertical, MessageCircle, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Conversation, User as UserType } from '../../types';
 import apiService from '../../services/api';
 
+// Swipeable Conversation Item Component
+interface SwipeableConversationItemProps {
+  conversation: Conversation;
+  isSelected: boolean;
+  activeTab: string;
+  onSelect: (conversation: Conversation) => void;
+  onDelete: (conversationId: string) => void;
+  index: number;
+}
+
+const SwipeableConversationItem: React.FC<SwipeableConversationItemProps> = ({
+  conversation,
+  isSelected,
+  activeTab,
+  onSelect,
+  onDelete,
+  index
+}) => {
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showDeleteButton, setShowDeleteButton] = useState(false);
+  const itemRef = useRef<HTMLDivElement>(null);
+  const startXRef = useRef(0);
+  const startTimeRef = useRef(0);
+
+  const handleStart = (clientX: number) => {
+    setIsDragging(true);
+    startXRef.current = clientX;
+    startTimeRef.current = Date.now();
+  };
+
+  const handleMove = (clientX: number) => {
+    if (!isDragging) return;
+    
+    const deltaX = clientX - startXRef.current;
+    const maxSwipe = -80; // Maximum swipe distance
+    const newOffset = Math.max(maxSwipe, Math.min(0, deltaX));
+    setSwipeOffset(newOffset);
+    setShowDeleteButton(newOffset < -20);
+  };
+
+  const handleEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    const swipeThreshold = -40;
+    if (swipeOffset < swipeThreshold) {
+      // Show delete button
+      setSwipeOffset(-80);
+      setShowDeleteButton(true);
+    } else {
+      // Snap back
+      setSwipeOffset(0);
+      setShowDeleteButton(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (confirm(`Are you sure you want to delete this conversation with ${conversation.participants?.[0]?.firstName} ${conversation.participants?.[0]?.lastName}?`)) {
+      await onDelete(conversation.id.toString());
+      setSwipeOffset(0);
+      setShowDeleteButton(false);
+    }
+  };
+
+  const truncateMessage = (message: string, wordLimit: number) => {
+    const words = message.split(' ');
+    if (words.length <= wordLimit) return message;
+    return words.slice(0, wordLimit).join(' ') + '...';
+  };
+
+  return (
+    <div className="relative overflow-hidden" style={{ width: '95%', margin: index === 0 ? '0 auto' : '16px auto 0 auto' }}>
+      {/* Delete Button Background */}
+      <div 
+        className="absolute right-0 top-0 h-full flex items-center justify-center"
+        style={{ 
+          width: '80px',
+          backgroundColor: '#ef4444',
+          zIndex: 1
+        }}
+      >
+        <button
+          onClick={handleDelete}
+          className="flex items-center justify-center w-full h-full"
+          style={{ color: 'white' }}
+        >
+          <Trash2 size={20} />
+        </button>
+      </div>
+
+      {/* Conversation Item */}
+      <div
+        ref={itemRef}
+        className={`p-4 transition-all duration-200 rounded-lg relative z-10 ${
+          isSelected ? 'bg-[#e8f5e8]' : 'hover:bg-[#525252]'
+        }`}
+        style={{ 
+          backgroundColor: isSelected ? '#5a7268' : '#708d81',
+          cursor: 'pointer',
+          border: '2px solid #000000',
+          transform: `translateX(${swipeOffset}px)`,
+          transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+        }}
+        onMouseEnter={(e) => {
+          if (!isSelected && !isDragging) {
+            e.currentTarget.style.backgroundColor = '#5a7268';
+            e.currentTarget.style.transform = `translateX(${swipeOffset}px) translateY(-2px)`;
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          // Handle both hover effect and drag end
+          if (!isSelected && !isDragging) {
+            e.currentTarget.style.backgroundColor = '#708d81';
+            e.currentTarget.style.transform = `translateX(${swipeOffset}px) translateY(0px)`;
+            e.currentTarget.style.boxShadow = 'none';
+          }
+          handleEnd();
+        }}
+        onClick={() => !isDragging && onSelect(conversation)}
+        
+        // Touch events
+        onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+        onTouchMove={(e) => {
+          e.preventDefault();
+          handleMove(e.touches[0].clientX);
+        }}
+        onTouchEnd={handleEnd}
+        
+        // Mouse events for desktop
+        onMouseDown={(e) => handleStart(e.clientX)}
+        onMouseMove={(e) => isDragging && handleMove(e.clientX)}
+        onMouseUp={handleEnd}
+      >
+        <div className="flex items-center space-x-3">
+          {/* Profile Picture */}
+          <div className="w-12 h-12 flex-shrink-0">
+            {conversation.participants && conversation.participants[0]?.profilePicture ? (
+              <img
+                src={conversation.participants[0].profilePicture}
+                alt={`${conversation.participants[0].firstName} ${conversation.participants[0].lastName}`}
+                className="w-12 h-12 rounded-full object-cover"
+                style={{ border: '2px solid #708d81' }}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
+                <span className="text-white text-sm font-bold">
+                  {conversation.participants && conversation.participants[0] 
+                    ? `${conversation.participants[0].firstName?.charAt(0) || '?'}${conversation.participants[0].lastName?.charAt(0) || '?'}`
+                    : <User size={24} className="text-white" />
+                  }
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <p className="text-lg font-semibold text-black truncate">
+                {conversation.participants && conversation.participants[0] ? `${conversation.participants[0].firstName} ${conversation.participants[0].lastName}` : 'Unknown User'}
+              </p>
+              {conversation.unreadCount > 0 && (
+                <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+                </span>
+              )}
+            </div>
+            {/* Message preview */}
+            {conversation.lastMessage && (
+              <p 
+                className="text-base mt-1 truncate" 
+                style={{ 
+                  color: activeTab === 'primary' ? '#4b5563' : 'white'
+                }}
+              >
+                {activeTab === 'primary' 
+                  ? `You: ${truncateMessage(conversation.lastMessage.content, 8)}`
+                  : truncateMessage(conversation.lastMessage.content, 10)
+                }
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MessagesTab: React.FC = () => {
   const router = useRouter();
-  const { 
+    const { 
     messages, 
     isLoading, 
     conversations, 
@@ -18,9 +206,10 @@ const MessagesTab: React.FC = () => {
     sentMessageRequests,
     sendMessage, 
     fetchConversations,
-    fetchMessageRequests, 
+    fetchMessageRequests,
     fetchSentMessageRequests,
-    respondToMessageRequest 
+    respondToMessageRequest,
+    deleteConversation
   } = useMessagesStore();
   const { user: currentUser } = useAuthStore();
 
@@ -213,6 +402,21 @@ const MessagesTab: React.FC = () => {
       // For other tabs, just select the conversation
       console.log('📩 CONVERSATION CLICKED - SELECTING CONVERSATION');
       setCurrentConversation(conversation);
+    }
+  };
+
+  const handleDeleteConversation = async (conversationId: string) => {
+    try {
+      await deleteConversation(conversationId);
+      // If the deleted conversation was selected, clear the current conversation
+      if (currentConversation?.id.toString() === conversationId) {
+        setCurrentConversation(null);
+      }
+      // Refresh conversations
+      await fetchConversations();
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      alert('Failed to delete conversation. Please try again.');
     }
   };
 
@@ -902,85 +1106,15 @@ const MessagesTab: React.FC = () => {
               // Primary/Unread Tabs - Show conversations
               <div className="px-2">
                 {filteredConversations.map((conversation, index) => (
-                  <div
+                  <SwipeableConversationItem
                     key={conversation.id}
-                    className={`p-4 transition-all duration-200 rounded-lg ${
-                      currentConversation?.id === conversation.id
-                        ? 'bg-[#e8f5e8]'
-                        : 'hover:bg-[#525252]'
-                    }`}
-                    style={{ 
-                      backgroundColor: currentConversation?.id === conversation.id ? '#5a7268' : '#708d81',
-                      cursor: 'pointer',
-                      border: '2px solid #000000',
-                      width: '95%',
-                      margin: index === 0 ? '0 auto' : '16px auto 0 auto'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentConversation?.id !== conversation.id) {
-                        e.currentTarget.style.backgroundColor = '#5a7268';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentConversation?.id !== conversation.id) {
-                        e.currentTarget.style.backgroundColor = '#708d81';
-                        e.currentTarget.style.transform = 'translateY(0px)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }
-                    }}
-                    onClick={() => handleConversationSelect(conversation)}
-                  >
-                    <div className="flex items-center space-x-3">
-                      {/* Profile Picture */}
-                      <div className="w-12 h-12 flex-shrink-0">
-                        {conversation.participants && conversation.participants[0]?.profilePicture ? (
-                          <img
-                            src={conversation.participants[0].profilePicture}
-                            alt={`${conversation.participants[0].firstName} ${conversation.participants[0].lastName}`}
-                            className="w-12 h-12 rounded-full object-cover"
-                            style={{ border: '2px solid #708d81' }}
-                          />
-                        ) : (
-                          <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                            <span className="text-white text-sm font-bold">
-                              {conversation.participants && conversation.participants[0] 
-                                ? `${conversation.participants[0].firstName?.charAt(0) || '?'}${conversation.participants[0].lastName?.charAt(0) || '?'}`
-                                : <User size={24} className="text-white" />
-                              }
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <p className="text-lg font-semibold text-black truncate">
-                            {conversation.participants && conversation.participants[0] ? `${conversation.participants[0].firstName} ${conversation.participants[0].lastName}` : 'Unknown User'}
-                          </p>
-                          {conversation.unreadCount > 0 && (
-                            <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                              {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
-                            </span>
-                          )}
-                        </div>
-                        {/* Message preview */}
-                        {conversation.lastMessage && (
-                          <p 
-                            className="text-base mt-1 truncate" 
-                            style={{ 
-                              color: activeTab === 'primary' ? '#4b5563' : 'white' // Darker grey for primary, white for unread
-                            }}
-                          >
-                            {activeTab === 'primary' 
-                              ? `You: ${truncateMessage(conversation.lastMessage.content, 8)}`
-                              : truncateMessage(conversation.lastMessage.content, 10)
-                            }
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                    conversation={conversation}
+                    isSelected={currentConversation?.id === conversation.id}
+                    activeTab={activeTab}
+                    onSelect={handleConversationSelect}
+                    onDelete={handleDeleteConversation}
+                    index={index}
+                  />
                 ))}
               </div>
             )}

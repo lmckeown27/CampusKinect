@@ -97,6 +97,15 @@ struct MessagesView: View {
                                         ConversationRow(conversation: conversation)
                                     }
                                     .listRowSeparator(.hidden)
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(role: .destructive) {
+                                            Task {
+                                                await viewModel.deleteConversation(conversationId: conversation.id)
+                                            }
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
                                 }
                             }
                             .listStyle(PlainListStyle())
@@ -141,6 +150,15 @@ struct MessagesView: View {
                                                 updatedAt: nil
                                             )
                                             shouldNavigateToChat = true
+                                        }
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                            Button(role: .destructive) {
+                                                Task {
+                                                    await viewModel.deleteConversation(conversationId: conversation.id)
+                                                }
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
                                         }
                                 }
                             }

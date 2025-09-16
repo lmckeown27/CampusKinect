@@ -134,5 +134,19 @@ class MessagesViewModel: ObservableObject {
     func refreshSentMessageRequests() async {
         await loadSentMessageRequests()
     }
+    
+    func deleteConversation(conversationId: Int) async {
+        do {
+            try await apiService.deleteConversation(conversationId: conversationId)
+            // Remove the conversation from the local array
+            await MainActor.run {
+                self.conversations.removeAll { $0.id == conversationId }
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error as? APIError
+            }
+        }
+    }
 }
 

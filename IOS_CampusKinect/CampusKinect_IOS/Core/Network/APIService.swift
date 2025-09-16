@@ -379,6 +379,15 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    func deleteConversation(conversationId: Int) async throws {
+        let _: EmptyResponse = try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/conversations/\(conversationId)",
+            method: .DELETE,
+            body: nil,
+            requiresAuth: true
+        )
+    }
+    
     func getUserById(userId: Int) async throws -> User {
         let response: UserByIdResponse = try await performRequest(
             endpoint: "\(APIConstants.Endpoints.users)/\(userId)",
