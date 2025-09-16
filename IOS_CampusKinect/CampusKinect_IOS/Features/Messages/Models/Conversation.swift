@@ -14,8 +14,8 @@ struct Conversation: Codable, Identifiable, Equatable {
     let postTitle: String?
     let postType: String?
     let otherUser: ConversationUser
-    let lastMessage: LastMessage
-    let lastMessageTime: Date
+    let lastMessage: LastMessage?
+    let lastMessageTime: Date?
     let unreadCount: String // Backend returns as string
     let createdAt: Date
     
@@ -25,6 +25,11 @@ struct Conversation: Codable, Identifiable, Equatable {
     }
     
     var timeAgo: String {
+        guard let lastMessageTime = lastMessageTime else {
+            let formatter = RelativeDateTimeFormatter()
+            formatter.unitsStyle = .abbreviated
+            return formatter.localizedString(for: createdAt, relativeTo: Date())
+        }
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
         return formatter.localizedString(for: lastMessageTime, relativeTo: Date())

@@ -22,7 +22,7 @@ struct MessagesView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // Search Bar
                 HStack {
@@ -293,7 +293,7 @@ struct ConversationRow: View {
                         .foregroundColor(.secondary)
                 }
                 
-                Text(conversation.lastMessage.content)
+                Text(conversation.lastMessage?.content ?? "No messages yet")
                     .font(.subheadline)
                     .foregroundColor(conversation.unreadCountInt > 0 ? .primary : .secondary)
                     .lineLimit(2)

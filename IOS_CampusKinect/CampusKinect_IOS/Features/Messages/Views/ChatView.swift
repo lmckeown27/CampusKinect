@@ -185,7 +185,7 @@ struct ChatView: View {
 
 // MARK: - Preview
 #Preview {
-    NavigationView {
+    NavigationStack {
         ChatView(userId: 2, userName: "John Doe")
     }
 }
