@@ -309,24 +309,25 @@ struct CameraPicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     @Environment(\.dismiss) private var dismiss
     
-    typealias UIViewControllerType = CameraViewController
+    typealias UIViewControllerType = AdvancedCameraViewController
     
-    func makeUIViewController(context: Context) -> CameraViewController {
-        let controller = CameraViewController()
+    func makeUIViewController(context: Context) -> AdvancedCameraViewController {
+        let controller = AdvancedCameraViewController()
         controller.delegate = context.coordinator
-        controller.flashMode = .auto
-        controller.initialCameraDevice = .rear
-        controller.allowsEditing = true
+        // Configure with same settings as post creation camera
+        controller.flashDuration = 0.1
+        controller.flashIntensity = 0.7
+        controller.enableCustomFlash = true
         return controller
     }
     
-    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: AdvancedCameraViewController, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    class Coordinator: NSObject, CameraViewDelegate {
+    class Coordinator: NSObject, AdvancedCameraDelegate {
         let parent: CameraPicker
         
         init(_ parent: CameraPicker) {
