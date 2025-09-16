@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
+import MessageUI
 
 struct SettingsView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @Environment(\.dismiss) private var dismiss
     @State private var showingLogoutAlert = false
+    @State private var showingHelpSupport = false
+    @State private var showingAbout = false
+    @State private var showingTerms = false
+    @State private var showingMailComposer = false
     
     var body: some View {
         NavigationView {
@@ -52,33 +57,6 @@ struct SettingsView: View {
                     }
                 }
                 
-                // App Settings
-                Section("App Settings") {
-                    SettingsRow(
-                        icon: "bell",
-                        title: "Notifications",
-                        subtitle: "Manage your notification preferences"
-                    ) {
-                        print("Notifications tapped")
-                    }
-                    
-                    SettingsRow(
-                        icon: "lock",
-                        title: "Privacy",
-                        subtitle: "Control your privacy settings"
-                    ) {
-                        print("Privacy tapped")
-                    }
-                    
-                    SettingsRow(
-                        icon: "paintbrush",
-                        title: "Appearance",
-                        subtitle: "Customize app appearance"
-                    ) {
-                        print("Appearance tapped")
-                    }
-                }
-                
                 // Support
                 Section("Support") {
                     SettingsRow(
@@ -86,7 +64,7 @@ struct SettingsView: View {
                         title: "Help & Support",
                         subtitle: "Get help with the app"
                     ) {
-                        print("Help tapped")
+                        showingHelpSupport = true
                     }
                     
                     SettingsRow(
@@ -94,7 +72,17 @@ struct SettingsView: View {
                         title: "Contact Us",
                         subtitle: "Send us feedback"
                     ) {
-                        print("Contact tapped")
+                        if MFMailComposeViewController.canSendMail() {
+                            showingMailComposer = true
+                        }
+                    }
+                    
+                    SettingsRow(
+                        icon: "doc.text",
+                        title: "Terms & Conditions",
+                        subtitle: "View our terms of service"
+                    ) {
+                        showingTerms = true
                     }
                     
                     SettingsRow(
@@ -102,7 +90,7 @@ struct SettingsView: View {
                         title: "About",
                         subtitle: "App version and info"
                     ) {
-                        print("About tapped")
+                        showingAbout = true
                     }
                 }
                 
@@ -148,6 +136,22 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("Are you sure you want to sign out?")
+            }
+            .sheet(isPresented: $showingHelpSupport) {
+                HelpSupportView()
+            }
+            .sheet(isPresented: $showingAbout) {
+                AboutView()
+            }
+            .sheet(isPresented: $showingTerms) {
+                TermsView()
+            }
+            .sheet(isPresented: $showingMailComposer) {
+                MailComposeView(
+                    recipients: ["campuskinect01@gmail.com"],
+                    subject: "CampusKinect Support Request",
+                    body: "Hi CampusKinect Team,\n\nI need help with:\n\n"
+                )
             }
         }
     }
