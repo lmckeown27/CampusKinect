@@ -46,12 +46,24 @@ struct EmptyResponse: Codable {
 
 struct BookmarkToggleResponse: Codable {
     let success: Bool
-    let action: String // "added" or "removed"
+    let message: String
+    let data: InteractionData
+    
+    struct InteractionData: Codable {
+        let interactionType: String
+        let postId: String
+    }
 }
 
 struct RepostToggleResponse: Codable {
     let success: Bool
-    let action: String // "added" or "removed"
+    let message: String
+    let data: InteractionData
+    
+    struct InteractionData: Codable {
+        let interactionType: String
+        let postId: String
+    }
 }
 
 struct UserInteractionsResponse: Codable {

@@ -143,7 +143,7 @@ class APIService: NSObject, ObservableObject {
         password: String,
         firstName: String,
         lastName: String
-    ) async throws -> AuthResponse {
+    ) async throws -> RegistrationResponse {
         let registerRequest = RegisterRequest(
             username: username,
             email: email,
@@ -218,21 +218,59 @@ class APIService: NSObject, ObservableObject {
     }
     
     func toggleBookmark(_ postId: Int) async throws -> BookmarkToggleResponse {
-        return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/bookmark",
-            method: .POST,
-            body: nil,
-            requiresAuth: true
-        )
+        // First, get current user interactions to determine if we should add or remove
+        let userInteractions = try await getUserInteractions(postId)
+        let isCurrentlyBookmarked = userInteractions.data.hasBookmarked
+        
+        let body = try encoder.encode(["interactionType": "bookmark"])
+        
+        if isCurrentlyBookmarked {
+            // Remove bookmark
+            let response: BookmarkToggleResponse = try await performRequest(
+                endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/interact",
+                method: .DELETE,
+                body: body,
+                requiresAuth: true
+            )
+            return response
+        } else {
+            // Add bookmark
+            let response: BookmarkToggleResponse = try await performRequest(
+                endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/interact",
+                method: .POST,
+                body: body,
+                requiresAuth: true
+            )
+            return response
+        }
     }
     
     func toggleRepost(_ postId: Int) async throws -> RepostToggleResponse {
-        return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/repost",
-            method: .POST,
-            body: nil,
-            requiresAuth: true
-        )
+        // First, get current user interactions to determine if we should add or remove
+        let userInteractions = try await getUserInteractions(postId)
+        let isCurrentlyReposted = userInteractions.data.hasReposted
+        
+        let body = try encoder.encode(["interactionType": "repost"])
+        
+        if isCurrentlyReposted {
+            // Remove repost
+            let response: RepostToggleResponse = try await performRequest(
+                endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/interact",
+                method: .DELETE,
+                body: body,
+                requiresAuth: true
+            )
+            return response
+        } else {
+            // Add repost
+            let response: RepostToggleResponse = try await performRequest(
+                endpoint: "\(APIConstants.Endpoints.posts)/\(postId)/interact",
+                method: .POST,
+                body: body,
+                requiresAuth: true
+            )
+            return response
+        }
     }
     
     func getUserInteractions(_ postId: Int) async throws -> UserInteractionsResponse {
@@ -301,7 +339,7 @@ class APIService: NSObject, ObservableObject {
     // MARK: - User Methods
     func getCurrentUser() async throws -> User {
         return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.users)/me",
+            endpoint: "\(APIConstants.Endpoints.auth)/me",
             method: .GET,
             body: nil,
             requiresAuth: true

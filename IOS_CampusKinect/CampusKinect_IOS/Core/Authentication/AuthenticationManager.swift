@@ -142,9 +142,9 @@ class AuthenticationManager: ObservableObject {
                 lastName: lastName
             )
             
-            // For registration, we might need email verification
-            // So we don't automatically log in the user
-            currentUser = response.data.user
+            // Registration successful - user needs to verify email
+            // Don't set currentUser yet, wait for email verification
+            print("Registration successful. Registration ID: \(response.data.registrationId)")
             
             isLoading = false
             return true

@@ -24,6 +24,19 @@ struct AuthResponse: Codable {
     }
 }
 
+// MARK: - Registration Response (for email verification flow)
+struct RegistrationResponse: Codable {
+    let success: Bool
+    let message: String?
+    let data: RegistrationData
+    
+    struct RegistrationData: Codable {
+        let registrationId: String
+        let email: String
+        let expiresAt: String
+    }
+}
+
 // MARK: - Login Request
 struct LoginRequest: Codable {
     let usernameOrEmail: String  // Backend expects "usernameOrEmail", not "email"

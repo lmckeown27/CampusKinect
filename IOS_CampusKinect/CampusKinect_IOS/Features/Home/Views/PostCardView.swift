@@ -104,11 +104,13 @@ struct PostCardView: View {
             }
             
             do {
-                let response = try await apiService.toggleBookmark(post.id)
+                let previousState = isBookmarked
+                let _ = try await apiService.toggleBookmark(post.id)
                 await MainActor.run {
-                    isBookmarked = response.action == "added"
-                    // Update count based on action
-                    if response.action == "added" {
+                    // Toggle the state
+                    isBookmarked = !previousState
+                    // Update count based on new state
+                    if isBookmarked {
                         bookmarkCount += 1
                     } else {
                         bookmarkCount = max(0, bookmarkCount - 1)
@@ -138,11 +140,13 @@ struct PostCardView: View {
             }
             
             do {
-                let response = try await apiService.toggleRepost(post.id)
+                let previousState = isReposted
+                let _ = try await apiService.toggleRepost(post.id)
                 await MainActor.run {
-                    isReposted = response.action == "added"
-                    // Update count based on action
-                    if response.action == "added" {
+                    // Toggle the state
+                    isReposted = !previousState
+                    // Update count based on new state
+                    if isReposted {
                         repostCount += 1
                     } else {
                         repostCount = max(0, repostCount - 1)
