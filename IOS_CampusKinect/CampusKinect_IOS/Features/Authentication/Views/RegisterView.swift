@@ -28,6 +28,11 @@ struct RegisterView: View {
                 VStack(spacing: 25) {
                     // Header
                     VStack(spacing: 12) {
+                        Image("Logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80, height: 80)
+                        
                         Text("Create Account")
                             .font(.largeTitle)
                             .fontWeight(.bold)

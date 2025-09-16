@@ -20,9 +20,10 @@ struct LoginView: View {
                 VStack(spacing: 30) {
                     // Logo and Title
                     VStack(spacing: 16) {
-                        Image(systemName: "graduationcap.circle.fill")
-                            .font(.system(size: 80))
-                            .foregroundColor(.blue)
+                        Image("Logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 120, height: 120)
                         
                         Text("CampusKinect")
                             .font(.largeTitle)

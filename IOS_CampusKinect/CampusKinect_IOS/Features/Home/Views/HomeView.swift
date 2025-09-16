@@ -30,8 +30,21 @@ struct HomeView: View {
                 PostsList()
                     .environmentObject(viewModel)
             }
-            .navigationTitle("CampusKinect")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    HStack {
+                        Image("Logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 32)
+                        Text("CampusKinect")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if viewModel.shouldShowOfferRequestToggle {
