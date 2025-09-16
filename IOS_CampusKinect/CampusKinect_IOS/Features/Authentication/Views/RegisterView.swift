@@ -390,10 +390,11 @@ struct CustomTextFieldWithPlaceholder: View {
                         .disableAutocorrection(keyboardType != .emailAddress)
                         .padding(.horizontal, 16)
                         .padding(.top, -8)
-                        .onTapGesture {
-                            onFocusChange(true)
-                        }
                 }
+            }
+            .contentShape(Rectangle()) // Make entire area tappable
+            .onTapGesture {
+                onFocusChange(true)
             }
         }
     }

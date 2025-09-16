@@ -235,10 +235,11 @@ struct CustomTextField: View {
                         .disableAutocorrection(true)
                         .padding(.horizontal, 16)
                         .padding(.top, -8)
-                        .onTapGesture {
-                            onFocusChange(true)
-                        }
                 }
+            }
+            .contentShape(Rectangle()) // Make entire area tappable
+            .onTapGesture {
+                onFocusChange(true)
             }
         }
     }
@@ -284,16 +285,10 @@ struct CustomSecureField: View {
                             TextField("", text: $text)
                                 .font(.system(size: 16))
                                 .textFieldStyle(PlainTextFieldStyle())
-                                .onTapGesture {
-                                    onFocusChange(true)
-                                }
                         } else {
                             SecureField("", text: $text)
                                 .font(.system(size: 16))
                                 .textFieldStyle(PlainTextFieldStyle())
-                                .onTapGesture {
-                                    onFocusChange(true)
-                                }
                         }
                         
                         Button(action: onVisibilityToggle) {
@@ -307,6 +302,10 @@ struct CustomSecureField: View {
                     .padding(.horizontal, 16)
                     .padding(.top, -8)
                 }
+            }
+            .contentShape(Rectangle()) // Make entire area tappable
+            .onTapGesture {
+                onFocusChange(true)
             }
         }
     }
