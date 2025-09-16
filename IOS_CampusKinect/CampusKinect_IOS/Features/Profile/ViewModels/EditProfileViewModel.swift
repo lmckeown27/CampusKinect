@@ -70,7 +70,11 @@ class EditProfileViewModel: ObservableObject {
                 bio: bio.isEmpty ? nil : bio
             )
             
-            let updatedUser = try await apiService.updateProfile(updateRequest)
+            guard let currentUser = authManager?.currentUser else {
+                throw APIError.decodingError("No current user available")
+            }
+            
+            let updatedUser = try await apiService.updateProfile(updateRequest, currentUser: currentUser)
             
             // Update the auth manager with new user data
             await authManager?.updateCurrentUser(updatedUser)
@@ -95,8 +99,15 @@ class EditProfileViewModel: ObservableObject {
             }
             
             // Update profile picture
-            let updatedUser = try await apiService.updateProfilePicture(imageUrl)
+            guard let currentUser = authManager?.currentUser else {
+                throw APIError.decodingError("No current user available")
+            }
+            
+            let updatedUser = try await apiService.updateProfilePicture(imageUrl, currentUser: currentUser)
             await authManager?.updateCurrentUser(updatedUser)
+            
+            // Update the local profileImageUrl to trigger UI refresh
+            self.profileImageUrl = imageUrl
             
         } catch {
             self.error = error as? APIError ?? APIError.unknown(0)

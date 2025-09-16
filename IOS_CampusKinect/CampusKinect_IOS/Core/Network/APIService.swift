@@ -299,7 +299,7 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
-    func updateProfile(_ profile: UpdateProfileRequest) async throws -> User {
+    func updateProfile(_ profile: UpdateProfileRequest, currentUser: User) async throws -> User {
         let body = try encoder.encode(profile)
         
         let response: ProfileUpdateResponse = try await performRequest(
@@ -309,10 +309,10 @@ class APIService: NSObject, ObservableObject {
             requiresAuth: true
         )
         
-        return response.data.user
+        return response.data.user.mergeWith(existingUser: currentUser)
     }
     
-    func updateProfilePicture(_ imageUrl: String) async throws -> User {
+    func updateProfilePicture(_ imageUrl: String, currentUser: User) async throws -> User {
         let request = UpdateProfilePictureRequest(profilePictureUrl: imageUrl)
         let body = try encoder.encode(request)
         
@@ -323,7 +323,7 @@ class APIService: NSObject, ObservableObject {
             requiresAuth: true
         )
         
-        return response.data.user
+        return response.data.user.mergeWith(existingUser: currentUser)
     }
     
     // MARK: - Messages Methods

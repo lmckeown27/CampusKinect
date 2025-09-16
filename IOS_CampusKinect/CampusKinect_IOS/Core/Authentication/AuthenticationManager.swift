@@ -254,8 +254,14 @@ class AuthenticationManager: ObservableObject {
         authError = nil
         
         do {
-            let updatedUser = try await apiService.updateProfile(profile)
-            currentUser = updatedUser
+            guard let currentUser = currentUser else {
+                authError = APIError.decodingError("No current user available")
+                isLoading = false
+                return false
+            }
+            
+            let updatedUser = try await apiService.updateProfile(profile, currentUser: currentUser)
+            self.currentUser = updatedUser
             
             isLoading = false
             return true

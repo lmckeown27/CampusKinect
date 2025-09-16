@@ -185,7 +185,45 @@ struct ProfileUpdateResponse: Codable {
 }
 
 struct ProfileUpdateData: Codable {
-    let user: User
+    let user: PartialUser
+}
+
+// Partial user model for profile update responses
+struct PartialUser: Codable {
+    let id: Int
+    let firstName: String?
+    let lastName: String?
+    let displayName: String?
+    let profilePicture: String?
+    let year: String?
+    let major: String?
+    let hometown: String?
+    let bio: String?
+    let updatedAt: Date?
+    
+    // Convert to full User by merging with existing user data
+    func mergeWith(existingUser: User) -> User {
+        return User(
+            id: id,
+            username: existingUser.username,
+            email: existingUser.email,
+            firstName: firstName ?? existingUser.firstName,
+            lastName: lastName ?? existingUser.lastName,
+            displayName: displayName ?? existingUser.displayName,
+            profilePicture: profilePicture ?? existingUser.profilePicture,
+            year: year ?? existingUser.year,
+            major: major ?? existingUser.major,
+            hometown: hometown ?? existingUser.hometown,
+            bio: bio ?? existingUser.bio,
+            universityId: existingUser.universityId,
+            universityName: existingUser.universityName,
+            universityDomain: existingUser.universityDomain,
+            isVerified: existingUser.isVerified,
+            isActive: existingUser.isActive,
+            createdAt: existingUser.createdAt ?? Date(),
+            updatedAt: updatedAt ?? existingUser.updatedAt
+        )
+    }
 }
 
 // MARK: - University Model
