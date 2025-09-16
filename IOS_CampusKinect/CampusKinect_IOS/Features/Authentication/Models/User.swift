@@ -18,7 +18,7 @@ struct User: Codable, Identifiable, Equatable {
     let universityDomain: String?
     let isVerified: Bool?
     let isActive: Bool?
-    let createdAt: Date
+    let createdAt: Date?
     let updatedAt: Date?
     
     enum CodingKeys: String, CodingKey {
