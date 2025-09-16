@@ -9,15 +9,16 @@ import SwiftUI
 
 struct MessagesView: View {
     @StateObject private var viewModel = MessagesViewModel()
+    @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingNewMessage = false
-    @State private var activeTab: MessageTab = .incoming
+    @State private var activeTab: MessageTab = .sent
     @State private var searchText = ""
     @State private var selectedUser: User?
     @State private var shouldNavigateToChat = false
     
     enum MessageTab: String, CaseIterable {
-        case incoming = "Incoming"
-        case sent = "Sent"
+        case incoming = "Unread"
+        case sent = "Primary"
         case requests = "Requests"
     }
     
@@ -104,13 +105,49 @@ struct MessagesView: View {
                             }
                         }
                     case .sent:
-                        EmptyStateView(
-                            title: "Sent Messages",
-                            message: "Sent messages feature coming soon",
-                            systemImage: "paperplane",
-                            actionTitle: "New Message"
-                        ) {
-                            showingNewMessage = true
+                        if filteredConversations.isEmpty {
+                            EmptyStateView(
+                                title: emptyStateTitle,
+                                message: emptyStateMessage,
+                                systemImage: "paperplane",
+                                actionTitle: "New Message"
+                            ) {
+                                showingNewMessage = true
+                            }
+                        } else {
+                            List {
+                                ForEach(filteredConversations) { conversation in
+                                    ConversationRow(conversation: conversation)
+                                        .listRowSeparator(.hidden)
+                                        .onTapGesture {
+                                            selectedUser = User(
+                                                id: conversation.otherUser.id,
+                                                username: conversation.otherUser.username,
+                                                email: nil,
+                                                firstName: conversation.otherUser.firstName,
+                                                lastName: conversation.otherUser.lastName,
+                                                displayName: conversation.otherUser.displayName,
+                                                profilePicture: conversation.otherUser.profilePicture,
+                                                year: nil,
+                                                major: nil,
+                                                hometown: nil,
+                                                bio: nil,
+                                                universityId: 0,
+                                                universityName: conversation.otherUser.university,
+                                                universityDomain: nil,
+                                                isVerified: false,
+                                                isActive: true,
+                                                createdAt: Date(),
+                                                updatedAt: nil
+                                            )
+                                            shouldNavigateToChat = true
+                                        }
+                                }
+                            }
+                            .listStyle(PlainListStyle())
+                            .refreshable {
+                                await viewModel.refreshConversations()
+                            }
                         }
                     case .requests:
                         if filteredMessageRequests.isEmpty {
@@ -139,7 +176,7 @@ struct MessagesView: View {
             }
             .navigationTitle("Messages")
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
+            .toolbar(content: {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         showingNewMessage = true
@@ -147,7 +184,7 @@ struct MessagesView: View {
                         Image(systemName: "square.and.pencil")
                     }
                 }
-            }
+            })
             .sheet(isPresented: $showingNewMessage) {
                 NewMessageView { user in
                     selectedUser = user
@@ -203,9 +240,9 @@ struct MessagesView: View {
     private var emptyStateTitle: String {
         switch activeTab {
         case .incoming:
-            return "No Incoming Messages"
+            return "No Unread Messages"
         case .sent:
-            return "No Sent Messages"
+            return "No Recent Conversations"
         case .requests:
             return "No Message Requests"
         }
@@ -214,27 +251,42 @@ struct MessagesView: View {
     private var emptyStateMessage: String {
         switch activeTab {
         case .incoming:
-            return "Messages sent to you will appear here"
+            return "Messages you haven't responded to will appear here"
         case .sent:
-            return "Messages you've sent will appear here"
+            return "Conversations where you sent the last message will appear here"
         case .requests:
             return "Message requests will appear here"
         }
     }
     
     private var filteredConversations: [Conversation] {
+        guard let currentUserId = authManager.currentUser?.id else {
+            return []
+        }
+        
         switch activeTab {
         case .incoming:
-            // Show regular conversations (messages received)
+            // Incoming: Show conversations where the last message was sent TO the current user (from someone else)
             return viewModel.conversations.filter { conversation in
                 let matchesSearch = searchText.isEmpty || 
                     conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText)
-                return matchesSearch
+                
+                // Check if last message was sent by someone else (incoming)
+                let isIncomingMessage = conversation.lastMessage?.senderId != currentUserId
+                
+                return matchesSearch && isIncomingMessage
             }
         case .sent:
-            // For sent messages, we would ideally need a different endpoint
-            // For now, show empty since conversations represent both directions
-            return []
+            // Sent: Show conversations where the last message was sent BY the current user (outgoing)
+            return viewModel.conversations.filter { conversation in
+                let matchesSearch = searchText.isEmpty || 
+                    conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText)
+                
+                // Check if last message was sent by current user (outgoing)
+                let isOutgoingMessage = conversation.lastMessage?.senderId == currentUserId
+                
+                return matchesSearch && isOutgoingMessage
+            }
         case .requests:
             // This will be handled separately with message requests
             return []
