@@ -90,7 +90,7 @@ class ChatViewModel: ObservableObject {
         newMessageText = ""
         
         do {
-            if let conversation = conversation {
+            if conversation != nil {
                 // Send message to existing conversation
                 _ = try await apiService.sendMessage(
                     receiverId: otherUser.id,
