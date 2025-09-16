@@ -47,11 +47,11 @@ class AuthenticationManager: ObservableObject {
         // Check if we have both a valid token and stored user ID
         if let _ = await keychainManager.getAccessToken(),
            let userIdString = await keychainManager.getUserID(),
-           let userId = Int(userIdString) {
+           let _ = Int(userIdString) {
             
             // We have valid credentials, try to get user details
             do {
-                let user = try await apiService.getUserById(userId: userId)
+                let user = try await apiService.getCurrentUser()
                 currentUser = user
                 isAuthenticated = true
                 
@@ -102,6 +102,9 @@ class AuthenticationManager: ObservableObject {
             // Update state
             currentUser = response.data.user
             isAuthenticated = true
+            
+            // Fetch complete user profile including email
+            await refreshCurrentUser()
             
             NotificationCenter.default.post(name: .userDidLogin, object: nil)
             
@@ -281,6 +284,18 @@ class AuthenticationManager: ObservableObject {
     func updateCurrentUser(_ user: User) async {
         await MainActor.run {
             self.currentUser = user
+        }
+    }
+    
+    // MARK: - Refresh Current User
+    func refreshCurrentUser() async {
+        do {
+            let user = try await apiService.getCurrentUser()
+            await MainActor.run {
+                self.currentUser = user
+            }
+        } catch {
+            print("Failed to refresh current user: \(error)")
         }
     }
     

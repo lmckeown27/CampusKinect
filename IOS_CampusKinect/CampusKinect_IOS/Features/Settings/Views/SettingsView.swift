@@ -125,6 +125,12 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
+            .onAppear {
+                // Refresh user data to ensure we have the latest information including email
+                Task {
+                    await authManager.refreshCurrentUser()
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
