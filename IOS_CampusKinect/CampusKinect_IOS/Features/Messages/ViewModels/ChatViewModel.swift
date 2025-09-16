@@ -103,10 +103,9 @@ class ChatViewModel: ObservableObject {
                     initialMessage: messageContent
                 )
                 
-                if let newConversation = response.data.conversations.first {
-                    self.conversation = newConversation
-                    startPolling()
-                }
+                // Set the newly created conversation
+                self.conversation = response.data.conversation
+                startPolling()
             }
             
             // Refresh messages to get the actual message from server

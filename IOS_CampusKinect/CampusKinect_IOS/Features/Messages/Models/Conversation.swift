@@ -111,3 +111,14 @@ struct MessageRequestsResponse: Codable {
     }
 }
 
+// MARK: - Create Conversation Response
+struct CreateConversationResponse: Codable {
+    let success: Bool
+    let message: String
+    let data: CreateConversationData
+    
+    struct CreateConversationData: Codable {
+        let conversation: Conversation
+    }
+}
+

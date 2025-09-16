@@ -365,7 +365,7 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
-    func createConversation(receiverId: Int, initialMessage: String) async throws -> ConversationsResponse {
+    func createConversation(receiverId: Int, initialMessage: String) async throws -> CreateConversationResponse {
         let request = CreateConversationRequest(
             otherUserId: receiverId,
             initialMessage: initialMessage
