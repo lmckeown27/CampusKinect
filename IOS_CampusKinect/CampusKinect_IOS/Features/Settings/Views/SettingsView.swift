@@ -183,13 +183,14 @@ struct SettingsRow: View {
                         .foregroundColor(.secondary)
                 }
                 
-                Spacer()
+                Spacer(minLength: 0)
                 
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             .padding(.vertical, 4)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }
