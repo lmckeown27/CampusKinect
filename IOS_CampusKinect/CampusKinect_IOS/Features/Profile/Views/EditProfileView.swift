@@ -309,29 +309,37 @@ struct CameraPicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     @Environment(\.dismiss) private var dismiss
     
-    func makeUIViewController(context: Context) -> CameraView {
-        return CameraView(
-            onImageCaptured: { capturedImage in
-                image = capturedImage
-                dismiss()
-            },
-            flashMode: .auto,
-            cameraDevice: .rear,
-            allowsEditing: true
-        )
+    typealias UIViewControllerType = CameraViewController
+    
+    func makeUIViewController(context: Context) -> CameraViewController {
+        let controller = CameraViewController()
+        controller.delegate = context.coordinator
+        controller.flashMode = .auto
+        controller.initialCameraDevice = .rear
+        controller.allowsEditing = true
+        return controller
     }
     
-    func updateUIViewController(_ uiViewController: CameraView, context: Context) {}
+    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    class Coordinator: NSObject {
+    class Coordinator: NSObject, CameraViewDelegate {
         let parent: CameraPicker
         
         init(_ parent: CameraPicker) {
             self.parent = parent
+        }
+        
+        func didCaptureImage(_ image: UIImage) {
+            parent.image = image
+            parent.dismiss()
+        }
+        
+        func didCancel() {
+            parent.dismiss()
         }
     }
 }
