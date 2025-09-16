@@ -256,7 +256,7 @@ struct ProfilePictureEditor: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
-        .onChange(of: profileImageUrl) { _ in
+        .onChange(of: profileImageUrl) { oldValue, newValue in
             // Force image reload when profile picture URL changes
             imageId = UUID()
         }

@@ -162,7 +162,7 @@ struct ProfileHeader: View {
                     .sheet(isPresented: $showingEditProfile) {
                 EditProfileView()
             }
-            .onChange(of: user?.profilePicture) { _ in
+            .onChange(of: user?.profilePicture) { oldValue, newValue in
                 // Force image reload when profile picture URL changes
                 profileImageId = UUID()
             }
