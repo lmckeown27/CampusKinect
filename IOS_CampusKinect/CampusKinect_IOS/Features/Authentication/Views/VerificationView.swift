@@ -13,92 +13,163 @@ struct VerificationView: View {
     @State private var verificationCode = ""
     @State private var isResending = false
     @State private var showingResendSuccess = false
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            
-            Image(systemName: "envelope.badge")
-                .font(.system(size: 60))
-                .foregroundColor(Color("BrandPrimary"))
-            
-            Text("Check Your Email")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(Color("BrandPrimary"))
-            
-            Text("We've sent a verification code to:")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            
-            Text(email)
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(Color("AccentColor"))
-            
-            TextField("Enter verification code", text: $verificationCode)
-                .keyboardType(.numberPad)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
-            
-            if let error = authManager.authError {
-                Text(error.userFriendlyMessage)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-            }
-            
-            Button(action: {
-                Task {
-                    await verifyEmail()
-                }
-            }) {
-                if authManager.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Text("Verify Email")
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(8)
-            .disabled(authManager.isLoading || verificationCode.isEmpty)
-            .padding(.horizontal)
-            
-            HStack {
-                Text("Didn't receive the code?")
-                    .foregroundColor(.gray)
-                
-                Button("Resend") {
-                    Task {
-                        await resendCode()
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 32) {
+                    Spacer(minLength: 60)
+                    
+                    // Header Section
+                    VStack(spacing: 16) {
+                        Image(systemName: "envelope.badge.fill")
+                            .font(.system(size: 64))
+                            .foregroundColor(Color("BrandPrimary"))
+                        
+                        Text("Check Your Email")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color("BrandPrimary"))
+                        
+                        Text("We've sent a 6-digit verification code to:")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Text(email)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(Color("BrandPrimary"))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(Color("BrandPrimary").opacity(0.1))
+                            .cornerRadius(8)
                     }
+                    
+                    // Verification Form Card
+                    VStack(spacing: 24) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Verification Code")
+                                .font(.headline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            
+                            TextField("Enter 6-digit code", text: $verificationCode)
+                                .keyboardType(.numberPad)
+                                .font(.system(size: 18, weight: .medium, design: .monospaced))
+                                .textFieldStyle(PlainTextFieldStyle())
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 16)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color("BrandPrimary").opacity(0.3), lineWidth: 1)
+                                )
+                                .onChange(of: verificationCode) { _, newValue in
+                                    // Limit to 6 digits
+                                    if newValue.count > 6 {
+                                        verificationCode = String(newValue.prefix(6))
+                                    }
+                                }
+                        }
+                        
+                        if let error = authManager.authError {
+                            HStack(spacing: 8) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundColor(.red)
+                                Text(error.userFriendlyMessage)
+                                    .foregroundColor(.red)
+                                    .font(.caption)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 4)
+                        }
+                        
+                        LoadingButton(
+                            title: "Verify Email",
+                            isLoading: authManager.isLoading
+                        ) {
+                            Task {
+                                await verifyEmail()
+                            }
+                        }
+                        .disabled(verificationCode.count != 6)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 32)
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.1), radius: 16, x: 0, y: 4)
+                    .padding(.horizontal, 32)
+                    
+                    // Resend Section
+                    VStack(spacing: 16) {
+                        HStack(spacing: 8) {
+                            Text("Didn't receive the code?")
+                                .foregroundColor(.secondary)
+                            
+                            Button("Resend Code") {
+                                Task {
+                                    await resendCode()
+                                }
+                            }
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .foregroundColor(Color("BrandPrimary"))
+                            .disabled(isResending)
+                        }
+                        
+                        if isResending {
+                            HStack(spacing: 8) {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                Text("Sending new code...")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
                 }
-                .foregroundColor(Color("AccentColor"))
-                .disabled(isResending)
             }
-            
-            Spacer()
-        }
-        .navigationTitle("Verify Email")
-        .navigationBarTitleDisplayMode(.inline)
-        .alert("Code Sent", isPresented: $showingResendSuccess) {
-            Button("OK") { }
-        } message: {
-            Text("A new verification code has been sent to your email.")
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color("BrandPrimary").opacity(0.05),
+                        Color.clear,
+                        Color("BrandPrimary").opacity(0.1)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .navigationTitle("Verify Email")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Back") {
+                        dismiss()
+                    }
+                    .foregroundColor(Color("BrandPrimary"))
+                }
+            }
+            .alert("Code Sent", isPresented: $showingResendSuccess) {
+                Button("OK") { }
+            } message: {
+                Text("A new verification code has been sent to your email.")
+            }
         }
     }
     
     private func verifyEmail() async {
-        guard !verificationCode.isEmpty else { return }
+        guard verificationCode.count == 6 else { return }
         
         let success = await authManager.verifyEmail(email: email, code: verificationCode)
         if success {
             // Verification successful - AuthenticationManager will handle navigation
+            dismiss()
         } else {
             // Error will be displayed through authManager.authError
         }
@@ -107,11 +178,13 @@ struct VerificationView: View {
     private func resendCode() async {
         isResending = true
         
-        // Simulate API call
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        let success = await authManager.resendVerificationCode(email: email)
         
         isResending = false
-        showingResendSuccess = true
+        if success {
+            showingResendSuccess = true
+        }
+        // Error will be displayed through authManager.authError if failed
     }
 }
 

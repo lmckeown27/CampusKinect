@@ -21,6 +21,7 @@ struct RegisterView: View {
     @State private var alertMessage = ""
     @State private var isPasswordVisible = false
     @State private var isConfirmPasswordVisible = false
+    @State private var showingVerification = false
     @FocusState private var focusedField: RegisterField?
     
     enum RegisterField {
@@ -240,6 +241,7 @@ struct RegisterView: View {
                                     
                                     if success {
                                         // Navigate to verification view
+                                        showingVerification = true
                                     } else {
                                         showingAlert = true
                                     }
@@ -329,6 +331,9 @@ struct RegisterView: View {
             }
         } message: {
             Text(authManager.authError?.userFriendlyMessage ?? "An error occurred")
+        }
+        .fullScreenCover(isPresented: $showingVerification) {
+            VerificationView(email: email)
         }
     }
     
