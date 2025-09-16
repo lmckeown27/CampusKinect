@@ -44,18 +44,25 @@ class AuthenticationManager: ObservableObject {
     func checkExistingAuth() async {
         isLoading = true
         
-        do {
-            // Check if we have a valid token
-            if let _ = await keychainManager.getAccessToken() {
-                // Try to get current user to validate token
-                let user = try await apiService.getCurrentUser()
+        // Check if we have both a valid token and stored user ID
+        if let _ = await keychainManager.getAccessToken(),
+           let userIdString = await keychainManager.getUserID(),
+           let userId = Int(userIdString) {
+            
+            // We have valid credentials, try to get user details
+            do {
+                let user = try await apiService.getUserById(userId: userId)
                 currentUser = user
                 isAuthenticated = true
                 
                 NotificationCenter.default.post(name: .userDidLogin, object: nil)
+            } catch {
+                // If we can't get user details, the token might be invalid
+                print("Failed to get user details: \(error)")
+                await logout()
             }
-        } catch {
-            // Token is invalid or expired, clear it
+        } else {
+            // No valid credentials found
             await logout()
         }
         

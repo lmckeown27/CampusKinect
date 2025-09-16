@@ -4,7 +4,7 @@ import Foundation
 struct User: Codable, Identifiable, Equatable {
     let id: Int
     let username: String?
-    let email: String
+    let email: String?
     let firstName: String
     let lastName: String
     let displayName: String
@@ -13,11 +13,11 @@ struct User: Codable, Identifiable, Equatable {
     let major: String?
     let hometown: String?
     let bio: String?
-    let universityId: Int
+    let universityId: Int?
     let universityName: String?
     let universityDomain: String?
-    let isVerified: Bool
-    let isActive: Bool
+    let isVerified: Bool?
+    let isActive: Bool?
     let createdAt: Date
     let updatedAt: Date?
     
@@ -40,6 +40,91 @@ struct User: Codable, Identifiable, Equatable {
         case isActive
         case createdAt
         case updatedAt
+        case university
+    }
+    
+    // Nested university structure for getUserById response
+    struct UniversityInfo: Codable {
+        let id: Int
+        let name: String
+        let city: String?
+        let state: String?
+    }
+    
+    // Memberwise initializer for creating User instances programmatically
+    init(id: Int, username: String?, email: String?, firstName: String, lastName: String, displayName: String, profilePicture: String?, year: String?, major: String?, hometown: String?, bio: String?, universityId: Int?, universityName: String?, universityDomain: String?, isVerified: Bool?, isActive: Bool?, createdAt: Date, updatedAt: Date?) {
+        self.id = id
+        self.username = username
+        self.email = email
+        self.firstName = firstName
+        self.lastName = lastName
+        self.displayName = displayName
+        self.profilePicture = profilePicture
+        self.year = year
+        self.major = major
+        self.hometown = hometown
+        self.bio = bio
+        self.universityId = universityId
+        self.universityName = universityName
+        self.universityDomain = universityDomain
+        self.isVerified = isVerified
+        self.isActive = isActive
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        id = try container.decode(Int.self, forKey: .id)
+        username = try container.decodeIfPresent(String.self, forKey: .username)
+        email = try container.decodeIfPresent(String.self, forKey: .email)
+        firstName = try container.decode(String.self, forKey: .firstName)
+        lastName = try container.decode(String.self, forKey: .lastName)
+        displayName = try container.decode(String.self, forKey: .displayName)
+        profilePicture = try container.decodeIfPresent(String.self, forKey: .profilePicture)
+        year = try container.decodeIfPresent(String.self, forKey: .year)
+        major = try container.decodeIfPresent(String.self, forKey: .major)
+        hometown = try container.decodeIfPresent(String.self, forKey: .hometown)
+        bio = try container.decodeIfPresent(String.self, forKey: .bio)
+        isVerified = try container.decodeIfPresent(Bool.self, forKey: .isVerified)
+        isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        
+        // Handle university fields - try nested university object first, then individual fields
+        if let universityInfo = try? container.decodeIfPresent(UniversityInfo.self, forKey: .university) {
+            universityId = universityInfo.id
+            universityName = universityInfo.name
+            universityDomain = nil // Not provided in nested structure
+        } else {
+            universityId = try container.decodeIfPresent(Int.self, forKey: .universityId)
+            universityName = try container.decodeIfPresent(String.self, forKey: .universityName)
+            universityDomain = try container.decodeIfPresent(String.self, forKey: .universityDomain)
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(username, forKey: .username)
+        try container.encodeIfPresent(email, forKey: .email)
+        try container.encode(firstName, forKey: .firstName)
+        try container.encode(lastName, forKey: .lastName)
+        try container.encode(displayName, forKey: .displayName)
+        try container.encodeIfPresent(profilePicture, forKey: .profilePicture)
+        try container.encodeIfPresent(year, forKey: .year)
+        try container.encodeIfPresent(major, forKey: .major)
+        try container.encodeIfPresent(hometown, forKey: .hometown)
+        try container.encodeIfPresent(bio, forKey: .bio)
+        try container.encodeIfPresent(universityId, forKey: .universityId)
+        try container.encodeIfPresent(universityName, forKey: .universityName)
+        try container.encodeIfPresent(universityDomain, forKey: .universityDomain)
+        try container.encodeIfPresent(isVerified, forKey: .isVerified)
+        try container.encodeIfPresent(isActive, forKey: .isActive)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
     }
     
     // MARK: - Computed Properties
