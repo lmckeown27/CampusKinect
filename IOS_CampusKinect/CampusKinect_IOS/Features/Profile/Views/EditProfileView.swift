@@ -199,6 +199,7 @@ struct ProfilePictureEditor: View {
     @Binding var profileImage: UIImage?
     let profileImageUrl: String?
     let onTap: () -> Void
+    @State private var imageId = UUID() // For cache busting
     
     var body: some View {
         VStack(spacing: 12) {
@@ -211,7 +212,8 @@ struct ProfilePictureEditor: View {
                             .frame(width: 120, height: 120)
                             .clipShape(Circle())
                     } else if let profileImageUrl = profileImageUrl, !profileImageUrl.isEmpty {
-                        AsyncImage(url: URL(string: "\(APIConstants.baseURL)/\(profileImageUrl)")) { image in
+                        let urlWithCacheBuster = "https://campuskinect.net\(profileImageUrl)?v=\(imageId.uuidString)"
+                        AsyncImage(url: URL(string: urlWithCacheBuster)) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
@@ -253,6 +255,10 @@ struct ProfilePictureEditor: View {
             Text("Tap to change photo")
                 .font(.caption)
                 .foregroundColor(.secondary)
+        }
+        .onChange(of: profileImageUrl) { _ in
+            // Force image reload when profile picture URL changes
+            imageId = UUID()
         }
     }
 }
@@ -303,41 +309,34 @@ struct CameraPicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     @Environment(\.dismiss) private var dismiss
     
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = .camera
-        picker.allowsEditing = true
-        return picker
+    func makeUIViewController(context: Context) -> CameraView {
+        return CameraView(
+            onImageCaptured: { capturedImage in
+                image = capturedImage
+                dismiss()
+            },
+            flashMode: .auto,
+            cameraDevice: .rear,
+            allowsEditing: true
+        )
     }
     
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    func updateUIViewController(_ uiViewController: CameraView, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    class Coordinator: NSObject {
         let parent: CameraPicker
         
         init(_ parent: CameraPicker) {
             self.parent = parent
         }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let editedImage = info[.editedImage] as? UIImage {
-                parent.image = editedImage
-            } else if let originalImage = info[.originalImage] as? UIImage {
-                parent.image = originalImage
-            }
-            parent.dismiss()
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.dismiss()
-        }
     }
 }
+
+
 
 #Preview {
     EditProfileView()

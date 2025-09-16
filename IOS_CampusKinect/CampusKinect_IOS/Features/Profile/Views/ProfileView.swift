@@ -64,6 +64,16 @@ struct ProfileView: View {
 struct ProfileHeader: View {
     let user: User?
     @State private var showingEditProfile = false
+    @State private var profileImageId = UUID() // For cache busting
+    
+    var profileImageURL: URL? {
+        guard let profilePicture = user?.profilePicture else { return nil }
+        
+        // Add cache-busting parameter to force reload
+        let baseURL = "https://campuskinect.net\(profilePicture)"
+        let urlWithCacheBuster = "\(baseURL)?v=\(profileImageId.uuidString)"
+        return URL(string: urlWithCacheBuster)
+    }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -71,7 +81,7 @@ struct ProfileHeader: View {
             Button(action: {
                 showingEditProfile = true
             }) {
-                AsyncImage(url: user?.profileImageURL) { image in
+                AsyncImage(url: profileImageURL) { image in
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -149,9 +159,13 @@ struct ProfileHeader: View {
                     .cornerRadius(8)
             }
         }
-        .sheet(isPresented: $showingEditProfile) {
-            EditProfileView()
-        }
+                    .sheet(isPresented: $showingEditProfile) {
+                EditProfileView()
+            }
+            .onChange(of: user?.profilePicture) { _ in
+                // Force image reload when profile picture URL changes
+                profileImageId = UUID()
+            }
     }
 }
 
