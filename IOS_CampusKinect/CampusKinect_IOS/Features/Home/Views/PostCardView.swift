@@ -9,13 +9,8 @@ import SwiftUI
 
 struct PostCardView: View {
     let post: Post
-    @State private var isBookmarked = false
-    @State private var isReposted = false
-    @State private var bookmarkCount = 0
-    @State private var repostCount = 0
     @State private var showingImageViewer = false
     @State private var selectedImageIndex = 0
-    @State private var isLoading = false
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
@@ -47,13 +42,6 @@ struct PostCardView: View {
             // Actions
             PostActions(
                 post: post,
-                isBookmarked: isBookmarked,
-                isReposted: isReposted,
-                bookmarkCount: bookmarkCount,
-                repostCount: repostCount,
-                isLoading: isLoading,
-                onBookmark: handleBookmark,
-                onRepost: handleRepost,
                 onMessage: handleMessage
             )
         }
@@ -67,100 +55,9 @@ struct PostCardView: View {
                 selectedIndex: selectedImageIndex
             )
         }
-        .task {
-            await loadUserInteractions()
-        }
     }
     
     // MARK: - Action Handlers
-    
-    private func loadUserInteractions() async {
-        guard authManager.currentUser != nil else { return }
-        
-        do {
-            let response = try await apiService.getUserInteractions(post.id)
-            await MainActor.run {
-                isBookmarked = response.data.hasBookmarked
-                isReposted = response.data.hasReposted
-                // Note: API doesn't provide counts yet, so we keep them at 0
-                // In the future, these could be loaded from post data or separate endpoint
-            }
-        } catch {
-            print("Failed to load user interactions: \(error)")
-        }
-    }
-    
-    private func handleBookmark() {
-        guard authManager.currentUser != nil else {
-            // Show login prompt
-            return
-        }
-        
-        guard !isLoading else { return }
-        
-        Task {
-            await MainActor.run {
-                isLoading = true
-            }
-            
-            do {
-                let previousState = isBookmarked
-                let _ = try await apiService.toggleBookmark(post.id)
-                await MainActor.run {
-                    // Toggle the state
-                    isBookmarked = !previousState
-                    // Update count based on new state
-                    if isBookmarked {
-                        bookmarkCount += 1
-                    } else {
-                        bookmarkCount = max(0, bookmarkCount - 1)
-                    }
-                    isLoading = false
-                }
-            } catch {
-                await MainActor.run {
-                    isLoading = false
-                }
-                print("Failed to toggle bookmark: \(error)")
-            }
-        }
-    }
-    
-    private func handleRepost() {
-        guard authManager.currentUser != nil else {
-            // Show login prompt
-            return
-        }
-        
-        guard !isLoading else { return }
-        
-        Task {
-            await MainActor.run {
-                isLoading = true
-            }
-            
-            do {
-                let previousState = isReposted
-                let _ = try await apiService.toggleRepost(post.id)
-                await MainActor.run {
-                    // Toggle the state
-                    isReposted = !previousState
-                    // Update count based on new state
-                    if isReposted {
-                        repostCount += 1
-                    } else {
-                        repostCount = max(0, repostCount - 1)
-                    }
-                    isLoading = false
-                }
-            } catch {
-                await MainActor.run {
-                    isLoading = false
-                }
-                print("Failed to toggle repost: \(error)")
-            }
-        }
-    }
     
     private func handleMessage() {
         guard let currentUser = authManager.currentUser else {
@@ -370,13 +267,6 @@ struct PostLocation: View {
 // MARK: - Post Actions
 struct PostActions: View {
     let post: Post
-    let isBookmarked: Bool
-    let isReposted: Bool
-    let bookmarkCount: Int
-    let repostCount: Int
-    let isLoading: Bool
-    let onBookmark: () -> Void
-    let onRepost: () -> Void
     let onMessage: () -> Void
     
     var body: some View {
@@ -388,28 +278,6 @@ struct PostActions: View {
                 isActive: false,
                 action: onMessage
             )
-            
-            // Repost
-            ActionButton(
-                systemImage: "arrow.2.squarepath",
-                count: repostCount > 0 ? repostCount : nil,
-                isActive: isReposted,
-                activeColor: .green,
-                action: onRepost
-            )
-            .disabled(isLoading)
-            
-            Spacer()
-            
-            // Bookmark (moved to right side)
-            ActionButton(
-                systemImage: isBookmarked ? "bookmark.fill" : "bookmark",
-                count: bookmarkCount > 0 ? bookmarkCount : nil,
-                isActive: isBookmarked,
-                activeColor: Color("BrandPrimary"),
-                action: onBookmark
-            )
-            .disabled(isLoading)
         }
     }
 }
