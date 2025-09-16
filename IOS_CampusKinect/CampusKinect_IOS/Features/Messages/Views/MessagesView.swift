@@ -154,17 +154,11 @@ struct MessagesView: View {
                     shouldNavigateToChat = true
                 }
             }
-            .background(
-                NavigationLink(
-                    destination: selectedUser.map { user in
-                        ChatView(userId: user.id, userName: user.displayName)
-                    },
-                    isActive: $shouldNavigateToChat
-                ) {
-                    EmptyView()
+            .navigationDestination(isPresented: $shouldNavigateToChat) {
+                if let selectedUser = selectedUser {
+                    ChatView(userId: selectedUser.id, userName: selectedUser.displayName)
                 }
-                .hidden()
-            )
+            }
             .onAppear {
                 Task {
                     switch activeTab {
