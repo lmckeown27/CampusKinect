@@ -123,19 +123,21 @@ extension HomeViewModel {
         // Start with all posts
         var filtered = posts
         
+        // Apply category filtering if any categories are selected
+        if !selectedCategories.isEmpty {
+            filtered = filtered.filter { post in
+                return selectedCategories.contains { selectedCategory in
+                    return post.postType.lowercased() == selectedCategory.lowercased()
+                }
+            }
+        }
+        
         // Apply tag filtering if any tags are selected
         if !selectedTags.isEmpty {
             filtered = filtered.filter { post in
-                // Check if post matches any selected tag
                 return selectedTags.contains { selectedTag in
-                    // Check if it's a category tag
-                    if ["goods", "services", "housing", "events"].contains(selectedTag.lowercased()) {
-                        return post.postType.lowercased() == selectedTag.lowercased()
-                    } else {
-                        // Check if it's a subcategory tag
-                        return post.tags.contains { postTag in
-                            postTag.lowercased() == selectedTag.lowercased()
-                        }
+                    return post.tags.contains { postTag in
+                        postTag.lowercased() == selectedTag.lowercased()
                     }
                 }
             }
@@ -156,14 +158,14 @@ extension HomeViewModel {
     }
     
     var hasTagsSelected: Bool {
-        return !selectedTags.isEmpty
+        return !selectedTags.isEmpty || !selectedCategories.isEmpty
     }
     
     var shouldShowOfferRequestToggle: Bool {
         // Only show toggle when goods, services, or housing categories are selected
         let offerRequestCategories = ["goods", "services", "housing"]
-        return selectedTags.contains { tag in
-            offerRequestCategories.contains(tag.lowercased())
+        return selectedCategories.contains { category in
+            offerRequestCategories.contains(category.lowercased())
         }
     }
     
