@@ -219,6 +219,8 @@ struct MessagesView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
                 print("💬 MessagesView: Received navigateToChat notification")
+                print("💬 MessagesView: Notification userInfo: \(notification.userInfo ?? [:])")
+                
                 if let userId = notification.userInfo?["userId"] as? Int,
                    let userName = notification.userInfo?["userName"] as? String {
                     print("💬 MessagesView: Creating chat with user: \(userName) (ID: \(userId))")
@@ -248,9 +250,11 @@ struct MessagesView: View {
                     print("💬 MessagesView: Navigation state updated - shouldNavigateToChat: \(shouldNavigateToChat)")
                 } else {
                     print("❌ MessagesView: Failed to extract userId or userName from notification")
+                    print("❌ MessagesView: Available keys: \(notification.userInfo?.keys.map { String(describing: $0) } ?? [])")
                 }
             }
             .onAppear {
+                print("💬 MessagesView: onAppear called - ready to receive notifications")
                 Task {
                     switch activeTab {
                     case .incoming:
@@ -260,6 +264,7 @@ struct MessagesView: View {
                     case .requests:
                         await viewModel.loadMessageRequests()
                     }
+                    print("💬 MessagesView: Initial data loading completed")
                 }
             }
             .onChange(of: activeTab) { oldValue, newValue in

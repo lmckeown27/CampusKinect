@@ -82,8 +82,9 @@ struct PostCardView: View {
         print("📱 PostCardView: handleMessage called (post tap) for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         
         // Navigate to chat with the post author
-        // Add a small delay to ensure MessagesView is ready to receive the notification
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        // Add a delay to ensure MessagesView is ready to receive the notification (especially on first login)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            print("📱 PostCardView: Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
             NotificationCenter.default.post(
                 name: .navigateToChat,
                 object: nil,
