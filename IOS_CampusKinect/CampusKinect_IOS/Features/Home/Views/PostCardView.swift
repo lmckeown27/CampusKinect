@@ -93,12 +93,16 @@ struct PostCardView: View {
     }
     
     private func handleProfileTap() {
-        // Navigate to user profile - use poster.id for consistency
+        print("👤 PostCardView: handleProfileTap called for user: \(post.poster.displayName) - DISABLED FOR TESTING")
+        // Temporarily disabled to prevent profile page flashing
+        // TODO: Re-enable with better tap area management
+        /*
         NotificationCenter.default.post(
             name: .navigateToProfile,
             object: nil,
             userInfo: ["userId": post.poster.id]
         )
+        */
     }
 }
 
@@ -129,25 +133,25 @@ struct PostHeader: View {
                 .clipShape(Circle())
             }
             
-            Button(action: onProfileTap) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(post.user.displayName)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                    
-                    HStack(spacing: 4) {
-                        Text("@\(post.user.username)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Text("• \(post.timeAgo)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(post.user.displayName)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .onTapGesture {
+                        onProfileTap()
                     }
+                
+                HStack(spacing: 4) {
+                    Text("@\(post.user.username)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Text("• \(post.timeAgo)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
-            .buttonStyle(PlainButtonStyle())
             
             Spacer()
             
