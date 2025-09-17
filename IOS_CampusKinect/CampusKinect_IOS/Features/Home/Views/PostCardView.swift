@@ -85,19 +85,16 @@ struct PostCardView: View {
         UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
         UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
         
-        // Navigate to chat with the post author
-        // MessagesView is now preloaded, so shorter delay is sufficient
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            print("📱 PostCardView: Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
-            NotificationCenter.default.post(
-                name: .navigateToChat,
-                object: nil,
-                userInfo: [
-                    "userId": post.poster.id,
-                    "userName": post.poster.displayName
-                ]
-            )
-        }
+        // Navigate to chat with the post author - MessagesView is preloaded so no delay needed
+        print("📱 PostCardView: Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
+        NotificationCenter.default.post(
+            name: .navigateToChat,
+            object: nil,
+            userInfo: [
+                "userId": post.poster.id,
+                "userName": post.poster.displayName
+            ]
+        )
     }
     
 
