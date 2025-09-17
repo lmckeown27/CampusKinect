@@ -677,10 +677,21 @@ class CameraViewController: UIViewController {
 // MARK: - Image Picker Delegate
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // Immediate success haptic feedback
+        let notificationFeedback = UINotificationFeedbackGenerator()
+        notificationFeedback.notificationOccurred(.success)
+        
         if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
-            // Fix image orientation to ensure proper display
-            let orientedImage = image.fixedOrientation()
-            delegate?.didCaptureImage(orientedImage)
+            // Process image on background queue for faster response
+            DispatchQueue.global(qos: .userInitiated).async {
+                // Fix image orientation to ensure proper display
+                let orientedImage = image.fixedOrientation()
+                
+                // Return to main queue for delegate callback
+                DispatchQueue.main.async {
+                    self.delegate?.didCaptureImage(orientedImage)
+                }
+            }
         } else {
             delegate?.didCancel()
         }

@@ -153,11 +153,15 @@ class AdvancedCameraViewController: UIViewController {
         captureButton.layer.cornerRadius = 40 // Updated for 80x80 button
         captureButton.layer.borderWidth = 5 // Slightly thicker border
         captureButton.layer.borderColor = UIColor(red: 0.44, green: 0.55, blue: 0.51, alpha: 1.0).cgColor // Olive Green
+        
+        // Only use touchUpInside to prevent double captures
         captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
         
-        // Make the button more sensitive by adding touch events
-        captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchDown)
-        captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchDragInside)
+        // Add visual feedback for touch down/up without triggering capture
+        captureButton.addTarget(self, action: #selector(captureButtonTouchDown), for: .touchDown)
+        captureButton.addTarget(self, action: #selector(captureButtonTouchUp), for: .touchUpInside)
+        captureButton.addTarget(self, action: #selector(captureButtonTouchUp), for: .touchUpOutside)
+        captureButton.addTarget(self, action: #selector(captureButtonTouchUp), for: .touchCancel)
         
         // Cancel button
         cancelButton = UIButton(type: .system)
@@ -237,20 +241,21 @@ class AdvancedCameraViewController: UIViewController {
     }
     
     @objc private func capturePhoto() {
-        // Prevent multiple rapid captures
+        // Prevent multiple rapid captures with shorter delay
         guard !isCapturing else { return }
         isCapturing = true
         
-        // Add haptic feedback
-        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        // Stronger haptic feedback for capture confirmation
+        let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
         impactFeedback.impactOccurred()
         
-        // Visual feedback - briefly change button appearance
-        UIView.animate(withDuration: 0.1, animations: {
-            self.captureButton.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        // Enhanced visual feedback - simulate camera shutter
+        UIView.animate(withDuration: 0.05, animations: {
+            // Quick flash effect
+            self.view.backgroundColor = UIColor.white.withAlphaComponent(0.8)
         }) { _ in
-            UIView.animate(withDuration: 0.1) {
-                self.captureButton.transform = CGAffineTransform.identity
+            UIView.animate(withDuration: 0.05) {
+                self.view.backgroundColor = UIColor.black
             }
         }
         
@@ -265,10 +270,30 @@ class AdvancedCameraViewController: UIViewController {
         
         photoOutput.capturePhoto(with: settings, delegate: self)
         
-        // Reset capture flag after a short delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        // Shorter reset delay for better responsiveness
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.isCapturing = false
         }
+    }
+    
+    @objc private func captureButtonTouchDown() {
+        // Light haptic feedback on touch down
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+        
+        // Visual feedback - button press animation
+        UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction], animations: {
+            self.captureButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            self.captureButton.backgroundColor = UIColor.white.withAlphaComponent(0.8)
+        })
+    }
+    
+    @objc private func captureButtonTouchUp() {
+        // Return button to normal state
+        UIView.animate(withDuration: 0.15, delay: 0, options: [.allowUserInteraction], animations: {
+            self.captureButton.transform = CGAffineTransform.identity
+            self.captureButton.backgroundColor = .white
+        })
     }
     
     private func configureCustomFlash() {
@@ -358,20 +383,41 @@ class AdvancedCameraViewController: UIViewController {
 // MARK: - Photo Capture Delegate
 extension AdvancedCameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        // Immediate success haptic feedback
+        DispatchQueue.main.async {
+            let notificationFeedback = UINotificationFeedbackGenerator()
+            notificationFeedback.notificationOccurred(.success)
+        }
+        
         if let error = error {
             print("❌ Photo capture error: \(error)")
+            DispatchQueue.main.async {
+                let notificationFeedback = UINotificationFeedbackGenerator()
+                notificationFeedback.notificationOccurred(.error)
+            }
             return
         }
         
         guard let imageData = photo.fileDataRepresentation(),
               let image = UIImage(data: imageData) else {
             print("❌ Failed to create image from photo data")
+            DispatchQueue.main.async {
+                let notificationFeedback = UINotificationFeedbackGenerator()
+                notificationFeedback.notificationOccurred(.error)
+            }
             return
         }
         
-        // Fix image orientation to ensure proper display
-        let orientedImage = image.fixedOrientation()
-        delegate?.didCaptureImage(orientedImage)
+        // Process image on background queue for faster response
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Fix image orientation to ensure proper display
+            let orientedImage = image.fixedOrientation()
+            
+            // Return to main queue for delegate callback
+            DispatchQueue.main.async {
+                self.delegate?.didCaptureImage(orientedImage)
+            }
+        }
     }
 }
 
