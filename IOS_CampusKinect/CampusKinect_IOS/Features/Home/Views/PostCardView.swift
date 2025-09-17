@@ -100,7 +100,7 @@ struct PostCardView: View {
         Task {
             do {
                 // Create the conversation immediately using the API service
-                let response = try await apiService.createConversation(
+                _ = try await apiService.createConversation(
                     receiverId: post.poster.id,
                     initialMessage: "" // Backend ignores this parameter anyway
                 )
