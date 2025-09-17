@@ -21,7 +21,6 @@ struct MessagesView: View {
     enum MessageTab: String, CaseIterable {
         case incoming = "Incoming"
         case sent = "Sent"
-        case requests = "Requests"
     }
     
     var body: some View {
@@ -169,31 +168,6 @@ struct MessagesView: View {
                                 await viewModel.refreshConversations()
                             }
                         }
-                    case .requests:
-                        if filteredMessageRequests.isEmpty {
-                            EmptyStateView(
-                                title: emptyStateTitle,
-                                message: emptyStateMessage,
-                                systemImage: "person.2",
-                                actionTitle: "New Message"
-                            ) {
-                                showingNewMessage = true
-                            }
-                        } else {
-                            List {
-                                ForEach(filteredMessageRequests) { request in
-                                    MessageRequestRow(request: request) {
-                                        // Handle message request tap
-                                        handleMessageRequestTap(request)
-                                    }
-                                    .listRowSeparator(.hidden)
-                                }
-                            }
-                            .listStyle(PlainListStyle())
-                            .refreshable {
-                                await viewModel.refreshMessageRequests()
-                            }
-                        }
                     }
                 }
             }
@@ -268,8 +242,6 @@ struct MessagesView: View {
                         await viewModel.loadConversations()
                     case .sent:
                         await viewModel.loadConversations()
-                    case .requests:
-                        await viewModel.loadMessageRequests()
                     }
                     print("💬 MessagesView: Initial data loading completed")
                     
@@ -355,8 +327,6 @@ struct MessagesView: View {
                         await viewModel.loadConversations()
                     case .sent:
                         await viewModel.loadConversations()
-                    case .requests:
-                        await viewModel.loadMessageRequests()
                     }
                 }
             }
@@ -412,8 +382,6 @@ struct MessagesView: View {
             return "Search incoming messages"
         case .sent:
             return "Search sent messages"
-        case .requests:
-            return "Search message requests"
         }
     }
     
@@ -423,8 +391,6 @@ struct MessagesView: View {
             return "No Unread Messages"
         case .sent:
             return "No Recent Conversations"
-        case .requests:
-            return "No Message Requests"
         }
     }
     
@@ -434,8 +400,6 @@ struct MessagesView: View {
             return "Messages you haven't responded to will appear here"
         case .sent:
             return "Conversations where you sent the last message will appear here"
-        case .requests:
-            return "Message requests will appear here"
         }
     }
     
@@ -467,9 +431,6 @@ struct MessagesView: View {
                 
                 return matchesSearch && isOutgoingMessage
             }
-        case .requests:
-            // This will be handled separately with message requests
-            return []
         }
     }
     

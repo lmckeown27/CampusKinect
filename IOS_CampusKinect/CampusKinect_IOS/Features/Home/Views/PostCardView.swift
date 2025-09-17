@@ -11,6 +11,7 @@ struct PostCardView: View {
     let post: Post
     @State private var showingImageViewer = false
     @State private var selectedImageIndex = 0
+    @State private var showingMessageConfirmation = false
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
@@ -63,6 +64,14 @@ struct PostCardView: View {
                 selectedIndex: selectedImageIndex
             )
         }
+        .alert("Start Conversation", isPresented: $showingMessageConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Yes, Message") {
+                confirmCreateConversation()
+            }
+        } message: {
+            Text("Do you want to start a conversation with \(post.poster.displayName)?")
+        }
     }
     
     // MARK: - Action Handlers
@@ -81,6 +90,13 @@ struct PostCardView: View {
         
         print("📱 PostCardView: handleMessage called (post tap) for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         
+        // Show confirmation dialog
+        showingMessageConfirmation = true
+    }
+    
+    private func confirmCreateConversation() {
+        print("📱 PostCardView: User confirmed - creating conversation with \(post.poster.displayName)")
+        
         // Store pending navigation in UserDefaults as backup for first-boot scenarios
         UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
         UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
@@ -96,8 +112,6 @@ struct PostCardView: View {
             ]
         )
     }
-    
-
 }
 
 // MARK: - Post Header
