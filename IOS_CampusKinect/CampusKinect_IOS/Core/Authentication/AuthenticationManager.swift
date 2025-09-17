@@ -107,8 +107,10 @@ class AuthenticationManager: ObservableObject {
             await refreshCurrentUser()
             
             // Request push notification permissions after successful login
+            print("🔔 AuthenticationManager: About to request push notification permissions...")
             Task {
-                await PushNotificationManager.shared.requestPermission()
+                let granted = await PushNotificationManager.shared.requestPermission()
+                print("🔔 AuthenticationManager: Push notification permission result: \(granted)")
             }
             
             NotificationCenter.default.post(name: .userDidLogin, object: nil)

@@ -25,17 +25,24 @@ class PushNotificationManager: NSObject, ObservableObject {
     // MARK: - Permission Management
     
     func requestPermission() async -> Bool {
+        print("🔔 PushNotificationManager: requestPermission() called")
         let center = UNUserNotificationCenter.current()
         
         do {
+            print("🔔 PushNotificationManager: Requesting authorization...")
             let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+            
+            print("🔔 PushNotificationManager: Authorization result: \(granted)")
             
             await MainActor.run {
                 self.isAuthorized = granted
             }
             
             if granted {
+                print("🔔 PushNotificationManager: Permission granted, registering for remote notifications...")
                 await registerForRemoteNotifications()
+            } else {
+                print("🔔 PushNotificationManager: Permission denied by user")
             }
             
             print("📱 Push notification permission: \(granted ? "Granted" : "Denied")")
