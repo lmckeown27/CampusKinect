@@ -161,8 +161,14 @@ class PushNotificationManager: NSObject, ObservableObject {
             do {
                 let unreadCount = try await apiService.getUnreadMessageCount()
                 
-                await MainActor.run {
-                    UIApplication.shared.applicationIconBadgeNumber = unreadCount
+                // Use modern UNUserNotificationCenter API for iOS 16+
+                if #available(iOS 16.0, *) {
+                    try await UNUserNotificationCenter.current().setBadgeCount(unreadCount)
+                } else {
+                    // Fallback for older iOS versions
+                    await MainActor.run {
+                        UIApplication.shared.applicationIconBadgeNumber = unreadCount
+                    }
                 }
                 
             } catch {
@@ -172,8 +178,16 @@ class PushNotificationManager: NSObject, ObservableObject {
     }
     
     func clearBadge() {
-        DispatchQueue.main.async {
-            UIApplication.shared.applicationIconBadgeNumber = 0
+        Task {
+            // Use modern UNUserNotificationCenter API for iOS 16+
+            if #available(iOS 16.0, *) {
+                try? await UNUserNotificationCenter.current().setBadgeCount(0)
+            } else {
+                // Fallback for older iOS versions
+                await MainActor.run {
+                    UIApplication.shared.applicationIconBadgeNumber = 0
+                }
+            }
         }
     }
     
