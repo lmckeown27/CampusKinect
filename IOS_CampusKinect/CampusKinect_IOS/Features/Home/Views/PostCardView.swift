@@ -79,15 +79,17 @@ struct PostCardView: View {
         print("📱 Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         
         // Navigate to chat with the post author
-        // Use poster.id and displayName for reliable data
-        NotificationCenter.default.post(
-            name: .navigateToChat,
-            object: nil,
-            userInfo: [
-                "userId": post.poster.id,
-                "userName": post.poster.displayName
-            ]
-        )
+        // Add a small delay to ensure MessagesView is ready to receive the notification
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NotificationCenter.default.post(
+                name: .navigateToChat,
+                object: nil,
+                userInfo: [
+                    "userId": post.poster.id,
+                    "userName": post.poster.displayName
+                ]
+            )
+        }
     }
     
     private func handleProfileTap() {
