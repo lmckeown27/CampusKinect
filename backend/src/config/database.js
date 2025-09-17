@@ -423,9 +423,16 @@ const addMobileColumns = async () => {
 // Initialize database
 const initializeDatabase = async () => {
   try {
-    await createTables();
-    await addMobileColumns();
-    console.log('✅ Database initialization complete');
+    // Skip table creation in production since tables already exist
+    if (process.env.NODE_ENV === 'production') {
+      console.log('🏗️ Skipping table creation - using existing production database');
+      console.log('✅ Database initialization complete (production mode)');
+    } else {
+      // Only create tables in development/test environments
+      await createTables();
+      await addMobileColumns();
+      console.log('✅ Database initialization complete');
+    }
   } catch (error) {
     console.error('❌ Database initialization failed:', error);
     throw error;
