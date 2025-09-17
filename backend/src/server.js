@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const { initializeDatabase, pool } = require('./config/database');
-const { connectRedis, redis } = require('./config/redis');
+const { connectRedis, client: getRedisClient } = require('./config/redis');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/notFound');
 
@@ -247,14 +247,21 @@ function gracefulShutdown() {
       
       // Close Redis connections
       console.log('🔄 Closing Redis connections...');
-      redis.quit().then(() => {
-        console.log('✅ Redis connections closed');
+      const redisClient = getRedisClient();
+      if (redisClient && typeof redisClient.quit === 'function') {
+        redisClient.quit().then(() => {
+          console.log('✅ Redis connections closed');
+          console.log('✅ Graceful shutdown complete');
+          process.exit(0);
+        }).catch((error) => {
+          console.error('❌ Error closing Redis:', error);
+          process.exit(1);
+        });
+      } else {
+        console.log('✅ No Redis connection to close');
         console.log('✅ Graceful shutdown complete');
         process.exit(0);
-      }).catch((error) => {
-        console.error('❌ Error closing Redis:', error);
-        process.exit(1);
-      });
+      }
     }).catch((error) => {
       console.error('❌ Error closing database:', error);
       process.exit(1);
