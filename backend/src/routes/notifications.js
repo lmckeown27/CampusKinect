@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../config/database');
-const auth = require('../middleware/auth');
+const { auth, requireVerification } = require('../middleware/auth');
 const Joi = require('joi');
 
 // Validation schemas
@@ -11,7 +11,7 @@ const deviceTokenSchema = Joi.object({
 });
 
 // Register device token for push notifications
-router.post('/register-device', auth, async (req, res) => {
+router.post('/register-device', [auth, requireVerification], async (req, res) => {
   try {
     const { error, value } = deviceTokenSchema.validate(req.body);
     if (error) {
@@ -66,7 +66,7 @@ router.post('/register-device', auth, async (req, res) => {
 });
 
 // Unregister device token (when user logs out)
-router.delete('/unregister-device', auth, async (req, res) => {
+router.delete('/unregister-device', [auth, requireVerification], async (req, res) => {
   try {
     const { deviceToken } = req.body;
     const userId = req.user.id;
