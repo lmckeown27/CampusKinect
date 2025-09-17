@@ -76,7 +76,7 @@ class AuthenticationManager: ObservableObject {
         
         do {
             print("🔐 AuthenticationManager: Starting login process...")
-            let response: LoginResponse = try await apiService.login(email: email, password: password)
+            let response = try await apiService.login(email: email, password: password)
             print("🔐 AuthenticationManager: Login API call successful")
             
             // Save tokens with error handling
