@@ -32,28 +32,38 @@ class PushNotificationService {
     });
 
     // Initialize Apple Push Notification service
-    if (apn && process.env.APN_KEY_ID && process.env.APN_TEAM_ID) {
-      const apnOptions = {
-        token: {
-          key: process.env.APN_PRIVATE_KEY || './certs/AuthKey.p8',
+    if (apn && process.env.APN_KEY_ID && process.env.APN_TEAM_ID && process.env.APN_PRIVATE_KEY) {
+      try {
+        // Fix the private key format - convert escaped newlines to actual newlines
+        const fixedPrivateKey = process.env.APN_PRIVATE_KEY.replace(/\\n/g, '\n');
+        
+        const apnOptions = {
+          token: {
+            key: fixedPrivateKey,
+            keyId: process.env.APN_KEY_ID,
+            teamId: process.env.APN_TEAM_ID
+          },
+          production: process.env.NODE_ENV === 'production'
+        };
+
+        console.log('📱 Creating APN Provider with options:', {
           keyId: process.env.APN_KEY_ID,
-          teamId: process.env.APN_TEAM_ID
-        },
-        production: process.env.NODE_ENV === 'production'
-      };
+          teamId: process.env.APN_TEAM_ID,
+          production: process.env.NODE_ENV === 'production',
+          keyLength: fixedPrivateKey.length,
+          keyPreview: fixedPrivateKey.substring(0, 50) + '...'
+        });
 
-      console.log('📱 Creating APN Provider with options:', {
-        keyId: process.env.APN_KEY_ID,
-        teamId: process.env.APN_TEAM_ID,
-        production: process.env.NODE_ENV === 'production',
-        keyPath: apnOptions.token.key
-      });
-
-      this.apnProvider = new apn.Provider(apnOptions);
-      console.log('✅ APN Provider initialized successfully');
+        this.apnProvider = new apn.Provider(apnOptions);
+        console.log('✅ APN Provider initialized successfully');
+      } catch (error) {
+        console.error('❌ Failed to initialize APN Provider:', error.message);
+        console.log('⚠️ Push notifications will be disabled, but server will continue...');
+        this.apnProvider = null;
+      }
     } else {
       console.log('❌ APN Provider not initialized - missing required environment variables or apn module');
-      console.log('❌ Required: APN_KEY_ID, APN_TEAM_ID, and apn module');
+      console.log('❌ Required: APN_KEY_ID, APN_TEAM_ID, APN_PRIVATE_KEY, and apn module');
     }
 
     // Initialize Firebase Cloud Messaging
@@ -67,7 +77,9 @@ class PushNotificationService {
         
         console.log('✅ FCM initialized');
       } catch (error) {
-        console.error('❌ FCM initialization failed:', error);
+        console.error('❌ FCM initialization failed:', error.message);
+        console.log('⚠️ FCM notifications will be disabled, but server will continue...');
+        this.fcmApp = null;
       }
     } else {
       console.log('❌ FCM not initialized - missing FIREBASE_SERVICE_ACCOUNT or firebase-admin module');
