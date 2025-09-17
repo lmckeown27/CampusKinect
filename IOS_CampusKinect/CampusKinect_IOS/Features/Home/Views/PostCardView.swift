@@ -81,8 +81,12 @@ struct PostCardView: View {
         
         print("📱 PostCardView: handleMessage called (post tap) for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         
+        // Store pending navigation in UserDefaults as backup for first-boot scenarios
+        UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
+        UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
+        
         // Navigate to chat with the post author
-        // Add a delay to ensure MessagesView is ready to receive the notification (especially on first login)
+        // MessagesView is now preloaded, so shorter delay is sufficient
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             print("📱 PostCardView: Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
             NotificationCenter.default.post(

@@ -37,6 +37,18 @@ struct MainTabView: View {
                 .tag(Tab.profile)
         }
         .accentColor(Color("AccentColor"))
+        .onAppear {
+            // Preload MessagesView to ensure it's ready for navigation
+            print("📱 MainTabView: Preloading MessagesView for first-boot navigation readiness")
+            let currentTab = selectedTab
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                selectedTab = .messages
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    selectedTab = currentTab
+                    print("📱 MainTabView: MessagesView preloaded, returned to \(currentTab)")
+                }
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { _ in
             // Switch to Messages tab when navigateToChat notification is received
             print("📱 MainTabView: Received navigateToChat notification - switching to Messages tab")

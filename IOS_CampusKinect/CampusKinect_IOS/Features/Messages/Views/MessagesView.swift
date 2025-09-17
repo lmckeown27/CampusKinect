@@ -278,6 +278,41 @@ struct MessagesView: View {
                         isViewReady = true
                         print("💬 MessagesView: View marked as ready - can now receive notifications")
                         
+                        // Check for pending navigation in UserDefaults (backup for first-boot)
+                        if let pendingUserId = UserDefaults.standard.object(forKey: "pendingChatUserId") as? Int,
+                           let pendingUserName = UserDefaults.standard.string(forKey: "pendingChatUserName") {
+                            print("💬 MessagesView: Found pending navigation in UserDefaults: \(pendingUserName) (ID: \(pendingUserId))")
+                            
+                            // Clear the stored values
+                            UserDefaults.standard.removeObject(forKey: "pendingChatUserId")
+                            UserDefaults.standard.removeObject(forKey: "pendingChatUserName")
+                            
+                            // Create user and navigate
+                            let user = User(
+                                id: pendingUserId,
+                                username: pendingUserName,
+                                email: "",
+                                firstName: "",
+                                lastName: "",
+                                displayName: pendingUserName,
+                                profilePicture: nil,
+                                year: nil,
+                                major: nil,
+                                hometown: nil,
+                                bio: nil,
+                                universityId: 0,
+                                universityName: "",
+                                universityDomain: "",
+                                isVerified: nil,
+                                isActive: true,
+                                createdAt: Date(),
+                                updatedAt: nil
+                            )
+                            selectedUser = user
+                            shouldNavigateToChat = true
+                            print("💬 MessagesView: Navigation triggered from UserDefaults backup")
+                        }
+                        
                         // Process any pending notification
                         if let pending = pendingNotification {
                             print("💬 MessagesView: Processing pending notification: \(pending)")
