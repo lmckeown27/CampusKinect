@@ -16,7 +16,7 @@ struct MessagesView: View {
     @State private var selectedUser: User?
     @State private var shouldNavigateToChat = false
     @State private var isViewReady = false // Track when view is fully initialized
-    @State private var pendingNotification: [String: Any]? // Queue notification if received before ready
+    @State private var pendingNotification: [AnyHashable: Any]? // Queue notification if received before ready
     
     enum MessageTab: String, CaseIterable {
         case incoming = "Incoming"
