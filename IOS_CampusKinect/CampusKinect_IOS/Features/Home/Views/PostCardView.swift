@@ -81,11 +81,7 @@ struct PostCardView: View {
         
         print("📱 PostCardView: handleMessage called (post tap) for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         
-        // Store pending navigation in UserDefaults as backup for first-boot scenarios
-        UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
-        UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
-        
-        // Navigate to chat with the post author - MessagesView is preloaded so no delay needed
+        // Navigate directly to chat - no intermediate tab switching required
         print("📱 PostCardView: Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         NotificationCenter.default.post(
             name: .navigateToChat,
