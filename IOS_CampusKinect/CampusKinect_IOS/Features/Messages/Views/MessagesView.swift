@@ -15,6 +15,8 @@ struct MessagesView: View {
     @State private var searchText = ""
     @State private var selectedUser: User?
     @State private var shouldNavigateToChat = false
+    @State private var isViewReady = false // Track when view is fully initialized
+    @State private var pendingNotification: [String: Any]? // Queue notification if received before ready
     
     enum MessageTab: String, CaseIterable {
         case incoming = "Incoming"
@@ -221,40 +223,45 @@ struct MessagesView: View {
                 print("💬 MessagesView: Received navigateToChat notification")
                 print("💬 MessagesView: Notification userInfo: \(notification.userInfo ?? [:])")
                 
-                if let userId = notification.userInfo?["userId"] as? Int,
-                   let userName = notification.userInfo?["userName"] as? String {
-                    print("💬 MessagesView: Creating chat with user: \(userName) (ID: \(userId))")
-                    // Create a user object for navigation
-                    let user = User(
-                        id: userId,
-                        username: userName,
-                        email: "",
-                        firstName: "",
-                        lastName: "",
-                        displayName: userName,
-                        profilePicture: nil,
-                        year: nil,
-                        major: nil,
-                        hometown: nil,
-                        bio: nil,
-                        universityId: 0,
-                        universityName: "",
-                        universityDomain: "",
-                        isVerified: nil,
-                        isActive: true,
-                        createdAt: Date(),
-                        updatedAt: nil
-                    )
-                    selectedUser = user
-                    shouldNavigateToChat = true
-                    print("💬 MessagesView: Navigation state updated - shouldNavigateToChat: \(shouldNavigateToChat)")
+                if isViewReady {
+                    if let userId = notification.userInfo?["userId"] as? Int,
+                       let userName = notification.userInfo?["userName"] as? String {
+                        print("💬 MessagesView: Creating chat with user: \(userName) (ID: \(userId))")
+                        // Create a user object for navigation
+                        let user = User(
+                            id: userId,
+                            username: userName,
+                            email: "",
+                            firstName: "",
+                            lastName: "",
+                            displayName: userName,
+                            profilePicture: nil,
+                            year: nil,
+                            major: nil,
+                            hometown: nil,
+                            bio: nil,
+                            universityId: 0,
+                            universityName: "",
+                            universityDomain: "",
+                            isVerified: nil,
+                            isActive: true,
+                            createdAt: Date(),
+                            updatedAt: nil
+                        )
+                        selectedUser = user
+                        shouldNavigateToChat = true
+                        print("💬 MessagesView: Navigation state updated - shouldNavigateToChat: \(shouldNavigateToChat)")
+                    } else {
+                        print("❌ MessagesView: Failed to extract userId or userName from notification")
+                        print("❌ MessagesView: Available keys: \(notification.userInfo?.keys.map { String(describing: $0) } ?? [])")
+                    }
                 } else {
-                    print("❌ MessagesView: Failed to extract userId or userName from notification")
-                    print("❌ MessagesView: Available keys: \(notification.userInfo?.keys.map { String(describing: $0) } ?? [])")
+                    print("�� MessagesView: View not ready to process navigateToChat notification.")
+                    pendingNotification = notification.userInfo
                 }
             }
             .onAppear {
-                print("💬 MessagesView: onAppear called - ready to receive notifications")
+                print("💬 MessagesView: onAppear called - initializing...")
                 Task {
                     switch activeTab {
                     case .incoming:
@@ -265,6 +272,45 @@ struct MessagesView: View {
                         await viewModel.loadMessageRequests()
                     }
                     print("💬 MessagesView: Initial data loading completed")
+                    
+                    // Mark view as ready after data loading
+                    await MainActor.run {
+                        isViewReady = true
+                        print("💬 MessagesView: View marked as ready - can now receive notifications")
+                        
+                        // Process any pending notification
+                        if let pending = pendingNotification {
+                            print("💬 MessagesView: Processing pending notification: \(pending)")
+                            if let userId = pending["userId"] as? Int,
+                               let userName = pending["userName"] as? String {
+                                print("💬 MessagesView: Creating chat with user from pending: \(userName) (ID: \(userId))")
+                                let user = User(
+                                    id: userId,
+                                    username: userName,
+                                    email: "",
+                                    firstName: "",
+                                    lastName: "",
+                                    displayName: userName,
+                                    profilePicture: nil,
+                                    year: nil,
+                                    major: nil,
+                                    hometown: nil,
+                                    bio: nil,
+                                    universityId: 0,
+                                    universityName: "",
+                                    universityDomain: "",
+                                    isVerified: nil,
+                                    isActive: true,
+                                    createdAt: Date(),
+                                    updatedAt: nil
+                                )
+                                selectedUser = user
+                                shouldNavigateToChat = true
+                                print("💬 MessagesView: Navigation state updated from pending - shouldNavigateToChat: \(shouldNavigateToChat)")
+                            }
+                            pendingNotification = nil
+                        }
+                    }
                 }
             }
             .onChange(of: activeTab) { oldValue, newValue in
