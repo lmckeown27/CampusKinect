@@ -23,6 +23,11 @@ struct PostCardView: View {
             // Content
             PostContent(post: post)
             
+            // Tags
+            if !post.tags.isEmpty {
+                PostTags(tags: post.tags)
+            }
+            
             // Images
             if post.hasImages {
                 PostImages(
@@ -450,6 +455,45 @@ extension Notification.Name {
     static let navigateToProfile = Notification.Name("navigateToProfile")
 }
 
+// MARK: - Post Tags
+struct PostTags: View {
+    let tags: [String]
+    
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(tags, id: \.self) { tag in
+                    TagChip(text: tag)
+                }
+            }
+            .padding(.horizontal, 2)
+        }
+    }
+}
+
+// MARK: - Tag Chip
+struct TagChip: View {
+    let text: String
+    
+    var body: some View {
+        Text(text)
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundColor(Color("BrandPrimary"))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                Color("BrandPrimary").opacity(0.1)
+            )
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color("BrandPrimary").opacity(0.3), lineWidth: 1)
+            )
+    }
+}
+
+// MARK: - Preview
 #Preview {
     PostCardView(post: Post(
         id: 1,

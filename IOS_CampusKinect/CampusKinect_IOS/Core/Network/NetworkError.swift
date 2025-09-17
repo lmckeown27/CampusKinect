@@ -84,7 +84,50 @@ struct ErrorResponse: Codable {
     struct ErrorDetail: Codable {
         let message: String
         let code: String?
-        let details: [String: String]?
+        let details: [ValidationDetail]?
+    }
+    
+    struct ValidationDetail: Codable {
+        let field: String
+        let message: String
+        let value: ValidationValue?
+    }
+    
+    enum ValidationValue: Codable {
+        case string(String)
+        case array([String])
+        case int(Int)
+        case bool(Bool)
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            
+            if let stringValue = try? container.decode(String.self) {
+                self = .string(stringValue)
+            } else if let arrayValue = try? container.decode([String].self) {
+                self = .array(arrayValue)
+            } else if let intValue = try? container.decode(Int.self) {
+                self = .int(intValue)
+            } else if let boolValue = try? container.decode(Bool.self) {
+                self = .bool(boolValue)
+            } else {
+                throw DecodingError.typeMismatch(ValidationValue.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unable to decode ValidationValue"))
+            }
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .string(let value):
+                try container.encode(value)
+            case .array(let value):
+                try container.encode(value)
+            case .int(let value):
+                try container.encode(value)
+            case .bool(let value):
+                try container.encode(value)
+            }
+        }
     }
 }
 

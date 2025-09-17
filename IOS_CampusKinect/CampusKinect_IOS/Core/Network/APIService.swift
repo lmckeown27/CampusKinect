@@ -99,6 +99,23 @@ class APIService: NSObject, ObservableObject {
                 throw APIError.unauthorized
             case 400:
                 if let errorResponse = try? decoder.decode(ErrorResponse.self, from: data) {
+                    // Check for specific validation errors and provide user-friendly messages
+                    if let details = errorResponse.error.details {
+                        for detail in details {
+                            if detail.field == "tags" {
+                                if detail.message.contains("1 to 10 items") {
+                                    throw APIError.badRequest("Please select at least one tag for your post")
+                                } else {
+                                    throw APIError.badRequest(detail.message)
+                                }
+                            }
+                        }
+                        // If we have validation details but none are tag-specific, use the first one
+                        if let firstDetail = details.first {
+                            throw APIError.badRequest(firstDetail.message)
+                        }
+                    }
+                    // Fallback to the general error message
                     throw APIError.badRequest(errorResponse.error.message)
                 }
                 throw APIError.badRequest("Bad request")

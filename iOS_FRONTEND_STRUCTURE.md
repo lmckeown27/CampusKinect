@@ -268,7 +268,7 @@ Resources/
 │   │   └── Illustrations/                // App illustrations
 │   └── Symbols/
 │       ├── TabBar/                       // Tab bar icons
-│       ├── Navigation/                   // Navigation icons
+│       ├── Navigation/                   // Navigation iconsA
 │       └── Actions/                      // Action icons
 ├── Fonts/
 │   ├── CustomFont-Regular.ttf            // Custom fonts
