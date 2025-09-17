@@ -3,23 +3,52 @@ const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  max: 10, // Reduced from 20 to prevent too many connections
+  min: 2,  // Maintain minimum connections
+  idleTimeoutMillis: 60000, // Increased from 30s to 60s
+  connectionTimeoutMillis: 5000, // Increased from 2s to 5s
+  acquireTimeoutMillis: 60000, // Add acquire timeout
 });
 
-// Test the connection
-pool.on('connect', () => {
-  console.log('✅ Connected to PostgreSQL database');
+// Test initial connection (only log once)
+let connectionTested = false;
+pool.on('connect', (client) => {
+  if (!connectionTested) {
+    console.log('✅ Connected to PostgreSQL database');
+    connectionTested = true;
+  }
 });
 
 pool.on('error', (err) => {
-  console.error('❌ Unexpected error on idle client', err);
-  process.exit(-1);
+  console.error('❌ Database connection error:', err.message);
+  // Don't exit process - let the app continue with degraded functionality
 });
 
-// Database query function
-const query = (text, params) => pool.query(text, params);
+// Add connection pool monitoring
+pool.on('acquire', () => {
+  // Optionally log connection acquisition in debug mode
+  if (process.env.LOG_LEVEL === 'debug') {
+    console.log('🔗 Database connection acquired');
+  }
+});
+
+pool.on('release', () => {
+  // Optionally log connection release in debug mode
+  if (process.env.LOG_LEVEL === 'debug') {
+    console.log('🔓 Database connection released');
+  }
+});
+
+// Database query function with better error handling
+const query = async (text, params) => {
+  try {
+    const result = await pool.query(text, params);
+    return result;
+  } catch (error) {
+    console.error('❌ Database query error:', error.message);
+    throw error;
+  }
+};
 
 // Create tables function
 const createTables = async () => {
@@ -445,4 +474,4 @@ module.exports = {
   createTables, 
   addMobileColumns, 
   initializeDatabase 
-}; 
+};
