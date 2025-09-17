@@ -3,8 +3,6 @@ import SwiftUI
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
     @State private var isMessagesPreloaded = false
-    @State private var showingDirectChat = false
-    @State private var directChatUser: (id: Int, name: String)?
     
     enum Tab: String, CaseIterable {
         case home = "Home"
@@ -58,32 +56,10 @@ struct MainTabView: View {
             }
         }
         .accentColor(Color("AccentColor"))
-        .fullScreenCover(isPresented: $showingDirectChat) {
-            if let user = directChatUser {
-                NavigationView {
-                    ChatView(userId: user.id, userName: user.name)
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarLeading) {
-                                Button("Messages") {
-                                    showingDirectChat = false
-                                    selectedTab = .messages
-                                }
-                            }
-                        }
-                }
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
-            print("📱 MainTabView: Received navigateToChat notification - opening direct chat")
-            
-            if let userId = notification.userInfo?["userId"] as? Int,
-               let userName = notification.userInfo?["userName"] as? String {
-                print("📱 MainTabView: Opening direct chat for user: \(userName) (ID: \(userId))")
-                directChatUser = (id: userId, name: userName)
-                showingDirectChat = true
-            } else {
-                print("❌ MainTabView: Failed to extract user info, falling back to Messages tab")
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { _ in
+            // Switch to Messages tab when navigateToChat notification is received
+            print("📱 MainTabView: Received navigateToChat notification - switching to Messages tab")
+            withAnimation(.easeInOut(duration: 0.3)) {
                 selectedTab = .messages
             }
         }
