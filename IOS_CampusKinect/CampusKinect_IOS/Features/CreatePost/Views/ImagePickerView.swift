@@ -86,11 +86,11 @@ struct ImagePickerView: View {
                                         .font(.caption)
                                         .foregroundColor(.gray)
                                 }
-                                .frame(width: 80, height: 80)
+                                .frame(width: 120, height: 120) // Match new thumbnail size
                                 .background(Color(.systemGray6))
-                                .cornerRadius(8)
+                                .cornerRadius(12) // Match new corner radius
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
+                                    RoundedRectangle(cornerRadius: 12)
                                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                 )
                             }
@@ -159,12 +159,74 @@ struct ImagePickerView: View {
     private func addImage(_ image: UIImage) {
         guard selectedImages.count < maxImages else { return }
         
-        if let imageData = image.jpegData(compressionQuality: 0.8) {
-            let localImage = LocalImage(
-                image: image,
-                data: imageData
-            )
-            selectedImages.append(localImage)
+        // Add haptic feedback for immediate response
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+        
+        // Create a temporary LocalImage with immediate visual feedback
+        let tempLocalImage = LocalImage(
+            image: image,
+            data: Data(), // Temporary empty data
+            isUploading: true
+        )
+        
+        // Add to UI immediately for instant feedback
+        selectedImages.append(tempLocalImage)
+        
+        // Process image data in background
+        Task {
+            // Optimize image processing
+            let processedImage = await optimizeImage(image)
+            
+            if let imageData = processedImage.jpegData(compressionQuality: 0.85) { // Slightly higher quality
+                await MainActor.run {
+                    // Update the image with actual data
+                    if let index = selectedImages.firstIndex(where: { $0.id == tempLocalImage.id }) {
+                        selectedImages[index] = LocalImage(
+                            image: processedImage,
+                            data: imageData,
+                            isUploading: false
+                        )
+                    }
+                }
+            } else {
+                await MainActor.run {
+                    // Remove if processing failed
+                    selectedImages.removeAll { $0.id == tempLocalImage.id }
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    private func optimizeImage(_ image: UIImage) async -> UIImage {
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                // Optimize image size and orientation
+                let maxDimension: CGFloat = 2048
+                let optimizedImage: UIImage
+                
+                // Fix orientation first
+                let orientationFixedImage = image.fixedOrientation()
+                
+                // Resize if needed
+                if max(orientationFixedImage.size.width, orientationFixedImage.size.height) > maxDimension {
+                    let scale = maxDimension / max(orientationFixedImage.size.width, orientationFixedImage.size.height)
+                    let newSize = CGSize(
+                        width: orientationFixedImage.size.width * scale,
+                        height: orientationFixedImage.size.height * scale
+                    )
+                    
+                    UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+                    orientationFixedImage.draw(in: CGRect(origin: .zero, size: newSize))
+                    optimizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? orientationFixedImage
+                    UIGraphicsEndImageContext()
+                } else {
+                    optimizedImage = orientationFixedImage
+                }
+                
+                continuation.resume(returning: optimizedImage)
+            }
         }
     }
     
@@ -173,13 +235,47 @@ struct ImagePickerView: View {
     }
     
     private func loadPhotosPickerItems(_ items: [PhotosPickerItem]) async {
+        // Add haptic feedback for selection
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+        
         for item in items {
             guard selectedImages.count < maxImages else { break }
             
+            // Create placeholder image immediately
+            let placeholderImage = UIImage(systemName: "photo") ?? UIImage()
+            let tempLocalImage = LocalImage(
+                image: placeholderImage,
+                data: Data(),
+                isUploading: true
+            )
+            
+            // Add placeholder to UI immediately
+            await MainActor.run {
+                selectedImages.append(tempLocalImage)
+            }
+            
+            // Load actual image data in background
             if let data = try? await item.loadTransferable(type: Data.self),
                let image = UIImage(data: data) {
+                
+                // Process the image
+                let processedImage = await optimizeImage(image)
+                
                 await MainActor.run {
-                    addImage(image)
+                    // Replace placeholder with actual image
+                    if let index = selectedImages.firstIndex(where: { $0.id == tempLocalImage.id }) {
+                        selectedImages[index] = LocalImage(
+                            image: processedImage,
+                            data: processedImage.jpegData(compressionQuality: 0.85) ?? data,
+                            isUploading: false
+                        )
+                    }
+                }
+            } else {
+                // Remove placeholder if loading failed
+                await MainActor.run {
+                    selectedImages.removeAll { $0.id == tempLocalImage.id }
                 }
             }
         }
@@ -231,46 +327,181 @@ struct ImagePickerView: View {
 struct ImageThumbnailView: View {
     let localImage: LocalImage
     let onRemove: () -> Void
+    @State private var showingFullImage = false
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            Image(uiImage: localImage.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 80, height: 80)
-                .clipped()
-                .cornerRadius(8)
-            
-            Button(action: onRemove) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(.white)
-                    .background(Color.black.opacity(0.6))
-                    .clipShape(Circle())
+            // Main image with tap to expand
+            Button(action: {
+                showingFullImage = true
+            }) {
+                Image(uiImage: localImage.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 120, height: 120) // Increased from 80x80
+                    .clipped()
+                    .cornerRadius(12) // Increased corner radius
             }
-            .offset(x: 8, y: -8)
+            .buttonStyle(PlainButtonStyle())
+            
+            // Enhanced X button with better visibility
+            Button(action: {
+                // Add haptic feedback
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                onRemove()
+            }) {
+                ZStack {
+                    // Background circle for better visibility
+                    Circle()
+                        .fill(Color.black.opacity(0.8))
+                        .frame(width: 28, height: 28)
+                    
+                    // White border for contrast
+                    Circle()
+                        .stroke(Color.white, lineWidth: 2)
+                        .frame(width: 28, height: 28)
+                    
+                    // X mark icon
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                }
+            }
+            .offset(x: 10, y: -10) // Better positioning to avoid cutoff
+            .shadow(color: Color.black.opacity(0.3), radius: 2, x: 0, y: 1)
         }
         .overlay(
             // Upload status overlay
             Group {
                 if localImage.isUploading {
-                    Color.black.opacity(0.5)
+                    Color.black.opacity(0.6)
                         .overlay(
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.8)
+                            VStack(spacing: 8) {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(1.2)
+                                
+                                Text("Uploading...")
+                                    .font(.caption2)
+                                    .foregroundColor(.white)
+                                    .fontWeight(.medium)
+                            }
                         )
-                        .cornerRadius(8)
+                        .cornerRadius(12)
+                        .transition(.opacity)
                 } else if localImage.uploadError != nil {
-                    Color.red.opacity(0.7)
+                    Color.red.opacity(0.8)
                         .overlay(
-                            Image(systemName: "exclamationmark.triangle")
-                                .foregroundColor(.white)
-                                .font(.title3)
+                            VStack(spacing: 4) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundColor(.white)
+                                    .font(.title3)
+                                
+                                Text("Failed")
+                                    .font(.caption2)
+                                    .foregroundColor(.white)
+                                    .fontWeight(.medium)
+                            }
                         )
-                        .cornerRadius(8)
+                        .cornerRadius(12)
+                        .transition(.opacity)
+                } else if localImage.uploadedURL != nil {
+                    // Success indicator
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .font(.title3)
+                                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+                        }
+                    }
+                    .padding(8)
                 }
             }
         )
+        .fullScreenCover(isPresented: $showingFullImage) {
+            FullImageView(image: localImage.image)
+        }
+    }
+}
+
+// MARK: - Full Image View
+struct FullImageView: View {
+    let image: UIImage
+    @Environment(\.dismiss) private var dismiss
+    @State private var scale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .scaleEffect(scale)
+                .offset(offset)
+                .gesture(
+                    SimultaneousGesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                scale = max(1.0, min(value, 4.0))
+                            },
+                        DragGesture()
+                            .onChanged { value in
+                                offset = CGSize(
+                                    width: lastOffset.width + value.translation.width,
+                                    height: lastOffset.height + value.translation.height
+                                )
+                            }
+                            .onEnded { _ in
+                                lastOffset = offset
+                            }
+                    )
+                )
+                .onTapGesture(count: 2) {
+                    withAnimation(.spring()) {
+                        if scale > 1.0 {
+                            scale = 1.0
+                            offset = .zero
+                            lastOffset = .zero
+                        } else {
+                            scale = 2.0
+                        }
+                    }
+                }
+            
+            // Close button
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.black.opacity(0.6))
+                                .frame(width: 44, height: 44)
+                            
+                            Image(systemName: "xmark")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .padding()
+                }
+                Spacer()
+            }
+        }
+        .onTapGesture {
+            dismiss()
+        }
     }
 }
 

@@ -35,6 +35,14 @@ struct LocalImage: Identifiable, Equatable {
     var isUploading: Bool = false
     var uploadError: String?
     
+    init(image: UIImage, data: Data, uploadedURL: String? = nil, isUploading: Bool = false, uploadError: String? = nil) {
+        self.image = image
+        self.data = data
+        self.uploadedURL = uploadedURL
+        self.isUploading = isUploading
+        self.uploadError = uploadError
+    }
+    
     static func == (lhs: LocalImage, rhs: LocalImage) -> Bool {
         lhs.id == rhs.id
     }
