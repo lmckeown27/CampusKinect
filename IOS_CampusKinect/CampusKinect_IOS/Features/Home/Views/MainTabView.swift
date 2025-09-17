@@ -44,12 +44,5 @@ struct MainTabView: View {
                 selectedTab = .messages
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .navigateToProfile)) { _ in
-            // Switch to Profile tab when navigateToProfile notification is received
-            print("👤 MainTabView: Received navigateToProfile notification - switching to Profile tab")
-            withAnimation(.easeInOut(duration: 0.3)) {
-                selectedTab = .profile
-            }
-        }
     }
 } 

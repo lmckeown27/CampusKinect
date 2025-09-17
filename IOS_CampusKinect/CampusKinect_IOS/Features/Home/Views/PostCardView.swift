@@ -18,7 +18,7 @@ struct PostCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            PostHeader(post: post, onProfileTap: handleProfileTap)
+            PostHeader(post: post)
             
             // Content
             PostContent(post: post)
@@ -54,6 +54,9 @@ struct PostCardView: View {
         .background(Color(.systemBackground))
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .onTapGesture {
+            handleMessage()
+        }
         .fullScreenCover(isPresented: $showingImageViewer) {
             ImageViewer(
                 images: post.images,
@@ -76,7 +79,7 @@ struct PostCardView: View {
             return
         }
         
-        print("📱 Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
+        print("📱 PostCardView: handleMessage called (post tap) for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         
         // Navigate to chat with the post author
         // Add a small delay to ensure MessagesView is ready to receive the notification
@@ -92,55 +95,38 @@ struct PostCardView: View {
         }
     }
     
-    private func handleProfileTap() {
-        print("👤 PostCardView: handleProfileTap called for user: \(post.poster.displayName) - DISABLED FOR TESTING")
-        // Temporarily disabled to prevent profile page flashing
-        // TODO: Re-enable with better tap area management
-        /*
-        NotificationCenter.default.post(
-            name: .navigateToProfile,
-            object: nil,
-            userInfo: ["userId": post.poster.id]
-        )
-        */
-    }
+
 }
 
 // MARK: - Post Header
 struct PostHeader: View {
     let post: Post
-    let onProfileTap: () -> Void
     
     var body: some View {
         HStack {
-            // Profile Picture
-            Button(action: onProfileTap) {
-                AsyncImage(url: post.user.profileImageURL) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Circle()
-                        .fill(Color("BrandPrimary"))
-                        .overlay(
-                            Text(post.user.initials)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.white)
-                        )
-                }
-                .frame(width: 40, height: 40)
-                .clipShape(Circle())
+            // Profile Picture (visual only - no tap functionality)
+            AsyncImage(url: post.user.profileImageURL) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Circle()
+                    .fill(Color("BrandPrimary"))
+                    .overlay(
+                        Text(post.user.initials)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    )
             }
+            .frame(width: 40, height: 40)
+            .clipShape(Circle())
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(post.user.displayName)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
-                    .onTapGesture {
-                        onProfileTap()
-                    }
                 
                 HStack(spacing: 4) {
                     Text("@\(post.user.username)")
