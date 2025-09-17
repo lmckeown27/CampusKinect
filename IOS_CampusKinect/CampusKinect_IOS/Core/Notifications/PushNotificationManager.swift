@@ -43,6 +43,8 @@ class PushNotificationManager: NSObject, ObservableObject {
                 await registerForRemoteNotifications()
             } else {
                 print("🔔 PushNotificationManager: Permission denied by user")
+                // Remove any existing device token from backend when permission is denied
+                await unregisterCurrentDevice()
             }
             
             print("📱 Push notification permission: \(granted ? "Granted" : "Denied")")
@@ -51,6 +53,49 @@ class PushNotificationManager: NSObject, ObservableObject {
         } catch {
             print("❌ Error requesting notification permission: \(error)")
             return false
+        }
+    }
+    
+    func checkNotificationSettings() async {
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+        
+        let wasAuthorized = isAuthorized
+        let nowAuthorized = settings.authorizationStatus == .authorized
+        
+        await MainActor.run {
+            self.isAuthorized = nowAuthorized
+        }
+        
+        print("🔔 Notification settings check: was \(wasAuthorized), now \(nowAuthorized)")
+        
+        // Handle permission changes
+        if wasAuthorized && !nowAuthorized {
+            // User disabled notifications - remove device token
+            print("🔔 User disabled notifications - removing device token")
+            await unregisterCurrentDevice()
+        } else if !wasAuthorized && nowAuthorized {
+            // User enabled notifications - register device token
+            print("🔔 User enabled notifications - registering device token")
+            await registerForRemoteNotifications()
+        }
+    }
+    
+    private func unregisterCurrentDevice() async {
+        guard let deviceToken = deviceToken else {
+            print("🔔 No device token to unregister")
+            return
+        }
+        
+        do {
+            _ = try await apiService.unregisterDeviceToken(token: deviceToken)
+            print("✅ Device token unregistered from backend")
+            
+            await MainActor.run {
+                self.deviceToken = nil
+            }
+        } catch {
+            print("❌ Failed to unregister device token: \(error)")
         }
     }
     
@@ -86,6 +131,18 @@ class PushNotificationManager: NSObject, ObservableObject {
     
     func handleRegistrationError(_ error: Error) {
         print("❌ Failed to register for remote notifications: \(error)")
+    }
+    
+    // Force registration for debugging
+    func forceTokenRegistration() async {
+        guard let token = deviceToken else {
+            print("❌ No device token available to register")
+            await registerForRemoteNotifications()
+            return
+        }
+        
+        print("🔄 Force registering existing device token...")
+        await registerDeviceToken(token)
     }
     
     private func registerDeviceToken(_ token: String) async {

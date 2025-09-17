@@ -21,6 +21,13 @@ struct CampusKinectApp: App {
                 .onAppear {
                     setupApp()
                 }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                    // Check notification settings when app becomes active
+                    // This catches changes made in iOS Settings
+                    Task {
+                        await PushNotificationManager.shared.checkNotificationSettings()
+                    }
+                }
         }
     }
     

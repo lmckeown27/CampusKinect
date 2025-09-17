@@ -127,6 +127,22 @@ struct SettingsView: View {
                             Spacer()
                         }
                     }
+                    
+                    Button(action: {
+                        Task {
+                            await PushNotificationManager.shared.forceTokenRegistration()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.clockwise")
+                                .foregroundColor(.green)
+                            
+                            Text("Force Register Device Token")
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                    }
                 }
                 
                 // Account Actions

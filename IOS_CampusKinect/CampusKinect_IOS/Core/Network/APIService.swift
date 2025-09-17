@@ -542,6 +542,18 @@ extension APIService {
         )
     }
     
+    func unregisterDeviceToken(token: String) async throws -> EmptyResponse {
+        let request = UnregisterDeviceTokenRequest(deviceToken: token)
+        let body = try encoder.encode(request)
+        
+        return try await performRequest(
+            endpoint: "/notifications/unregister-device",
+            method: .DELETE,
+            body: body,
+            requiresAuth: true
+        )
+    }
+    
     func getUnreadMessageCount() async throws -> Int {
         let response: UnreadCountResponse = try await performRequest(
             endpoint: "\(APIConstants.Endpoints.messages)/unread-count",
@@ -557,6 +569,10 @@ extension APIService {
 struct DeviceTokenRequest: Codable {
     let deviceToken: String
     let platform: String
+}
+
+struct UnregisterDeviceTokenRequest: Codable {
+    let deviceToken: String
 }
 
 struct UnreadCountResponse: Codable {
