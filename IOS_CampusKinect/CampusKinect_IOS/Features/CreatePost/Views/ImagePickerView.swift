@@ -63,7 +63,7 @@ struct ImagePickerView: View {
                 .cornerRadius(12)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    HStack(spacing: 8) { // Reduced spacing since we have padding on thumbnails
                         ForEach(selectedImages) { localImage in
                             ImageThumbnailView(
                                 localImage: localImage,
@@ -94,9 +94,12 @@ struct ImagePickerView: View {
                                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                 )
                             }
+                            .padding(.top, 16) // Match thumbnail padding
+                            .padding(.trailing, 16) // Match thumbnail padding
                         }
                     }
                     .padding(.horizontal, 4)
+                    .padding(.top, 0) // Remove extra top padding since thumbnails have their own
                 }
                 
                 Text("\(selectedImages.count)/\(maxImages) photos")
@@ -330,7 +333,7 @@ struct ImageThumbnailView: View {
     @State private var showingFullImage = false
     
     var body: some View {
-        ZStack(alignment: .topTrailing) {
+        ZStack {
             // Main image with tap to expand
             Button(action: {
                 showingFullImage = true
@@ -338,92 +341,107 @@ struct ImageThumbnailView: View {
                 Image(uiImage: localImage.image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 120, height: 120) // Increased from 80x80
+                    .frame(width: 120, height: 120)
                     .clipped()
-                    .cornerRadius(12) // Increased corner radius
+                    .cornerRadius(12)
             }
             .buttonStyle(PlainButtonStyle())
-            
-            // Enhanced X button with better visibility
-            Button(action: {
-                // Add haptic feedback
-                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                impactFeedback.impactOccurred()
-                onRemove()
-            }) {
-                ZStack {
-                    // Background circle for better visibility
-                    Circle()
-                        .fill(Color.black.opacity(0.8))
-                        .frame(width: 28, height: 28)
-                    
-                    // White border for contrast
-                    Circle()
-                        .stroke(Color.white, lineWidth: 2)
-                        .frame(width: 28, height: 28)
-                    
-                    // X mark icon
-                    Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.white)
-                }
-            }
-            .offset(x: 10, y: -10) // Better positioning to avoid cutoff
-            .shadow(color: Color.black.opacity(0.3), radius: 2, x: 0, y: 1)
-        }
-        .overlay(
-            // Upload status overlay
-            Group {
-                if localImage.isUploading {
-                    Color.black.opacity(0.6)
-                        .overlay(
-                            VStack(spacing: 8) {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(1.2)
-                                
-                                Text("Uploading...")
-                                    .font(.caption2)
-                                    .foregroundColor(.white)
-                                    .fontWeight(.medium)
-                            }
-                        )
-                        .cornerRadius(12)
-                        .transition(.opacity)
-                } else if localImage.uploadError != nil {
-                    Color.red.opacity(0.8)
-                        .overlay(
-                            VStack(spacing: 4) {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundColor(.white)
-                                    .font(.title3)
-                                
-                                Text("Failed")
-                                    .font(.caption2)
-                                    .foregroundColor(.white)
-                                    .fontWeight(.medium)
-                            }
-                        )
-                        .cornerRadius(12)
-                        .transition(.opacity)
-                } else if localImage.uploadedURL != nil {
-                    // Success indicator
-                    VStack {
-                        Spacer()
-                        HStack {
+            .allowsHitTesting(true) // Allow tapping on image
+            .overlay(
+                // Upload status overlay
+                Group {
+                    if localImage.isUploading {
+                        Color.black.opacity(0.6)
+                            .overlay(
+                                VStack(spacing: 8) {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .scaleEffect(1.2)
+                                    
+                                    Text("Uploading...")
+                                        .font(.caption2)
+                                        .foregroundColor(.white)
+                                        .fontWeight(.medium)
+                                }
+                            )
+                            .cornerRadius(12)
+                            .transition(.opacity)
+                            .allowsHitTesting(false) // Don't block X button
+                    } else if localImage.uploadError != nil {
+                        Color.red.opacity(0.8)
+                            .overlay(
+                                VStack(spacing: 4) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(.white)
+                                        .font(.title3)
+                                    
+                                    Text("Failed")
+                                        .font(.caption2)
+                                        .foregroundColor(.white)
+                                        .fontWeight(.medium)
+                                }
+                            )
+                            .cornerRadius(12)
+                            .transition(.opacity)
+                            .allowsHitTesting(false) // Don't block X button
+                    } else if localImage.uploadedURL != nil {
+                        // Success indicator
+                        VStack {
                             Spacer()
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                                .background(Color.white)
-                                .clipShape(Circle())
-                                .font(.title3)
-                                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+                            HStack {
+                                Spacer()
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                    .background(Color.white)
+                                    .clipShape(Circle())
+                                    .font(.title3)
+                                    .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+                            }
+                        }
+                        .padding(8)
+                        .allowsHitTesting(false) // Don't block X button
+                    }
+                }
+            )
+            
+            // Enhanced X button positioned to overlap beyond image bounds
+            // This is placed after the image in the ZStack so it appears on top
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        // Add haptic feedback
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+                        onRemove()
+                    }) {
+                        ZStack {
+                            // Background circle for better visibility
+                            Circle()
+                                .fill(Color.black.opacity(0.8))
+                                .frame(width: 32, height: 32)
+                            
+                            // White border for contrast
+                            Circle()
+                                .stroke(Color.white, lineWidth: 2)
+                                .frame(width: 32, height: 32)
+                            
+                            // X mark icon
+                            Image(systemName: "xmark")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white)
                         }
                     }
-                    .padding(8)
+                    .shadow(color: Color.black.opacity(0.4), radius: 4, x: 0, y: 2)
+                    .offset(x: 16, y: -16) // Positioned to extend beyond image bounds
+                    .zIndex(1) // Ensure X button is on top
                 }
+                Spacer()
             }
-        )
+        }
+        .frame(width: 120, height: 120) // Maintain image size
+        .padding(.top, 16) // Add padding to accommodate overlapping X button
+        .padding(.trailing, 16) // Add padding to accommodate overlapping X button
         .fullScreenCover(isPresented: $showingFullImage) {
             FullImageView(image: localImage.image)
         }
