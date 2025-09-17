@@ -114,8 +114,8 @@ class ChatViewModel: ObservableObject {
                     initialMessage: messageContent
                 )
                 
-                // Set the newly created conversation
-                self.conversation = response.data.conversation
+                // Convert the minimal conversation to a full conversation object
+                self.conversation = response.data.conversation.toConversation()
                 startPolling()
                 
                 // Notify MessagesViewModel about the new conversation and message

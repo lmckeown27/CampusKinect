@@ -99,7 +99,29 @@ struct CreateConversationResponse: Codable {
     let data: CreateConversationData
     
     struct CreateConversationData: Codable {
-        let conversation: Conversation
+        let conversation: NewConversation
+    }
+}
+
+// MARK: - New Conversation (Minimal response from API)
+struct NewConversation: Codable, Identifiable {
+    let id: Int
+    let createdAt: Date
+    let otherUser: ConversationUser
+    
+    // Convert to full Conversation object for UI
+    func toConversation() -> Conversation {
+        return Conversation(
+            id: id,
+            postId: nil,
+            postTitle: nil,
+            postType: nil,
+            otherUser: otherUser,
+            lastMessage: nil,
+            lastMessageTime: nil,
+            unreadCount: nil,
+            createdAt: createdAt
+        )
     }
 }
 
