@@ -16,12 +16,12 @@ struct Conversation: Codable, Identifiable, Equatable {
     let otherUser: ConversationUser
     let lastMessage: LastMessage?
     let lastMessageTime: Date?
-    let unreadCount: String // Backend returns as string
+    let unreadCount: String? // Backend returns as string, optional for new conversations
     let createdAt: Date
     
     // Computed properties
     var unreadCountInt: Int {
-        return Int(unreadCount) ?? 0
+        return Int(unreadCount ?? "0") ?? 0
     }
     
     var timeAgo: String {
