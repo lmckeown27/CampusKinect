@@ -78,7 +78,7 @@ struct MainTabView: View {
             print("📱 MainTabView: Received navigateToChat notification - opening direct chat")
             
             if let userId = notification.userInfo?["userId"] as? Int,
-               let userName = notification.userInfo?["userName"] as String {
+               let userName = notification.userInfo?["userName"] as? String {
                 print("📱 MainTabView: Opening direct chat for user: \(userName) (ID: \(userId))")
                 directChatUser = (id: userId, name: userName)
                 showingDirectChat = true
