@@ -396,4 +396,33 @@ router.get('/stats', [
   }
 });
 
+// @route   GET /api/v1/messages/unread-count
+// @desc    Get unread message count for user
+// @access  Private
+router.get('/unread-count', [
+  auth,
+  requireVerification
+], async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const unreadCount = await messageService.getUnreadMessageCount(userId);
+
+    res.json({
+      success: true,
+      data: {
+        count: unreadCount
+      }
+    });
+
+  } catch (error) {
+    console.error('Error getting unread message count:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to get unread message count'
+      }
+    });
+  }
+});
+
 module.exports = router; 

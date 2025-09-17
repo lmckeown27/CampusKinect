@@ -1,5 +1,6 @@
 const { query: dbQuery } = require('../config/database');
 const { redisGet, redisSet, redisDel, generateCacheKey, CACHE_TTL } = require('../config/redis');
+const pushNotificationService = require('./pushNotificationService');
 
 class MessageService {
   /**
@@ -397,6 +398,31 @@ class MessageService {
         },
         isOwn: true
       };
+
+      // Send push notification to the recipient
+      try {
+        // Get recipient ID (the other user in the conversation)
+        const recipientResult = await dbQuery(`
+          SELECT user1_id, user2_id FROM conversations WHERE id = $1
+        `, [conversationId]);
+        
+        if (recipientResult.rows.length > 0) {
+          const conversation = recipientResult.rows[0];
+          const recipientId = conversation.user1_id === senderId ? conversation.user2_id : conversation.user1_id;
+          
+          // Send push notification
+          await pushNotificationService.sendMessageNotification(
+            recipientId,
+            sender.display_name || `${sender.first_name} ${sender.last_name}`,
+            content
+          );
+          
+          console.log(`📱 Push notification sent to user ${recipientId} for message from ${sender.display_name}`);
+        }
+      } catch (notificationError) {
+        // Don't fail the message sending if notification fails
+        console.error('Failed to send push notification:', notificationError);
+      }
 
       // Clear cache for both users in the conversation
       await this.clearConversationCache(conversationId);
@@ -1001,6 +1027,28 @@ class MessageService {
         message: 'Failed to send welcome message',
         error: error.message
       };
+    }
+  }
+
+  /**
+   * Get unread message count for a user
+   */
+  async getUnreadMessageCount(userId) {
+    try {
+      const result = await dbQuery(`
+        SELECT COUNT(*) as unread_count
+        FROM messages m
+        JOIN conversations c ON m.conversation_id = c.id
+        WHERE (c.user1_id = $1 OR c.user2_id = $1)
+        AND m.sender_id != $1
+        AND m.is_read = false
+      `, [userId]);
+
+      return parseInt(result.rows[0].unread_count) || 0;
+
+    } catch (error) {
+      console.error('Error getting unread message count:', error);
+      throw error;
     }
   }
 }

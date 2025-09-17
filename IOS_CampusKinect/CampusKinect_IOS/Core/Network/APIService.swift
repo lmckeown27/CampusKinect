@@ -528,6 +528,46 @@ class APIService: NSObject, ObservableObject {
 
 }
 
+// MARK: - Notification Methods
+extension APIService {
+    func registerDeviceToken(token: String, platform: String) async throws -> EmptyResponse {
+        let request = DeviceTokenRequest(deviceToken: token, platform: platform)
+        let body = try encoder.encode(request)
+        
+        return try await performRequest(
+            endpoint: "/notifications/register-device",
+            method: .POST,
+            body: body,
+            requiresAuth: true
+        )
+    }
+    
+    func getUnreadMessageCount() async throws -> Int {
+        let response: UnreadCountResponse = try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.messages)/unread-count",
+            method: .GET,
+            body: nil,
+            requiresAuth: true
+        )
+        return response.data.count
+    }
+}
+
+// MARK: - Notification Request/Response Models
+struct DeviceTokenRequest: Codable {
+    let deviceToken: String
+    let platform: String
+}
+
+struct UnreadCountResponse: Codable {
+    let success: Bool
+    let data: UnreadCountData
+    
+    struct UnreadCountData: Codable {
+        let count: Int
+    }
+}
+
 // MARK: - HTTP Methods
 enum HTTPMethod: String {
     case GET = "GET"

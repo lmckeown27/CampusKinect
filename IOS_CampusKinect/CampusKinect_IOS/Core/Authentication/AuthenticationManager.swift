@@ -106,6 +106,11 @@ class AuthenticationManager: ObservableObject {
             // Fetch complete user profile including email
             await refreshCurrentUser()
             
+            // Request push notification permissions after successful login
+            Task {
+                await PushNotificationManager.shared.requestPermission()
+            }
+            
             NotificationCenter.default.post(name: .userDidLogin, object: nil)
             
             isLoading = false
