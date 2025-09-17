@@ -97,20 +97,37 @@ struct PostCardView: View {
     private func confirmCreateConversation() {
         print("📱 PostCardView: User confirmed - creating conversation with \(post.poster.displayName)")
         
-        // Store pending navigation in UserDefaults as backup for first-boot scenarios
-        UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
-        UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
-        
-        // Navigate to chat with the post author - MessagesView is preloaded so no delay needed
-        print("📱 PostCardView: Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
-        NotificationCenter.default.post(
-            name: .navigateToChat,
-            object: nil,
-            userInfo: [
-                "userId": post.poster.id,
-                "userName": post.poster.displayName
-            ]
-        )
+        Task {
+            do {
+                // Create the conversation immediately using the API service
+                let response = try await apiService.createConversation(
+                    receiverId: post.poster.id,
+                    initialMessage: "" // Backend ignores this parameter anyway
+                )
+                
+                print("✅ Conversation created successfully with \(post.poster.displayName)")
+                
+                // Store the conversation info for navigation
+                UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
+                UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
+                
+                // Navigate to chat with the post author
+                await MainActor.run {
+                    NotificationCenter.default.post(
+                        name: .navigateToChat,
+                        object: nil,
+                        userInfo: [
+                            "userId": post.poster.id,
+                            "userName": post.poster.displayName
+                        ]
+                    )
+                }
+                
+            } catch {
+                print("❌ Failed to create conversation: \(error)")
+                // Could show an error alert here if needed
+            }
+        }
     }
 }
 
