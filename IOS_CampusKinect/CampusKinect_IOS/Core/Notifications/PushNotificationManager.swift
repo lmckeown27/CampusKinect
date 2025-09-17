@@ -83,10 +83,14 @@ class PushNotificationManager: NSObject, ObservableObject {
     
     private func registerDeviceToken(_ token: String) async {
         do {
+            print("📱 Attempting to register device token with backend...")
             _ = try await apiService.registerDeviceToken(token: token, platform: "ios")
-            print("✅ Device token registered with backend")
+            print("✅ Device token registered with backend successfully")
         } catch {
             print("❌ Failed to register device token with backend: \(error)")
+            if let apiError = error as? APIError {
+                print("❌ API Error details: \(apiError)")
+            }
         }
     }
     

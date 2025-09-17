@@ -22,6 +22,15 @@ class PushNotificationService {
   }
 
   initializeServices() {
+    console.log('📱 Initializing push notification services...');
+    console.log('📱 Environment check:', {
+      NODE_ENV: process.env.NODE_ENV,
+      APN_KEY_ID: process.env.APN_KEY_ID ? '✅ Set' : '❌ Missing',
+      APN_TEAM_ID: process.env.APN_TEAM_ID ? '✅ Set' : '❌ Missing',
+      APN_PRIVATE_KEY: process.env.APN_PRIVATE_KEY ? '✅ Set' : '❌ Missing',
+      APN_BUNDLE_ID: process.env.APN_BUNDLE_ID ? '✅ Set' : '❌ Missing'
+    });
+
     // Initialize Apple Push Notification service
     if (apn && process.env.APN_KEY_ID && process.env.APN_TEAM_ID) {
       const apnOptions = {
@@ -33,8 +42,18 @@ class PushNotificationService {
         production: process.env.NODE_ENV === 'production'
       };
 
+      console.log('📱 Creating APN Provider with options:', {
+        keyId: process.env.APN_KEY_ID,
+        teamId: process.env.APN_TEAM_ID,
+        production: process.env.NODE_ENV === 'production',
+        keyPath: apnOptions.token.key
+      });
+
       this.apnProvider = new apn.Provider(apnOptions);
-      console.log('✅ APN Provider initialized');
+      console.log('✅ APN Provider initialized successfully');
+    } else {
+      console.log('❌ APN Provider not initialized - missing required environment variables or apn module');
+      console.log('❌ Required: APN_KEY_ID, APN_TEAM_ID, and apn module');
     }
 
     // Initialize Firebase Cloud Messaging
@@ -50,35 +69,52 @@ class PushNotificationService {
       } catch (error) {
         console.error('❌ FCM initialization failed:', error);
       }
+    } else {
+      console.log('❌ FCM not initialized - missing FIREBASE_SERVICE_ACCOUNT or firebase-admin module');
     }
   }
 
   async sendNotification(userId, notification) {
     try {
+      console.log(`📱 Attempting to send notification to user ${userId}:`, {
+        title: notification.title,
+        body: notification.body,
+        type: notification.type
+      });
+
       // Get user's registered devices
       const devices = await query(
         'SELECT device_token, platform FROM mobile_devices WHERE user_id = $1 AND is_active = true',
         [userId]
       );
 
+      console.log(`📱 Found ${devices.rows.length} registered devices for user ${userId}`);
+
       if (devices.rows.length === 0) {
-        console.log(`No registered devices for user ${userId}`);
+        console.log(`❌ No registered devices for user ${userId}`);
         return { success: false, reason: 'No registered devices' };
       }
 
       const results = [];
 
       for (const device of devices.rows) {
+        console.log(`📱 Sending to ${device.platform} device: ${device.device_token.substring(0, 10)}...`);
         try {
           if (device.platform === 'ios' && this.apnProvider) {
+            console.log('📱 Using APN provider for iOS device');
             const result = await this.sendIOSNotification(device.device_token, notification);
             results.push({ platform: 'ios', token: device.device_token, result });
           } else if (device.platform === 'android' && this.fcmApp) {
+            console.log('📱 Using FCM for Android device');
             const result = await this.sendAndroidNotification(device.device_token, notification);
             results.push({ platform: 'android', token: device.device_token, result });
+          } else {
+            console.log(`❌ No provider available for platform: ${device.platform}`);
+            console.log(`❌ APN Provider available: ${!!this.apnProvider}`);
+            console.log(`❌ FCM App available: ${!!this.fcmApp}`);
           }
         } catch (deviceError) {
-          console.error(`Error sending to device ${device.device_token}:`, deviceError);
+          console.error(`❌ Error sending to device ${device.device_token}:`, deviceError);
           results.push({ 
             platform: device.platform, 
             token: device.device_token, 
@@ -90,10 +126,11 @@ class PushNotificationService {
       // Log notification
       await this.logNotification(userId, notification, results);
 
+      console.log(`📱 Notification sending completed. Results:`, results);
       return { success: true, results };
 
     } catch (error) {
-      console.error('Push notification error:', error);
+      console.error('❌ Push notification error:', error);
       return { success: false, error: error.message };
     }
   }
