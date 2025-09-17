@@ -116,6 +116,12 @@ class ChatViewModel: ObservableObject {
                 
                 // Convert the minimal conversation to a full conversation object
                 self.conversation = response.data.conversation.toConversation()
+                
+                // Load messages immediately to show the initial message that was sent
+                if let conversation = self.conversation {
+                    await loadMessages(for: conversation.id)
+                }
+                
                 startPolling()
                 
                 // Notify MessagesViewModel about the new conversation and message
