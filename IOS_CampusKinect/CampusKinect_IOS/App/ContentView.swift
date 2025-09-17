@@ -17,6 +17,13 @@ struct ContentView: View {
                 LoadingView()
             } else if authManager.isAuthenticated {
                 MainTabView()
+                    .onAppear {
+                        // Ensure device token is registered for authenticated users
+                        Task {
+                            let granted = await PushNotificationManager.shared.requestPermission()
+                            print("📱 Authenticated User: Push notification permission \(granted ? "granted" : "denied")")
+                        }
+                    }
             } else {
                 AuthenticationFlow()
             }

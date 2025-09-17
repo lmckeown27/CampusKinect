@@ -94,6 +94,41 @@ struct SettingsView: View {
                     }
                 }
                 
+                // Notification Testing (Debug)
+                Section("Push Notifications") {
+                    Button(action: {
+                        Task {
+                            let granted = await PushNotificationManager.shared.requestPermission()
+                            print("📱 Manual request: Push notification permission \(granted ? "granted" : "denied")")
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "bell")
+                                .foregroundColor(.blue)
+                            
+                            Text("Request Notification Permission")
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                    }
+                    
+                    Button(action: {
+                        PushNotificationManager.shared.updateBadgeCount()
+                        print("📱 Manual badge update triggered")
+                    }) {
+                        HStack {
+                            Image(systemName: "app.badge")
+                                .foregroundColor(.orange)
+                            
+                            Text("Update Badge Count")
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                    }
+                }
+                
                 // Account Actions
                 Section {
                     Button(action: {
