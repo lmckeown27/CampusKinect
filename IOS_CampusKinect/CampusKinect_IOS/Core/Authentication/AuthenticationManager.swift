@@ -75,36 +75,51 @@ class AuthenticationManager: ObservableObject {
         authError = nil
         
         do {
-            let response = try await apiService.login(email: email, password: password)
+            print("🔐 AuthenticationManager: Starting login process...")
+            let response: LoginResponse = try await apiService.login(email: email, password: password)
+            print("🔐 AuthenticationManager: Login API call successful")
             
             // Save tokens with error handling
+            print("🔐 AuthenticationManager: Saving access token...")
             let tokenSaved = await keychainManager.saveAccessToken(response.data.tokens.accessToken)
             guard tokenSaved else {
+                print("❌ AuthenticationManager: Failed to save access token")
                 authError = .keychainError
                 isLoading = false
                 return false
             }
+            print("✅ AuthenticationManager: Access token saved")
             
+            print("🔐 AuthenticationManager: Saving refresh token...")
             let refreshTokenSaved = await keychainManager.saveRefreshToken(response.data.tokens.refreshToken)
             guard refreshTokenSaved else {
+                print("❌ AuthenticationManager: Failed to save refresh token")
                 authError = .keychainError
                 isLoading = false
                 return false
             }
+            print("✅ AuthenticationManager: Refresh token saved")
             
+            print("🔐 AuthenticationManager: Saving user ID...")
             let userIDSaved = await keychainManager.saveUserID(String(response.data.user.id))
             guard userIDSaved else {
+                print("❌ AuthenticationManager: Failed to save user ID")
                 authError = .keychainError
                 isLoading = false
                 return false
             }
+            print("✅ AuthenticationManager: User ID saved")
             
             // Update state
+            print("🔐 AuthenticationManager: Updating authentication state...")
             currentUser = response.data.user
             isAuthenticated = true
+            print("✅ AuthenticationManager: Authentication state updated")
             
             // Fetch complete user profile including email
+            print("🔐 AuthenticationManager: Refreshing user profile...")
             await refreshCurrentUser()
+            print("✅ AuthenticationManager: User profile refreshed")
             
             // Request push notification permissions after successful login
             print("🔔 AuthenticationManager: About to request push notification permissions...")
@@ -113,16 +128,20 @@ class AuthenticationManager: ObservableObject {
                 print("🔔 AuthenticationManager: Push notification permission result: \(granted)")
             }
             
+            print("🔐 AuthenticationManager: Posting login notification...")
             NotificationCenter.default.post(name: .userDidLogin, object: nil)
             
+            print("🔐 AuthenticationManager: Login process completed successfully")
             isLoading = false
             return true
             
         } catch let error as APIError {
+            print("❌ AuthenticationManager: Login failed with API error: \(error)")
             authError = error
             isLoading = false
             return false
         } catch {
+            print("❌ AuthenticationManager: Login failed with unknown error: \(error)")
             authError = .networkError(error.localizedDescription)
             isLoading = false
             return false
