@@ -11,10 +11,21 @@ struct SwipeablePostCard: View {
     let post: Post
     let swipeAction: SwipeAction
     let onSwipeAction: (Int) async -> Bool
+    let onUndo: ((Int) async -> Bool)?
     
     @State private var offset: CGFloat = 0
     @State private var isShowingConfirmation = false
     @State private var isPerformingAction = false
+    @State private var isDeleted = false
+    @State private var showingUndoToast = false
+    @State private var undoTimer: Timer?
+    
+    init(post: Post, swipeAction: SwipeAction, onSwipeAction: @escaping (Int) async -> Bool, onUndo: ((Int) async -> Bool)? = nil) {
+        self.post = post
+        self.swipeAction = swipeAction
+        self.onSwipeAction = onSwipeAction
+        self.onUndo = onUndo
+    }
     
     enum SwipeAction {
         case delete
@@ -64,18 +75,44 @@ struct SwipeablePostCard: View {
                 return "Are you sure you want to remove this bookmark?"
             }
         }
+        
+        var successMessage: String {
+            switch self {
+            case .delete:
+                return "Post deleted"
+            case .removeRepost:
+                return "Repost removed"
+            case .removeBookmark:
+                return "Bookmark removed"
+            }
+        }
+        
+        var undoMessage: String {
+            switch self {
+            case .delete:
+                return "Post deleted. Tap to undo."
+            case .removeRepost:
+                return "Repost removed. Tap to undo."
+            case .removeBookmark:
+                return "Bookmark removed. Tap to undo."
+            }
+        }
     }
     
     var body: some View {
-        mainContent
-            .clipped()
-            .alert(swipeAction.title, isPresented: $isShowingConfirmation) {
-                alertButtons
-            } message: {
-                Text(swipeAction.confirmationMessage)
+        ZStack {
+            if isDeleted && onUndo != nil {
+                undoToastView
+            } else {
+                mainContent
             }
-            .overlay(loadingOverlay)
-            .overlay(progressIndicator)
+        }
+        .clipped()
+        .alert(swipeAction.title, isPresented: $isShowingConfirmation) {
+            alertButtons
+        } message: {
+            Text(swipeAction.confirmationMessage)
+        }
     }
     
     private var mainContent: some View {
@@ -83,6 +120,8 @@ struct SwipeablePostCard: View {
             actionButton
             swipeablePostCard
         }
+        .overlay(loadingOverlay)
+        .overlay(progressIndicator)
     }
     
     private var actionButton: some View {
@@ -90,6 +129,10 @@ struct SwipeablePostCard: View {
             Spacer()
             
             Button(action: {
+                // Add haptic feedback
+                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedback.impactOccurred()
+                
                 isShowingConfirmation = true
             }) {
                 actionButtonContent
@@ -116,6 +159,8 @@ struct SwipeablePostCard: View {
     private var swipeablePostCard: some View {
         PostCardView(post: post)
             .offset(x: offset)
+            .scaleEffect(isPerformingAction ? 0.95 : 1.0)
+            .opacity(isPerformingAction ? 0.7 : 1.0)
             .simultaneousGesture(swipeGesture)
             .onTapGesture {
                 handleTapGesture()
@@ -134,7 +179,11 @@ struct SwipeablePostCard: View {
     
     private var alertButtons: some View {
         Group {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) { 
+                // Add haptic feedback for cancel
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+            }
             Button(swipeAction.title, role: .destructive) {
                 performAction()
             }
@@ -145,6 +194,7 @@ struct SwipeablePostCard: View {
         Group {
             if isPerformingAction {
                 Color.black.opacity(0.3)
+                    .transition(.opacity)
             } else {
                 Color.clear
             }
@@ -154,10 +204,49 @@ struct SwipeablePostCard: View {
     private var progressIndicator: some View {
         Group {
             if isPerformingAction {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(1.2)
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.2)
+                    
+                    Text("Deleting...")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                        .fontWeight(.medium)
+                }
+                .transition(.scale.combined(with: .opacity))
             }
+        }
+    }
+    
+    private var undoToastView: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(swipeAction.successMessage)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                Text("Tap to undo")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Button("UNDO") {
+                performUndo()
+            }
+            .font(.caption)
+            .fontWeight(.bold)
+            .foregroundColor(.blue)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .transition(.move(edge: .trailing).combined(with: .opacity))
+        .onTapGesture {
+            performUndo()
         }
     }
     
@@ -172,6 +261,12 @@ struct SwipeablePostCard: View {
         // Only allow left swipe (negative translation)
         if value.translation.width < 0 {
             offset = max(value.translation.width, -80)
+            
+            // Add subtle haptic feedback when reaching threshold
+            if offset <= -40 && offset > -45 {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+            }
         }
     }
     
@@ -183,7 +278,7 @@ struct SwipeablePostCard: View {
         // Only handle if gesture is more horizontal than vertical
         guard horizontalMovement > verticalMovement else { return }
         
-        withAnimation(.spring()) {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
             if value.translation.width < -40 {
                 // Snap to show action button
                 offset = -80
@@ -197,13 +292,17 @@ struct SwipeablePostCard: View {
     private func handleTapGesture() {
         // Tap to close if swiped open
         if offset != 0 {
-            withAnimation(.spring()) {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                 offset = 0
             }
         }
     }
     
     private func performAction() {
+        // Add strong haptic feedback for destructive action
+        let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
+        impactFeedback.impactOccurred()
+        
         isPerformingAction = true
         
         Task {
@@ -211,17 +310,71 @@ struct SwipeablePostCard: View {
             
             await MainActor.run {
                 isPerformingAction = false
+                
                 if success {
-                    // Animate the card away
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        offset = -UIScreen.main.bounds.width
+                    if onUndo != nil {
+                        // Show undo toast instead of immediately removing
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            isDeleted = true
+                        }
+                        startUndoTimer()
+                    } else {
+                        // Animate the card away immediately
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            offset = -UIScreen.main.bounds.width
+                        }
                     }
+                    
+                    // Success haptic feedback
+                    let notificationFeedback = UINotificationFeedbackGenerator()
+                    notificationFeedback.notificationOccurred(.success)
                 } else {
                     // Reset position on failure
-                    withAnimation(.spring()) {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                         offset = 0
                     }
+                    
+                    // Error haptic feedback
+                    let notificationFeedback = UINotificationFeedbackGenerator()
+                    notificationFeedback.notificationOccurred(.error)
                 }
+            }
+        }
+    }
+    
+    private func performUndo() {
+        guard let onUndo = onUndo else { return }
+        
+        // Cancel the undo timer
+        undoTimer?.invalidate()
+        undoTimer = nil
+        
+        // Add haptic feedback
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+        
+        Task {
+            let success = await onUndo(post.id)
+            
+            await MainActor.run {
+                if success {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        isDeleted = false
+                    }
+                    
+                    // Success haptic feedback
+                    let notificationFeedback = UINotificationFeedbackGenerator()
+                    notificationFeedback.notificationOccurred(.success)
+                }
+            }
+        }
+    }
+    
+    private func startUndoTimer() {
+        undoTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
+            // Auto-hide after 5 seconds
+            withAnimation(.easeInOut(duration: 0.3)) {
+                offset = -UIScreen.main.bounds.width
             }
         }
     }
@@ -266,6 +419,7 @@ struct SwipeablePostCard: View {
             tags: ["sample"]
         ),
         swipeAction: .delete,
-        onSwipeAction: { _ in return true }
+        onSwipeAction: { _ in return true },
+        onUndo: { _ in return true }
     )
 } 

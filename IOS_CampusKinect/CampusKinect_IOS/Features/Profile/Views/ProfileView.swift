@@ -56,6 +56,18 @@ struct ProfileView: View {
                     await viewModel.loadUserBookmarks(userId: userId)
                 }
             }
+            .overlay(
+                // Toast notification overlay
+                ToastView(
+                    message: viewModel.toastMessage ?? "",
+                    isShowing: $viewModel.showingToast,
+                    onDismiss: {
+                        viewModel.dismissToast()
+                    }
+                )
+                .animation(.spring(), value: viewModel.showingToast),
+                alignment: .bottom
+            )
         }
     }
 }
@@ -240,6 +252,9 @@ struct PostsTabContent: View {
                             swipeAction: .delete,
                             onSwipeAction: { postId in
                                 await viewModel.deletePost(postId)
+                            },
+                            onUndo: { postId in
+                                await viewModel.undoDeletePost(postId)
                             }
                         )
                     }
@@ -288,6 +303,9 @@ struct RepostsTabContent: View {
                             swipeAction: .removeRepost,
                             onSwipeAction: { postId in
                                 await viewModel.removeRepost(postId)
+                            },
+                            onUndo: { postId in
+                                await viewModel.undoRemoveRepost(postId)
                             }
                         )
                     }
@@ -325,6 +343,9 @@ struct BookmarksTabContent: View {
                             swipeAction: .removeBookmark,
                             onSwipeAction: { postId in
                                 await viewModel.removeBookmark(postId)
+                            },
+                            onUndo: { postId in
+                                await viewModel.undoRemoveBookmark(postId)
                             }
                         )
                     }
@@ -334,6 +355,45 @@ struct BookmarksTabContent: View {
         .refreshable {
             if let userId = currentUser?.id {
                 await viewModel.loadUserBookmarks(userId: userId)
+            }
+        }
+    }
+}
+
+// MARK: - Toast View
+struct ToastView: View {
+    let message: String
+    @Binding var isShowing: Bool
+    let onDismiss: () -> Void
+    
+    var body: some View {
+        if isShowing && !message.isEmpty {
+            HStack {
+                Image(systemName: message.contains("Failed") || message.contains("Error") ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
+                    .foregroundColor(message.contains("Failed") || message.contains("Error") ? .red : .green)
+                
+                Text(message)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Button(action: onDismiss) {
+                    Image(systemName: "xmark")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .padding(.horizontal)
+            .padding(.bottom, 100) // Account for tab bar
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .onTapGesture {
+                onDismiss()
             }
         }
     }
