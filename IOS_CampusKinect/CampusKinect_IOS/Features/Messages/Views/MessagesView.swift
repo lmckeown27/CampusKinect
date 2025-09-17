@@ -218,8 +218,10 @@ struct MessagesView: View {
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
+                print("💬 MessagesView: Received navigateToChat notification")
                 if let userId = notification.userInfo?["userId"] as? Int,
                    let userName = notification.userInfo?["userName"] as? String {
+                    print("💬 MessagesView: Creating chat with user: \(userName) (ID: \(userId))")
                     // Create a user object for navigation
                     let user = User(
                         id: userId,
@@ -243,6 +245,9 @@ struct MessagesView: View {
                     )
                     selectedUser = user
                     shouldNavigateToChat = true
+                    print("💬 MessagesView: Navigation state updated - shouldNavigateToChat: \(shouldNavigateToChat)")
+                } else {
+                    print("❌ MessagesView: Failed to extract userId or userName from notification")
                 }
             }
             .onAppear {

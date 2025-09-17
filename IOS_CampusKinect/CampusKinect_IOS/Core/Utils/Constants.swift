@@ -67,5 +67,7 @@ extension Notification.Name {
     static let userDidLogout = Notification.Name("userDidLogout")
     static let networkStatusChanged = Notification.Name("networkStatusChanged")
     static let newMessageReceived = Notification.Name("newMessageReceived")
+    static let navigateToChat = Notification.Name("navigateToChat")
+    static let navigateToProfile = Notification.Name("navigateToProfile")
 }
 

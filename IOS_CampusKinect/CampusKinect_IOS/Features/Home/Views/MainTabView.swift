@@ -37,5 +37,19 @@ struct MainTabView: View {
                 .tag(Tab.profile)
         }
         .accentColor(Color("AccentColor"))
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { _ in
+            // Switch to Messages tab when navigateToChat notification is received
+            print("📱 MainTabView: Received navigateToChat notification - switching to Messages tab")
+            withAnimation(.easeInOut(duration: 0.3)) {
+                selectedTab = .messages
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToProfile)) { _ in
+            // Switch to Profile tab when navigateToProfile notification is received
+            print("👤 MainTabView: Received navigateToProfile notification - switching to Profile tab")
+            withAnimation(.easeInOut(duration: 0.3)) {
+                selectedTab = .profile
+            }
+        }
     }
 } 

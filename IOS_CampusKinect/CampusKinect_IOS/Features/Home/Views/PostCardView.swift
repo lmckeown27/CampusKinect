@@ -66,34 +66,36 @@ struct PostCardView: View {
     
     private func handleMessage() {
         guard let currentUser = authManager.currentUser else {
-            // Show login prompt
+            print("❌ No current user - cannot message")
             return
         }
         
-        // Don't allow messaging yourself
-        guard currentUser.id != post.userId else {
+        // Don't allow messaging yourself - use poster.id for reliable comparison
+        guard currentUser.id != post.poster.id else {
+            print("❌ Cannot message yourself")
             return
         }
+        
+        print("📱 Sending navigateToChat notification for user: \(post.poster.displayName) (ID: \(post.poster.id))")
         
         // Navigate to chat with the post author
-        // This would typically be handled by a navigation coordinator
-        // For now, we'll use a notification to trigger navigation
+        // Use poster.id and displayName for reliable data
         NotificationCenter.default.post(
             name: .navigateToChat,
             object: nil,
             userInfo: [
-                "userId": post.userId as Any,
+                "userId": post.poster.id,
                 "userName": post.poster.displayName
             ]
         )
     }
     
     private func handleProfileTap() {
-        // Navigate to user profile
+        // Navigate to user profile - use poster.id for consistency
         NotificationCenter.default.post(
             name: .navigateToProfile,
             object: nil,
-            userInfo: ["userId": post.userId as Any]
+            userInfo: ["userId": post.poster.id]
         )
     }
 }
@@ -447,12 +449,6 @@ struct ImageViewer: View {
             }
         }
     }
-}
-
-// MARK: - Notification Extensions
-extension Notification.Name {
-    static let navigateToChat = Notification.Name("navigateToChat")
-    static let navigateToProfile = Notification.Name("navigateToProfile")
 }
 
 // MARK: - Post Tags
