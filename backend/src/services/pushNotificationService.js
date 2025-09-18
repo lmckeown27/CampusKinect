@@ -160,7 +160,12 @@ class PushNotificationService {
       title: notification.title,
       body: notification.body
     };
-    note.payload = notification.data || {};
+    // Include notification type and other data in payload for iOS app to process
+    note.payload = {
+      ...notification.data,
+      type: notification.type,
+      category: notification.category
+    };
     note.topic = process.env.APN_BUNDLE_ID || 'com.campuskinect.app';
 
     // Add category for interactive notifications
