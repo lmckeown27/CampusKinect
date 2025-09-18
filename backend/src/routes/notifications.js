@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../config/database');
 const { auth, requireVerification } = require('../middleware/auth');
+const pushNotificationService = require('../services/pushNotificationService');
 const Joi = require('joi');
 
 // Validation schemas
@@ -100,6 +101,61 @@ router.delete('/unregister-device', [auth, requireVerification], async (req, res
       error: {
         message: 'Failed to unregister device token'
       }
+    });
+  }
+});
+
+// Update badge count
+router.post('/update-badge', [auth, requireVerification], async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { badgeCount } = req.body; // Optional: specific count, otherwise uses unread count
+
+    const result = await pushNotificationService.updateBadgeCount(userId, badgeCount);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Badge count updated successfully'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: { message: result.error }
+      });
+    }
+  } catch (error) {
+    console.error('Update badge error:', error);
+    res.status(500).json({
+      success: false,
+      error: { message: 'Failed to update badge count' }
+    });
+  }
+});
+
+// Clear badge (set to 0)
+router.post('/clear-badge', [auth, requireVerification], async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    const result = await pushNotificationService.clearBadge(userId);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Badge cleared successfully'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: { message: result.error }
+      });
+    }
+  } catch (error) {
+    console.error('Clear badge error:', error);
+    res.status(500).json({
+      success: false,
+      error: { message: 'Failed to clear badge' }
     });
   }
 });

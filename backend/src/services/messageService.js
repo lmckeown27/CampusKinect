@@ -204,13 +204,25 @@ class MessageService {
       const total = parseInt(countResult.rows[0].total);
 
       // Mark messages as read (only messages from other users)
-      await dbQuery(`
+      const readResult = await dbQuery(`
         UPDATE messages 
         SET is_read = true 
         WHERE conversation_id = $1 
         AND sender_id != $2 
         AND is_read = false
+        RETURNING id
       `, [conversationId, userId]);
+
+      // If messages were marked as read, update badge count
+      if (readResult.rows.length > 0) {
+        try {
+          const pushNotificationService = require('./pushNotificationService');
+          await pushNotificationService.updateBadgeCount(userId);
+          console.log(`📱 Updated badge count for user ${userId} after reading ${readResult.rows.length} messages`);
+        } catch (error) {
+          console.error('Failed to update badge count after reading messages:', error);
+        }
+      }
 
       console.log('🔍 DEBUG: Messages query result:', {
         rowCount: result.rows.length,
@@ -736,6 +748,16 @@ class MessageService {
       // Clear cache for both users
       await this.clearUserConversationCache(user1_id);
       await this.clearUserConversationCache(user2_id);
+
+      // Update badge counts for both users after conversation deletion
+      try {
+        const pushNotificationService = require('./pushNotificationService');
+        await pushNotificationService.updateBadgeCount(user1_id);
+        await pushNotificationService.updateBadgeCount(user2_id);
+        console.log(`📱 Updated badge counts for users ${user1_id} and ${user2_id} after conversation deletion`);
+      } catch (error) {
+        console.error('Failed to update badge counts after conversation deletion:', error);
+      }
 
       return {
         success: true,

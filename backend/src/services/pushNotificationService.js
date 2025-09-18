@@ -254,15 +254,27 @@ class PushNotificationService {
 
   // Notification templates for different events
   async sendMessageNotification(recipientId, senderName, messagePreview) {
+    // Get the user's current unread message count for accurate badge
+    const messageService = require('./messageService');
+    let unreadCount = 1; // Default to 1 if we can't get the count
+    
+    try {
+      unreadCount = await messageService.getUnreadMessageCount(recipientId);
+    } catch (error) {
+      console.error('Failed to get unread count for badge:', error);
+    }
+
     const notification = {
       title: senderName,
       body: messagePreview.length > 50 ? `${messagePreview.substring(0, 50)}...` : messagePreview,
       type: 'message',
       category: 'MESSAGE_CATEGORY',
       sound: 'default',
+      badge: unreadCount, // Set badge to actual unread count
       data: {
         type: 'message',
-        action: 'open_chat'
+        action: 'open_chat',
+        unreadCount: unreadCount // Include in payload for iOS app
       }
     };
 
@@ -297,6 +309,38 @@ class PushNotificationService {
     };
 
     return await this.sendNotification(postOwnerId, notification);
+  }
+
+  // Badge management functions
+  async updateBadgeCount(userId, badgeCount = null) {
+    try {
+      // If no badge count provided, get current unread count
+      if (badgeCount === null) {
+        const messageService = require('./messageService');
+        badgeCount = await messageService.getUnreadMessageCount(userId);
+      }
+
+      const notification = {
+        title: '', // Silent badge update
+        body: '',
+        type: 'badge_update',
+        badge: badgeCount,
+        data: {
+          type: 'badge_update',
+          silent: true
+        }
+      };
+
+      // Send silent notification to update badge only
+      return await this.sendNotification(userId, notification);
+    } catch (error) {
+      console.error('Failed to update badge count:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  async clearBadge(userId) {
+    return await this.updateBadgeCount(userId, 0);
   }
 
   async sendFollowNotification(followedUserId, followerName) {
