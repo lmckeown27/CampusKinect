@@ -45,31 +45,6 @@ struct NotificationSettingsView: View {
                 } footer: {
                     Text("When enabled, you'll receive push notifications for new messages and important updates. You can change this setting anytime.")
                 }
-                
-                if notificationsEnabled {
-                    Section("Notification Types") {
-                        NotificationTypeRow(
-                            icon: "message.fill",
-                            title: "Messages",
-                            subtitle: "New messages and conversations",
-                            isEnabled: true
-                        )
-                        
-                        NotificationTypeRow(
-                            icon: "heart.fill",
-                            title: "Interactions",
-                            subtitle: "Likes and comments on your posts",
-                            isEnabled: true
-                        )
-                        
-                        NotificationTypeRow(
-                            icon: "bell.fill",
-                            title: "General Updates",
-                            subtitle: "App updates and announcements",
-                            isEnabled: true
-                        )
-                    }
-                }
             }
             .navigationTitle("Notifications")
             .navigationBarTitleDisplayMode(.large)
@@ -159,38 +134,6 @@ struct NotificationSettingsView: View {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(settingsURL)
         }
-    }
-}
-
-struct NotificationTypeRow: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let isEnabled: Bool
-    
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(.blue)
-                .frame(width: 24, height: 24)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            if isEnabled {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-            }
-        }
-        .padding(.vertical, 4)
     }
 }
 
