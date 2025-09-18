@@ -166,7 +166,7 @@ class PushNotificationService {
       type: notification.type,
       category: notification.category
     };
-    note.topic = process.env.APN_BUNDLE_ID || 'com.campuskinect.app';
+    note.topic = process.env.APN_BUNDLE_ID || 'com.liammckeown.CampusKinect-IOS';
 
     // Add category for interactive notifications
     if (notification.category) {
