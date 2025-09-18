@@ -130,7 +130,7 @@ class PushNotificationManager: NSObject, ObservableObject {
     }
     
     @MainActor
-    private func registerForRemoteNotifications() {
+    func registerForRemoteNotifications() {
         UIApplication.shared.registerForRemoteNotifications()
     }
     
