@@ -129,7 +129,9 @@ struct NotificationSettingsView: View {
                     }
                 case .authorized, .provisional, .ephemeral:
                     // Already authorized - register token
-                    await PushNotificationManager.shared.registerForRemoteNotifications()
+                    await MainActor.run {
+                        PushNotificationManager.shared.registerForRemoteNotifications()
+                    }
                 @unknown default:
                     await MainActor.run {
                         notificationsEnabled = false
