@@ -103,7 +103,7 @@ class PushNotificationManager: NSObject, ObservableObject {
         }
     }
     
-    private func unregisterCurrentDevice() async {
+    func unregisterCurrentDevice() async {
         guard let deviceToken = deviceToken else {
             print("🔔 No device token to unregister")
             return
