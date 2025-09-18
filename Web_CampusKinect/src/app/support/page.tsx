@@ -50,7 +50,7 @@ const SupportPage: React.FC = () => {
       id: 7,
       category: 'Account & Profile',
       question: 'How do I delete my account?',
-      answer: 'Currently, account deletion must be requested through our support team. Contact us at support@campuskinect.net with your request, and we\'ll process it within 48 hours.'
+      answer: 'Currently, account deletion must be requested through our support team. Contact us at campuskinect01@gmail.com with your request, and we\'ll process it within 48 hours.'
     },
     {
       id: 8,
@@ -73,35 +73,32 @@ const SupportPage: React.FC = () => {
   const handleContactEmail = (type: string) => {
     const subjects = {
       support: 'CampusKinect Support Request',
-      bug: 'Bug Report - CampusKinect Web',
+      bug: 'Bug Report - CampusKinect',
       feedback: 'Feedback - CampusKinect'
     };
     
-    const emails = {
-      support: 'support@campuskinect.net',
-      bug: 'bugs@campuskinect.net',
-      feedback: 'feedback@campuskinect.net'
-    };
+    const email = 'campuskinect01@gmail.com';
 
-    window.location.href = `mailto:${emails[type as keyof typeof emails]}?subject=${subjects[type as keyof typeof subjects]}`;
+    window.location.href = `mailto:${email}?subject=${subjects[type as keyof typeof subjects]}`;
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
       {/* Header */}
-      <div className="border-b border-gray-600 sticky top-0 z-10" style={{ backgroundColor: '#525252' }}>
+      <div className="border-b border-[#708d81] sticky top-0 z-10" style={{ backgroundColor: '#737373' }}>
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.back()}
-                className="p-2 rounded-lg hover:bg-gray-600 transition-colors"
+                className="p-2 rounded-lg hover:bg-[#708d81] transition-colors cursor-pointer"
+                style={{ cursor: 'pointer' }}
               >
                 <ArrowLeft size={24} className="text-white" />
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-white">Support Center</h1>
-                <p className="text-gray-300">Get help with CampusKinect</p>
+                <p className="text-[#708d81]">Get help with CampusKinect</p>
               </div>
             </div>
             <HelpCircle size={32} className="text-[#708d81]" />
@@ -114,8 +111,16 @@ const SupportPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <button
             onClick={() => handleContactEmail('support')}
-            className="p-6 rounded-xl border-2 border-[#708d81] hover:bg-[#708d81] transition-all duration-200 group"
-            style={{ backgroundColor: '#737373' }}
+            className="p-6 rounded-xl border-2 border-[#708d81] hover:bg-[#708d81] transition-all duration-200 group cursor-pointer"
+            style={{ backgroundColor: '#737373', cursor: 'pointer' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0px)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
             <Mail size={32} className="text-[#708d81] group-hover:text-white mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">Contact Support</h3>
@@ -124,8 +129,16 @@ const SupportPage: React.FC = () => {
 
           <button
             onClick={() => handleContactEmail('bug')}
-            className="p-6 rounded-xl border-2 border-[#708d81] hover:bg-[#708d81] transition-all duration-200 group"
-            style={{ backgroundColor: '#737373' }}
+            className="p-6 rounded-xl border-2 border-[#708d81] hover:bg-[#708d81] transition-all duration-200 group cursor-pointer"
+            style={{ backgroundColor: '#737373', cursor: 'pointer' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0px)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
             <Bug size={32} className="text-[#708d81] group-hover:text-white mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">Report a Bug</h3>
@@ -134,8 +147,16 @@ const SupportPage: React.FC = () => {
 
           <button
             onClick={() => handleContactEmail('feedback')}
-            className="p-6 rounded-xl border-2 border-[#708d81] hover:bg-[#708d81] transition-all duration-200 group"
-            style={{ backgroundColor: '#737373' }}
+            className="p-6 rounded-xl border-2 border-[#708d81] hover:bg-[#708d81] transition-all duration-200 group cursor-pointer"
+            style={{ backgroundColor: '#737373', cursor: 'pointer' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0px)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
             <MessageCircle size={32} className="text-[#708d81] group-hover:text-white mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">Send Feedback</h3>
@@ -172,7 +193,8 @@ const SupportPage: React.FC = () => {
               >
                 <button
                   onClick={() => toggleFAQ(faq.id)}
-                  className="w-full px-6 py-4 text-left hover:bg-[#708d81] transition-colors flex items-center justify-between"
+                  className="w-full px-6 py-4 text-left hover:bg-[#708d81] transition-colors flex items-center justify-between cursor-pointer"
+                  style={{ cursor: 'pointer' }}
                 >
                   <div>
                     <div className="text-sm text-[#708d81] font-medium mb-1">{faq.category}</div>
@@ -210,11 +232,9 @@ const SupportPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-white">Support Hours</h3>
             </div>
             <div className="space-y-2 text-gray-300">
-              <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM EST</p>
-              <p><strong>Saturday:</strong> 10:00 AM - 4:00 PM EST</p>
-              <p><strong>Sunday:</strong> Closed</p>
+              <p><strong>Available Hours:</strong> Whenever I am free</p>
               <p className="text-sm text-gray-400 mt-3">
-                We typically respond to emails within 24 hours during business days.
+                We typically respond to emails as soon as possible. Response times may vary based on availability.
               </p>
             </div>
           </div>
@@ -228,16 +248,11 @@ const SupportPage: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-gray-300">
                 <Mail size={16} className="text-[#708d81]" />
-                <span>support@campuskinect.net</span>
+                <span>campuskinect01@gmail.com</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Bug size={16} className="text-[#708d81]" />
-                <span>bugs@campuskinect.net</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <MessageCircle size={16} className="text-[#708d81]" />
-                <span>feedback@campuskinect.net</span>
-              </div>
+              <p className="text-sm text-gray-400 mt-3">
+                For all support, bug reports, feedback, and general inquiries, please use the email above.
+              </p>
             </div>
           </div>
         </div>
@@ -251,14 +266,32 @@ const SupportPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               onClick={() => router.push('/privacy')}
-              className="text-left p-4 rounded-lg hover:bg-[#708d81] transition-colors border border-gray-600"
+              className="text-left p-4 rounded-lg hover:bg-[#708d81] transition-colors border border-[#708d81] cursor-pointer"
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0px)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
             >
               <h4 className="text-white font-medium mb-1">Privacy Policy</h4>
               <p className="text-gray-400 text-sm">Learn how we protect your data</p>
             </button>
             <button
               onClick={() => router.push('/terms')}
-              className="text-left p-4 rounded-lg hover:bg-[#708d81] transition-colors border border-gray-600"
+              className="text-left p-4 rounded-lg hover:bg-[#708d81] transition-colors border border-[#708d81] cursor-pointer"
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0px)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
             >
               <h4 className="text-white font-medium mb-1">Terms of Service</h4>
               <p className="text-gray-400 text-sm">Read our terms and conditions</p>

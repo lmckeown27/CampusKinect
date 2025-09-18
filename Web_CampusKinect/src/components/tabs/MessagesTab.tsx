@@ -121,15 +121,17 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
               e.stopPropagation();
               handleDelete();
             }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-500 ml-2"
-            style={{ color: '#ef4444' }}
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-500 ml-2 cursor-pointer"
+            style={{ color: '#ef4444', cursor: 'pointer' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#ef4444';
               e.currentTarget.style.color = 'white';
+              e.currentTarget.style.cursor = 'pointer';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
               e.currentTarget.style.color = '#ef4444';
+              e.currentTarget.style.cursor = 'pointer';
             }}
           >
             <Trash2 size={16} />
