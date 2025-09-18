@@ -478,7 +478,67 @@ class MessageService {
         if (status === 'pending') {
           throw new Error('You already have a pending message request with this user. Please wait for them to respond.');
         } else if (status === 'accepted') {
-          throw new Error('Message request was already accepted. You should have an existing conversation.');
+          // Check if the conversation actually still exists
+          const conversationCheck = await dbQuery(`
+            SELECT id FROM conversations 
+            WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)
+            ${postId ? 'AND post_id = $3' : ''}
+          `, postId ? [fromUserId, toUserId, postId] : [fromUserId, toUserId]);
+          
+          if (conversationCheck.rows.length > 0) {
+            // Conversation exists, so the error is valid
+            throw new Error('Message request was already accepted. You should have an existing conversation.');
+          } else {
+            // Conversation was deleted, so reset the request status and allow a new request
+            console.log('🔄 Previous conversation was deleted, resetting message request status');
+            const result = await dbQuery(`
+              UPDATE message_requests 
+              SET message = $1, status = 'pending', created_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+              WHERE id = $2
+              RETURNING id, created_at
+            `, [content, requestId]);
+            
+            const messageRequest = result.rows[0];
+
+            // Get sender info
+            const senderResult = await dbQuery(`
+              SELECT username, first_name, last_name, display_name, profile_picture
+              FROM users 
+              WHERE id = $1
+            `, [fromUserId]);
+
+            const sender = senderResult.rows[0];
+
+            // Get target user info
+            const targetUserResult = await dbQuery(`
+              SELECT id, username, first_name, last_name, display_name, profile_picture
+              FROM users 
+              WHERE id = $1 AND is_active = true
+            `, [toUserId]);
+
+            return {
+              success: true,
+              message: 'Message request sent successfully (previous conversation was deleted)',
+              data: {
+                id: messageRequest.id,
+                fromUserId,
+                toUserId,
+                content,
+                postId,
+                status: 'pending',
+                createdAt: messageRequest.created_at,
+                sender: {
+                  id: fromUserId,
+                  username: sender.username,
+                  firstName: sender.first_name,
+                  lastName: sender.last_name,
+                  displayName: sender.display_name,
+                  profilePicture: sender.profile_picture
+                },
+                targetUser: targetUserResult.rows[0]
+              }
+            };
+          }
         } else if (status === 'rejected' || status === 'ignored') {
           // Update the existing request instead of creating a new one
           const result = await dbQuery(`
