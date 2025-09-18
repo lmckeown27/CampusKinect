@@ -35,7 +35,7 @@ struct NotificationSettingsView: View {
                         Spacer()
                         
                         Toggle("", isOn: $notificationsEnabled)
-                            .onChange(of: notificationsEnabled) { newValue in
+                            .onChange(of: notificationsEnabled) { _, newValue in
                                 handleNotificationToggle(newValue)
                             }
                     }
