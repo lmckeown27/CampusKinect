@@ -231,53 +231,54 @@ struct PostsTabContent: View {
     let currentUser: User?
     
     var body: some View {
-        VStack {
-            if viewModel.isLoading && viewModel.userPosts.isEmpty {
-                ProgressView("Loading posts...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if viewModel.userPosts.isEmpty {
-                EmptyStateView(
-                    title: "No Posts Yet",
-                    message: "Share something with your campus community!",
-                    systemImage: "doc.text",
-                    actionTitle: "Create Post"
-                ) {
-                    // Navigate to create post
-                }
-            } else {
-                List {
-                    ForEach(viewModel.userPosts) { post in
-                        PostCardView(post: post)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await viewModel.deletePost(post.id)
-                                    }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                    }
-                    
-                    // Load more posts if available
-                    if viewModel.hasMorePosts {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                            Spacer()
-                        }
-                        .listRowSeparator(.hidden)
-                        .task {
-                            if let userId = currentUser?.id {
-                                await viewModel.loadMoreUserPosts(userId: userId)
-                            }
-                        }
-                    }
-                }
-                .listStyle(PlainListStyle())
+        if viewModel.isLoading && viewModel.userPosts.isEmpty {
+            ProgressView("Loading posts...")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if viewModel.userPosts.isEmpty {
+            EmptyStateView(
+                title: "No Posts Yet",
+                message: "Share something with your campus community!",
+                systemImage: "doc.text",
+                actionTitle: "Create Post"
+            ) {
+                // Navigate to create post
             }
+        } else {
+            List {
+                ForEach(viewModel.userPosts) { post in
+                    PostCardView(post: post)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                        .listRowBackground(Color.clear)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                Task {
+                                    await viewModel.deletePost(post.id)
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                }
+                
+                // Load more posts if available
+                if viewModel.hasMorePosts {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .task {
+                        if let userId = currentUser?.id {
+                            await viewModel.loadMoreUserPosts(userId: userId)
+                        }
+                    }
+                }
+            }
+            .listStyle(PlainListStyle())
+            .scrollContentBackground(.hidden)
         }
         .refreshable {
             if let userId = currentUser?.id {
