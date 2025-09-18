@@ -12,7 +12,6 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @State private var showingSettings = false
     @State private var selectedTab: ProfileTab = .posts
-    @State private var isRefreshing = false
     
     enum ProfileTab: String, CaseIterable {
         case posts = "Posts"
@@ -38,17 +37,6 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        Task {
-                            await reloadAllData()
-                        }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                            .foregroundColor(.primary)
-                    }
-                }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         showingSettings = true
@@ -56,9 +44,6 @@ struct ProfileView: View {
                         Image(systemName: "gearshape")
                     }
                 }
-            }
-            .refreshable {
-                await reloadAllData()
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
@@ -85,23 +70,8 @@ struct ProfileView: View {
             )
         }
     }
-
-    private func reloadAllData() async {
-        guard let userId = authManager.currentUser?.id else { return }
-        
-        isRefreshing = true
-        defer { isRefreshing = false }
-        
-        // Reload all tabs simultaneously
-        async let postsTask = viewModel.refreshUserPosts(userId: userId)
-        async let repostsTask = viewModel.refreshUserReposts(userId: userId)
-        async let bookmarksTask = viewModel.refreshBookmarks(userId: userId)
-        
-        await postsTask
-        await repostsTask
-        await bookmarksTask
-    }
 }
+
 // MARK: - Profile Header
 struct ProfileHeader: View {
     let user: User?
@@ -261,55 +231,46 @@ struct PostsTabContent: View {
     let currentUser: User?
     
     var body: some View {
-        Group {
+        VStack {
             if viewModel.isLoading && viewModel.userPosts.isEmpty {
-            ProgressView("Loading posts...")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if viewModel.userPosts.isEmpty {
-            EmptyStateView(
-                title: "No Posts Yet",
-                message: "Share something with your campus community!",
-                systemImage: "doc.text",
-                actionTitle: "Create Post"
-            ) {
-                // Navigate to create post
-            }
-        } else {
-            List {
-                ForEach(viewModel.userPosts) { post in
-                    PostCardView(post: post)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                Task {
-                                    await viewModel.deletePost(post.id)
-                                }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
+                ProgressView("Loading posts...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.userPosts.isEmpty {
+                EmptyStateView(
+                    title: "No Posts Yet",
+                    message: "Share something with your campus community!",
+                    systemImage: "doc.text",
+                    actionTitle: "Create Post"
+                ) {
+                    // Navigate to create post
+                }
+            } else {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.userPosts) { post in
+                        SwipeablePostCard(
+                            post: post,
+                            swipeAction: .delete,
+                            onSwipeAction: { postId in
+                                await viewModel.deletePost(postId)
+                            },
+                            onUndo: { postId in
+                                await viewModel.undoDeletePost(postId)
                             }
-                        }
-                }
-                
-                // Load more posts if available
-                if viewModel.hasMorePosts {
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                        Spacer()
+                        )
                     }
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                    .task {
-                        if let userId = currentUser?.id {
-                            await viewModel.loadMoreUserPosts(userId: userId)
-                        }
+                    
+                    // Load more posts if available
+                    if viewModel.hasMorePosts {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .task {
+                                if let userId = currentUser?.id {
+                                    await viewModel.loadMoreUserPosts(userId: userId)
+                                }
+                            }
                     }
                 }
             }
-            .listStyle(PlainListStyle())
-            .scrollContentBackground(.hidden)
-        }
         }
         .refreshable {
             if let userId = currentUser?.id {
@@ -324,7 +285,7 @@ struct RepostsTabContent: View {
     let currentUser: User?
     
     var body: some View {
-        Group {
+        VStack {
             if viewModel.isLoading && viewModel.userReposts.isEmpty {
                 ProgressView("Loading reposts...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -335,24 +296,20 @@ struct RepostsTabContent: View {
                     systemImage: "arrow.2.squarepath"
                 )
             } else {
-                List {
+                LazyVStack(spacing: 16) {
                     ForEach(viewModel.userReposts) { post in
-                        PostCardView(post: post)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await viewModel.removeRepost(post.id)
-                                    }
-                                } label: {
-                                    Label("Remove", systemImage: "arrow.2.squarepath")
-                                }
-                                .tint(.orange)
+                        SwipeablePostCard(
+                            post: post,
+                            swipeAction: .removeRepost,
+                            onSwipeAction: { postId in
+                                await viewModel.removeRepost(postId)
+                            },
+                            onUndo: { postId in
+                                await viewModel.undoRemoveRepost(postId)
                             }
+                        )
                     }
                 }
-                .listStyle(PlainListStyle())
             }
         }
         .refreshable {
@@ -368,7 +325,7 @@ struct BookmarksTabContent: View {
     let currentUser: User?
     
     var body: some View {
-        Group {
+        VStack {
             if viewModel.isLoading && viewModel.userBookmarks.isEmpty {
                 ProgressView("Loading bookmarks...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -379,24 +336,20 @@ struct BookmarksTabContent: View {
                     systemImage: "bookmark"
                 )
             } else {
-                List {
+                LazyVStack(spacing: 16) {
                     ForEach(viewModel.userBookmarks) { post in
-                        PostCardView(post: post)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await viewModel.removeBookmark(post.id)
-                                    }
-                                } label: {
-                                    Label("Remove", systemImage: "bookmark.slash")
-                                }
-                                .tint(.blue)
+                        SwipeablePostCard(
+                            post: post,
+                            swipeAction: .removeBookmark,
+                            onSwipeAction: { postId in
+                                await viewModel.removeBookmark(postId)
+                            },
+                            onUndo: { postId in
+                                await viewModel.undoRemoveBookmark(postId)
                             }
+                        )
                     }
                 }
-                .listStyle(PlainListStyle())
             }
         }
         .refreshable {
