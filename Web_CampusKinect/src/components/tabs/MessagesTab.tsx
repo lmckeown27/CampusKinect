@@ -641,18 +641,7 @@ const MessagesTab: React.FC = () => {
                   >
                     Sent
                   </button>
-                  
-                  <button
-                    onClick={() => setActiveTab('requests')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
-                    style={{
-                      backgroundColor: activeTab === 'requests' ? '#737373' : '#708d81',
-                      color: activeTab === 'requests' ? '#708d81' : 'white',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Requests
-                  </button>
+
                 </div>
               </div>
             </div>
