@@ -71,25 +71,27 @@ router.get('/conversations/:id', [
 router.post('/conversations', [
   auth,
   requireVerification,
-  body('participantIds').isArray().withMessage('Participant IDs must be an array'),
-  body('participantIds.*').isInt().withMessage('Each participant ID must be an integer'),
+  body('otherUserId').isInt().withMessage('Other user ID must be an integer'),
+  body('initialMessage').optional().isString().withMessage('Initial message must be a string'),
   body('postId').optional().isInt().withMessage('Post ID must be an integer'),
   validate
 ], async (req, res) => {
   try {
-    const { participantIds, postId } = req.body;
+    const { otherUserId, initialMessage, postId } = req.body;
     const userId = req.user.id;
 
-    // For now, we only support conversations between 2 users
-    if (participantIds.length !== 1) {
-      return res.status(400).json({
-        success: false,
-        error: { message: 'Currently only direct conversations between 2 users are supported' }
-      });
-    }
-
-    const otherUserId = participantIds[0];
     const result = await messageService.startConversation(userId, otherUserId, postId);
+    
+    // If there's an initial message, send it immediately
+    if (initialMessage && initialMessage.trim()) {
+      try {
+        await messageService.sendMessage(result.data.conversation.id, userId, initialMessage.trim());
+      } catch (messageError) {
+        console.error('Failed to send initial message:', messageError);
+        // Don't fail the conversation creation if message sending fails
+      }
+    }
+    
     res.status(201).json(result);
 
   } catch (error) {

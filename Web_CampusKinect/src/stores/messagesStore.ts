@@ -17,7 +17,7 @@ interface MessagesActions {
   fetchConversations: () => Promise<void>;
   fetchMessages: (conversationId: string, page?: number) => Promise<void>;
   sendMessage: (conversationId: string, content: string) => Promise<void>;
-  createConversation: (participantIds: string[]) => Promise<void>;
+  createConversation: (otherUserId: string, initialMessage?: string) => Promise<void>;
   deleteConversation: (conversationId: string) => Promise<void>;
   createMessageRequest: (toUserId: string, content: string, postId?: string) => Promise<void>;
   fetchMessageRequests: () => Promise<void>;
@@ -114,11 +114,11 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
     }
   },
 
-  createConversation: async (participantIds: string[]) => {
+  createConversation: async (otherUserId: string, initialMessage?: string) => {
     set({ isLoading: true, error: null });
 
     try {
-      const newConversation = await apiService.createConversation(participantIds);
+      const newConversation = await apiService.createConversation(otherUserId, initialMessage);
       
       set((state) => ({
         conversations: [newConversation, ...state.conversations],

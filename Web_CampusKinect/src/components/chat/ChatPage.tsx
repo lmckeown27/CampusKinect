@@ -176,14 +176,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           msg.id === optimisticMessage.id ? sentMessage : msg
         ));
       } else {
-        // No existing conversation - create conversation directly
+        // No existing conversation - create conversation with initial message (iOS style)
         try {
-          const newConversation = await apiService.createConversation([chatUser.id]);
+          const newConversation = await apiService.createConversation(chatUser.id, newMessage.trim());
           setConversation(newConversation);
           
-          // Send the message to the new conversation
-          const sentMessage = await apiService.sendMessage(newConversation.id, newMessage.trim());
-          setChatMessages([sentMessage]);
+          // Load messages for the new conversation to show the initial message
+          const messagesData = await apiService.getMessages(newConversation.id);
+          setChatMessages(messagesData.data || []);
           setNewMessage('');
           
           // Show success message

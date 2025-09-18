@@ -574,12 +574,24 @@ class ApiService {
     throw new Error(response.data.message || 'Failed to send message');
   }
 
-  public async createConversation(participantIds: string[]): Promise<Conversation> {
-    const response: AxiosResponse<ApiResponse<Conversation>> = 
-      await this.api.post('/messages/conversations', { participantIds });
+  public async createConversation(otherUserId: string, initialMessage: string = ''): Promise<Conversation> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post('/messages/conversations', { 
+        otherUserId: parseInt(otherUserId), 
+        initialMessage 
+      });
     
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+    if (response.data.success && response.data.data?.conversation) {
+      // Convert the backend response to match frontend Conversation type
+      const backendConv = response.data.data.conversation;
+      return {
+        id: backendConv.id.toString(),
+        participantIds: [otherUserId], // We know the other participant
+        lastMessageAt: backendConv.createdAt,
+        createdAt: backendConv.createdAt,
+        participants: [backendConv.otherUser],
+        unreadCount: 0
+      };
     }
     
     throw new Error(response.data.message || 'Failed to create conversation');
