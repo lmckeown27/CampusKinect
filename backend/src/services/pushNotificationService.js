@@ -258,7 +258,7 @@ class PushNotificationService {
       body: messagePreview.length > 50 ? `${messagePreview.substring(0, 50)}...` : messagePreview,
       type: 'message',
       category: 'MESSAGE_CATEGORY',
-      sound: 'message.aiff',
+      sound: 'default',
       data: {
         type: 'message',
         action: 'open_chat'
