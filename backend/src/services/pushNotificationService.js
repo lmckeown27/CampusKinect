@@ -164,7 +164,8 @@ class PushNotificationService {
     note.payload = {
       ...notification.data,
       type: notification.type,
-      category: notification.category
+      category: notification.category,
+      color: '#708d81' // Olive green color for the platform
     };
     note.topic = process.env.APN_BUNDLE_ID || 'com.liammckeown.CampusKinect-IOS';
 
@@ -254,7 +255,7 @@ class PushNotificationService {
   // Notification templates for different events
   async sendMessageNotification(recipientId, senderName, messagePreview) {
     const notification = {
-      title: `New message from ${senderName}`,
+      title: senderName,
       body: messagePreview.length > 50 ? `${messagePreview.substring(0, 50)}...` : messagePreview,
       type: 'message',
       category: 'MESSAGE_CATEGORY',
