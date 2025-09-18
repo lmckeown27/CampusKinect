@@ -258,8 +258,8 @@ const MessagesTab: React.FC = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedActiveTab = sessionStorage.getItem('campusConnect_messagesActiveTab');
-      if (savedActiveTab && ['unread', 'primary', 'requests'].includes(savedActiveTab)) {
-        setActiveTab(savedActiveTab as 'unread' | 'primary' | 'requests');
+      if (savedActiveTab && ['unread', 'primary'].includes(savedActiveTab)) {
+        setActiveTab(savedActiveTab as 'unread' | 'primary');
       }
     }
   }, []);

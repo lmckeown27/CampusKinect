@@ -15,7 +15,7 @@ interface ChatPageProps {
 const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   const router = useRouter();
   const { user: currentUser } = useAuthStore();
-  const { messages, isLoading, sendMessage, createMessageRequest } = useMessagesStore();
+  const { messages, isLoading, sendMessage } = useMessagesStore();
   
   const [newMessage, setNewMessage] = useState('');
   const [chatUser, setChatUser] = useState<UserType | null>(null);
@@ -150,19 +150,15 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   }, [conversation, chatMessages.length, isMounted]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !currentUser || !chatUser) return;
+    if (!newMessage.trim() || !chatUser) return;
 
     try {
-      // Attempting to send message
-      
       if (conversation) {
-        // Using existing conversation
-        
         // Existing conversation - send message normally
         const optimisticMessage: Message = {
-          id: `temp_${Date.now()}`,
+          id: `temp_${Date.now()}`, // Temporary ID for optimistic UI
           conversationId: conversation.id,
-          senderId: currentUser.id.toString(), // Convert to string to match backend and alignment logic
+          senderId: currentUser?.id || '', // Convert to string to match backend and alignment logic
           content: newMessage.trim(),
           createdAt: new Date().toISOString(),
           isRead: true // Mark sent messages as read immediately
@@ -180,13 +176,26 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           msg.id === optimisticMessage.id ? sentMessage : msg
         ));
       } else {
-        // No existing conversation - create message request
-        await createMessageRequest(chatUser.id, newMessage.trim());
-        setNewMessage('');
-        
-        // Show success message and navigate back
-        alert('Message request sent! The user will see your message in their requests.');
-        router.push('/messages');
+        // No existing conversation - create conversation directly
+        try {
+          const newConversation = await apiService.createConversation([chatUser.id]);
+          setConversation(newConversation);
+          
+          // Send the message to the new conversation
+          const sentMessage = await apiService.sendMessage(newConversation.id, newMessage.trim());
+          setChatMessages([sentMessage]);
+          setNewMessage('');
+          
+          // Show success message
+          alert('Conversation started! Your message has been sent.');
+        } catch (createError: any) {
+          // Handle conversation creation errors
+          const errorMessage = createError.response?.data?.error?.message || 
+                              createError.response?.data?.message || 
+                              createError.message || 
+                              'Failed to start conversation. Please try again.';
+          alert(`Error: ${errorMessage}`);
+        }
       }
       
     } catch (error: any) {
@@ -195,29 +204,12 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
         setChatMessages(prev => prev.filter(msg => !msg.id.startsWith('temp_')));
       }
       
-      // Handle specific error cases with user-friendly messages
-      if (error.response?.status === 409) {
-        // 409 means there's already a pending message request
-        // Try to get the specific error message from the backend
-        const backendMessage = error.response?.data?.error?.message || 
-                              error.response?.data?.message ||
-                              'You already have a pending message request with this user. Please wait for them to respond.';
-        
-        alert(`${backendMessage}\n\nYou can check your sent requests in the messages tab.`);
-        router.push('/messages');
-      } else if (error.message?.includes('already sent') || 
-                 error.message?.includes('already exists') || 
-                 error.message?.includes('already have a pending')) {
-        alert('You already have a pending message request with this user. Check the messages tab to see your sent requests.');
-        router.push('/messages');
-      } else {
-        // Show generic error for other cases
-        const errorMessage = error.response?.data?.error?.message || 
-                            error.response?.data?.message || 
-                            error.message || 
-                            'Failed to send message. Please try again.';
-        alert(`Error: ${errorMessage}`);
-      }
+      // Show generic error for other cases
+      const errorMessage = error.response?.data?.error?.message || 
+                          error.response?.data?.message || 
+                          error.message || 
+                          'Failed to send message. Please try again.';
+      alert(`Error: ${errorMessage}`);
     }
   };
 
@@ -380,14 +372,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
             </div>
             <h3 className="text-lg font-medium text-[#708d81] mb-2">
               {conversation ? 
-                `Start a conversation with ${chatUser.firstName}` :
-                `Send a message request to ${chatUser.firstName}`
+                `Continue your conversation with ${chatUser.firstName}` :
+                `Start a conversation with ${chatUser.firstName}`
               }
             </h3>
             <p className="text-gray-500 max-w-md">
               {conversation ? 
-                'Send a message to begin your conversation. Be respectful and follow community guidelines.' :
-                'Your message will be sent as a request. They can choose to accept or decline it.'
+                'Send a message to continue your conversation. Be respectful and follow community guidelines.' :
+                'Your message will start a new conversation. Be respectful and follow community guidelines.'
               }
             </p>
           </div>
@@ -469,7 +461,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={conversation ? `Message ${chatUser.firstName}...` : `Send a message request to ${chatUser.firstName}...`}
+            placeholder={conversation ? `Message ${chatUser.firstName}...` : `Start a conversation with ${chatUser.firstName}...`}
             className="flex-1 px-4 py-3 border border-[#708d81] rounded-2xl focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none max-h-32 text-base"
             rows={1}
             style={{

@@ -71,14 +71,24 @@ router.get('/conversations/:id', [
 router.post('/conversations', [
   auth,
   requireVerification,
-  body('otherUserId').isInt().withMessage('Other user ID must be an integer'),
+  body('participantIds').isArray().withMessage('Participant IDs must be an array'),
+  body('participantIds.*').isInt().withMessage('Each participant ID must be an integer'),
   body('postId').optional().isInt().withMessage('Post ID must be an integer'),
   validate
 ], async (req, res) => {
   try {
-    const { otherUserId, postId } = req.body;
+    const { participantIds, postId } = req.body;
     const userId = req.user.id;
 
+    // For now, we only support conversations between 2 users
+    if (participantIds.length !== 1) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Currently only direct conversations between 2 users are supported' }
+      });
+    }
+
+    const otherUserId = participantIds[0];
     const result = await messageService.startConversation(userId, otherUserId, postId);
     res.status(201).json(result);
 
