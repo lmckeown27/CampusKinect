@@ -235,9 +235,7 @@ const MessagesTab: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
-  const [activeTab, setActiveTab] = useState<'unread' | 'primary' | 'requests'>('primary');
-  const [requestsSubTab, setRequestsSubTab] = useState<'incoming' | 'sent'>('incoming');
-  const [processingRequests, setProcessingRequests] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<'unread' | 'primary'>('primary');
   
   // New Message Modal state
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -258,8 +256,8 @@ const MessagesTab: React.FC = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedActiveTab = sessionStorage.getItem('campusConnect_messagesActiveTab');
-      if (savedActiveTab && ['unread', 'primary'].includes(savedActiveTab)) {
-        setActiveTab(savedActiveTab as 'unread' | 'primary');
+      if (savedActiveTab && ['unread', 'primary', 'requests'].includes(savedActiveTab)) {
+        setActiveTab(savedActiveTab as 'unread' | 'primary' | 'requests');
       }
     }
   }, []);
