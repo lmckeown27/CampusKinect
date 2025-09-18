@@ -12,6 +12,9 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @State private var showingSettings = false
     @State private var selectedTab: ProfileTab = .posts
+    @State private var isRefreshing = false
+    @State private var isRefreshing = false
+    @State private var isRefreshing = false
     
     enum ProfileTab: String, CaseIterable {
         case posts = "Posts"
@@ -37,6 +40,17 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        Task {
+                            await reloadAllData()
+                        }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundColor(.primary)
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         showingSettings = true
@@ -44,6 +58,9 @@ struct ProfileView: View {
                         Image(systemName: "gearshape")
                     }
                 }
+            }
+            .refreshable {
+                await reloadAllData()
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
@@ -294,7 +311,7 @@ struct RepostsTabContent: View {
     let currentUser: User?
     
     var body: some View {
-        VStack {
+        Group {
             if viewModel.isLoading && viewModel.userReposts.isEmpty {
                 ProgressView("Loading reposts...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -338,7 +355,7 @@ struct BookmarksTabContent: View {
     let currentUser: User?
     
     var body: some View {
-        VStack {
+        Group {
             if viewModel.isLoading && viewModel.userBookmarks.isEmpty {
                 ProgressView("Loading bookmarks...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
