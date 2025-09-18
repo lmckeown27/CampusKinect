@@ -347,20 +347,24 @@ struct BookmarksTabContent: View {
                     systemImage: "bookmark"
                 )
             } else {
-                LazyVStack(spacing: 16) {
+                List {
                     ForEach(viewModel.userBookmarks) { post in
-                        SwipeablePostCard(
-                            post: post,
-                            swipeAction: .removeBookmark,
-                            onSwipeAction: { postId in
-                                await viewModel.removeBookmark(postId)
-                            },
-                            onUndo: { postId in
-                                await viewModel.undoRemoveBookmark(postId)
+                        PostCardView(post: post)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    Task {
+                                        await viewModel.removeBookmark(post.id)
+                                    }
+                                } label: {
+                                    Label("Remove", systemImage: "bookmark.slash")
+                                }
+                                .tint(.blue)
                             }
-                        )
                     }
                 }
+                .listStyle(PlainListStyle())
             }
         }
         .refreshable {
