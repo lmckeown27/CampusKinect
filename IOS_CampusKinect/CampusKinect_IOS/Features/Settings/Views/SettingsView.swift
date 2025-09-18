@@ -16,6 +16,7 @@ struct SettingsView: View {
     @State private var showingAbout = false
     @State private var showingTerms = false
     @State private var showingMailComposer = false
+    @State private var showingNotificationSettings = false
     
     var body: some View {
         NavigationView {
@@ -60,6 +61,14 @@ struct SettingsView: View {
                 // Support
                 Section("Support") {
                     SettingsRow(
+                        icon: "bell",
+                        title: "Notifications",
+                        subtitle: "Manage notification preferences"
+                    ) {
+                        showingNotificationSettings = true
+                    }
+                    
+                    SettingsRow(
                         icon: "questionmark.circle",
                         title: "Help & Support",
                         subtitle: "Get help with the app"
@@ -91,57 +100,6 @@ struct SettingsView: View {
                         subtitle: "App version and info"
                     ) {
                         showingAbout = true
-                    }
-                }
-                
-                // Notification Testing (Debug)
-                Section("Push Notifications") {
-                    Button(action: {
-                        Task {
-                            let granted = await PushNotificationManager.shared.requestPermission()
-                            print("📱 Manual request: Push notification permission \(granted ? "granted" : "denied")")
-                        }
-                    }) {
-                        HStack {
-                            Image(systemName: "bell")
-                                .foregroundColor(.blue)
-                            
-                            Text("Request Notification Permission")
-                                .foregroundColor(.primary)
-                            
-                            Spacer()
-                        }
-                    }
-                    
-                    Button(action: {
-                        PushNotificationManager.shared.updateBadgeCount()
-                        print("📱 Manual badge update triggered")
-                    }) {
-                        HStack {
-                            Image(systemName: "app.badge")
-                                .foregroundColor(.orange)
-                            
-                            Text("Update Badge Count")
-                                .foregroundColor(.primary)
-                            
-                            Spacer()
-                        }
-                    }
-                    
-                    Button(action: {
-                        Task {
-                            await PushNotificationManager.shared.forceTokenRegistration()
-                        }
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                                .foregroundColor(.green)
-                            
-                            Text("Force Register Device Token")
-                                .foregroundColor(.primary)
-                            
-                            Spacer()
-                        }
                     }
                 }
                 
@@ -203,6 +161,9 @@ struct SettingsView: View {
                     subject: "CampusKinect Support Request",
                     body: "Hi CampusKinect Team,\n\nI need help with:\n\n"
                 )
+            }
+            .sheet(isPresented: $showingNotificationSettings) {
+                NotificationSettingsView()
             }
         }
     }

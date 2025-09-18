@@ -81,6 +81,28 @@ class PushNotificationManager: NSObject, ObservableObject {
         }
     }
     
+    func checkAndRequestPermissionIfNeeded() async {
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+        
+        switch settings.authorizationStatus {
+        case .notDetermined:
+            // First time - request permission
+            print("🔔 First time user - requesting notification permission")
+            let granted = await requestPermission()
+            print("🔔 First time permission result: \(granted)")
+        case .authorized:
+            // Already authorized - just register token
+            print("🔔 Notifications already authorized - registering token")
+            await registerForRemoteNotifications()
+        case .denied, .provisional, .ephemeral:
+            // User previously made a choice - respect it
+            print("🔔 User previously set notification preference - not requesting again")
+        @unknown default:
+            print("🔔 Unknown notification authorization status")
+        }
+    }
+    
     private func unregisterCurrentDevice() async {
         guard let deviceToken = deviceToken else {
             print("🔔 No device token to unregister")

@@ -121,11 +121,10 @@ class AuthenticationManager: ObservableObject {
             await refreshCurrentUser()
             print("✅ AuthenticationManager: User profile refreshed")
             
-            // Request push notification permissions after successful login
-            print("🔔 AuthenticationManager: About to request push notification permissions...")
+            // Check if this is first login and request push notification permissions
+            print("🔔 AuthenticationManager: Checking notification permission status...")
             Task {
-                let granted = await PushNotificationManager.shared.requestPermission()
-                print("🔔 AuthenticationManager: Push notification permission result: \(granted)")
+                await PushNotificationManager.shared.checkAndRequestPermissionIfNeeded()
             }
             
             print("🔐 AuthenticationManager: Posting login notification...")
