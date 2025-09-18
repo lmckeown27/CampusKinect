@@ -13,8 +13,6 @@ struct ProfileView: View {
     @State private var showingSettings = false
     @State private var selectedTab: ProfileTab = .posts
     @State private var isRefreshing = false
-    @State private var isRefreshing = false
-    @State private var isRefreshing = false
     
     enum ProfileTab: String, CaseIterable {
         case posts = "Posts"
