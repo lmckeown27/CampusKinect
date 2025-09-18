@@ -245,31 +245,38 @@ struct PostsTabContent: View {
                     // Navigate to create post
                 }
             } else {
-                LazyVStack(spacing: 16) {
+                List {
                     ForEach(viewModel.userPosts) { post in
-                        SwipeablePostCard(
-                            post: post,
-                            swipeAction: .delete,
-                            onSwipeAction: { postId in
-                                await viewModel.deletePost(postId)
-                            },
-                            onUndo: { postId in
-                                await viewModel.undoDeletePost(postId)
+                        PostCardView(post: post)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    Task {
+                                        await viewModel.deletePost(post.id)
+                                    }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
                             }
-                        )
                     }
                     
                     // Load more posts if available
                     if viewModel.hasMorePosts {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .task {
-                                if let userId = currentUser?.id {
-                                    await viewModel.loadMoreUserPosts(userId: userId)
-                                }
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                        .listRowSeparator(.hidden)
+                        .task {
+                            if let userId = currentUser?.id {
+                                await viewModel.loadMoreUserPosts(userId: userId)
                             }
+                        }
                     }
                 }
+                .listStyle(PlainListStyle())
             }
         }
         .refreshable {
@@ -296,20 +303,24 @@ struct RepostsTabContent: View {
                     systemImage: "arrow.2.squarepath"
                 )
             } else {
-                LazyVStack(spacing: 16) {
+                List {
                     ForEach(viewModel.userReposts) { post in
-                        SwipeablePostCard(
-                            post: post,
-                            swipeAction: .removeRepost,
-                            onSwipeAction: { postId in
-                                await viewModel.removeRepost(postId)
-                            },
-                            onUndo: { postId in
-                                await viewModel.undoRemoveRepost(postId)
+                        PostCardView(post: post)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    Task {
+                                        await viewModel.removeRepost(post.id)
+                                    }
+                                } label: {
+                                    Label("Remove", systemImage: "arrow.2.squarepath")
+                                }
+                                .tint(.orange)
                             }
-                        )
                     }
                 }
+                .listStyle(PlainListStyle())
             }
         }
         .refreshable {
