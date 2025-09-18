@@ -513,6 +513,12 @@ const RegisterForm: React.FC = () => {
               Privacy Policy
             </Link>
           </p>
+          <p className="mt-2">
+            Need help?{' '}
+            <Link href="/support" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+              Visit our Support Center
+            </Link>
+          </p>
         </div>
       </div>
     </div>
