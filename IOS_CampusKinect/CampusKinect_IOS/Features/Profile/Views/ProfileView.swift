@@ -85,8 +85,23 @@ struct ProfileView: View {
             )
         }
     }
-}
 
+    private func reloadAllData() async {
+        guard let userId = authManager.currentUser?.id else { return }
+        
+        isRefreshing = true
+        defer { isRefreshing = false }
+        
+        // Reload all tabs simultaneously
+        async let postsTask = viewModel.refreshUserPosts(userId: userId)
+        async let repostsTask = viewModel.refreshUserReposts(userId: userId)
+        async let bookmarksTask = viewModel.refreshBookmarks(userId: userId)
+        
+        await postsTask
+        await repostsTask
+        await bookmarksTask
+    }
+}
 // MARK: - Profile Header
 struct ProfileHeader: View {
     let user: User?
