@@ -231,7 +231,8 @@ struct PostsTabContent: View {
     let currentUser: User?
     
     var body: some View {
-        if viewModel.isLoading && viewModel.userPosts.isEmpty {
+        Group {
+            if viewModel.isLoading && viewModel.userPosts.isEmpty {
             ProgressView("Loading posts...")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if viewModel.userPosts.isEmpty {
@@ -279,6 +280,7 @@ struct PostsTabContent: View {
             }
             .listStyle(PlainListStyle())
             .scrollContentBackground(.hidden)
+        }
         }
         .refreshable {
             if let userId = currentUser?.id {
