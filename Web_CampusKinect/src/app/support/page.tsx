@@ -243,11 +243,11 @@ export default function SupportPage() {
           <div className="mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-white hover:text-gray-200 transition-colors cursor-pointer"
+              className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200 font-medium cursor-pointer"
               style={{ cursor: 'pointer' }}
             >
               <ArrowLeft size={20} />
-              <span className="text-lg">Back</span>
+              <span>Back</span>
             </button>
           </div>
           
