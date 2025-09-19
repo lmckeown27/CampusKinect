@@ -16,8 +16,8 @@ export default function MessagingGuide() {
           <div className="mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200 font-medium cursor-pointer"
-              style={{ cursor: 'pointer' }}
+              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium cursor-pointer"
+              style={{ color: '#708d81' }}
             >
               <ArrowLeft size={20} />
               <span>Back to Help Center</span>
@@ -67,12 +67,12 @@ export default function MessagingGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">From a Marketplace Post</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   The easiest way to start a conversation is by messaging someone about their post.
                 </p>
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Steps:</h4>
-                  <ol className="space-y-1 text-sm" className="text-gray-300">
+                  <ol className="space-y-1 text-sm text-gray-300">
                     <li>1. Find a post you're interested in</li>
                     <li>2. Click anywhere on the post card</li>
                     <li>3. Confirm you want to start a conversation</li>
@@ -92,12 +92,12 @@ export default function MessagingGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">From Messages Page</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   You can also start new conversations from your messages page.
                 </p>
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Steps:</h4>
-                  <ol className="space-y-1 text-sm" className="text-gray-300">
+                  <ol className="space-y-1 text-sm text-gray-300">
                     <li>1. Go to the Messages tab</li>
                     <li>2. Look for existing conversations</li>
                     <li>3. Click on any conversation to continue</li>
@@ -146,7 +146,7 @@ export default function MessagingGuide() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h4 className="font-semibold text-white mb-2">Web Platform:</h4>
-                  <ul className="space-y-1 text-sm" className="text-gray-300">
+                  <ul className="space-y-1 text-sm text-gray-300">
                     <li>Click "Messages" in the navigation</li>
                     <li>See all conversations in one place</li>
                     <li>Click any conversation to open chat</li>
@@ -155,7 +155,7 @@ export default function MessagingGuide() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-white mb-2">iOS App:</h4>
-                  <ul className="space-y-1 text-sm" className="text-gray-300">
+                  <ul className="space-y-1 text-sm text-gray-300">
                     <li>Tap "Messages" in the bottom tab bar</li>
                     <li>Swipe left on conversations to delete</li>
                     <li>Tap any conversation to open chat</li>
@@ -194,7 +194,7 @@ export default function MessagingGuide() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-2">iOS Push Notifications:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Get instant notifications on your phone</li>
                 <li>Shows sender name and message preview</li>
                 <li>Tap notification to open conversation</li>
@@ -203,7 +203,7 @@ export default function MessagingGuide() {
             </div>
             <div>
               <h3 className="font-semibold text-white mb-2">Managing Notifications:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Go to Settings → Notifications</li>
                 <li>Toggle notifications on/off</li>
                 <li>Customize notification preferences</li>
@@ -248,7 +248,7 @@ export default function MessagingGuide() {
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-white mb-2">Can't send messages?</h3>
-              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
+              <ul className="space-y-1 text-sm ml-4 text-gray-300">
                 <li>Make sure your email is verified</li>
                 <li>Check your internet connection</li>
                 <li>Try refreshing the page</li>
@@ -258,7 +258,7 @@ export default function MessagingGuide() {
             
             <div>
               <h3 className="font-semibold text-white mb-2">Not receiving notifications?</h3>
-              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
+              <ul className="space-y-1 text-sm ml-4 text-gray-300">
                 <li>Check notification settings in the app</li>
                 <li>Verify iOS notification permissions</li>
                 <li>Make sure notifications are enabled for CampusKinect</li>
@@ -268,7 +268,7 @@ export default function MessagingGuide() {
             
             <div>
               <h3 className="font-semibold text-white mb-2">Messages not loading?</h3>
-              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
+              <ul className="space-y-1 text-sm ml-4 text-gray-300">
                 <li>Check your internet connection</li>
                 <li>Try closing and reopening the app</li>
                 <li>Clear your browser cache (web)</li>

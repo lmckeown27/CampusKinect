@@ -16,8 +16,8 @@ export default function SafetyGuide() {
           <div className="mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200 font-medium cursor-pointer"
-              style={{ cursor: 'pointer' }}
+              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium cursor-pointer"
+              style={{ color: '#708d81' }}
             >
               <ArrowLeft size={20} />
               <span>Back to Help Center</span>
@@ -36,7 +36,7 @@ export default function SafetyGuide() {
         {/* Safety Overview */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Your Safety is Our Priority</h2>
-          <p className="mb-4" className="text-gray-300">
+          <p className="mb-4 text-gray-300">
             CampusKinect is designed to be a safe, campus-only marketplace. However, it's important to follow safety guidelines when meeting other students and conducting transactions.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -70,7 +70,7 @@ export default function SafetyGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Always Meet in Public Places</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Choose busy, well-lit locations on campus where other people are around.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -109,7 +109,7 @@ export default function SafetyGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Bring a Friend When Possible</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Having someone with you adds an extra layer of safety and can help with larger items.
                 </p>
                 <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
@@ -133,7 +133,7 @@ export default function SafetyGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Meet During Daylight Hours</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Schedule meetings during busy campus hours when there's good visibility and foot traffic.
                 </p>
                 <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
@@ -256,7 +256,7 @@ export default function SafetyGuide() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-3">When to Report:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Inappropriate or threatening messages</li>
                 <li>Suspicious or fraudulent behavior</li>
                 <li>Harassment or bullying</li>
@@ -267,7 +267,7 @@ export default function SafetyGuide() {
             </div>
             <div>
               <h3 className="font-semibold text-white mb-3">How to Report:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Use the "Report User" feature in messages</li>
                 <li>Contact CampusKinect support</li>
                 <li>Provide screenshots if possible</li>
@@ -312,7 +312,7 @@ export default function SafetyGuide() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-3">Campus Resources:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Campus safety escorts</li>
                 <li>Emergency blue light phones</li>
                 <li>Campus safety apps</li>
@@ -322,7 +322,7 @@ export default function SafetyGuide() {
             </div>
             <div>
               <h3 className="font-semibold text-white mb-3">Personal Safety:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Share your location with friends</li>
                 <li>Keep your phone charged</li>
                 <li>Stay aware of your surroundings</li>

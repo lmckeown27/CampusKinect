@@ -16,8 +16,8 @@ export default function PostItemGuide() {
           <div className="mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200 font-medium cursor-pointer"
-              style={{ cursor: 'pointer' }}
+              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium cursor-pointer"
+              style={{ color: '#708d81' }}
             >
               <ArrowLeft size={20} />
               <span>Back to Help Center</span>
@@ -39,7 +39,7 @@ export default function PostItemGuide() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-2">What You'll Need:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Clear photos of your item</li>
                 <li>Item description and details</li>
                 <li>Fair market price</li>
@@ -49,7 +49,7 @@ export default function PostItemGuide() {
             </div>
             <div>
               <h3 className="font-semibold text-white mb-2">Tips for Success:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Use natural lighting for photos</li>
                 <li>Be honest about condition</li>
                 <li>Research similar item prices</li>
@@ -72,12 +72,12 @@ export default function PostItemGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Access the Create Post Page</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Navigate to the marketplace section and click the "Create Post" or "+" button.
                 </p>
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">How to Find It:</h4>
-                  <ul className="space-y-1 text-sm" className="text-gray-300">
+                  <ul className="space-y-1 text-sm text-gray-300">
                     <li>Web: Click "Create Post" in the top navigation</li>
                     <li>Mobile: Tap the "+" button in the bottom navigation</li>
                     <li>Or go directly to /create-post</li>
@@ -95,7 +95,7 @@ export default function PostItemGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Add Photos</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Upload clear, well-lit photos of your item from multiple angles.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -132,13 +132,13 @@ export default function PostItemGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Write Title & Description</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Create a clear, descriptive title and detailed description of your item.
                 </p>
                 <div className="space-y-4">
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Title Best Practices:</h4>
-                    <ul className="space-y-1 text-sm" className="text-gray-300">
+                    <ul className="space-y-1 text-sm text-gray-300">
                       <li>Include brand, model, and key features</li>
                       <li>Keep it under 60 characters</li>
                       <li>Be specific and accurate</li>
@@ -147,7 +147,7 @@ export default function PostItemGuide() {
                   </div>
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Description Should Include:</h4>
-                    <ul className="space-y-1 text-sm" className="text-gray-300">
+                    <ul className="space-y-1 text-sm text-gray-300">
                       <li>Detailed specifications</li>
                       <li>Condition and any flaws</li>
                       <li>Reason for selling</li>
@@ -168,13 +168,13 @@ export default function PostItemGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Set Price & Category</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Choose the right category and set a fair, competitive price.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Pricing Tips:</h4>
-                    <ul className="space-y-1 text-sm" className="text-gray-300">
+                    <ul className="space-y-1 text-sm text-gray-300">
                       <li>Research similar items</li>
                       <li>Consider condition and age</li>
                       <li>Price slightly high for negotiation</li>
@@ -183,7 +183,7 @@ export default function PostItemGuide() {
                   </div>
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Popular Categories:</h4>
-                    <ul className="space-y-1 text-sm" className="text-gray-300">
+                    <ul className="space-y-1 text-sm text-gray-300">
                       <li>Electronics & Tech</li>
                       <li>Textbooks & School Supplies</li>
                       <li>Furniture & Home</li>
@@ -203,7 +203,7 @@ export default function PostItemGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Add Location & Preferences</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Set your location and specify pickup/delivery preferences.
                 </p>
                 <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
@@ -229,7 +229,7 @@ export default function PostItemGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Review & Publish</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Double-check all information before publishing your listing.
                 </p>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
@@ -259,7 +259,7 @@ export default function PostItemGuide() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-2">Managing Your Listing:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Respond to messages promptly</li>
                 <li>Edit listing if needed</li>
                 <li>Mark as sold when complete</li>
@@ -268,7 +268,7 @@ export default function PostItemGuide() {
             </div>
             <div>
               <h3 className="font-semibold text-white mb-2">Boosting Visibility:</h3>
-              <ul className="space-y-1 text-sm" className="text-gray-300">
+              <ul className="space-y-1 text-sm text-gray-300">
                 <li>Share with friends</li>
                 <li>Post in relevant campus groups</li>
                 <li>Update listing to refresh it</li>

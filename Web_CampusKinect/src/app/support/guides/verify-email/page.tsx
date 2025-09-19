@@ -16,8 +16,8 @@ export default function VerifyEmailGuide() {
           <div className="mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200 font-medium cursor-pointer"
-              style={{ cursor: 'pointer' }}
+              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium cursor-pointer"
+              style={{ color: '#708d81' }}
             >
               <ArrowLeft size={20} />
               <span>Back to Help Center</span>
@@ -67,12 +67,12 @@ export default function VerifyEmailGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Create Your Account</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Start by creating your CampusKinect account with your university email address.
                 </p>
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Requirements:</h4>
-                  <ul className="space-y-1 text-sm" className="text-gray-300">
+                  <ul className="space-y-1 text-sm text-gray-300">
                     <li>Must use your official university email (.edu domain)</li>
                     <li>Email must be active and accessible</li>
                     <li>One account per email address</li>
@@ -90,12 +90,12 @@ export default function VerifyEmailGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Check Your Email</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   After registration, check your university email for a verification message from CampusKinect.
                 </p>
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">What to Look For:</h4>
-                  <ul className="space-y-1 text-sm" className="text-gray-300">
+                  <ul className="space-y-1 text-sm text-gray-300">
                     <li>Subject: "Verify Your CampusKinect Account"</li>
                     <li>From: noreply@campuskinect.com</li>
                     <li>Contains a verification link</li>
@@ -114,7 +114,7 @@ export default function VerifyEmailGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Click the Verification Link</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Click the verification link in the email to confirm your university email address.
                 </p>
                 <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
@@ -140,7 +140,7 @@ export default function VerifyEmailGuide() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Confirmation & Access</h3>
-                <p className="mb-4" className="text-gray-300">
+                <p className="mb-4 text-gray-300">
                   Once verified, you'll see a confirmation message and gain full access to CampusKinect.
                 </p>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
@@ -166,7 +166,7 @@ export default function VerifyEmailGuide() {
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-white mb-2">Didn't receive the verification email?</h3>
-              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
+              <ul className="space-y-1 text-sm ml-4 text-gray-300">
                 <li>Check your spam/junk folder</li>
                 <li>Verify you entered your email correctly</li>
                 <li>Wait 5-10 minutes for delivery</li>
@@ -176,7 +176,7 @@ export default function VerifyEmailGuide() {
             
             <div>
               <h3 className="font-semibold text-white mb-2">Verification link expired?</h3>
-              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
+              <ul className="space-y-1 text-sm ml-4 text-gray-300">
                 <li>Go to Account Settings</li>
                 <li>Click "Resend Verification Email"</li>
                 <li>Check for the new email</li>
@@ -185,7 +185,7 @@ export default function VerifyEmailGuide() {
             
             <div>
               <h3 className="font-semibold text-white mb-2">Using a non-.edu email?</h3>
-              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
+              <ul className="space-y-1 text-sm ml-4 text-gray-300">
                 <li>CampusKinect requires official university email addresses</li>
                 <li>Contact your university IT department for your .edu email</li>
                 <li>Some schools use different domains - contact support if needed</li>
