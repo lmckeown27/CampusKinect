@@ -10,6 +10,7 @@ import {
   Shield, 
   Settings,
   ChevronRight,
+  ChevronDown,
   Clock,
   Send,
   CheckCircle,
@@ -364,8 +365,8 @@ export default function SupportPage() {
                 {categories.map((category) => (
                   <div
                     key={category.id}
-                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-all duration-200 group"
-                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)', cursor: 'pointer' }}
+                    className="p-6 rounded-lg border-2 border-dashed border-gray-500 hover:border-[#708d81] hover:border-solid transition-all duration-200 group"
+                    style={{ backgroundColor: '#404040', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)', cursor: 'pointer' }}
                     onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
@@ -381,13 +382,16 @@ export default function SupportPage() {
                         <div className="text-white">{category.icon}</div>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-white">{category.title}</h3>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-lg font-semibold text-white">{category.title}</h3>
+                          <span className="text-xs px-2 py-1 rounded-full bg-[#99afa7] text-white font-medium">EXPAND</span>
+                        </div>
                         <p className="text-sm mt-1 text-gray-300">{category.description}</p>
                       </div>
-                      <ChevronRight 
-                        size={16} 
+                      <ChevronDown 
+                        size={20} 
                         className={`text-gray-300 group-hover:text-[#708d81] transition-all duration-200 ${
-                          selectedCategory === category.id ? 'rotate-90' : ''
+                          selectedCategory === category.id ? 'rotate-180' : ''
                         }`} 
                       />
                     </div>
@@ -398,8 +402,8 @@ export default function SupportPage() {
                           {category.articles.map((article) => (
                             <div
                               key={article.id}
-                              className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-600"
-                              style={{ cursor: 'pointer' }}
+                              className="flex items-center justify-between p-3 rounded-lg border border-transparent hover:border-[#99afa7] hover:bg-gray-700 transition-all duration-200 group"
+                              style={{ cursor: 'pointer', backgroundColor: '#2d3748' }}
                               onClick={() => {
                                 const guideMap: { [key: string]: string } = {
                                   'verify-email': '/support/guides/verify-email',
@@ -425,11 +429,14 @@ export default function SupportPage() {
                                 }
                               }}
                             >
-                              <div>
-                                <h4 className="text-sm font-medium text-white">{article.title}</h4>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="text-sm font-medium text-white">{article.title}</h4>
+                                  <span className="text-xs px-2 py-1 rounded-full bg-blue-600 text-white font-medium">GUIDE</span>
+                                </div>
                                 <p className="text-xs mt-1 text-gray-300">{article.description}</p>
                               </div>
-                              <ChevronRight size={14} className="text-gray-300" />
+                              <ChevronRight size={16} className="text-[#99afa7] group-hover:text-white transition-colors" />
                             </div>
                           ))}
                         </div>
