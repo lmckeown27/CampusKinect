@@ -35,7 +35,7 @@ export default function PostItemGuide() {
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Before You Start */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Before You Start</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Before You Start</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-2">What You'll Need:</h3>
@@ -62,7 +62,7 @@ export default function PostItemGuide() {
 
         {/* Step-by-Step Guide */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Step-by-Step Posting</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Step-by-Step Posting</h2>
           
           {/* Step 1 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -254,7 +254,7 @@ export default function PostItemGuide() {
 
         {/* After Publishing */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>After Publishing</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>After Publishing</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -280,7 +280,7 @@ export default function PostItemGuide() {
 
         {/* Safety Guidelines */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Safety Guidelines</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Safety Guidelines</h2>
           
           <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
             <div className="flex items-start space-x-2">
@@ -312,7 +312,7 @@ export default function PostItemGuide() {
               className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
               style={{ 
                 backgroundColor: 'white', 
-                color: '#708d81',
+                color: '#99afa7',
                 cursor: 'pointer'
               }}
               onMouseEnter={(e) => {

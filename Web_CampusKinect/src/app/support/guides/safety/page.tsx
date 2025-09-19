@@ -35,23 +35,23 @@ export default function SafetyGuide() {
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Safety Overview */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Your Safety is Our Priority</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Your Safety is Our Priority</h2>
           <p className="mb-4" className="text-gray-300">
             CampusKinect is designed to be a safe, campus-only marketplace. However, it's important to follow safety guidelines when meeting other students and conducting transactions.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4">
-              <Users size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <Users size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Verified Community</h3>
               <p className="text-sm text-gray-300">Only verified students with .edu emails can join</p>
             </div>
             <div className="text-center p-4">
-              <MapPin size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <MapPin size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Campus-Only</h3>
               <p className="text-sm text-gray-300">All transactions happen within your campus community</p>
             </div>
             <div className="text-center p-4">
-              <Lock size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <Lock size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Secure Platform</h3>
               <p className="text-sm text-gray-300">Encrypted messages and secure user verification</p>
             </div>
@@ -60,13 +60,13 @@ export default function SafetyGuide() {
 
         {/* Meeting Safety */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Safe Meeting Practices</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Safe Meeting Practices</h2>
           
           {/* Public Places */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <MapPin size={32} style={{ color: '#708d81' }} />
+                <MapPin size={32} style={{ color: '#99afa7' }} />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Always Meet in Public Places</h3>
@@ -105,7 +105,7 @@ export default function SafetyGuide() {
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <Users size={32} style={{ color: '#708d81' }} />
+                <Users size={32} style={{ color: '#99afa7' }} />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Bring a Friend When Possible</h3>
@@ -129,7 +129,7 @@ export default function SafetyGuide() {
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <Eye size={32} style={{ color: '#708d81' }} />
+                <Eye size={32} style={{ color: '#99afa7' }} />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">Meet During Daylight Hours</h3>
@@ -152,7 +152,7 @@ export default function SafetyGuide() {
 
         {/* Transaction Safety */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Transaction Safety</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Transaction Safety</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -198,7 +198,7 @@ export default function SafetyGuide() {
 
         {/* Red Flags */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Red Flags to Watch For</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Red Flags to Watch For</h2>
           
           <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
             <div className="flex items-start space-x-2">
@@ -228,7 +228,7 @@ export default function SafetyGuide() {
 
         {/* Trust Your Instincts */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Trust Your Instincts</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Trust Your Instincts</h2>
           
           <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
             <h3 className="font-semibold text-purple-800 mb-3">If Something Feels Wrong:</h3>
@@ -251,7 +251,7 @@ export default function SafetyGuide() {
 
         {/* Reporting Issues */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Reporting Safety Issues</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Reporting Safety Issues</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -281,7 +281,7 @@ export default function SafetyGuide() {
 
         {/* Emergency Contacts */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Emergency Contacts</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Emergency Contacts</h2>
           
           <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
             <div className="flex items-start space-x-2">
@@ -307,7 +307,7 @@ export default function SafetyGuide() {
 
         {/* Additional Safety Resources */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Additional Safety Resources</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Additional Safety Resources</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -345,7 +345,7 @@ export default function SafetyGuide() {
               className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
               style={{ 
                 backgroundColor: 'white', 
-                color: '#708d81',
+                color: '#99afa7',
                 cursor: 'pointer'
               }}
               onMouseEnter={(e) => {

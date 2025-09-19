@@ -301,7 +301,7 @@ export default function SupportPage() {
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-sm font-medium" style={{ color: '#708d81' }}>{article.category}</span>
+                        <span className="text-sm font-medium" style={{ color: '#99afa7' }}>{article.category}</span>
                         <h3 className="text-lg font-semibold mt-1 text-white">{article.title}</h3>
                         <p className="mt-2 text-gray-300">{article.description}</p>
                       </div>
@@ -351,7 +351,7 @@ export default function SupportPage() {
                     }}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium" style={{ color: '#708d81' }}>{article.category}</span>
+                      <span className="text-sm font-medium" style={{ color: '#99afa7' }}>{article.category}</span>
                       <ChevronRight size={16} className="text-gray-300 group-hover:text-[#708d81] transition-colors" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2 text-white">{article.title}</h3>
@@ -381,7 +381,7 @@ export default function SupportPage() {
                     }}
                   >
                     <div className="flex items-center mb-4">
-                      <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: '#708d81' }}>
+                      <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: '#99afa7' }}>
                         <div className="text-white">{category.icon}</div>
                       </div>
                       <div className="flex-1">
@@ -460,7 +460,7 @@ export default function SupportPage() {
                 className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 cursor-pointer"
                 style={{ 
                   backgroundColor: 'white', 
-                  color: '#708d81',
+                  color: '#99afa7',
                   cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
@@ -556,7 +556,7 @@ export default function SupportPage() {
                     className="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
                     style={{ 
                       backgroundColor: 'white', 
-                      color: '#708d81',
+                      color: '#99afa7',
                       cursor: 'pointer'
                     }}
                     onMouseEnter={(e) => {
@@ -572,7 +572,7 @@ export default function SupportPage() {
                   <button
                     type="button"
                     onClick={() => setShowContactForm(false)}
-                    className="px-6 py-3 rounded-lg font-semibold text-white border-2 border-white hover:bg-white hover:text-[#708d81] transition-all duration-200 cursor-pointer"
+                    className="px-6 py-3 rounded-lg font-semibold text-white border-2 border-white hover:bg-white hover:text-[#99afa7] transition-all duration-200 cursor-pointer"
                     style={{ cursor: 'pointer' }}
                   >
                     Cancel

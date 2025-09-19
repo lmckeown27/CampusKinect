@@ -35,20 +35,20 @@ export default function MessagingGuide() {
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Overview */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>How Messaging Works</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>How Messaging Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4">
-              <UserCheck size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <UserCheck size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Verified Users Only</h3>
               <p className="text-sm text-gray-300">Only verified students can send and receive messages</p>
             </div>
             <div className="text-center p-4">
-              <Shield size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <Shield size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Safe & Secure</h3>
               <p className="text-sm text-gray-300">All messages are encrypted and campus-only</p>
             </div>
             <div className="text-center p-4">
-              <Bell size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <Bell size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Real-time Notifications</h3>
               <p className="text-sm text-gray-300">Get notified instantly when you receive messages</p>
             </div>
@@ -57,7 +57,7 @@ export default function MessagingGuide() {
 
         {/* How to Start a Conversation */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Starting a Conversation</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Starting a Conversation</h2>
           
           {/* Method 1 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -111,7 +111,7 @@ export default function MessagingGuide() {
 
         {/* Message Best Practices */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Message Best Practices</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Message Best Practices</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
@@ -137,7 +137,7 @@ export default function MessagingGuide() {
 
         {/* Managing Conversations */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Managing Your Conversations</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Managing Your Conversations</h2>
           
           <div className="space-y-6">
             {/* Viewing Messages */}
@@ -189,7 +189,7 @@ export default function MessagingGuide() {
 
         {/* Notifications */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Message Notifications</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Message Notifications</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -215,7 +215,7 @@ export default function MessagingGuide() {
 
         {/* Safety & Etiquette */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Safety & Etiquette</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Safety & Etiquette</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
@@ -243,7 +243,7 @@ export default function MessagingGuide() {
 
         {/* Troubleshooting */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Troubleshooting</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Troubleshooting</h2>
           
           <div className="space-y-4">
             <div>
@@ -290,7 +290,7 @@ export default function MessagingGuide() {
               className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
               style={{ 
                 backgroundColor: 'white', 
-                color: '#708d81',
+                color: '#99afa7',
                 cursor: 'pointer'
               }}
               onMouseEnter={(e) => {

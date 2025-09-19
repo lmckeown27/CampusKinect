@@ -38,17 +38,17 @@ export default function VerifyEmailGuide() {
           <h2 className="text-2xl font-bold mb-4 text-white">Why Verify Your Email?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4">
-              <Shield size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <Shield size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Campus Security</h3>
               <p className="text-sm text-gray-300">Only verified students can access your campus community</p>
             </div>
             <div className="text-center p-4">
-              <CheckCircle size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <CheckCircle size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Trust & Safety</h3>
               <p className="text-sm text-gray-300">Verified accounts build trust in the marketplace</p>
             </div>
             <div className="text-center p-4">
-              <Mail size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
+              <Mail size={32} className="mx-auto mb-2" style={{ color: '#99afa7' }} />
               <h3 className="font-semibold text-white mb-2">Full Access</h3>
               <p className="text-sm text-gray-300">Unlock all CampusKinect features and messaging</p>
             </div>
@@ -57,7 +57,7 @@ export default function VerifyEmailGuide() {
 
         {/* Step-by-Step Guide */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Step-by-Step Verification</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Step-by-Step Verification</h2>
           
           {/* Step 1 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -161,7 +161,7 @@ export default function VerifyEmailGuide() {
 
         {/* Troubleshooting */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Troubleshooting</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Troubleshooting</h2>
           
           <div className="space-y-4">
             <div>
@@ -206,7 +206,7 @@ export default function VerifyEmailGuide() {
               className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
               style={{ 
                 backgroundColor: 'white', 
-                color: '#708d81',
+                color: '#99afa7',
                 cursor: 'pointer'
               }}
               onMouseEnter={(e) => {
