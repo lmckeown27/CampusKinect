@@ -286,6 +286,18 @@ export default function SupportPage() {
                     key={article.id}
                     className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-colors cursor-pointer"
                     style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                    onClick={() => {
+                      const guideMap: { [key: string]: string } = {
+                        'verify-email': '/support/guides/verify-email',
+                        'post-item': '/support/guides/post-item',
+                        'messaging': '/support/guides/messaging',
+                        'safety': '/support/guides/safety'
+                      };
+                      const guidePath = guideMap[article.id];
+                      if (guidePath) {
+                        router.push(guidePath);
+                      }
+                    }}
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -317,6 +329,18 @@ export default function SupportPage() {
                     key={article.id}
                     className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
                     style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                    onClick={() => {
+                      const guideMap: { [key: string]: string } = {
+                        'verify-email': '/support/guides/verify-email',
+                        'post-item': '/support/guides/post-item',
+                        'messaging': '/support/guides/messaging',
+                        'safety': '/support/guides/safety'
+                      };
+                      const guidePath = guideMap[article.id];
+                      if (guidePath) {
+                        router.push(guidePath);
+                      }
+                    }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
@@ -379,6 +403,30 @@ export default function SupportPage() {
                             <div
                               key={article.id}
                               className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer"
+                              onClick={() => {
+                                const guideMap: { [key: string]: string } = {
+                                  'verify-email': '/support/guides/verify-email',
+                                  'create-account': '/support/guides/verify-email',
+                                  'setup-profile': '/support/guides/verify-email',
+                                  'campus-verification': '/support/guides/verify-email',
+                                  'post-item-detailed': '/support/guides/post-item',
+                                  'edit-listing': '/support/guides/post-item',
+                                  'search-filter': '/support/guides/post-item',
+                                  'message-users': '/support/guides/messaging',
+                                  'manage-conversations': '/support/guides/messaging',
+                                  'push-notifications': '/support/guides/messaging',
+                                  'reset-password': '/support/guides/verify-email',
+                                  'privacy-settings': '/support/guides/verify-email',
+                                  'report-user': '/support/guides/safety',
+                                  'safe-trading': '/support/guides/safety',
+                                  'campus-rules': '/support/guides/safety',
+                                  'something-wrong': '/support/guides/safety'
+                                };
+                                const guidePath = guideMap[article.id];
+                                if (guidePath) {
+                                  router.push(guidePath);
+                                }
+                              }}
                             >
                               <div>
                                 <h4 className="text-sm font-medium" style={{ color: '#708d81' }}>{article.title}</h4>
