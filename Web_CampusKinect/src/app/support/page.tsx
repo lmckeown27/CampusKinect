@@ -276,7 +276,7 @@ export default function SupportPage() {
                       <div>
                         <span className="text-sm font-medium" style={{ color: '#708d81' }}>{article.category}</span>
                         <h3 className="text-lg font-semibold mt-1" style={{ color: '#708d81' }}>{article.title}</h3>
-                        <p className="text-gray-700 mt-2">{article.description}</p>
+                        <p className="text-black mt-2">{article.description}</p>
                       </div>
                       <ChevronRight size={20} className="text-gray-500" />
                     </div>
@@ -316,7 +316,7 @@ export default function SupportPage() {
                       <ChevronRight size={16} className="text-gray-500 group-hover:text-[#708d81] transition-colors" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2" style={{ color: '#708d81' }}>{article.title}</h3>
-                    <p className="text-gray-700">{article.description}</p>
+                    <p className="text-black">{article.description}</p>
                   </div>
                 ))}
               </div>
@@ -347,7 +347,7 @@ export default function SupportPage() {
                       </div>
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold" style={{ color: '#708d81' }}>{category.title}</h3>
-                        <p className="text-gray-700 text-sm mt-1">{category.description}</p>
+                        <p className="text-black text-sm mt-1">{category.description}</p>
                       </div>
                       <ChevronRight 
                         size={16} 
@@ -367,7 +367,7 @@ export default function SupportPage() {
                             >
                               <div>
                                 <h4 className="text-sm font-medium" style={{ color: '#708d81' }}>{article.title}</h4>
-                                <p className="text-xs text-gray-600 mt-1">{article.description}</p>
+                                <p className="text-xs text-black mt-1">{article.description}</p>
                               </div>
                               <ChevronRight size={14} className="text-gray-500" />
                             </div>
