@@ -439,6 +439,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "CampusKinect needs camera access to take photos for your posts. This allows you to capture and share moments with your campus community.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "CampusKinect needs permission to save photos to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CampusKinect needs photo library access to select images for your posts. This allows you to share photos from your gallery with your campus community.";
@@ -480,6 +481,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "CampusKinect needs camera access to take photos for your posts. This allows you to capture and share moments with your campus community.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "CampusKinect needs permission to save photos to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CampusKinect needs photo library access to select images for your posts. This allows you to share photos from your gallery with your campus community.";
