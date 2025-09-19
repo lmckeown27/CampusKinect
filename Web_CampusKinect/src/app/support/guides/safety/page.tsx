@@ -77,23 +77,23 @@ export default function SafetyGuide() {
                   <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
                     <h4 className="font-semibold text-green-800 mb-2">✅ Great Meeting Spots:</h4>
                     <ul className="space-y-1 text-sm text-green-700">
-                      <li>• Campus library entrance</li>
-                      <li>• Student union building</li>
-                      <li>• Campus security office</li>
-                      <li>• Busy dining halls</li>
-                      <li>• Main campus quad</li>
-                      <li>• Campus coffee shops</li>
+                      <li>Campus library entrance</li>
+                      <li>Student union building</li>
+                      <li>Campus security office</li>
+                      <li>Busy dining halls</li>
+                      <li>Main campus quad</li>
+                      <li>Campus coffee shops</li>
                     </ul>
                   </div>
                   <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
                     <h4 className="font-semibold text-red-800 mb-2">❌ Avoid These Places:</h4>
                     <ul className="space-y-1 text-sm text-red-700">
-                      <li>• Dorm rooms or apartments</li>
-                      <li>• Empty parking lots</li>
-                      <li>• Isolated campus areas</li>
-                      <li>• Off-campus locations</li>
-                      <li>• Late night meetings</li>
-                      <li>• Private study rooms</li>
+                      <li>Dorm rooms or apartments</li>
+                      <li>Empty parking lots</li>
+                      <li>Isolated campus areas</li>
+                      <li>Off-campus locations</li>
+                      <li>Late night meetings</li>
+                      <li>Private study rooms</li>
                     </ul>
                   </div>
                 </div>
@@ -115,10 +115,10 @@ export default function SafetyGuide() {
                 <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
                   <h4 className="font-semibold text-blue-800 mb-2">Benefits of Bringing a Friend:</h4>
                   <ul className="space-y-1 text-sm text-blue-700">
-                    <li>• Added safety and peace of mind</li>
-                    <li>• Help carrying large or heavy items</li>
-                    <li>• Witness to the transaction</li>
-                    <li>• Someone to help inspect items</li>
+                    <li>Added safety and peace of mind</li>
+                    <li>Help carrying large or heavy items</li>
+                    <li>Witness to the transaction</li>
+                    <li>Someone to help inspect items</li>
                   </ul>
                 </div>
               </div>
@@ -139,10 +139,10 @@ export default function SafetyGuide() {
                 <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
                   <h4 className="font-semibold text-yellow-800 mb-2">Best Meeting Times:</h4>
                   <ul className="space-y-1 text-sm text-yellow-700">
-                    <li>• Between classes (10am - 4pm)</li>
-                    <li>• Lunch hours (11am - 2pm)</li>
-                    <li>• Early evening (5pm - 7pm)</li>
-                    <li>• Avoid late nights or early mornings</li>
+                    <li>Between classes (10am - 4pm)</li>
+                    <li>Lunch hours (11am - 2pm)</li>
+                    <li>Early evening (5pm - 7pm)</li>
+                    <li>Avoid late nights or early mornings</li>
                   </ul>
                 </div>
               </div>
@@ -161,18 +161,18 @@ export default function SafetyGuide() {
                 <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
                   <h4 className="font-semibold text-green-800 mb-1">✅ Safe Payment Methods:</h4>
                   <ul className="text-sm text-green-700 space-y-1">
-                    <li>• Cash (exact change preferred)</li>
-                    <li>• Venmo, Zelle, or PayPal</li>
-                    <li>• Campus payment systems</li>
+                    <li>Cash (exact change preferred)</li>
+                    <li>Venmo, Zelle, or PayPal</li>
+                    <li>Campus payment systems</li>
                   </ul>
                 </div>
                 <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
                   <h4 className="font-semibold text-red-800 mb-1">❌ Avoid:</h4>
                   <ul className="text-sm text-red-700 space-y-1">
-                    <li>• Wire transfers</li>
-                    <li>• Gift cards</li>
-                    <li>• Cryptocurrency</li>
-                    <li>• Personal checks</li>
+                    <li>Wire transfers</li>
+                    <li>Gift cards</li>
+                    <li>Cryptocurrency</li>
+                    <li>Personal checks</li>
                   </ul>
                 </div>
               </div>
@@ -184,11 +184,11 @@ export default function SafetyGuide() {
                 <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
                   <h4 className="font-semibold text-blue-800 mb-1">Before You Buy:</h4>
                   <ul className="text-sm text-blue-700 space-y-1">
-                    <li>• Inspect the item thoroughly</li>
-                    <li>• Test electronics if possible</li>
-                    <li>• Check for damage or wear</li>
-                    <li>• Verify authenticity</li>
-                    <li>• Ask questions about history</li>
+                    <li>Inspect the item thoroughly</li>
+                    <li>Test electronics if possible</li>
+                    <li>Check for damage or wear</li>
+                    <li>Verify authenticity</li>
+                    <li>Ask questions about history</li>
                   </ul>
                 </div>
               </div>
@@ -207,18 +207,18 @@ export default function SafetyGuide() {
                 <h3 className="font-semibold text-red-800 mb-3">Warning Signs:</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <ul className="space-y-2 text-sm text-red-700">
-                    <li>• Pressure to meet immediately</li>
-                    <li>• Requests for personal information</li>
-                    <li>• Prices that seem too good to be true</li>
-                    <li>• Insistence on meeting in private</li>
-                    <li>• Requests for unusual payment methods</li>
+                    <li>Pressure to meet immediately</li>
+                    <li>Requests for personal information</li>
+                    <li>Prices that seem too good to be true</li>
+                    <li>Insistence on meeting in private</li>
+                    <li>Requests for unusual payment methods</li>
                   </ul>
                   <ul className="space-y-2 text-sm text-red-700">
-                    <li>• Poor communication or grammar</li>
-                    <li>• Reluctance to answer questions</li>
-                    <li>• No photos or stock photos only</li>
-                    <li>• Aggressive or pushy behavior</li>
-                    <li>• Stories that don't add up</li>
+                    <li>Poor communication or grammar</li>
+                    <li>Reluctance to answer questions</li>
+                    <li>No photos or stock photos only</li>
+                    <li>Aggressive or pushy behavior</li>
+                    <li>Stories that don't add up</li>
                   </ul>
                 </div>
               </div>
@@ -234,16 +234,16 @@ export default function SafetyGuide() {
             <h3 className="font-semibold text-purple-800 mb-3">If Something Feels Wrong:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ul className="space-y-2 text-sm text-purple-700">
-                <li>• Don't ignore your gut feeling</li>
-                <li>• It's okay to cancel or walk away</li>
-                <li>• You don't owe anyone an explanation</li>
-                <li>• Your safety is more important than any deal</li>
+                <li>Don't ignore your gut feeling</li>
+                <li>It's okay to cancel or walk away</li>
+                <li>You don't owe anyone an explanation</li>
+                <li>Your safety is more important than any deal</li>
               </ul>
               <ul className="space-y-2 text-sm text-purple-700">
-                <li>• End the conversation politely</li>
-                <li>• Don't feel pressured to continue</li>
-                <li>• Report suspicious behavior</li>
-                <li>• Find another seller/buyer</li>
+                <li>End the conversation politely</li>
+                <li>Don't feel pressured to continue</li>
+                <li>Report suspicious behavior</li>
+                <li>Find another seller/buyer</li>
               </ul>
             </div>
           </div>
@@ -257,23 +257,23 @@ export default function SafetyGuide() {
             <div>
               <h3 className="font-semibold text-white mb-3">When to Report:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Inappropriate or threatening messages</li>
-                <li>• Suspicious or fraudulent behavior</li>
-                <li>• Harassment or bullying</li>
-                <li>• Scam attempts</li>
-                <li>• Unsafe meeting requests</li>
-                <li>• Any behavior that makes you uncomfortable</li>
+                <li>Inappropriate or threatening messages</li>
+                <li>Suspicious or fraudulent behavior</li>
+                <li>Harassment or bullying</li>
+                <li>Scam attempts</li>
+                <li>Unsafe meeting requests</li>
+                <li>Any behavior that makes you uncomfortable</li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-white mb-3">How to Report:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Use the "Report User" feature in messages</li>
-                <li>• Contact CampusKinect support</li>
-                <li>• Provide screenshots if possible</li>
-                <li>• Include specific details</li>
-                <li>• For emergencies, contact campus security</li>
-                <li>• We take all reports seriously</li>
+                <li>Use the "Report User" feature in messages</li>
+                <li>Contact CampusKinect support</li>
+                <li>Provide screenshots if possible</li>
+                <li>Include specific details</li>
+                <li>For emergencies, contact campus security</li>
+                <li>We take all reports seriously</li>
               </ul>
             </div>
           </div>
@@ -313,21 +313,21 @@ export default function SafetyGuide() {
             <div>
               <h3 className="font-semibold text-white mb-3">Campus Resources:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Campus safety escorts</li>
-                <li>• Emergency blue light phones</li>
-                <li>• Campus safety apps</li>
-                <li>• Security camera locations</li>
-                <li>• Safe ride programs</li>
+                <li>Campus safety escorts</li>
+                <li>Emergency blue light phones</li>
+                <li>Campus safety apps</li>
+                <li>Security camera locations</li>
+                <li>Safe ride programs</li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-white mb-3">Personal Safety:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Share your location with friends</li>
-                <li>• Keep your phone charged</li>
-                <li>• Stay aware of your surroundings</li>
-                <li>• Trust your instincts</li>
-                <li>• Have an exit plan</li>
+                <li>Share your location with friends</li>
+                <li>Keep your phone charged</li>
+                <li>Stay aware of your surroundings</li>
+                <li>Trust your instincts</li>
+                <li>Have an exit plan</li>
               </ul>
             </div>
           </div>

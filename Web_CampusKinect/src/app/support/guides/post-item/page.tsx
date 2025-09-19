@@ -40,21 +40,21 @@ export default function PostItemGuide() {
             <div>
               <h3 className="font-semibold text-white mb-2">What You'll Need:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Clear photos of your item</li>
-                <li>• Item description and details</li>
-                <li>• Fair market price</li>
-                <li>• Category selection</li>
-                <li>• Your location/pickup details</li>
+                <li>Clear photos of your item</li>
+                <li>Item description and details</li>
+                <li>Fair market price</li>
+                <li>Category selection</li>
+                <li>Your location/pickup details</li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-white mb-2">Tips for Success:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Use natural lighting for photos</li>
-                <li>• Be honest about condition</li>
-                <li>• Research similar item prices</li>
-                <li>• Write detailed descriptions</li>
-                <li>• Respond quickly to messages</li>
+                <li>Use natural lighting for photos</li>
+                <li>Be honest about condition</li>
+                <li>Research similar item prices</li>
+                <li>Write detailed descriptions</li>
+                <li>Respond quickly to messages</li>
               </ul>
             </div>
           </div>
@@ -78,9 +78,9 @@ export default function PostItemGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">How to Find It:</h4>
                   <ul className="space-y-1 text-sm" className="text-gray-300">
-                    <li>• Web: Click "Create Post" in the top navigation</li>
-                    <li>• Mobile: Tap the "+" button in the bottom navigation</li>
-                    <li>• Or go directly to /create-post</li>
+                    <li>Web: Click "Create Post" in the top navigation</li>
+                    <li>Mobile: Tap the "+" button in the bottom navigation</li>
+                    <li>Or go directly to /create-post</li>
                   </ul>
                 </div>
               </div>
@@ -102,21 +102,21 @@ export default function PostItemGuide() {
                   <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
                     <h4 className="font-semibold text-green-800 mb-2">✅ Good Photos:</h4>
                     <ul className="space-y-1 text-sm text-green-700">
-                      <li>• Well-lit, natural lighting</li>
-                      <li>• Multiple angles</li>
-                      <li>• Show any flaws or wear</li>
-                      <li>• Clean background</li>
-                      <li>• High resolution</li>
+                      <li>Well-lit, natural lighting</li>
+                      <li>Multiple angles</li>
+                      <li>Show any flaws or wear</li>
+                      <li>Clean background</li>
+                      <li>High resolution</li>
                     </ul>
                   </div>
                   <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
                     <h4 className="font-semibold text-red-800 mb-2">❌ Avoid:</h4>
                     <ul className="space-y-1 text-sm text-red-700">
-                      <li>• Blurry or dark photos</li>
-                      <li>• Only one angle</li>
-                      <li>• Hiding damage</li>
-                      <li>• Cluttered background</li>
-                      <li>• Low quality images</li>
+                      <li>Blurry or dark photos</li>
+                      <li>Only one angle</li>
+                      <li>Hiding damage</li>
+                      <li>Cluttered background</li>
+                      <li>Low quality images</li>
                     </ul>
                   </div>
                 </div>
@@ -139,20 +139,20 @@ export default function PostItemGuide() {
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Title Best Practices:</h4>
                     <ul className="space-y-1 text-sm" className="text-gray-300">
-                      <li>• Include brand, model, and key features</li>
-                      <li>• Keep it under 60 characters</li>
-                      <li>• Be specific and accurate</li>
-                      <li>• Example: "MacBook Pro 13-inch 2020 - Excellent Condition"</li>
+                      <li>Include brand, model, and key features</li>
+                      <li>Keep it under 60 characters</li>
+                      <li>Be specific and accurate</li>
+                      <li>Example: "MacBook Pro 13-inch 2020 - Excellent Condition"</li>
                     </ul>
                   </div>
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Description Should Include:</h4>
                     <ul className="space-y-1 text-sm" className="text-gray-300">
-                      <li>• Detailed specifications</li>
-                      <li>• Condition and any flaws</li>
-                      <li>• Reason for selling</li>
-                      <li>• What's included</li>
-                      <li>• Pickup/delivery preferences</li>
+                      <li>Detailed specifications</li>
+                      <li>Condition and any flaws</li>
+                      <li>Reason for selling</li>
+                      <li>What's included</li>
+                      <li>Pickup/delivery preferences</li>
                     </ul>
                   </div>
                 </div>
@@ -175,19 +175,19 @@ export default function PostItemGuide() {
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Pricing Tips:</h4>
                     <ul className="space-y-1 text-sm" className="text-gray-300">
-                      <li>• Research similar items</li>
-                      <li>• Consider condition and age</li>
-                      <li>• Price slightly high for negotiation</li>
-                      <li>• Be realistic about value</li>
+                      <li>Research similar items</li>
+                      <li>Consider condition and age</li>
+                      <li>Price slightly high for negotiation</li>
+                      <li>Be realistic about value</li>
                     </ul>
                   </div>
                   <div className="bg-gray-700 p-4 rounded-lg">
                     <h4 className="font-semibold text-white mb-2">Popular Categories:</h4>
                     <ul className="space-y-1 text-sm" className="text-gray-300">
-                      <li>• Electronics & Tech</li>
-                      <li>• Textbooks & School Supplies</li>
-                      <li>• Furniture & Home</li>
-                      <li>• Clothing & Accessories</li>
+                      <li>Electronics & Tech</li>
+                      <li>Textbooks & School Supplies</li>
+                      <li>Furniture & Home</li>
+                      <li>Clothing & Accessories</li>
                     </ul>
                   </div>
                 </div>
@@ -238,11 +238,11 @@ export default function PostItemGuide() {
                     <div>
                       <h4 className="font-semibold text-green-800 mb-1">Final Checklist:</h4>
                       <ul className="text-sm text-green-700 space-y-1">
-                        <li>• Photos are clear and show the item well</li>
-                        <li>• Title and description are accurate</li>
-                        <li>• Price is fair and competitive</li>
-                        <li>• Category is correct</li>
-                        <li>• Contact preferences are set</li>
+                        <li>Photos are clear and show the item well</li>
+                        <li>Title and description are accurate</li>
+                        <li>Price is fair and competitive</li>
+                        <li>Category is correct</li>
+                        <li>Contact preferences are set</li>
                       </ul>
                     </div>
                   </div>
@@ -260,19 +260,19 @@ export default function PostItemGuide() {
             <div>
               <h3 className="font-semibold text-white mb-2">Managing Your Listing:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Respond to messages promptly</li>
-                <li>• Edit listing if needed</li>
-                <li>• Mark as sold when complete</li>
-                <li>• Delete if no longer available</li>
+                <li>Respond to messages promptly</li>
+                <li>Edit listing if needed</li>
+                <li>Mark as sold when complete</li>
+                <li>Delete if no longer available</li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-white mb-2">Boosting Visibility:</h3>
               <ul className="space-y-1 text-sm" className="text-gray-300">
-                <li>• Share with friends</li>
-                <li>• Post in relevant campus groups</li>
-                <li>• Update listing to refresh it</li>
-                <li>• Consider adjusting price if no interest</li>
+                <li>Share with friends</li>
+                <li>Post in relevant campus groups</li>
+                <li>Update listing to refresh it</li>
+                <li>Consider adjusting price if no interest</li>
               </ul>
             </div>
           </div>
@@ -288,12 +288,12 @@ export default function PostItemGuide() {
               <div>
                 <h4 className="font-semibold text-red-800 mb-2">Important Safety Tips:</h4>
                 <ul className="space-y-1 text-sm text-red-700">
-                  <li>• Always meet in public, well-lit areas</li>
-                  <li>• Bring a friend when possible</li>
-                  <li>• Trust your instincts</li>
-                  <li>• Don't share personal information</li>
-                  <li>• Use campus security as meeting points</li>
-                  <li>• Report suspicious behavior</li>
+                  <li>Always meet in public, well-lit areas</li>
+                  <li>Bring a friend when possible</li>
+                  <li>Trust your instincts</li>
+                  <li>Don't share personal information</li>
+                  <li>Use campus security as meeting points</li>
+                  <li>Report suspicious behavior</li>
                 </ul>
               </div>
             </div>

@@ -73,9 +73,9 @@ export default function VerifyEmailGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Requirements:</h4>
                   <ul className="space-y-1 text-sm" className="text-gray-300">
-                    <li>• Must use your official university email (.edu domain)</li>
-                    <li>• Email must be active and accessible</li>
-                    <li>• One account per email address</li>
+                    <li>Must use your official university email (.edu domain)</li>
+                    <li>Email must be active and accessible</li>
+                    <li>One account per email address</li>
                   </ul>
                 </div>
               </div>
@@ -96,10 +96,10 @@ export default function VerifyEmailGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">What to Look For:</h4>
                   <ul className="space-y-1 text-sm" className="text-gray-300">
-                    <li>• Subject: "Verify Your CampusKinect Account"</li>
-                    <li>• From: noreply@campuskinect.com</li>
-                    <li>• Contains a verification link</li>
-                    <li>• Check spam/junk folder if not in inbox</li>
+                    <li>Subject: "Verify Your CampusKinect Account"</li>
+                    <li>From: noreply@campuskinect.com</li>
+                    <li>Contains a verification link</li>
+                    <li>Check spam/junk folder if not in inbox</li>
                   </ul>
                 </div>
               </div>
@@ -167,28 +167,28 @@ export default function VerifyEmailGuide() {
             <div>
               <h3 className="font-semibold text-white mb-2">Didn't receive the verification email?</h3>
               <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
-                <li>• Check your spam/junk folder</li>
-                <li>• Verify you entered your email correctly</li>
-                <li>• Wait 5-10 minutes for delivery</li>
-                <li>• Request a new verification email from Settings</li>
+                <li>Check your spam/junk folder</li>
+                <li>Verify you entered your email correctly</li>
+                <li>Wait 5-10 minutes for delivery</li>
+                <li>Request a new verification email from Settings</li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold text-white mb-2">Verification link expired?</h3>
               <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
-                <li>• Go to Account Settings</li>
-                <li>• Click "Resend Verification Email"</li>
-                <li>• Check for the new email</li>
+                <li>Go to Account Settings</li>
+                <li>Click "Resend Verification Email"</li>
+                <li>Check for the new email</li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold text-white mb-2">Using a non-.edu email?</h3>
               <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
-                <li>• CampusKinect requires official university email addresses</li>
-                <li>• Contact your university IT department for your .edu email</li>
-                <li>• Some schools use different domains - contact support if needed</li>
+                <li>CampusKinect requires official university email addresses</li>
+                <li>Contact your university IT department for your .edu email</li>
+                <li>Some schools use different domains - contact support if needed</li>
               </ul>
             </div>
           </div>
