@@ -260,8 +260,8 @@ export default function SupportPage() {
                 placeholder="Search help topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-96 px-4 py-4 rounded-lg border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-white text-center"
-                style={{ backgroundColor: '#5a7268', color: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+                className="w-[500px] px-4 py-4 rounded-lg border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-white text-center"
+                style={{ backgroundColor: 'white', color: '#374151', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
               />
             </div>
           </div>
