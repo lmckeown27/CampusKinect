@@ -8,7 +8,7 @@ export default function VerifyEmailGuide() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="min-h-screen bg-grey-medium">
       {/* Header */}
       <div className="py-8" style={{ backgroundColor: '#708d81' }}>
         <div className="max-w-4xl mx-auto px-6">
@@ -34,23 +34,23 @@ export default function VerifyEmailGuide() {
 
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Overview */}
-        <div className="mb-8 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Why Verify Your Email?</h2>
+        <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
+          <h2 className="text-2xl font-bold mb-4 text-white">Why Verify Your Email?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4">
               <Shield size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
-              <h3 className="font-semibold text-gray-900 mb-2">Campus Security</h3>
-              <p className="text-sm" style={{ color: '#000000' }}>Only verified students can access your campus community</p>
+              <h3 className="font-semibold text-white mb-2">Campus Security</h3>
+              <p className="text-sm text-gray-300">Only verified students can access your campus community</p>
             </div>
             <div className="text-center p-4">
               <CheckCircle size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
-              <h3 className="font-semibold text-gray-900 mb-2">Trust & Safety</h3>
-              <p className="text-sm" style={{ color: '#000000' }}>Verified accounts build trust in the marketplace</p>
+              <h3 className="font-semibold text-white mb-2">Trust & Safety</h3>
+              <p className="text-sm text-gray-300">Verified accounts build trust in the marketplace</p>
             </div>
             <div className="text-center p-4">
               <Mail size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
-              <h3 className="font-semibold text-gray-900 mb-2">Full Access</h3>
-              <p className="text-sm" style={{ color: '#000000' }}>Unlock all CampusKinect features and messaging</p>
+              <h3 className="font-semibold text-white mb-2">Full Access</h3>
+              <p className="text-sm text-gray-300">Unlock all CampusKinect features and messaging</p>
             </div>
           </div>
         </div>
@@ -60,19 +60,19 @@ export default function VerifyEmailGuide() {
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Step-by-Step Verification</h2>
           
           {/* Step 1 */}
-          <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+          <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#708d81' }}>
                 1
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Create Your Account</h3>
-                <p className="mb-4" style={{ color: '#000000' }}>
+                <h3 className="text-lg font-semibold text-white mb-2">Create Your Account</h3>
+                <p className="mb-4" className="text-gray-300">
                   Start by creating your CampusKinect account with your university email address.
                 </p>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Requirements:</h4>
-                  <ul className="space-y-1 text-sm" style={{ color: '#000000' }}>
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-white mb-2">Requirements:</h4>
+                  <ul className="space-y-1 text-sm" className="text-gray-300">
                     <li>• Must use your official university email (.edu domain)</li>
                     <li>• Email must be active and accessible</li>
                     <li>• One account per email address</li>
@@ -83,19 +83,19 @@ export default function VerifyEmailGuide() {
           </div>
 
           {/* Step 2 */}
-          <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+          <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#708d81' }}>
                 2
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Check Your Email</h3>
-                <p className="mb-4" style={{ color: '#000000' }}>
+                <h3 className="text-lg font-semibold text-white mb-2">Check Your Email</h3>
+                <p className="mb-4" className="text-gray-300">
                   After registration, check your university email for a verification message from CampusKinect.
                 </p>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">What to Look For:</h4>
-                  <ul className="space-y-1 text-sm" style={{ color: '#000000' }}>
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-white mb-2">What to Look For:</h4>
+                  <ul className="space-y-1 text-sm" className="text-gray-300">
                     <li>• Subject: "Verify Your CampusKinect Account"</li>
                     <li>• From: noreply@campuskinect.com</li>
                     <li>• Contains a verification link</li>
@@ -107,14 +107,14 @@ export default function VerifyEmailGuide() {
           </div>
 
           {/* Step 3 */}
-          <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+          <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#708d81' }}>
                 3
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Click the Verification Link</h3>
-                <p className="mb-4" style={{ color: '#000000' }}>
+                <h3 className="text-lg font-semibold text-white mb-2">Click the Verification Link</h3>
+                <p className="mb-4" className="text-gray-300">
                   Click the verification link in the email to confirm your university email address.
                 </p>
                 <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
@@ -133,14 +133,14 @@ export default function VerifyEmailGuide() {
           </div>
 
           {/* Step 4 */}
-          <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+          <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#708d81' }}>
                 4
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirmation & Access</h3>
-                <p className="mb-4" style={{ color: '#000000' }}>
+                <h3 className="text-lg font-semibold text-white mb-2">Confirmation & Access</h3>
+                <p className="mb-4" className="text-gray-300">
                   Once verified, you'll see a confirmation message and gain full access to CampusKinect.
                 </p>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
@@ -160,13 +160,13 @@ export default function VerifyEmailGuide() {
         </div>
 
         {/* Troubleshooting */}
-        <div className="mb-8 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+        <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Troubleshooting</h2>
           
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Didn't receive the verification email?</h3>
-              <ul className="space-y-1 text-sm ml-4" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">Didn't receive the verification email?</h3>
+              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
                 <li>• Check your spam/junk folder</li>
                 <li>• Verify you entered your email correctly</li>
                 <li>• Wait 5-10 minutes for delivery</li>
@@ -175,8 +175,8 @@ export default function VerifyEmailGuide() {
             </div>
             
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Verification link expired?</h3>
-              <ul className="space-y-1 text-sm ml-4" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">Verification link expired?</h3>
+              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
                 <li>• Go to Account Settings</li>
                 <li>• Click "Resend Verification Email"</li>
                 <li>• Check for the new email</li>
@@ -184,8 +184,8 @@ export default function VerifyEmailGuide() {
             </div>
             
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Using a non-.edu email?</h3>
-              <ul className="space-y-1 text-sm ml-4" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">Using a non-.edu email?</h3>
+              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
                 <li>• CampusKinect requires official university email addresses</li>
                 <li>• Contact your university IT department for your .edu email</li>
                 <li>• Some schools use different domains - contact support if needed</li>

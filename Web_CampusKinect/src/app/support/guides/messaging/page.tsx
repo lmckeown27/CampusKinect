@@ -8,7 +8,7 @@ export default function MessagingGuide() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
       {/* Header */}
       <div className="py-8" style={{ backgroundColor: '#708d81' }}>
         <div className="max-w-4xl mx-auto px-6">
@@ -34,23 +34,23 @@ export default function MessagingGuide() {
 
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Overview */}
-        <div className="mb-8 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+        <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>How Messaging Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4">
               <UserCheck size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
-              <h3 className="font-semibold text-gray-900 mb-2">Verified Users Only</h3>
-              <p className="text-sm" style={{ color: '#000000' }}>Only verified students can send and receive messages</p>
+              <h3 className="font-semibold text-white mb-2">Verified Users Only</h3>
+              <p className="text-sm text-gray-300">Only verified students can send and receive messages</p>
             </div>
             <div className="text-center p-4">
               <Shield size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
-              <h3 className="font-semibold text-gray-900 mb-2">Safe & Secure</h3>
-              <p className="text-sm" style={{ color: '#000000' }}>All messages are encrypted and campus-only</p>
+              <h3 className="font-semibold text-white mb-2">Safe & Secure</h3>
+              <p className="text-sm text-gray-300">All messages are encrypted and campus-only</p>
             </div>
             <div className="text-center p-4">
               <Bell size={32} className="mx-auto mb-2" style={{ color: '#708d81' }} />
-              <h3 className="font-semibold text-gray-900 mb-2">Real-time Notifications</h3>
-              <p className="text-sm" style={{ color: '#000000' }}>Get notified instantly when you receive messages</p>
+              <h3 className="font-semibold text-white mb-2">Real-time Notifications</h3>
+              <p className="text-sm text-gray-300">Get notified instantly when you receive messages</p>
             </div>
           </div>
         </div>
@@ -60,19 +60,19 @@ export default function MessagingGuide() {
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Starting a Conversation</h2>
           
           {/* Method 1 */}
-          <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+          <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#708d81' }}>
                 1
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">From a Marketplace Post</h3>
-                <p className="mb-4" style={{ color: '#000000' }}>
+                <h3 className="text-lg font-semibold text-white mb-2">From a Marketplace Post</h3>
+                <p className="mb-4" className="text-gray-300">
                   The easiest way to start a conversation is by messaging someone about their post.
                 </p>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Steps:</h4>
-                  <ol className="space-y-1 text-sm" style={{ color: '#000000' }}>
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-white mb-2">Steps:</h4>
+                  <ol className="space-y-1 text-sm" className="text-gray-300">
                     <li>1. Find a post you're interested in</li>
                     <li>2. Click anywhere on the post card</li>
                     <li>3. Confirm you want to start a conversation</li>
@@ -85,19 +85,19 @@ export default function MessagingGuide() {
           </div>
 
           {/* Method 2 */}
-          <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+          <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#708d81' }}>
                 2
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">From Messages Page</h3>
-                <p className="mb-4" style={{ color: '#000000' }}>
+                <h3 className="text-lg font-semibold text-white mb-2">From Messages Page</h3>
+                <p className="mb-4" className="text-gray-300">
                   You can also start new conversations from your messages page.
                 </p>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Steps:</h4>
-                  <ol className="space-y-1 text-sm" style={{ color: '#000000' }}>
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-white mb-2">Steps:</h4>
+                  <ol className="space-y-1 text-sm" className="text-gray-300">
                     <li>1. Go to the Messages tab</li>
                     <li>2. Look for existing conversations</li>
                     <li>3. Click on any conversation to continue</li>
@@ -110,7 +110,7 @@ export default function MessagingGuide() {
         </div>
 
         {/* Message Best Practices */}
-        <div className="mb-8 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+        <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Message Best Practices</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -141,12 +141,12 @@ export default function MessagingGuide() {
           
           <div className="space-y-6">
             {/* Viewing Messages */}
-            <div className="p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Viewing Your Messages</h3>
+            <div className="p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
+              <h3 className="text-lg font-semibold text-white mb-3">Viewing Your Messages</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Web Platform:</h4>
-                  <ul className="space-y-1 text-sm" style={{ color: '#000000' }}>
+                  <h4 className="font-semibold text-white mb-2">Web Platform:</h4>
+                  <ul className="space-y-1 text-sm" className="text-gray-300">
                     <li>• Click "Messages" in the navigation</li>
                     <li>• See all conversations in one place</li>
                     <li>• Click any conversation to open chat</li>
@@ -154,8 +154,8 @@ export default function MessagingGuide() {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">iOS App:</h4>
-                  <ul className="space-y-1 text-sm" style={{ color: '#000000' }}>
+                  <h4 className="font-semibold text-white mb-2">iOS App:</h4>
+                  <ul className="space-y-1 text-sm" className="text-gray-300">
                     <li>• Tap "Messages" in the bottom tab bar</li>
                     <li>• Swipe left on conversations to delete</li>
                     <li>• Tap any conversation to open chat</li>
@@ -166,8 +166,8 @@ export default function MessagingGuide() {
             </div>
 
             {/* Deleting Conversations */}
-            <div className="p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Deleting Conversations</h3>
+            <div className="p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
+              <h3 className="text-lg font-semibold text-white mb-3">Deleting Conversations</h3>
               <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
                 <div className="flex items-start space-x-2">
                   <AlertTriangle size={16} className="text-yellow-600 mt-0.5" />
@@ -188,13 +188,13 @@ export default function MessagingGuide() {
         </div>
 
         {/* Notifications */}
-        <div className="mb-8 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+        <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Message Notifications</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">iOS Push Notifications:</h3>
-              <ul className="space-y-1 text-sm" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">iOS Push Notifications:</h3>
+              <ul className="space-y-1 text-sm" className="text-gray-300">
                 <li>• Get instant notifications on your phone</li>
                 <li>• Shows sender name and message preview</li>
                 <li>• Tap notification to open conversation</li>
@@ -202,8 +202,8 @@ export default function MessagingGuide() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Managing Notifications:</h3>
-              <ul className="space-y-1 text-sm" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">Managing Notifications:</h3>
+              <ul className="space-y-1 text-sm" className="text-gray-300">
                 <li>• Go to Settings → Notifications</li>
                 <li>• Toggle notifications on/off</li>
                 <li>• Customize notification preferences</li>
@@ -214,7 +214,7 @@ export default function MessagingGuide() {
         </div>
 
         {/* Safety & Etiquette */}
-        <div className="mb-8 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+        <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Safety & Etiquette</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -242,13 +242,13 @@ export default function MessagingGuide() {
         </div>
 
         {/* Troubleshooting */}
-        <div className="mb-8 p-6 bg-white rounded-lg border border-gray-200" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
+        <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#708d81' }}>Troubleshooting</h2>
           
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Can't send messages?</h3>
-              <ul className="space-y-1 text-sm ml-4" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">Can't send messages?</h3>
+              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
                 <li>• Make sure your email is verified</li>
                 <li>• Check your internet connection</li>
                 <li>• Try refreshing the page</li>
@@ -257,8 +257,8 @@ export default function MessagingGuide() {
             </div>
             
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Not receiving notifications?</h3>
-              <ul className="space-y-1 text-sm ml-4" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">Not receiving notifications?</h3>
+              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
                 <li>• Check notification settings in the app</li>
                 <li>• Verify iOS notification permissions</li>
                 <li>• Make sure notifications are enabled for CampusKinect</li>
@@ -267,8 +267,8 @@ export default function MessagingGuide() {
             </div>
             
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Messages not loading?</h3>
-              <ul className="space-y-1 text-sm ml-4" style={{ color: '#000000' }}>
+              <h3 className="font-semibold text-white mb-2">Messages not loading?</h3>
+              <ul className="space-y-1 text-sm ml-4" className="text-gray-300">
                 <li>• Check your internet connection</li>
                 <li>• Try closing and reopening the app</li>
                 <li>• Clear your browser cache (web)</li>

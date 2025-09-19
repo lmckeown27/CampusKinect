@@ -235,7 +235,7 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="min-h-screen bg-grey-medium">
       {/* Header */}
       <div className="py-12" style={{ backgroundColor: '#708d81' }}>
         <div className="max-w-4xl mx-auto px-6">
@@ -276,7 +276,7 @@ export default function SupportPage() {
         {/* Search Results */}
         {searchQuery && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>
+            <h2 className="text-2xl font-bold mb-6 text-white">
               Search Results for "{searchQuery}"
             </h2>
             {filteredArticles().length > 0 ? (
@@ -284,8 +284,8 @@ export default function SupportPage() {
                 {filteredArticles().map((article) => (
                   <div
                     key={article.id}
-                    className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-colors cursor-pointer"
-                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-colors cursor-pointer"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
                     onClick={() => {
                       const guideMap: { [key: string]: string } = {
                         'verify-email': '/support/guides/verify-email',
@@ -302,17 +302,17 @@ export default function SupportPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-sm font-medium" style={{ color: '#708d81' }}>{article.category}</span>
-                        <h3 className="text-lg font-semibold mt-1" style={{ color: '#708d81' }}>{article.title}</h3>
-                        <p className="mt-2" style={{ color: '#000000' }}>{article.description}</p>
+                        <h3 className="text-lg font-semibold mt-1 text-white">{article.title}</h3>
+                        <p className="mt-2 text-gray-300">{article.description}</p>
                       </div>
-                      <ChevronRight size={20} className="text-gray-500" />
+                      <ChevronRight size={20} className="text-gray-300" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-600">No articles found matching your search.</p>
+                <p className="text-gray-300">No articles found matching your search.</p>
               </div>
             )}
           </div>
@@ -322,13 +322,13 @@ export default function SupportPage() {
         {!searchQuery && (
           <>
             <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Popular Articles</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">Popular Articles</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {popularArticles.map((article) => (
                   <div
                     key={article.id}
-                    className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
-                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
                     onClick={() => {
                       const guideMap: { [key: string]: string } = {
                         'verify-email': '/support/guides/verify-email',
@@ -352,10 +352,10 @@ export default function SupportPage() {
                   >
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-medium" style={{ color: '#708d81' }}>{article.category}</span>
-                      <ChevronRight size={16} className="text-gray-500 group-hover:text-[#708d81] transition-colors" />
+                      <ChevronRight size={16} className="text-gray-300 group-hover:text-[#708d81] transition-colors" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2" style={{ color: '#708d81' }}>{article.title}</h3>
-                    <p style={{ color: '#000000' }}>{article.description}</p>
+                    <h3 className="text-lg font-semibold mb-2 text-white">{article.title}</h3>
+                    <p className="text-gray-300">{article.description}</p>
                   </div>
                 ))}
               </div>
@@ -363,13 +363,13 @@ export default function SupportPage() {
 
             {/* Categories */}
             <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Browse by Category</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">Browse by Category</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categories.map((category) => (
                   <div
                     key={category.id}
-                    className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
-                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
                     onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
@@ -385,24 +385,24 @@ export default function SupportPage() {
                         <div className="text-white">{category.icon}</div>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold" style={{ color: '#708d81' }}>{category.title}</h3>
-                        <p className="text-sm mt-1" style={{ color: '#000000' }}>{category.description}</p>
+                        <h3 className="text-lg font-semibold text-white">{category.title}</h3>
+                        <p className="text-sm mt-1 text-gray-300">{category.description}</p>
                       </div>
                       <ChevronRight 
                         size={16} 
-                        className={`text-gray-500 group-hover:text-[#708d81] transition-all duration-200 ${
+                        className={`text-gray-300 group-hover:text-[#708d81] transition-all duration-200 ${
                           selectedCategory === category.id ? 'rotate-90' : ''
                         }`} 
                       />
                     </div>
                     
                     {selectedCategory === category.id && (
-                      <div className="mt-4 pt-4 border-t border-gray-100">
+                      <div className="mt-4 pt-4 border-t border-gray-600">
                         <div className="space-y-3">
                           {category.articles.map((article) => (
                             <div
                               key={article.id}
-                              className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer"
+                              className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-600 cursor-pointer"
                               onClick={() => {
                                 const guideMap: { [key: string]: string } = {
                                   'verify-email': '/support/guides/verify-email',
@@ -429,10 +429,10 @@ export default function SupportPage() {
                               }}
                             >
                               <div>
-                                <h4 className="text-sm font-medium" style={{ color: '#708d81' }}>{article.title}</h4>
-                                <p className="text-xs mt-1" style={{ color: '#000000' }}>{article.description}</p>
+                                <h4 className="text-sm font-medium text-white">{article.title}</h4>
+                                <p className="text-xs mt-1 text-gray-300">{article.description}</p>
                               </div>
-                              <ChevronRight size={14} className="text-gray-500" />
+                              <ChevronRight size={14} className="text-gray-300" />
                             </div>
                           ))}
                         </div>
