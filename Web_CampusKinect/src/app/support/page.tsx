@@ -261,7 +261,7 @@ export default function SupportPage() {
         {/* Search Results */}
         {searchQuery && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>
               Search Results for "{searchQuery}"
             </h2>
             {filteredArticles().length > 0 ? (
@@ -274,8 +274,8 @@ export default function SupportPage() {
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-sm text-[#708d81] font-medium">{article.category}</span>
-                        <h3 className="text-lg font-semibold text-gray-900 mt-1">{article.title}</h3>
+                        <span className="text-sm font-medium" style={{ color: '#708d81' }}>{article.category}</span>
+                        <h3 className="text-lg font-semibold mt-1" style={{ color: '#708d81' }}>{article.title}</h3>
                         <p className="text-gray-700 mt-2">{article.description}</p>
                       </div>
                       <ChevronRight size={20} className="text-gray-500" />
@@ -295,7 +295,7 @@ export default function SupportPage() {
         {!searchQuery && (
           <>
             <div className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Popular Articles</h2>
+              <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Popular Articles</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {popularArticles.map((article) => (
                   <div
@@ -312,10 +312,10 @@ export default function SupportPage() {
                     }}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm text-[#708d81] font-medium">{article.category}</span>
+                      <span className="text-sm font-medium" style={{ color: '#708d81' }}>{article.category}</span>
                       <ChevronRight size={16} className="text-gray-500 group-hover:text-[#708d81] transition-colors" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{article.title}</h3>
+                    <h3 className="text-lg font-semibold mb-2" style={{ color: '#708d81' }}>{article.title}</h3>
                     <p className="text-gray-700">{article.description}</p>
                   </div>
                 ))}
@@ -324,7 +324,7 @@ export default function SupportPage() {
 
             {/* Categories */}
             <div className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
+              <h2 className="text-2xl font-bold mb-6" style={{ color: '#708d81' }}>Browse by Category</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categories.map((category) => (
                   <div
@@ -346,7 +346,7 @@ export default function SupportPage() {
                         <div className="text-white">{category.icon}</div>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">{category.title}</h3>
+                        <h3 className="text-lg font-semibold" style={{ color: '#708d81' }}>{category.title}</h3>
                         <p className="text-gray-700 text-sm mt-1">{category.description}</p>
                       </div>
                       <ChevronRight 
@@ -366,7 +366,7 @@ export default function SupportPage() {
                               className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer"
                             >
                               <div>
-                                <h4 className="text-sm font-medium text-gray-900">{article.title}</h4>
+                                <h4 className="text-sm font-medium" style={{ color: '#708d81' }}>{article.title}</h4>
                                 <p className="text-xs text-gray-600 mt-1">{article.description}</p>
                               </div>
                               <ChevronRight size={14} className="text-gray-500" />
