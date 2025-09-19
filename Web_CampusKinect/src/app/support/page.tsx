@@ -17,7 +17,8 @@ import {
   AlertTriangle,
   Book,
   Users,
-  Lock
+  Lock,
+  ArrowLeft
 } from 'lucide-react';
 
 interface Article {
@@ -237,22 +238,36 @@ export default function SupportPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
       {/* Header */}
       <div className="py-12" style={{ backgroundColor: '#708d81' }}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <Book size={48} className="text-white mx-auto mb-4" />
-          <h1 className="text-4xl font-bold text-white mb-4">CampusKinect Help Center</h1>
-          <p className="text-xl text-white opacity-90 mb-8">Find answers, get help, and learn how to use CampusKinect</p>
+        <div className="max-w-4xl mx-auto px-6">
+          {/* Back Button */}
+          <div className="mb-6">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center space-x-2 text-white hover:text-gray-200 transition-colors cursor-pointer"
+              style={{ cursor: 'pointer' }}
+            >
+              <ArrowLeft size={20} />
+              <span className="text-lg">Back</span>
+            </button>
+          </div>
           
-          {/* Search Bar */}
-          <div className="relative max-w-2xl mx-auto">
-            <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search help topics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-lg border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-white"
-              style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
-            />
+          <div className="text-center">
+            <Book size={48} className="text-white mx-auto mb-4" />
+            <h1 className="text-4xl font-bold text-white mb-4">CampusKinect Help Center</h1>
+            <p className="text-xl text-white opacity-90 mb-8">Find answers, get help, and learn how to use CampusKinect</p>
+            
+            {/* Search Bar */}
+            <div className="relative max-w-2xl mx-auto">
+              <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search help topics..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-lg border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-white"
+                style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+              />
+            </div>
           </div>
         </div>
       </div>
