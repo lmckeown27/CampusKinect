@@ -13,16 +13,16 @@ export default function PostItemGuide() {
           <div className="mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium cursor-pointer"
-              style={{ color: '#708d81' }}
+              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
+              style={{ color: '#708d81', cursor: 'pointer' }}
             >
               <ArrowLeft size={20} />
               <span>Back to Help Center</span>
             </button>
           </div>
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white mb-2 text-center">Post an Item for Sale</h1>
-            <p className="text-xl text-white opacity-90 text-center">Create your first listing with photos and pricing</p>
+            <h1 className="text-3xl font-bold text-white mb-2" style={{ textAlign: 'center' }}>Post an Item for Sale</h1>
+            <p className="text-xl text-white opacity-90" style={{ textAlign: 'center' }}>Create your first listing with photos and pricing</p>
           </div>
         </div>
       </div>
@@ -291,7 +291,7 @@ export default function PostItemGuide() {
             </p>
             <button
               onClick={() => router.push('/support')}
-              className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
+              className="px-6 py-3 rounded-lg font-semibold transition-all duration-200"
               style={{ 
                 backgroundColor: 'white', 
                 color: '#99afa7',

@@ -241,8 +241,8 @@ export default function SupportPage() {
           <div className="mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium cursor-pointer"
-              style={{ color: '#708d81' }}
+              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
+              style={{ color: '#708d81', cursor: 'pointer' }}
             >
               <ArrowLeft size={20} />
               <span>Back</span>
@@ -250,8 +250,8 @@ export default function SupportPage() {
           </div>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4 text-center">CampusKinect Help Center</h1>
-            <p className="text-xl text-white opacity-90 mb-8 text-center">Find answers, get help, and learn how to use CampusKinect</p>
+            <h1 className="text-4xl font-bold text-white mb-4" style={{ textAlign: 'center' }}>CampusKinect Help Center</h1>
+            <p className="text-xl text-white opacity-90 mb-8" style={{ textAlign: 'center' }}>Find answers, get help, and learn how to use CampusKinect</p>
             
             {/* Search Bar */}
             <div className="flex justify-center">
@@ -323,8 +323,8 @@ export default function SupportPage() {
                 {popularArticles.map((article) => (
                   <div
                     key={article.id}
-                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
-                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
+                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-all duration-200 group"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)', cursor: 'pointer' }}
                     onClick={() => {
                       const guideMap: { [key: string]: string } = {
                         'verify-email': '/support/guides/verify-email',
@@ -364,8 +364,8 @@ export default function SupportPage() {
                 {categories.map((category) => (
                   <div
                     key={category.id}
-                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
-                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
+                    className="p-6 bg-grey-light rounded-lg border border-gray-600 hover:border-[#708d81] transition-all duration-200 group"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)', cursor: 'pointer' }}
                     onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
@@ -398,7 +398,8 @@ export default function SupportPage() {
                           {category.articles.map((article) => (
                             <div
                               key={article.id}
-                              className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-600 cursor-pointer"
+                              className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-600"
+                              style={{ cursor: 'pointer' }}
                               onClick={() => {
                                 const guideMap: { [key: string]: string } = {
                                   'verify-email': '/support/guides/verify-email',
@@ -453,10 +454,11 @@ export default function SupportPage() {
             <div className="text-center">
               <button
                 onClick={() => setShowContactForm(true)}
-                className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 cursor-pointer"
+                className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200"
                 style={{ 
                   backgroundColor: 'white', 
-                  color: '#99afa7'
+                  color: '#99afa7',
+                  cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -548,10 +550,11 @@ export default function SupportPage() {
                 <div className="flex space-x-4">
                   <button
                     type="submit"
-                    className="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
+                    className="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200"
                     style={{ 
                       backgroundColor: 'white', 
-                      color: '#99afa7'
+                      color: '#99afa7',
+                      cursor: 'pointer'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#f8f9fa';
@@ -566,7 +569,8 @@ export default function SupportPage() {
                   <button
                     type="button"
                     onClick={() => setShowContactForm(false)}
-                    className="px-6 py-3 rounded-lg font-semibold text-white border-2 border-white hover:bg-white hover:text-[#99afa7] transition-all duration-200 cursor-pointer"
+                    className="px-6 py-3 rounded-lg font-semibold text-white border-2 border-white hover:bg-white hover:text-[#99afa7] transition-all duration-200"
+                    style={{ cursor: 'pointer' }}
                   >
                     Cancel
                   </button>
