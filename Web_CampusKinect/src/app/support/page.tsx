@@ -1,178 +1,399 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, HelpCircle, Mail, MessageCircle, Bug, Book, Users, Shield, ChevronDown, ChevronRight, Search, Phone, Clock, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { 
+  Search, 
+  Mail, 
+  User, 
+  ShoppingBag, 
+  MessageCircle, 
+  Shield, 
+  Settings,
+  ChevronRight,
+  Clock,
+  Send,
+  CheckCircle,
+  AlertTriangle,
+  Book,
+  Users,
+  Lock
+} from 'lucide-react';
 
-const SupportPage: React.FC = () => {
+interface Article {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  popular?: boolean;
+}
+
+interface Category {
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  description: string;
+  articles: Article[];
+}
+
+export default function SupportPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    campus: '',
+    issueType: '',
+    description: ''
+  });
 
-  const faqs = [
+  const popularArticles: Article[] = [
     {
-      id: 1,
+      id: 'verify-email',
+      title: 'Getting Started: Verify your university email',
       category: 'Getting Started',
-      question: 'How do I create an account on CampusKinect?',
-      answer: 'To create an account, you need a valid university email address (.edu). Click "Register" on the login page, enter your university email, create a password, and verify your email. Once verified, complete your profile with your major, year, and other details.'
+      description: 'Step-by-step guide to verify your .edu email address',
+      popular: true
     },
     {
-      id: 2,
-      category: 'Account & Profile',
-      question: 'How do I update my profile information?',
-      answer: 'Go to Settings > Account section. You can update your display name, bio, major, year, hometown, and profile picture. Changes are saved automatically when you click "Save Settings".'
+      id: 'post-item',
+      title: 'How to post an item in the marketplace',
+      category: 'Marketplace Basics',
+      description: 'Create your first listing with photos and pricing',
+      popular: true
     },
     {
-      id: 3,
-      category: 'Privacy & Security',
-      question: 'Who can see my posts and profile?',
-      answer: 'Only verified students from your university can see your posts and profile. CampusKinect is campus-exclusive, ensuring your content stays within your university community.'
+      id: 'messaging',
+      title: 'How to message a buyer/seller',
+      category: 'Messaging & Connections',
+      description: 'Start conversations and manage your messages',
+      popular: true
     },
     {
-      id: 4,
-      category: 'Messaging',
-      question: 'How do I send a message to another student?',
-      answer: 'You can message other students by clicking on their profile or tapping anywhere on their post. This will open a chat conversation where you can send direct messages in real-time.'
-    },
-    {
-      id: 5,
-      category: 'Posts & Feed',
-      question: 'How do I create a post with images?',
-      answer: 'Click the "Create Post" button, write your message, and click the camera icon to add photos. You can add multiple images to a single post. Posts appear in your campus feed immediately.'
-    },
-    {
-      id: 6,
-      category: 'Technical Issues',
-      question: 'Why am I not receiving notifications?',
-      answer: 'Check your browser notification settings and ensure CampusKinect has permission to send notifications. On mobile, check your device notification settings. You can also manage notification preferences in Settings.'
-    },
-    {
-      id: 7,
-      category: 'Account & Profile',
-      question: 'How do I delete my account?',
-      answer: 'Currently, account deletion must be requested through our support team. Contact us at campuskinect01@gmail.com with your request, and we\'ll process it within 48 hours.'
-    },
-    {
-      id: 8,
-      category: 'Campus Verification',
-      question: 'My university email isn\'t working for registration',
-      answer: 'Ensure you\'re using your official university email ending in .edu. If you\'re still having issues, your university might not be supported yet. Contact us to request adding your university to our platform.'
+      id: 'safety',
+      title: 'Staying safe on CampusKinect',
+      category: 'Safety & Trust',
+      description: 'Essential safety tips for campus trading',
+      popular: true
     }
   ];
 
-  const filteredFAQs = faqs.filter(faq => 
-    faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    faq.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const categories: Category[] = [
+    {
+      id: 'getting-started',
+      title: 'Getting Started',
+      icon: <User size={24} />,
+      description: 'Set up your account and get verified',
+      articles: [
+        {
+          id: 'create-account',
+          title: 'Create Your Account',
+          category: 'Getting Started',
+          description: 'Step-by-step account creation with .edu verification'
+        },
+        {
+          id: 'setup-profile',
+          title: 'Set Up Your Profile',
+          category: 'Getting Started',
+          description: 'Add your photo, bio, major, and graduation year'
+        },
+        {
+          id: 'campus-verification',
+          title: 'Campus Verification',
+          category: 'Getting Started',
+          description: 'Why verification matters and how it works'
+        }
+      ]
+    },
+    {
+      id: 'marketplace',
+      title: 'Marketplace Basics',
+      icon: <ShoppingBag size={24} />,
+      description: 'Buy and sell items on your campus',
+      articles: [
+        {
+          id: 'post-item-detailed',
+          title: 'Post an Item for Sale',
+          category: 'Marketplace Basics',
+          description: 'Add title, price, images, and description'
+        },
+        {
+          id: 'edit-listing',
+          title: 'Edit or Delete a Listing',
+          category: 'Marketplace Basics',
+          description: 'Manage your active marketplace posts'
+        },
+        {
+          id: 'search-filter',
+          title: 'Search & Filter Listings',
+          category: 'Marketplace Basics',
+          description: 'Find items by category, price, and campus'
+        }
+      ]
+    },
+    {
+      id: 'messaging',
+      title: 'Messaging & Connections',
+      icon: <MessageCircle size={24} />,
+      description: 'Connect with other students',
+      articles: [
+        {
+          id: 'message-users',
+          title: 'Message a Seller or Buyer',
+          category: 'Messaging & Connections',
+          description: 'Start conversations about listings'
+        },
+        {
+          id: 'manage-conversations',
+          title: 'Manage Conversations',
+          category: 'Messaging & Connections',
+          description: 'Delete, archive, or block users'
+        },
+        {
+          id: 'push-notifications',
+          title: 'Push Notifications',
+          category: 'Messaging & Connections',
+          description: 'Turn notifications on or off'
+        }
+      ]
+    },
+    {
+      id: 'account-security',
+      title: 'Account & Security',
+      icon: <Lock size={24} />,
+      description: 'Manage your account settings',
+      articles: [
+        {
+          id: 'reset-password',
+          title: 'Reset Your Password',
+          category: 'Account & Security',
+          description: 'Recover access to your account'
+        },
+        {
+          id: 'privacy-settings',
+          title: 'Privacy Settings',
+          category: 'Account & Security',
+          description: 'Control who can see your profile'
+        },
+        {
+          id: 'report-user',
+          title: 'Report a User or Post',
+          category: 'Account & Security',
+          description: 'Flag inappropriate content or behavior'
+        }
+      ]
+    },
+    {
+      id: 'safety-trust',
+      title: 'Safety & Trust',
+      icon: <Shield size={24} />,
+      description: 'Stay safe while trading',
+      articles: [
+        {
+          id: 'safe-trading',
+          title: 'Safe Trading Tips',
+          category: 'Safety & Trust',
+          description: 'Meet in public places and avoid scams'
+        },
+        {
+          id: 'campus-rules',
+          title: 'Campus Rules & Moderation',
+          category: 'Safety & Trust',
+          description: 'Community guidelines and enforcement'
+        },
+        {
+          id: 'something-wrong',
+          title: 'What to Do if Something Goes Wrong',
+          category: 'Safety & Trust',
+          description: 'Report issues and get help'
+        }
+      ]
+    }
+  ];
 
-  const toggleFAQ = (id: number) => {
-    setExpandedFAQ(expandedFAQ === id ? null : id);
+  const filteredArticles = () => {
+    if (!searchQuery) return [];
+    
+    const allArticles = [...popularArticles, ...categories.flatMap(cat => cat.articles)];
+    return allArticles.filter(article =>
+      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
 
-  const handleContactEmail = (type: string) => {
-    const subjects = {
-      support: 'CampusKinect Support Request',
-      bug: 'Bug Report - CampusKinect',
-      feedback: 'Feedback - CampusKinect'
-    };
-    
-    const email = 'campuskinect01@gmail.com';
-
-    window.location.href = `mailto:${email}?subject=${subjects[type as keyof typeof subjects]}`;
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically send the form data to your backend
+    console.log('Contact form submitted:', contactForm);
+    alert('Thank you for contacting us! We\'ll respond within 24-48 hours.');
+    setShowContactForm(false);
+    setContactForm({ name: '', email: '', campus: '', issueType: '', description: '' });
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
       {/* Header */}
-      <div className="border-b border-[#708d81] sticky top-0 z-10" style={{ backgroundColor: '#737373' }}>
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.back()}
-                className="p-2 rounded-lg hover:bg-[#708d81] transition-colors cursor-pointer"
-                style={{ cursor: 'pointer' }}
-              >
-                <ArrowLeft size={24} className="text-white" />
-              </button>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Support Center</h1>
-                <p className="text-[#708d81]">Get help with CampusKinect</p>
-              </div>
-            </div>
-            <HelpCircle size={32} className="text-[#708d81]" />
+      <div className="py-12" style={{ backgroundColor: '#708d81' }}>
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <Book size={48} className="text-white mx-auto mb-4" />
+          <h1 className="text-4xl font-bold text-white mb-4">CampusKinect Help Center</h1>
+          <p className="text-xl text-white opacity-90 mb-8">Find answers, get help, and learn how to use CampusKinect</p>
+          
+          {/* Search Bar */}
+          <div className="relative max-w-2xl mx-auto">
+            <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search help topics..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-4 rounded-lg border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-white"
+              style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+            />
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {/* Search Results */}
+        {searchQuery && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Search Results for "{searchQuery}"
+            </h2>
+            {filteredArticles().length > 0 ? (
+              <div className="grid gap-4">
+                {filteredArticles().map((article) => (
+                  <div
+                    key={article.id}
+                    className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-colors cursor-pointer"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-sm text-[#708d81] font-medium">{article.category}</span>
+                        <h3 className="text-lg font-semibold text-gray-800 mt-1">{article.title}</h3>
+                        <p className="text-gray-600 mt-2">{article.description}</p>
+                      </div>
+                      <ChevronRight size={20} className="text-gray-400" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No articles found matching your search.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Popular Articles */}
+        {!searchQuery && (
+          <>
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Popular Articles</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {popularArticles.map((article) => (
+                  <div
+                    key={article.id}
+                    className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0px)';
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.05)';
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm text-[#708d81] font-medium">{article.category}</span>
+                      <ChevronRight size={16} className="text-gray-400 group-hover:text-[#708d81] transition-colors" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">{article.title}</h3>
+                    <p className="text-gray-600">{article.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Categories */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Browse by Category</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {categories.map((category) => (
+                  <div
+                    key={category.id}
+                    className="p-6 bg-white rounded-lg border border-gray-200 hover:border-[#708d81] transition-all duration-200 cursor-pointer group"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}
+                    onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0px)';
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.05)';
+                    }}
+                  >
+                    <div className="flex items-center mb-4">
+                      <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: '#708d81' }}>
+                        <div className="text-white">{category.icon}</div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-800">{category.title}</h3>
+                        <p className="text-gray-600 text-sm mt-1">{category.description}</p>
+                      </div>
+                      <ChevronRight 
+                        size={16} 
+                        className={`text-gray-400 group-hover:text-[#708d81] transition-all duration-200 ${
+                          selectedCategory === category.id ? 'rotate-90' : ''
+                        }`} 
+                      />
+                    </div>
+                    
+                    {selectedCategory === category.id && (
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <div className="space-y-3">
+                          {category.articles.map((article) => (
+                            <div
+                              key={article.id}
+                              className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer"
+                            >
+                              <div>
+                                <h4 className="text-sm font-medium text-gray-800">{article.title}</h4>
+                                <p className="text-xs text-gray-500 mt-1">{article.description}</p>
+                              </div>
+                              <ChevronRight size={14} className="text-gray-400" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
         {/* Contact Support Section */}
-        <div className="mb-8">
-          <div className="p-8 rounded-xl border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
-            <div className="text-center mb-6">
-              <Mail size={48} className="text-white mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-2">Need Help?</h2>
-              <p className="text-white opacity-90">We're here to support you with any questions or issues</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="p-4 rounded-lg" style={{ backgroundColor: '#5a7268' }}>
-                <h3 className="text-lg font-semibold text-white mb-3">Contact us for:</h3>
-                <ul className="space-y-2 text-white">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Account issues & login problems</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Bug reports & technical issues</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Feature requests & feedback</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>University verification help</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Privacy & safety concerns</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="p-4 rounded-lg" style={{ backgroundColor: '#5a7268' }}>
-                <h3 className="text-lg font-semibold text-white mb-3">What to include:</h3>
-                <ul className="space-y-2 text-white">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Your university email address</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Detailed description of the issue</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Screenshots (if applicable)</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Device & browser information</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Steps to reproduce the problem</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            
+        <div className="p-8 rounded-xl border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
+          <div className="text-center mb-8">
+            <Users size={48} className="text-white mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">Still Need Help?</h2>
+            <p className="text-white opacity-90">Can't find what you're looking for? Get in touch with our support team.</p>
+          </div>
+
+          {!showContactForm ? (
             <div className="text-center">
               <button
-                onClick={() => handleContactEmail('support')}
+                onClick={() => setShowContactForm(true)}
                 className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 cursor-pointer"
                 style={{ 
                   backgroundColor: 'white', 
@@ -190,166 +411,115 @@ const SupportPage: React.FC = () => {
                   e.currentTarget.style.backgroundColor = 'white';
                 }}
               >
-                <Mail size={20} className="inline mr-2" />
-                Email Support: campuskinect01@gmail.com
+                <Send size={20} className="inline mr-2" />
+                Submit a Support Request
               </button>
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="mb-8">
-          <div className="p-6 rounded-xl border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
-            <div className="flex items-center space-x-3 mb-6">
-              <Book size={28} className="text-white" />
-              <h2 className="text-2xl font-bold text-white">Frequently Asked Questions</h2>
-            </div>
-
-            {/* Search Bar */}
-            <div className="relative mb-6">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#708d81]" />
-              <input
-                type="text"
-                placeholder="Search FAQs..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-white bg-white text-[#708d81] placeholder-gray-500 focus:outline-none focus:border-[#5a7268]"
-              />
-            </div>
-          </div>
-
-          {/* FAQ Items */}
-          <div className="space-y-4 mt-6">
-            {filteredFAQs.map((faq) => (
-              <div
-                key={faq.id}
-                className="border-2 border-[#5a7268] rounded-lg overflow-hidden"
-                style={{ backgroundColor: '#5a7268' }}
-              >
-                <button
-                  onClick={() => toggleFAQ(faq.id)}
-                  className="w-full px-6 py-4 text-left hover:bg-[#525252] transition-colors flex items-center justify-between cursor-pointer"
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div>
-                    <div className="text-sm text-white opacity-80 font-medium mb-1">{faq.category}</div>
-                    <div className="text-white font-medium">{faq.question}</div>
-                  </div>
-                  {expandedFAQ === faq.id ? (
-                    <ChevronDown size={20} className="text-white" />
-                  ) : (
-                    <ChevronRight size={20} className="text-white" />
-                  )}
-                </button>
-                
-                {expandedFAQ === faq.id && (
-                  <div className="px-6 py-4 border-t border-[#708d81] bg-white">
-                    <p className="text-[#525252] leading-relaxed">{faq.answer}</p>
-                  </div>
-                )}
+              <div className="mt-4 flex items-center justify-center space-x-2 text-white opacity-80">
+                <Clock size={16} />
+                <span className="text-sm">We aim to reply within 24–48 hours</span>
               </div>
-            ))}
-          </div>
-
-          {filteredFAQs.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-white opacity-80">No FAQs found matching your search.</p>
+            </div>
+          ) : (
+            <div className="max-w-2xl mx-auto">
+              <form onSubmit={handleContactSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-white font-medium mb-2">Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                      className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white font-medium mb-2">Email</label>
+                    <input
+                      type="email"
+                      required
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                      className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-white font-medium mb-2">Campus</label>
+                    <input
+                      type="text"
+                      required
+                      value={contactForm.campus}
+                      onChange={(e) => setContactForm({...contactForm, campus: e.target.value})}
+                      placeholder="e.g., University of California, Berkeley"
+                      className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white font-medium mb-2">Issue Type</label>
+                    <select
+                      required
+                      value={contactForm.issueType}
+                      onChange={(e) => setContactForm({...contactForm, issueType: e.target.value})}
+                      className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                    >
+                      <option value="">Select an issue type</option>
+                      <option value="account">Account Issues</option>
+                      <option value="marketplace">Marketplace Problems</option>
+                      <option value="safety">Safety Concerns</option>
+                      <option value="bug">Bug Report</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-white font-medium mb-2">Description</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={contactForm.description}
+                    onChange={(e) => setContactForm({...contactForm, description: e.target.value})}
+                    placeholder="Please describe your issue in detail..."
+                    className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white resize-none"
+                  />
+                </div>
+                
+                <div className="flex space-x-4">
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
+                    style={{ 
+                      backgroundColor: 'white', 
+                      color: '#708d81',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f8f9fa';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'white';
+                    }}
+                  >
+                    <Send size={18} className="inline mr-2" />
+                    Submit Request
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowContactForm(false)}
+                    className="px-6 py-3 rounded-lg font-semibold text-white border-2 border-white hover:bg-white hover:text-[#708d81] transition-all duration-200 cursor-pointer"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
           )}
-        </div>
-
-        {/* Support Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Support Hours */}
-          <div className="p-6 rounded-xl border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
-            <div className="flex items-center space-x-3 mb-4">
-              <Clock size={24} className="text-white" />
-              <h3 className="text-lg font-semibold text-white">Support Hours</h3>
-            </div>
-            <div className="space-y-2 text-white">
-              <p><strong>Available Hours:</strong> Whenever I am free</p>
-              <p className="text-sm text-white opacity-80 mt-3">
-                We typically respond to emails as soon as possible. Response times may vary based on availability.
-              </p>
-            </div>
-          </div>
-
-          {/* Response Time */}
-          <div className="p-6 rounded-xl border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
-            <div className="flex items-center space-x-3 mb-4">
-              <MessageCircle size={24} className="text-white" />
-              <h3 className="text-lg font-semibold text-white">Response Time</h3>
-            </div>
-            <div className="space-y-2 text-white">
-              <p><strong>Typical Response:</strong> Within 24-48 hours</p>
-              <p className="text-sm text-white opacity-80 mt-3">
-                For urgent issues affecting multiple users, we prioritize faster responses. Complex technical issues may take longer to resolve.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Resources */}
-        <div className="mt-8 p-6 rounded-xl border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
-          <div className="flex items-center space-x-3 mb-4">
-            <Shield size={24} className="text-white" />
-            <h3 className="text-lg font-semibold text-white">Additional Resources</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button
-              onClick={() => router.push('/privacy')}
-              className="text-left p-4 rounded-lg hover:bg-white transition-colors border border-white cursor-pointer"
-              style={{ cursor: 'pointer', backgroundColor: '#5a7268' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-                e.currentTarget.style.backgroundColor = 'white';
-                e.currentTarget.style.color = '#708d81';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0px)';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.backgroundColor = '#5a7268';
-                e.currentTarget.style.color = 'white';
-              }}
-            >
-              <h4 className="text-white font-medium mb-1">Privacy Policy</h4>
-              <p className="text-white opacity-80 text-sm">Learn how we protect your data</p>
-            </button>
-            <button
-              onClick={() => router.push('/terms')}
-              className="text-left p-4 rounded-lg hover:bg-white transition-colors border border-white cursor-pointer"
-              style={{ cursor: 'pointer', backgroundColor: '#5a7268' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-                e.currentTarget.style.backgroundColor = 'white';
-                e.currentTarget.style.color = '#708d81';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0px)';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.backgroundColor = '#5a7268';
-                e.currentTarget.style.color = 'white';
-              }}
-            >
-              <h4 className="text-white font-medium mb-1">Terms of Service</h4>
-              <p className="text-white opacity-80 text-sm">Read our terms and conditions</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Emergency Notice */}
-        <div className="mt-8 p-4 rounded-lg border-l-4 border-red-500 bg-red-900/20">
-          <p className="text-red-200 text-sm">
-            <strong>Emergency:</strong> If you're experiencing a mental health crisis or emergency, 
-            please contact your campus counseling center, call 988 (Suicide & Crisis Lifeline), 
-            or go to your nearest emergency room immediately.
-          </p>
         </div>
       </div>
     </div>
   );
-};
-
-export default SupportPage; 
+} 
