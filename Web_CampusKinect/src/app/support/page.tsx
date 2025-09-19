@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  Search, 
   Mail, 
   User, 
   ShoppingBag, 
@@ -15,7 +14,6 @@ import {
   Send,
   CheckCircle,
   AlertTriangle,
-  Book,
   Users,
   Lock,
   ArrowLeft
@@ -252,20 +250,18 @@ export default function SupportPage() {
           </div>
           
           <div className="text-center">
-            <Book size={48} className="text-white mx-auto mb-4" />
             <h1 className="text-4xl font-bold text-white mb-4">CampusKinect Help Center</h1>
             <p className="text-xl text-white opacity-90 mb-8">Find answers, get help, and learn how to use CampusKinect</p>
             
             {/* Search Bar */}
-            <div className="relative max-w-2xl mx-auto">
-              <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <div className="flex justify-center">
               <input
                 type="text"
                 placeholder="Search help topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-lg border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-white"
-                style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+                className="w-96 px-4 py-4 rounded-lg border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-white text-center"
+                style={{ backgroundColor: '#5a7268', color: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
               />
             </div>
           </div>

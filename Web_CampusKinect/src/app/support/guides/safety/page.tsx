@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Shield, MapPin, Users, AlertTriangle, CheckCircle, Phone, Eye, Lock } from 'lucide-react';
+import { ArrowLeft, MapPin, Users, AlertTriangle, CheckCircle, Phone, Eye, Lock } from 'lucide-react';
 
 export default function SafetyGuide() {
   const router = useRouter();
@@ -25,7 +25,6 @@ export default function SafetyGuide() {
           </div>
           
           <div className="text-center">
-            <Shield size={48} className="text-white mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-white mb-2">Staying Safe on CampusKinect</h1>
             <p className="text-xl text-white opacity-90">Essential safety tips for campus trading</p>
           </div>

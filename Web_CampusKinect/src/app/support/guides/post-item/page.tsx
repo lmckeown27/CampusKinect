@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ShoppingBag, Camera, DollarSign, Tag, MapPin, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Camera, DollarSign, Tag, MapPin, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function PostItemGuide() {
   const router = useRouter();
@@ -25,7 +25,6 @@ export default function PostItemGuide() {
           </div>
           
           <div className="text-center">
-            <ShoppingBag size={48} className="text-white mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-white mb-2">Post an Item for Sale</h1>
             <p className="text-xl text-white opacity-90">Create your first listing with photos and pricing</p>
           </div>

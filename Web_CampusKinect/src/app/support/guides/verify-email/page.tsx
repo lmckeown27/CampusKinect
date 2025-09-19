@@ -25,7 +25,6 @@ export default function VerifyEmailGuide() {
           </div>
           
           <div className="text-center">
-            <Mail size={48} className="text-white mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-white mb-2">Verify Your University Email</h1>
             <p className="text-xl text-white opacity-90">Step-by-step guide to verify your .edu email address</p>
           </div>

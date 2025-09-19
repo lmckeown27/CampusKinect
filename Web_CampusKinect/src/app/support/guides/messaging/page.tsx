@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, MessageCircle, Send, Shield, Bell, UserCheck, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Send, Shield, Bell, UserCheck, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function MessagingGuide() {
   const router = useRouter();
@@ -25,7 +25,6 @@ export default function MessagingGuide() {
           </div>
           
           <div className="text-center">
-            <MessageCircle size={48} className="text-white mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-white mb-2">Message a Buyer or Seller</h1>
             <p className="text-xl text-white opacity-90">Start conversations and manage your messages</p>
           </div>
