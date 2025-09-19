@@ -250,8 +250,8 @@ export default function SupportPage() {
           </div>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">CampusKinect Help Center</h1>
-            <p className="text-xl text-white opacity-90 mb-8">Find answers, get help, and learn how to use CampusKinect</p>
+            <h1 className="text-4xl font-bold text-white mb-4 text-center">CampusKinect Help Center</h1>
+            <p className="text-xl text-white opacity-90 mb-8 text-center">Find answers, get help, and learn how to use CampusKinect</p>
             
             {/* Search Bar */}
             <div className="flex justify-center">
@@ -456,8 +456,7 @@ export default function SupportPage() {
                 className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 cursor-pointer"
                 style={{ 
                   backgroundColor: 'white', 
-                  color: '#99afa7',
-                  cursor: 'pointer'
+                  color: '#99afa7'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';

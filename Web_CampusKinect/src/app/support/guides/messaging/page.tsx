@@ -1,12 +1,9 @@
 'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Send, Shield, Bell, UserCheck, AlertTriangle, CheckCircle } from 'lucide-react';
-
 export default function MessagingGuide() {
   const router = useRouter();
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
       {/* Header */}
@@ -23,14 +20,12 @@ export default function MessagingGuide() {
               <span>Back to Help Center</span>
             </button>
           </div>
-          
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white mb-2">Message a Buyer or Seller</h1>
-            <p className="text-xl text-white opacity-90">Start conversations and manage your messages</p>
+            <h1 className="text-3xl font-bold text-white mb-2 text-center">Message a Buyer or Seller</h1>
+            <p className="text-xl text-white opacity-90 text-center">Start conversations and manage your messages</p>
           </div>
         </div>
       </div>
-
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Overview */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -53,11 +48,9 @@ export default function MessagingGuide() {
             </div>
           </div>
         </div>
-
         {/* How to Start a Conversation */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Starting a Conversation</h2>
-          
           {/* Method 1 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -82,7 +75,6 @@ export default function MessagingGuide() {
               </div>
             </div>
           </div>
-
           {/* Method 2 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -107,11 +99,9 @@ export default function MessagingGuide() {
             </div>
           </div>
         </div>
-
         {/* Message Best Practices */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Message Best Practices</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
               <h3 className="font-semibold text-green-800 mb-3">✅ Good Messages:</h3>
@@ -133,11 +123,9 @@ export default function MessagingGuide() {
             </div>
           </div>
         </div>
-
         {/* Managing Conversations */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Managing Your Conversations</h2>
-          
           <div className="space-y-6">
             {/* Viewing Messages */}
             <div className="p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -163,7 +151,6 @@ export default function MessagingGuide() {
                 </div>
               </div>
             </div>
-
             {/* Deleting Conversations */}
             <div className="p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
               <h3 className="text-lg font-semibold text-white mb-3">Deleting Conversations</h3>
@@ -185,11 +172,9 @@ export default function MessagingGuide() {
             </div>
           </div>
         </div>
-
         {/* Notifications */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Message Notifications</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-2">iOS Push Notifications:</h3>
@@ -211,11 +196,9 @@ export default function MessagingGuide() {
             </div>
           </div>
         </div>
-
         {/* Safety & Etiquette */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Safety & Etiquette</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
               <h3 className="font-semibold text-blue-800 mb-3">Message Etiquette:</h3>
@@ -239,11 +222,9 @@ export default function MessagingGuide() {
             </div>
           </div>
         </div>
-
         {/* Troubleshooting */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Troubleshooting</h2>
-          
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-white mb-2">Can't send messages?</h3>
@@ -254,7 +235,6 @@ export default function MessagingGuide() {
                 <li>The other user may have deleted the conversation</li>
               </ul>
             </div>
-            
             <div>
               <h3 className="font-semibold text-white mb-2">Not receiving notifications?</h3>
               <ul className="space-y-1 text-sm ml-4 text-gray-300">
@@ -264,7 +244,6 @@ export default function MessagingGuide() {
                 <li>Check your device's Do Not Disturb settings</li>
               </ul>
             </div>
-            
             <div>
               <h3 className="font-semibold text-white mb-2">Messages not loading?</h3>
               <ul className="space-y-1 text-sm ml-4 text-gray-300">
@@ -276,7 +255,6 @@ export default function MessagingGuide() {
             </div>
           </div>
         </div>
-
         {/* Need More Help */}
         <div className="p-6 rounded-lg border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
           <div className="text-center">
@@ -290,7 +268,6 @@ export default function MessagingGuide() {
               style={{ 
                 backgroundColor: 'white', 
                 color: '#99afa7',
-                cursor: 'pointer'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#f8f9fa';

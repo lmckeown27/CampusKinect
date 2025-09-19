@@ -1,12 +1,9 @@
 'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, MapPin, Users, AlertTriangle, CheckCircle, Phone, Eye, Lock } from 'lucide-react';
-
 export default function SafetyGuide() {
   const router = useRouter();
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
       {/* Header */}
@@ -23,14 +20,12 @@ export default function SafetyGuide() {
               <span>Back to Help Center</span>
             </button>
           </div>
-          
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white mb-2">Staying Safe on CampusKinect</h1>
-            <p className="text-xl text-white opacity-90">Essential safety tips for campus trading</p>
+            <h1 className="text-3xl font-bold text-white mb-2 text-center">Staying Safe on CampusKinect</h1>
+            <p className="text-xl text-white opacity-90 text-center">Essential safety tips for campus trading</p>
           </div>
         </div>
       </div>
-
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Safety Overview */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -56,11 +51,9 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Meeting Safety */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Safe Meeting Practices</h2>
-          
           {/* Public Places */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -99,7 +92,6 @@ export default function SafetyGuide() {
               </div>
             </div>
           </div>
-
           {/* Bring a Friend */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -123,7 +115,6 @@ export default function SafetyGuide() {
               </div>
             </div>
           </div>
-
           {/* Daytime Meetings */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -148,11 +139,9 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Transaction Safety */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Transaction Safety</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
               <h3 className="text-lg font-semibold text-white mb-3">Payment Safety</h3>
@@ -176,7 +165,6 @@ export default function SafetyGuide() {
                 </div>
               </div>
             </div>
-
             <div className="p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
               <h3 className="text-lg font-semibold text-white mb-3">Item Inspection</h3>
               <div className="space-y-3">
@@ -194,11 +182,9 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Red Flags */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Red Flags to Watch For</h2>
-          
           <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
             <div className="flex items-start space-x-2">
               <AlertTriangle size={20} className="text-red-600 mt-0.5 flex-shrink-0" />
@@ -224,11 +210,9 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Trust Your Instincts */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Trust Your Instincts</h2>
-          
           <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
             <h3 className="font-semibold text-purple-800 mb-3">If Something Feels Wrong:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -247,11 +231,9 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Reporting Issues */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Reporting Safety Issues</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-3">When to Report:</h3>
@@ -277,11 +259,9 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Emergency Contacts */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Emergency Contacts</h2>
-          
           <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
             <div className="flex items-start space-x-2">
               <Phone size={20} className="text-red-600 mt-0.5 flex-shrink-0" />
@@ -303,11 +283,9 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Additional Safety Resources */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Additional Safety Resources</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-3">Campus Resources:</h3>
@@ -331,7 +309,6 @@ export default function SafetyGuide() {
             </div>
           </div>
         </div>
-
         {/* Need More Help */}
         <div className="p-6 rounded-lg border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
           <div className="text-center">
@@ -345,7 +322,6 @@ export default function SafetyGuide() {
               style={{ 
                 backgroundColor: 'white', 
                 color: '#99afa7',
-                cursor: 'pointer'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#f8f9fa';

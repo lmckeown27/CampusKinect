@@ -1,12 +1,9 @@
 'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Mail, CheckCircle, AlertCircle, Clock, Shield } from 'lucide-react';
-
 export default function VerifyEmailGuide() {
   const router = useRouter();
-
   return (
     <div className="min-h-screen bg-grey-medium">
       {/* Header */}
@@ -23,14 +20,12 @@ export default function VerifyEmailGuide() {
               <span>Back to Help Center</span>
             </button>
           </div>
-          
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white mb-2">Verify Your University Email</h1>
-            <p className="text-xl text-white opacity-90">Step-by-step guide to verify your .edu email address</p>
+            <h1 className="text-3xl font-bold text-white mb-2 text-center">Verify Your University Email</h1>
+            <p className="text-xl text-white opacity-90 text-center">Step-by-step guide to verify your .edu email address</p>
           </div>
         </div>
       </div>
-
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Overview */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -53,11 +48,9 @@ export default function VerifyEmailGuide() {
             </div>
           </div>
         </div>
-
         {/* Step-by-Step Guide */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Step-by-Step Verification</h2>
-          
           {/* Step 1 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -80,7 +73,6 @@ export default function VerifyEmailGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 2 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -104,7 +96,6 @@ export default function VerifyEmailGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 3 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -130,7 +121,6 @@ export default function VerifyEmailGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 4 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -157,11 +147,9 @@ export default function VerifyEmailGuide() {
             </div>
           </div>
         </div>
-
         {/* Troubleshooting */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Troubleshooting</h2>
-          
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-white mb-2">Didn't receive the verification email?</h3>
@@ -172,7 +160,6 @@ export default function VerifyEmailGuide() {
                 <li>Request a new verification email from Settings</li>
               </ul>
             </div>
-            
             <div>
               <h3 className="font-semibold text-white mb-2">Verification link expired?</h3>
               <ul className="space-y-1 text-sm ml-4 text-gray-300">
@@ -181,7 +168,6 @@ export default function VerifyEmailGuide() {
                 <li>Check for the new email</li>
               </ul>
             </div>
-            
             <div>
               <h3 className="font-semibold text-white mb-2">Using a non-.edu email?</h3>
               <ul className="space-y-1 text-sm ml-4 text-gray-300">
@@ -192,7 +178,6 @@ export default function VerifyEmailGuide() {
             </div>
           </div>
         </div>
-
         {/* Need More Help */}
         <div className="p-6 rounded-lg border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
           <div className="text-center">
@@ -205,8 +190,7 @@ export default function VerifyEmailGuide() {
               className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
               style={{ 
                 backgroundColor: 'white', 
-                color: '#99afa7',
-                cursor: 'pointer'
+                color: '#99afa7'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#f8f9fa';

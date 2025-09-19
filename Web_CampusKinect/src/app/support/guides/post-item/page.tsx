@@ -1,12 +1,9 @@
 'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Camera, DollarSign, Tag, MapPin, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
-
 export default function PostItemGuide() {
   const router = useRouter();
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
       {/* Header */}
@@ -23,14 +20,12 @@ export default function PostItemGuide() {
               <span>Back to Help Center</span>
             </button>
           </div>
-          
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white mb-2">Post an Item for Sale</h1>
-            <p className="text-xl text-white opacity-90">Create your first listing with photos and pricing</p>
+            <h1 className="text-3xl font-bold text-white mb-2 text-center">Post an Item for Sale</h1>
+            <p className="text-xl text-white opacity-90 text-center">Create your first listing with photos and pricing</p>
           </div>
         </div>
       </div>
-
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Before You Start */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
@@ -58,11 +53,9 @@ export default function PostItemGuide() {
             </div>
           </div>
         </div>
-
         {/* Step-by-Step Guide */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#99afa7' }}>Step-by-Step Posting</h2>
-          
           {/* Step 1 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -85,7 +78,6 @@ export default function PostItemGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 2 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -122,7 +114,6 @@ export default function PostItemGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 3 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -158,7 +149,6 @@ export default function PostItemGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 4 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -193,7 +183,6 @@ export default function PostItemGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 5 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -219,7 +208,6 @@ export default function PostItemGuide() {
               </div>
             </div>
           </div>
-
           {/* Step 6 */}
           <div className="mb-6 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
             <div className="flex items-start space-x-4">
@@ -250,11 +238,9 @@ export default function PostItemGuide() {
             </div>
           </div>
         </div>
-
         {/* After Publishing */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>After Publishing</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-white mb-2">Managing Your Listing:</h3>
@@ -276,11 +262,9 @@ export default function PostItemGuide() {
             </div>
           </div>
         </div>
-
         {/* Safety Guidelines */}
         <div className="mb-8 p-6 bg-grey-light rounded-lg border border-gray-600" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#99afa7' }}>Safety Guidelines</h2>
-          
           <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
             <div className="flex items-start space-x-2">
               <AlertTriangle size={16} className="text-red-600 mt-0.5" />
@@ -298,7 +282,6 @@ export default function PostItemGuide() {
             </div>
           </div>
         </div>
-
         {/* Need More Help */}
         <div className="p-6 rounded-lg border-2 border-[#708d81]" style={{ backgroundColor: '#708d81' }}>
           <div className="text-center">
@@ -312,7 +295,6 @@ export default function PostItemGuide() {
               style={{ 
                 backgroundColor: 'white', 
                 color: '#99afa7',
-                cursor: 'pointer'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#f8f9fa';
