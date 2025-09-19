@@ -522,7 +522,7 @@ export default function SupportPage() {
                       required
                       value={contactForm.issueType}
                       onChange={(e) => setContactForm({...contactForm, issueType: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                      className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer"
                     >
                       <option value="">Select an issue type</option>
                       <option value="account">Account Issues</option>
@@ -552,8 +552,7 @@ export default function SupportPage() {
                     className="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer"
                     style={{ 
                       backgroundColor: 'white', 
-                      color: '#99afa7',
-                      cursor: 'pointer'
+                      color: '#99afa7'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#f8f9fa';
@@ -569,7 +568,6 @@ export default function SupportPage() {
                     type="button"
                     onClick={() => setShowContactForm(false)}
                     className="px-6 py-3 rounded-lg font-semibold text-white border-2 border-white hover:bg-white hover:text-[#99afa7] transition-all duration-200 cursor-pointer"
-                    style={{ cursor: 'pointer' }}
                   >
                     Cancel
                   </button>
