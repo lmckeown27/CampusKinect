@@ -245,19 +245,19 @@ export default function SupportPage() {
             </div>
           </div>
                       
-          <div className="w-full max-w-sm mx-auto">
+          <div className="w-full max-w-md mx-auto">
             <div className="grid grid-cols-2 gap-4 justify-items-center">
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="w-28 h-28 p-2 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                  className="w-40 h-40 p-3 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
                   style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                 >
                 <div className="flex flex-col items-center mb-2 text-center">
                   <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
                     <div className="text-white text-lg">{category.icon}</div>
                   </div>
-                  <p className="text-gray-300 text-xs">{category.description}</p>
+                  <p className="text-gray-300 text-sm">{category.description}</p>
                 </div>
                 
                 <div className="space-y-2 flex-1">
@@ -276,12 +276,12 @@ export default function SupportPage() {
                           router.push(guidePath);
                         }
                       }}
-                      className="w-full mx-auto flex flex-col items-center justify-center p-1 rounded hover:bg-gray-600 transition-colors text-center"
+                      className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                       style={{ cursor: 'pointer' }}
                     >
                       <div>
-                        <h4 className="text-white font-medium text-xs">{article.title}</h4>
-                        <p className="text-gray-300 text-xs mt-0.5">{article.description}</p>
+                        <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                        <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                       </div>
                     </button>
                   ))}
