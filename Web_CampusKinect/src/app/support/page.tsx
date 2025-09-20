@@ -134,7 +134,7 @@ export default function SupportPage() {
                 <img
                   src={KinectLogo.src}
                   alt="CampusKinect"
-                  className="h-10 w-10 object-cover rounded-md"
+                  className="h-12 w-12 object-cover rounded-md"
                   style={{ backgroundColor: '#708d81' }}
                 />
               </button>
