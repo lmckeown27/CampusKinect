@@ -245,12 +245,12 @@ export default function SupportPage() {
             </div>
           </div>
                       
-          <div className="w-full max-w-md mx-auto">
+          <div className="w-full max-w-sm mx-auto">
             <div className="grid grid-cols-2 gap-4 justify-items-center">
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="w-36 h-36 p-2 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                  className="w-28 h-28 p-2 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
                   style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                 >
                 <div className="flex items-center mb-2">
