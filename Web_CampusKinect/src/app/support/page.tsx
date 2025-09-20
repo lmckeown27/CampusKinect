@@ -245,8 +245,8 @@ export default function SupportPage() {
             </div>
           </div>
                       
-          <div className="w-full max-w-md mx-auto">
-            <div className="grid grid-cols-2 gap-4 justify-items-center">
+          <div className="flex justify-center w-full">
+            <div className="grid grid-cols-2 gap-6 justify-items-center place-items-center max-w-md">
               {categories.map((category) => (
                 <div
                   key={category.id}
