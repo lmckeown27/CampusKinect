@@ -229,32 +229,9 @@ export default function SupportPage() {
           </div>
         </div>
 
-        {/* 4. User Guides / Resources */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-6" style={{ textAlign: 'center' }}>
-            Platform Guides
-          </h2>
-          <div className="flex justify-center space-x-6">
-                         <button
-               onClick={() => router.push('/support/guides/ios')}
-               className="flex items-center px-6 py-4 bg-grey-light rounded-lg border border-gray-600 hover:border-[#99afa7] transition-colors"
-               style={{ cursor: 'pointer' }}
-             >
-               <ExternalLink size={20} className="mr-3 text-[#99afa7]" />
-               <span className="text-white font-medium">iOS Guide</span>
-             </button>
-             <button
-               onClick={() => router.push('/support/guides/web')}
-               className="flex items-center px-6 py-4 bg-grey-light rounded-lg border border-gray-600 hover:border-[#99afa7] transition-colors"
-               style={{ cursor: 'pointer' }}
-             >
-               <ExternalLink size={20} className="mr-3 text-[#99afa7]" />
-               <span className="text-white font-medium">Web Guide</span>
-             </button>
-          </div>
-        </div>
 
-        {/* 5. Search Bar */}
+
+        {/* 4. Search Bar */}
         <div className="mb-16">
           <div className="max-w-2xl mx-auto">
             <div className="relative">
@@ -312,7 +289,7 @@ export default function SupportPage() {
           </div>
         </div>
 
-        {/* 6. Contact & Support Section */}
+        {/* 5. Contact & Support Section */}
         <div className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column: Need more help? */}
@@ -323,20 +300,130 @@ export default function SupportPage() {
               </p>
               <div className="space-y-4">
                 <button
-                  onClick={() => setShowContactForm(true)}
-                  className="w-full px-6 py-3 bg-[#708d81] text-white rounded-lg font-semibold hover:bg-[#5a7268] transition-colors"
-                  style={{ cursor: 'pointer' }}
+                  onClick={() => setShowContactForm(!showContactForm)}
+                  className="py-4 px-8 text-white font-medium rounded-lg transition-colors cursor-pointer text-lg w-full"
+                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#5a7268';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
                 >
                   Contact Support
                 </button>
                 <button
                   onClick={() => router.push('/support/guides/safety')}
-                  className="w-full px-6 py-3 border-2 border-[#708d81] text-[#708d81] rounded-lg font-semibold hover:bg-[#708d81] hover:text-white transition-colors"
-                  style={{ cursor: 'pointer' }}
+                  className="py-4 px-8 text-white font-medium rounded-lg transition-colors cursor-pointer text-lg w-full"
+                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#5a7268';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
                 >
                   Report a Problem
                 </button>
               </div>
+              
+              {/* Contact Form Dropdown */}
+              {showContactForm && (
+                <div className="mt-6 bg-grey-medium rounded-xl p-6 border border-gray-600">
+                  <h4 className="text-xl font-bold text-white mb-4" style={{ textAlign: 'center' }}>
+                    Contact Support
+                  </h4>
+                  
+                  <form onSubmit={handleContactFormSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-white font-medium mb-2">Name</label>
+                        <input
+                          type="text"
+                          required
+                          value={contactForm.name}
+                          onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                          className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-white font-medium mb-2">Email</label>
+                        <input
+                          type="email"
+                          required
+                          value={contactForm.email}
+                          onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                          className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-medium mb-2">Campus</label>
+                      <input
+                        type="text"
+                        required
+                        value={contactForm.campus}
+                        onChange={(e) => setContactForm({...contactForm, campus: e.target.value})}
+                        className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-medium mb-2">Issue Type</label>
+                      <select
+                        required
+                        value={contactForm.issueType}
+                        onChange={(e) => setContactForm({...contactForm, issueType: e.target.value})}
+                        className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                      >
+                        <option value="">Select an issue type</option>
+                        <option value="account">Account Issues</option>
+                        <option value="marketplace">Marketplace Problems</option>
+                        <option value="safety">Safety Concerns</option>
+                        <option value="bug">Bug Report</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-medium mb-2">Description</label>
+                      <textarea
+                        required
+                        rows={4}
+                        value={contactForm.description}
+                        onChange={(e) => setContactForm({...contactForm, description: e.target.value})}
+                        className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white resize-none"
+                        placeholder="Please describe your issue in detail..."
+                      />
+                    </div>
+                    
+                    <div className="flex justify-end space-x-4">
+                      <button
+                        type="button"
+                        onClick={() => setShowContactForm(false)}
+                        className="px-6 py-3 text-gray-300 hover:text-white transition-colors"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="py-3 px-6 text-white font-medium rounded-lg transition-colors cursor-pointer"
+                        style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#5a7268';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#708d81';
+                        }}
+                      >
+                        Send Message
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </div>
 
             {/* Right Column: Community */}
@@ -347,134 +434,27 @@ export default function SupportPage() {
               </p>
               <div className="space-y-4">
                 <button
-                  onClick={() => window.open('mailto:feedback@campuskinect.net', '_blank')}
-                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                  style={{ cursor: 'pointer' }}
+                  onClick={() => window.open('mailto:campuskinect01@gmail.com', '_blank')}
+                  className="py-4 px-8 text-white font-medium rounded-lg transition-colors cursor-pointer text-lg w-full"
+                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#5a7268';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
                 >
                   Send Feedback
                 </button>
-                <button
-                  onClick={() => router.push('/support/guides/verify-email')}
-                  className="w-full px-6 py-3 border-2 border-blue-600 text-blue-400 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
-                  style={{ cursor: 'pointer' }}
-                >
-                  App Updates
-                </button>
+
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Contact Form Modal */}
-      {showContactForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-grey-light rounded-xl p-8 max-w-md w-full border border-gray-600">
-            <h3 className="text-2xl font-bold text-white mb-6" style={{ textAlign: 'center' }}>
-              Contact Support
-            </h3>
-            
-            <form onSubmit={handleContactFormSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-white font-medium mb-2">Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={contactForm.name}
-                    onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white font-medium mb-2">Email</label>
-                  <input
-                    type="email"
-                    required
-                    value={contactForm.email}
-                    onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-white font-medium mb-2">Campus</label>
-                  <input
-                    type="text"
-                    required
-                    value={contactForm.campus}
-                    onChange={(e) => setContactForm({...contactForm, campus: e.target.value})}
-                    placeholder="e.g., University of California, Berkeley"
-                    className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white font-medium mb-2">Issue Type</label>
-                  <select
-                    required
-                    value={contactForm.issueType}
-                    onChange={(e) => setContactForm({...contactForm, issueType: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <option value="">Select an issue type</option>
-                    <option value="account">Account Issues</option>
-                    <option value="marketplace">Marketplace Problems</option>
-                    <option value="safety">Safety Concerns</option>
-                    <option value="bug">Bug Report</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-white font-medium mb-2">Description</label>
-                <textarea
-                  required
-                  value={contactForm.description}
-                  onChange={(e) => setContactForm({...contactForm, description: e.target.value})}
-                  rows={5}
-                  className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white resize-none"
-                  placeholder="Describe your issue in detail..."
-                />
-              </div>
-              
-              <div className="flex space-x-4">
-                <button
-                  type="submit"
-                  className="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200"
-                  style={{ 
-                    backgroundColor: 'white', 
-                    color: '#99afa7',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f8f9fa';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'white';
-                  }}
-                >
-                  <Send size={18} className="inline mr-2" />
-                  Submit Request
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowContactForm(false)}
-                  className="px-6 py-3 rounded-lg font-semibold text-white border-2 border-white hover:bg-white hover:text-[#99afa7] transition-all duration-200"
-                  style={{ cursor: 'pointer' }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
-      {/* 7. Footer */}
+      {/* 5. Footer */}
       <div className="bg-grey-light border-t border-gray-600">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex flex-wrap justify-center items-center space-x-8 text-sm text-gray-300">
@@ -503,7 +483,7 @@ export default function SupportPage() {
           </div>
           <div className="text-center mt-4">
             <p className="text-gray-400 text-sm">
-              © 2024 CampusKinect. All rights reserved.
+              © 2025 CampusKinect. All rights reserved.
             </p>
           </div>
         </div>
