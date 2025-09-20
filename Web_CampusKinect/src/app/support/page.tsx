@@ -318,19 +318,7 @@ export default function SupportPage() {
                 >
                   Contact Support
                 </button>
-                <button
-                  onClick={() => router.push('/support/guides/safety')}
-                  className="py-4 px-8 text-white font-medium rounded-lg transition-colors cursor-pointer text-lg w-full"
-                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#5a7268';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#708d81';
-                  }}
-                >
-                  Report a Problem
-                </button>
+
               </div>
               
               {/* Contact Form Dropdown */}
