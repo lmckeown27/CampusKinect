@@ -281,22 +281,22 @@ export default function SupportPage() {
             Platform Guides
           </h2>
           <div className="flex justify-center space-x-6">
-            <button
-              onClick={() => router.push('/support/guides/verify-email')}
-              className="flex items-center px-6 py-4 bg-grey-light rounded-lg border border-gray-600 hover:border-[#99afa7] transition-colors"
-              style={{ cursor: 'pointer' }}
-            >
-              <ExternalLink size={20} className="mr-3 text-[#99afa7]" />
-              <span className="text-white font-medium">iOS Guide</span>
-            </button>
-            <button
-              onClick={() => router.push('/support/guides/post-item')}
-              className="flex items-center px-6 py-4 bg-grey-light rounded-lg border border-gray-600 hover:border-[#99afa7] transition-colors"
-              style={{ cursor: 'pointer' }}
-            >
-              <ExternalLink size={20} className="mr-3 text-[#99afa7]" />
-              <span className="text-white font-medium">Web Guide</span>
-            </button>
+                         <button
+               onClick={() => router.push('/support/guides/ios')}
+               className="flex items-center px-6 py-4 bg-grey-light rounded-lg border border-gray-600 hover:border-[#99afa7] transition-colors"
+               style={{ cursor: 'pointer' }}
+             >
+               <ExternalLink size={20} className="mr-3 text-[#99afa7]" />
+               <span className="text-white font-medium">iOS Guide</span>
+             </button>
+             <button
+               onClick={() => router.push('/support/guides/web')}
+               className="flex items-center px-6 py-4 bg-grey-light rounded-lg border border-gray-600 hover:border-[#99afa7] transition-colors"
+               style={{ cursor: 'pointer' }}
+             >
+               <ExternalLink size={20} className="mr-3 text-[#99afa7]" />
+               <span className="text-white font-medium">Web Guide</span>
+             </button>
           </div>
         </div>
 
