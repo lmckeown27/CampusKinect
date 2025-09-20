@@ -279,14 +279,13 @@ export default function SupportPage() {
                           router.push(guidePath);
                         }
                       }}
-                      className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-600 transition-colors text-left"
+                      className="w-1/2 mx-auto flex flex-col items-center justify-center p-3 rounded-lg hover:bg-gray-600 transition-colors text-center"
                       style={{ cursor: 'pointer' }}
                     >
                       <div>
                         <h4 className="text-white font-medium text-sm">{article.title}</h4>
                         <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                       </div>
-                      <ChevronRight size={16} className="text-[#99afa7]" />
                     </button>
                   ))}
                 </div>
