@@ -246,12 +246,12 @@ export default function SupportPage() {
           </div>
                       
           <div className="flex justify-center w-full">
-            <div className="flex flex-col items-center space-y-8 max-w-lg">
-              <div className="flex space-x-8">
+            <div className="flex flex-col items-center space-y-12 max-w-4xl">
+              <div className="flex space-x-12">
                 {categories.slice(0, 2).map((category) => (
                   <div
                     key={category.id}
-                    className="w-40 h-40 p-3 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                    className="w-44 h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
                     style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
@@ -290,11 +290,11 @@ export default function SupportPage() {
                 </div>
               ))}
               </div>
-              <div className="flex space-x-8">
+              <div className="flex space-x-12">
                 {categories.slice(2, 4).map((category) => (
                   <div
                     key={category.id}
-                    className="w-40 h-40 p-3 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                    className="w-44 h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
                     style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
