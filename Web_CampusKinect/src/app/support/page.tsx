@@ -61,37 +61,29 @@ export default function SupportPage() {
   const categories: Category[] = [
     {
       id: 'getting-started',
-      title: 'Account & Verification',
+      title: 'Getting Started',
       icon: <User size={24} />,
-      description: 'Set up your account and get verified',
+      description: 'Account setup and verification',
       articles: [
-        { id: 'verify-email', title: 'Verify Your University Email', category: 'Getting Started', description: 'Step-by-step guide to verify your .edu email address' },
-        { id: 'create-account', title: 'Create Your Account', category: 'Getting Started', description: 'Sign up with your university email' },
-        { id: 'setup-profile', title: 'Set Up Your Profile', category: 'Getting Started', description: 'Add photos and personal information' },
-        { id: 'reset-password', title: 'Reset Your Password', category: 'Account & Security', description: 'Recover access to your account' },
-        { id: 'privacy-settings', title: 'Privacy Settings', category: 'Account & Security', description: 'Control who can see your information' }
+        { id: 'verify-email', title: 'Verify Your University Email', category: 'Getting Started', description: 'Step-by-step email verification guide' }
       ]
     },
     {
       id: 'marketplace',
-      title: 'Marketplace Listings',
+      title: 'Marketplace',
       icon: <ShoppingBag size={24} />,
-      description: 'Buy and sell items on your campus',
+      description: 'Buy and sell items',
       articles: [
-        { id: 'post-item-detailed', title: 'Post an Item for Sale', category: 'Marketplace Basics', description: 'Create listings with photos and descriptions' },
-        { id: 'edit-listing', title: 'Edit or Delete a Listing', category: 'Marketplace Basics', description: 'Manage your posted items' },
-        { id: 'search-filter', title: 'Search & Filter Listings', category: 'Marketplace Basics', description: 'Find what you\'re looking for' }
+        { id: 'post-item-detailed', title: 'Post an Item for Sale', category: 'Marketplace', description: 'Create and manage listings' }
       ]
     },
     {
       id: 'messaging',
-      title: 'Messaging & Notifications',
+      title: 'Messaging',
       icon: <MessageCircle size={24} />,
-      description: 'Connect with other students',
+      description: 'Chat with other users',
       articles: [
-        { id: 'message-users', title: 'Message a Buyer or Seller', category: 'Messaging & Connections', description: 'Start and manage conversations' },
-        { id: 'manage-conversations', title: 'Manage Conversations', category: 'Messaging & Connections', description: 'Delete, archive, and organize chats' },
-        { id: 'push-notifications', title: 'Push Notifications', category: 'Messaging & Connections', description: 'Set up alerts for new messages' }
+        { id: 'message-users', title: 'How to Message Users', category: 'Messaging', description: 'Start conversations and manage chats' }
       ]
     },
     {
@@ -100,19 +92,14 @@ export default function SupportPage() {
       icon: <Shield size={24} />,
       description: 'Stay safe while trading',
       articles: [
-        { id: 'safe-trading', title: 'Safe Trading Tips', category: 'Safety & Trust', description: 'Meet in public places and avoid scams' },
-        { id: 'report-user', title: 'Report a User or Post', category: 'Account & Security', description: 'Flag inappropriate content or behavior' },
-        { id: 'campus-rules', title: 'Campus Rules & Moderation', category: 'Safety & Trust', description: 'Community guidelines and enforcement' },
-        { id: 'something-wrong', title: 'What to Do if Something Goes Wrong', category: 'Safety & Trust', description: 'Report issues and get help' }
+        { id: 'safe-trading', title: 'Safety Guidelines', category: 'Safety', description: 'Essential safety tips and reporting' }
       ]
     }
   ];
 
   const quickLinks = [
-    { title: 'Verify Email', path: '/support/guides/verify-email' },
-    { title: 'Post Item', path: '/support/guides/post-item' },
-    { title: 'Start Messaging', path: '/support/guides/messaging' },
-    { title: 'Safety Tips', path: '/support/guides/safety' }
+    { title: 'iOS Guide', path: '/support/guides/ios' },
+    { title: 'Web Guide', path: '/support/guides/web' }
   ];
 
   const handleContactFormSubmit = (e: React.FormEvent) => {
@@ -149,27 +136,6 @@ export default function SupportPage() {
             
             {/* Right: Top-level navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              <button
-                onClick={() => router.push('/support/guides/post-item')}
-                className="text-white hover:text-[#99afa7] transition-colors"
-                style={{ cursor: 'pointer' }}
-              >
-                Marketplace Help
-              </button>
-              <button
-                onClick={() => router.push('/support/guides/messaging')}
-                className="text-white hover:text-[#99afa7] transition-colors"
-                style={{ cursor: 'pointer' }}
-              >
-                Messaging Help
-              </button>
-              <button
-                onClick={() => router.push('/support/guides/verify-email')}
-                className="text-white hover:text-[#99afa7] transition-colors"
-                style={{ cursor: 'pointer' }}
-              >
-                Account Help
-              </button>
               <button
                 onClick={() => setShowContactForm(true)}
                 className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] transition-colors"
@@ -238,21 +204,9 @@ export default function SupportPage() {
                       onClick={() => {
                         const guideMap: { [key: string]: string } = {
                           'verify-email': '/support/guides/verify-email',
-                          'create-account': '/support/guides/verify-email',
-                          'setup-profile': '/support/guides/verify-email',
-                          'campus-verification': '/support/guides/verify-email',
                           'post-item-detailed': '/support/guides/post-item',
-                          'edit-listing': '/support/guides/post-item',
-                          'search-filter': '/support/guides/post-item',
                           'message-users': '/support/guides/messaging',
-                          'manage-conversations': '/support/guides/messaging',
-                          'push-notifications': '/support/guides/messaging',
-                          'reset-password': '/support/guides/verify-email',
-                          'privacy-settings': '/support/guides/verify-email',
-                          'report-user': '/support/guides/safety',
-                          'safe-trading': '/support/guides/safety',
-                          'campus-rules': '/support/guides/safety',
-                          'something-wrong': '/support/guides/safety'
+                          'safe-trading': '/support/guides/safety'
                         };
                         const guidePath = guideMap[article.id];
                         if (guidePath) {
@@ -326,18 +280,18 @@ export default function SupportPage() {
                     {filteredArticles.map((article) => (
                       <button
                         key={article.id}
-                        onClick={() => {
-                          const guideMap: { [key: string]: string } = {
-                            'verify-email': '/support/guides/verify-email',
-                            'post-item': '/support/guides/post-item',
-                            'messaging': '/support/guides/messaging',
-                            'safety': '/support/guides/safety'
-                          };
-                          const guidePath = guideMap[article.id];
-                          if (guidePath) {
-                            router.push(guidePath);
-                          }
-                        }}
+                                                 onClick={() => {
+                           const guideMap: { [key: string]: string } = {
+                             'verify-email': '/support/guides/verify-email',
+                             'post-item-detailed': '/support/guides/post-item',
+                             'message-users': '/support/guides/messaging',
+                             'safe-trading': '/support/guides/safety'
+                           };
+                           const guidePath = guideMap[article.id];
+                           if (guidePath) {
+                             router.push(guidePath);
+                           }
+                         }}
                         className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-gray-600 transition-colors text-left"
                         style={{ cursor: 'pointer' }}
                       >

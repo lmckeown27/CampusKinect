@@ -73,11 +73,11 @@ export default function WebGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Browser Requirements:</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Chrome 90+ (recommended)</li>
-                    <li>• Safari 14+ (macOS/iOS)</li>
-                    <li>• Firefox 88+</li>
-                    <li>• Edge 90+</li>
-                    <li>• JavaScript enabled</li>
+                    <li>Chrome 90+ (recommended)</li>
+                    <li>Safari 14+ (macOS/iOS)</li>
+                    <li>Firefox 88+</li>
+                    <li>Edge 90+</li>
+                    <li>JavaScript enabled</li>
                   </ul>
                 </div>
               </div>
@@ -95,11 +95,11 @@ export default function WebGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Registration Process:</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Navigate to the registration page</li>
-                    <li>• Enter your university email (.edu required)</li>
-                    <li>• Create a secure password</li>
-                    <li>• Verify your email through the confirmation link</li>
-                    <li>• Complete your profile setup</li>
+                    <li>Navigate to the registration page</li>
+                    <li>Enter your university email (.edu required)</li>
+                    <li>Create a secure password</li>
+                    <li>Verify your email through the confirmation link</li>
+                    <li>Complete your profile setup</li>
                   </ul>
                 </div>
               </div>
@@ -157,11 +157,11 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Responsive Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Bottom navigation bar (similar to mobile apps)</li>
-                  <li>• Touch-optimized interface</li>
-                  <li>• Swipe gestures for certain actions</li>
-                  <li>• Optimized for thumb navigation</li>
-                  <li>• Fast loading on mobile networks</li>
+                  <li>Bottom navigation bar (similar to mobile apps)</li>
+                  <li>Touch-optimized interface</li>
+                  <li>Swipe gestures for certain actions</li>
+                  <li>Optimized for thumb navigation</li>
+                  <li>Fast loading on mobile networks</li>
                 </ul>
               </div>
             </div>
@@ -185,11 +185,11 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Search Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Real-time search suggestions</li>
-                  <li>• Category-based filtering</li>
-                  <li>• Price range filters</li>
-                  <li>• Location-based results</li>
-                  <li>• Sort by date, price, or relevance</li>
+                  <li>Real-time search suggestions</li>
+                  <li>Category-based filtering</li>
+                  <li>Price range filters</li>
+                  <li>Location-based results</li>
+                  <li>Sort by date, price, or relevance</li>
                 </ul>
               </div>
             </div>
@@ -206,11 +206,11 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Upload Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Drag and drop image upload</li>
-                  <li>• Multiple file selection</li>
-                  <li>• Image preview before posting</li>
-                  <li>• Automatic image optimization</li>
-                  <li>• Progress indicators for uploads</li>
+                  <li>Drag and drop image upload</li>
+                  <li>Multiple file selection</li>
+                  <li>Image preview before posting</li>
+                  <li>Automatic image optimization</li>
+                  <li>Progress indicators for uploads</li>
                 </ul>
               </div>
             </div>
@@ -227,11 +227,11 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Messaging Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Real-time message delivery</li>
-                  <li>• Browser push notifications</li>
-                  <li>• Conversation threading</li>
-                  <li>• Message status indicators</li>
-                  <li>• Easy conversation deletion</li>
+                  <li>Real-time message delivery</li>
+                  <li>Browser push notifications</li>
+                  <li>Conversation threading</li>
+                  <li>Message status indicators</li>
+                  <li>Easy conversation deletion</li>
                 </ul>
               </div>
             </div>
@@ -248,10 +248,10 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Sync Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Automatic login state persistence</li>
-                  <li>• Cross-device message sync</li>
-                  <li>• Consistent user experience</li>
-                  <li>• Secure session management</li>
+                  <li>Automatic login state persistence</li>
+                  <li>Cross-device message sync</li>
+                  <li>Consistent user experience</li>
+                  <li>Secure session management</li>
                 </ul>
               </div>
             </div>
@@ -288,10 +288,10 @@ export default function WebGuide() {
                     <h4 className="font-semibold text-white">Edit Posts</h4>
                   </div>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Update prices and descriptions</li>
-                    <li>• Add or remove photos</li>
-                    <li>• Change categories</li>
-                    <li>• Mark as sold</li>
+                    <li>Update prices and descriptions</li>
+                    <li>Add or remove photos</li>
+                    <li>Change categories</li>
+                    <li>Mark as sold</li>
                   </ul>
                 </div>
                 
@@ -301,10 +301,10 @@ export default function WebGuide() {
                     <h4 className="font-semibold text-white">Delete Posts</h4>
                   </div>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Hover over post for delete button</li>
-                    <li>• Confirmation dialog prevents accidents</li>
-                    <li>• Immediate removal from marketplace</li>
-                    <li>• Related conversations preserved</li>
+                    <li>Hover over post for delete button</li>
+                    <li>Confirmation dialog prevents accidents</li>
+                    <li>Immediate removal from marketplace</li>
+                    <li>Related conversations preserved</li>
                   </ul>
                 </div>
               </div>
@@ -339,11 +339,11 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Web-Specific Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Hover-to-show delete buttons (no swipe needed)</li>
-                  <li>• Keyboard shortcuts for quick actions</li>
-                  <li>• Multi-tab support for different conversations</li>
-                  <li>• Copy/paste support for sharing information</li>
-                  <li>• Browser notification management</li>
+                  <li>Hover-to-show delete buttons (no swipe needed)</li>
+                  <li>Keyboard shortcuts for quick actions</li>
+                  <li>Multi-tab support for different conversations</li>
+                  <li>Copy/paste support for sharing information</li>
+                  <li>Browser notification management</li>
                 </ul>
               </div>
             </div>
@@ -360,10 +360,10 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Useful Shortcuts:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• <kbd className="bg-gray-600 px-2 py-1 rounded">Ctrl/Cmd + K</kbd> - Quick search</li>
-                  <li>• <kbd className="bg-gray-600 px-2 py-1 rounded">Ctrl/Cmd + N</kbd> - New post</li>
-                  <li>• <kbd className="bg-gray-600 px-2 py-1 rounded">Ctrl/Cmd + M</kbd> - Go to messages</li>
-                  <li>• <kbd className="bg-gray-600 px-2 py-1 rounded">Esc</kbd> - Close modals/dialogs</li>
+                  <li><kbd className="bg-gray-600 px-2 py-1 rounded">Ctrl/Cmd + K</kbd> - Quick search</li>
+                  <li><kbd className="bg-gray-600 px-2 py-1 rounded">Ctrl/Cmd + N</kbd> - New post</li>
+                  <li><kbd className="bg-gray-600 px-2 py-1 rounded">Ctrl/Cmd + M</kbd> - Go to messages</li>
+                  <li><kbd className="bg-gray-600 px-2 py-1 rounded">Esc</kbd> - Close modals/dialogs</li>
                 </ul>
               </div>
             </div>
@@ -373,10 +373,10 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Notification Settings:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Allow notifications when prompted</li>
-                  <li>• Customize notification preferences in settings</li>
-                  <li>• Desktop notifications for new messages</li>
-                  <li>• Sound alerts (if enabled)</li>
+                  <li>Allow notifications when prompted</li>
+                  <li>Customize notification preferences in settings</li>
+                  <li>Desktop notifications for new messages</li>
+                  <li>Sound alerts (if enabled)</li>
                 </ul>
               </div>
             </div>
@@ -386,10 +386,10 @@ export default function WebGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Browser Integration:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Bookmark specific posts or searches</li>
-                  <li>• Browser history for easy navigation</li>
-                  <li>• Share posts via browser sharing</li>
-                  <li>• Print-friendly post views</li>
+                  <li>Bookmark specific posts or searches</li>
+                  <li>Browser history for easy navigation</li>
+                  <li>Share posts via browser sharing</li>
+                  <li>Print-friendly post views</li>
                 </ul>
               </div>
             </div>
@@ -407,10 +407,10 @@ export default function WebGuide() {
                 <h3 className="text-lg font-semibold text-white">Data Security</h3>
               </div>
               <ul className="space-y-2 text-sm text-gray-300">
-                <li>• HTTPS encryption for all data</li>
-                <li>• Secure session management</li>
-                <li>• Protected API endpoints</li>
-                <li>• Regular security updates</li>
+                <li>HTTPS encryption for all data</li>
+                <li>Secure session management</li>
+                <li>Protected API endpoints</li>
+                <li>Regular security updates</li>
               </ul>
             </div>
             
@@ -420,10 +420,10 @@ export default function WebGuide() {
                 <h3 className="text-lg font-semibold text-white">Privacy Controls</h3>
               </div>
               <ul className="space-y-2 text-sm text-gray-300">
-                <li>• Campus-only visibility</li>
-                <li>• Block and report functionality</li>
-                <li>• Profile privacy settings</li>
-                <li>• Data deletion options</li>
+                <li>Campus-only visibility</li>
+                <li>Block and report functionality</li>
+                <li>Profile privacy settings</li>
+                <li>Data deletion options</li>
               </ul>
             </div>
           </div>
@@ -440,41 +440,41 @@ export default function WebGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Page won't load or is slow?</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Check your internet connection</li>
-                    <li>• Clear browser cache and cookies</li>
-                    <li>• Disable browser extensions temporarily</li>
-                    <li>• Try incognito/private browsing mode</li>
-                    <li>• Update your browser to the latest version</li>
+                    <li>Check your internet connection</li>
+                    <li>Clear browser cache and cookies</li>
+                    <li>Disable browser extensions temporarily</li>
+                    <li>Try incognito/private browsing mode</li>
+                    <li>Update your browser to the latest version</li>
                   </ul>
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Images not uploading?</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Check file size (max 10MB per image)</li>
-                    <li>• Ensure files are in supported formats (JPG, PNG, WebP)</li>
-                    <li>• Disable ad blockers temporarily</li>
-                    <li>• Check browser permissions for file access</li>
+                    <li>Check file size (max 10MB per image)</li>
+                    <li>Ensure files are in supported formats (JPG, PNG, WebP)</li>
+                    <li>Disable ad blockers temporarily</li>
+                    <li>Check browser permissions for file access</li>
                   </ul>
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Not receiving notifications?</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Allow notifications when prompted by browser</li>
-                    <li>• Check browser notification settings</li>
-                    <li>• Ensure the tab isn't muted</li>
-                    <li>• Check if Do Not Disturb is enabled</li>
+                    <li>Allow notifications when prompted by browser</li>
+                    <li>Check browser notification settings</li>
+                    <li>Ensure the tab isn't muted</li>
+                    <li>Check if Do Not Disturb is enabled</li>
                   </ul>
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Layout looks broken on mobile?</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Refresh the page</li>
-                    <li>• Check if you're using a supported browser</li>
-                    <li>• Clear browser cache</li>
-                    <li>• Try rotating your device</li>
+                    <li>Refresh the page</li>
+                    <li>Check if you're using a supported browser</li>
+                    <li>Clear browser cache</li>
+                    <li>Try rotating your device</li>
                   </ul>
                 </div>
               </div>

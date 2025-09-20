@@ -72,10 +72,10 @@ export default function IOSGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Requirements:</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• iOS 14.0 or later</li>
-                    <li>• iPhone 6s or newer</li>
-                    <li>• Active university email (.edu domain)</li>
-                    <li>• Camera and location permissions</li>
+                    <li>iOS 14.0 or later</li>
+                    <li>iPhone 6s or newer</li>
+                    <li>Active university email (.edu domain)</li>
+                    <li>Camera and location permissions</li>
                   </ul>
                 </div>
               </div>
@@ -93,10 +93,10 @@ export default function IOSGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Account Setup Process:</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Enter your university email (.edu required)</li>
-                    <li>• Create a secure password</li>
-                    <li>• Verify your email through the confirmation link</li>
-                    <li>• Complete your profile with photo and details</li>
+                    <li>Enter your university email (.edu required)</li>
+                    <li>Create a secure password</li>
+                    <li>Verify your email through the confirmation link</li>
+                    <li>Complete your profile with photo and details</li>
                   </ul>
                 </div>
               </div>
@@ -167,10 +167,10 @@ export default function IOSGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Notification Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Real-time message notifications</li>
-                  <li>• Badge count on app icon</li>
-                  <li>• Customizable notification settings</li>
-                  <li>• Silent notifications for background updates</li>
+                  <li>Real-time message notifications</li>
+                  <li>Badge count on app icon</li>
+                  <li>Customizable notification settings</li>
+                  <li>Silent notifications for background updates</li>
                 </ul>
               </div>
             </div>
@@ -187,10 +187,10 @@ export default function IOSGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Security Options:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Face ID authentication</li>
-                  <li>• Touch ID support</li>
-                  <li>• Secure keychain storage</li>
-                  <li>• Automatic session management</li>
+                  <li>Face ID authentication</li>
+                  <li>Touch ID support</li>
+                  <li>Secure keychain storage</li>
+                  <li>Automatic session management</li>
                 </ul>
               </div>
             </div>
@@ -207,10 +207,10 @@ export default function IOSGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Photo Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Built-in camera for posting items</li>
-                  <li>• Photo library access</li>
-                  <li>• Image compression and optimization</li>
-                  <li>• Multiple photo support per post</li>
+                  <li>Built-in camera for posting items</li>
+                  <li>Photo library access</li>
+                  <li>Image compression and optimization</li>
+                  <li>Multiple photo support per post</li>
                 </ul>
               </div>
             </div>
@@ -227,10 +227,10 @@ export default function IOSGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">Location Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Campus location detection</li>
-                  <li>• Location-based post filtering</li>
-                  <li>• Privacy-focused location sharing</li>
-                  <li>• Manual location override</li>
+                  <li>Campus location detection</li>
+                  <li>Location-based post filtering</li>
+                  <li>Privacy-focused location sharing</li>
+                  <li>Manual location override</li>
                 </ul>
               </div>
             </div>
@@ -264,10 +264,10 @@ export default function IOSGuide() {
               <div className="bg-gray-700 p-4 rounded-lg">
                 <h4 className="font-semibold text-white mb-2">iOS-Specific Features:</h4>
                 <ul className="space-y-1 text-sm text-gray-300">
-                  <li>• Swipe left on conversations to delete</li>
-                  <li>• Real-time message delivery</li>
-                  <li>• Message read receipts</li>
-                  <li>• Automatic conversation creation</li>
+                  <li>Swipe left on conversations to delete</li>
+                  <li>Real-time message delivery</li>
+                  <li>Message read receipts</li>
+                  <li>Automatic conversation creation</li>
                 </ul>
               </div>
             </div>
@@ -285,10 +285,10 @@ export default function IOSGuide() {
                 <h3 className="text-lg font-semibold text-white">App Settings</h3>
               </div>
               <ul className="space-y-2 text-sm text-gray-300">
-                <li>• Notification preferences</li>
-                <li>• Account management</li>
-                <li>• Privacy controls</li>
-                <li>• App preferences</li>
+                <li>Notification preferences</li>
+                <li>Account management</li>
+                <li>Privacy controls</li>
+                <li>App preferences</li>
               </ul>
             </div>
             
@@ -298,10 +298,10 @@ export default function IOSGuide() {
                 <h3 className="text-lg font-semibold text-white">Privacy & Safety</h3>
               </div>
               <ul className="space-y-2 text-sm text-gray-300">
-                <li>• Block and report users</li>
-                <li>• Control profile visibility</li>
-                <li>• Secure data storage</li>
-                <li>• Campus-only interactions</li>
+                <li>Block and report users</li>
+                <li>Control profile visibility</li>
+                <li>Secure data storage</li>
+                <li>Campus-only interactions</li>
               </ul>
             </div>
           </div>
@@ -322,10 +322,10 @@ export default function IOSGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Offline Features:</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Cache recent posts for offline viewing</li>
-                    <li>• Queue messages when offline</li>
-                    <li>• Background sync when connection returns</li>
-                    <li>• Offline draft saving</li>
+                    <li>Cache recent posts for offline viewing</li>
+                    <li>Queue messages when offline</li>
+                    <li>Background sync when connection returns</li>
+                    <li>Offline draft saving</li>
                   </ul>
                 </div>
               </div>
@@ -344,30 +344,30 @@ export default function IOSGuide() {
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">App won't load posts?</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Check your internet connection</li>
-                    <li>• Force close and reopen the app</li>
-                    <li>• Ensure you're verified with your university email</li>
-                    <li>• Try logging out and back in</li>
+                    <li>Check your internet connection</li>
+                    <li>Force close and reopen the app</li>
+                    <li>Ensure you're verified with your university email</li>
+                    <li>Try logging out and back in</li>
                   </ul>
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Not receiving notifications?</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Check notification settings in the app</li>
-                    <li>• Verify iOS notification permissions</li>
-                    <li>• Ensure the app is updated to the latest version</li>
-                    <li>• Restart your device if needed</li>
+                    <li>Check notification settings in the app</li>
+                    <li>Verify iOS notification permissions</li>
+                    <li>Ensure the app is updated to the latest version</li>
+                    <li>Restart your device if needed</li>
                   </ul>
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg">
                   <h4 className="font-semibold text-white mb-2">Camera not working?</h4>
                   <ul className="space-y-1 text-sm text-gray-300">
-                    <li>• Check camera permissions in iOS Settings</li>
-                    <li>• Ensure sufficient storage space</li>
-                    <li>• Close other apps using the camera</li>
-                    <li>• Restart the app</li>
+                    <li>Check camera permissions in iOS Settings</li>
+                    <li>Ensure sufficient storage space</li>
+                    <li>Close other apps using the camera</li>
+                    <li>Restart the app</li>
                   </ul>
                 </div>
               </div>
