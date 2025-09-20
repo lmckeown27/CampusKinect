@@ -186,6 +186,65 @@ export default function SupportPage() {
           <h2 className="text-3xl font-bold text-white mb-8" style={{ textAlign: 'center' }}>
             Browse by Topic
           </h2>
+          
+          {/* Search Bar */}
+          <div className="mb-12">
+            <div className="max-w-lg mx-auto">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search CampusKinect Support"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 rounded-xl border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                  style={{ backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+                />
+              </div>
+              
+              {/* Search Results */}
+              {searchQuery && (
+                <div className="mt-6 bg-grey-light rounded-xl p-6 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4">
+                    Search Results for "{searchQuery}"
+                  </h3>
+                  {filteredArticles.length > 0 ? (
+                    <div className="space-y-3">
+                      {filteredArticles.map((article) => (
+                        <button
+                          key={article.id}
+                          onClick={() => {
+                            const guideMap: { [key: string]: string } = {
+                              'verify-email': '/support/guides/verify-email',
+                              'post-item-detailed': '/support/guides/post-item',
+                              'message-users': '/support/guides/messaging',
+                              'safe-trading': '/support/guides/safety'
+                            };
+                            const guidePath = guideMap[article.id];
+                            if (guidePath) {
+                              router.push(guidePath);
+                            }
+                          }}
+                          className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-gray-600 transition-colors text-left"
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div>
+                            <span className="text-sm text-[#99afa7] font-medium">{article.category}</span>
+                            <h4 className="text-white font-medium">{article.title}</h4>
+                            <p className="text-gray-300 text-sm mt-1">{article.description}</p>
+                          </div>
+                          <ChevronRight size={18} className="text-[#99afa7]" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-400">No articles found matching your search.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {categories.map((category) => (
               <div
@@ -237,65 +296,9 @@ export default function SupportPage() {
 
 
 
-        {/* 4. Search Bar */}
-        <div className="mb-16">
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Search CampusKinect Support"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-[#708d81]"
-                style={{ backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
-              />
-            </div>
-            
-            {/* Search Results */}
-            {searchQuery && (
-              <div className="mt-6 bg-grey-light rounded-xl p-6 border border-gray-600">
-                <h3 className="text-lg font-semibold text-white mb-4">
-                  Search Results for "{searchQuery}"
-                </h3>
-                {filteredArticles.length > 0 ? (
-                  <div className="space-y-3">
-                    {filteredArticles.map((article) => (
-                      <button
-                        key={article.id}
-                                                 onClick={() => {
-                           const guideMap: { [key: string]: string } = {
-                             'verify-email': '/support/guides/verify-email',
-                             'post-item-detailed': '/support/guides/post-item',
-                             'message-users': '/support/guides/messaging',
-                             'safe-trading': '/support/guides/safety'
-                           };
-                           const guidePath = guideMap[article.id];
-                           if (guidePath) {
-                             router.push(guidePath);
-                           }
-                         }}
-                        className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-gray-600 transition-colors text-left"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <div>
-                          <span className="text-sm text-[#99afa7] font-medium">{article.category}</span>
-                          <h4 className="text-white font-medium">{article.title}</h4>
-                          <p className="text-gray-300 text-sm mt-1">{article.description}</p>
-                        </div>
-                        <ChevronRight size={16} className="text-[#99afa7]" />
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-300">No articles found matching your search.</p>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* 5. Contact & Support Section */}
+
+        {/* 4. Contact & Support Section */}
         <div className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column: Need more help? */}
@@ -466,13 +469,7 @@ export default function SupportPage() {
             >
               Terms of Service
             </button>
-            <button
-              onClick={() => router.push('/')}
-              className="hover:text-white transition-colors"
-              style={{ cursor: 'pointer' }}
-            >
-              About CampusKinect
-            </button>
+
             <span className="text-gray-400">Version 1.0.0</span>
           </div>
           <div className="text-center mt-4">
