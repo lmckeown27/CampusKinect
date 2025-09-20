@@ -134,7 +134,7 @@ export default function SupportPage() {
                 <img
                   src={KinectLogo.src}
                   alt="CampusKinect"
-                  className="h-8 w-8 rounded-md shadow-lg object-contain"
+                  className="h-10 w-10 object-contain"
                 />
               </button>
             </div>
