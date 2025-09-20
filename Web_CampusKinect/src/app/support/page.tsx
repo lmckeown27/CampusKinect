@@ -129,7 +129,7 @@ export default function SupportPage() {
               <button
                 onClick={() => router.push('/auth/login')}
                 className="hover:opacity-80 transition-opacity"
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', backgroundColor: 'transparent', border: 'none' }}
               >
                 <img
                   src={KinectLogo.src}
