@@ -253,14 +253,11 @@ export default function SupportPage() {
                   className="w-28 h-28 p-2 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
                   style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                 >
-                <div className="flex items-center mb-2">
-                  <div className="p-1 rounded mr-2" style={{ backgroundColor: '#99afa7' }}>
-                    <div className="text-white text-sm">{category.icon}</div>
+                <div className="flex flex-col items-center mb-2 text-center">
+                  <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
+                    <div className="text-white text-lg">{category.icon}</div>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-white">{category.title}</h3>
-                    <p className="text-gray-300 text-xs mt-0.5">{category.description}</p>
-                  </div>
+                  <p className="text-gray-300 text-xs">{category.description}</p>
                 </div>
                 
                 <div className="space-y-2 flex-1">
