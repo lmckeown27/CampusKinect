@@ -245,21 +245,21 @@ export default function SupportPage() {
             </div>
           </div>
                       
-          <div className="max-w-[200px] mx-auto">
-            <div className="grid grid-cols-2 gap-1">
+          <div className="max-w-[250px] mx-auto">
+            <div className="grid grid-cols-2 gap-2">
               {categories.map((category) => (
                 <div
                   key={category.id}
                   className="p-2 bg-grey-light rounded-lg border border-gray-600 aspect-square flex flex-col"
                   style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                 >
-                <div className="flex items-center mb-2">
-                  <div className="p-1 rounded mr-2" style={{ backgroundColor: '#99afa7' }}>
-                    <div className="text-white text-xs">{category.icon}</div>
+                <div className="flex items-center mb-3">
+                  <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: '#99afa7' }}>
+                    <div className="text-white">{category.icon}</div>
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">{category.title}</h3>
-                    <p className="text-gray-300 text-xs mt-0.5">{category.description}</p>
+                    <h3 className="text-base font-bold text-white">{category.title}</h3>
+                    <p className="text-gray-300 text-sm mt-1">{category.description}</p>
                   </div>
                 </div>
                 
@@ -283,8 +283,8 @@ export default function SupportPage() {
                       style={{ cursor: 'pointer' }}
                     >
                       <div>
-                        <h4 className="text-white font-medium text-xs">{article.title}</h4>
-                        <p className="text-gray-300 text-xs mt-0.5">{article.description}</p>
+                        <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                        <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                       </div>
                     </button>
                   ))}
