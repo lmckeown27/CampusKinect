@@ -245,24 +245,25 @@ export default function SupportPage() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="p-8 bg-grey-light rounded-xl border border-gray-600"
-                style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
-              >
-                <div className="flex items-center mb-6">
-                  <div className="p-3 rounded-lg mr-4" style={{ backgroundColor: '#99afa7' }}>
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {categories.map((category) => (
+                <div
+                  key={category.id}
+                  className="p-6 bg-grey-light rounded-xl border border-gray-600 aspect-square flex flex-col"
+                  style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
+                >
+                <div className="flex items-center mb-4">
+                  <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: '#99afa7' }}>
                     <div className="text-white">{category.icon}</div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">{category.title}</h3>
-                    <p className="text-gray-300 mt-1">{category.description}</p>
+                    <h3 className="text-lg font-bold text-white">{category.title}</h3>
+                    <p className="text-gray-300 text-sm mt-1">{category.description}</p>
                   </div>
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-2 flex-1">
                   {category.articles.map((article) => (
                     <button
                       key={article.id}
@@ -291,6 +292,7 @@ export default function SupportPage() {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         </div>
 
