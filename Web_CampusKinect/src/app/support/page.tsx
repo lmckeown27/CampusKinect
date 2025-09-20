@@ -134,8 +134,12 @@ export default function SupportPage() {
                 <img
                   src={KinectLogo.src}
                   alt="CampusKinect"
-                  className="h-9 w-9 object-contain"
-                  style={{ backgroundColor: 'transparent' }}
+                  className="h-8 w-8 object-contain"
+                  style={{ 
+                    backgroundColor: 'transparent',
+                    filter: 'drop-shadow(0 0 0 transparent)',
+                    mixBlendMode: 'multiply'
+                  }}
                 />
               </button>
             </div>
