@@ -246,48 +246,93 @@ export default function SupportPage() {
           </div>
                       
           <div className="flex justify-center w-full">
-            <div className="grid grid-cols-2 gap-6 justify-items-center place-items-center max-w-md">
-              {categories.map((category) => (
-                <div
-                  key={category.id}
-                  className="w-40 h-40 p-3 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
-                  style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
-                >
-                <div className="flex flex-col items-center mb-2 text-center">
-                  <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
-                    <div className="text-white text-lg">{category.icon}</div>
+            <div className="flex flex-col items-center space-y-8 max-w-lg">
+              <div className="flex space-x-8">
+                {categories.slice(0, 2).map((category) => (
+                  <div
+                    key={category.id}
+                    className="w-40 h-40 p-3 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
+                  >
+                  <div className="flex flex-col items-center mb-2 text-center">
+                    <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
+                      <div className="text-white text-lg">{category.icon}</div>
+                    </div>
+                    <p className="text-gray-300 text-sm">{category.description}</p>
                   </div>
-                  <p className="text-gray-300 text-sm">{category.description}</p>
+                  
+                  <div className="space-y-2 flex-1">
+                    {category.articles.map((article) => (
+                      <button
+                        key={article.id}
+                        onClick={() => {
+                          const guideMap: { [key: string]: string } = {
+                            'verify-email': '/support/guides/verify-email',
+                            'post-item-detailed': '/support/guides/post-item',
+                            'message-users': '/support/guides/messaging',
+                            'safe-trading': '/support/guides/safety'
+                          };
+                          const guidePath = guideMap[article.id];
+                          if (guidePath) {
+                            router.push(guidePath);
+                          }
+                        }}
+                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div>
+                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                          <p className="text-gray-300 text-sm mt-1">{article.description}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                
-                <div className="space-y-2 flex-1">
-                  {category.articles.map((article) => (
-                    <button
-                      key={article.id}
-                      onClick={() => {
-                        const guideMap: { [key: string]: string } = {
-                          'verify-email': '/support/guides/verify-email',
-                          'post-item-detailed': '/support/guides/post-item',
-                          'message-users': '/support/guides/messaging',
-                          'safe-trading': '/support/guides/safety'
-                        };
-                        const guidePath = guideMap[article.id];
-                        if (guidePath) {
-                          router.push(guidePath);
-                        }
-                      }}
-                      className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div>
-                        <h4 className="text-white font-medium text-sm">{article.title}</h4>
-                        <p className="text-gray-300 text-sm mt-1">{article.description}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+              ))}
               </div>
-            ))}
+              <div className="flex space-x-8">
+                {categories.slice(2, 4).map((category) => (
+                  <div
+                    key={category.id}
+                    className="w-40 h-40 p-3 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
+                  >
+                  <div className="flex flex-col items-center mb-2 text-center">
+                    <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
+                      <div className="text-white text-lg">{category.icon}</div>
+                    </div>
+                    <p className="text-gray-300 text-sm">{category.description}</p>
+                  </div>
+                  
+                  <div className="space-y-2 flex-1">
+                    {category.articles.map((article) => (
+                      <button
+                        key={article.id}
+                        onClick={() => {
+                          const guideMap: { [key: string]: string } = {
+                            'verify-email': '/support/guides/verify-email',
+                            'post-item-detailed': '/support/guides/post-item',
+                            'message-users': '/support/guides/messaging',
+                            'safe-trading': '/support/guides/safety'
+                          };
+                          const guidePath = guideMap[article.id];
+                          if (guidePath) {
+                            router.push(guidePath);
+                          }
+                        }}
+                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div>
+                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                          <p className="text-gray-300 text-sm mt-1">{article.description}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              </div>
             </div>
           </div>
         </div>
