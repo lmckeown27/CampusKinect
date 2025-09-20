@@ -21,6 +21,7 @@ import {
   Search,
   ExternalLink
 } from 'lucide-react';
+import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 interface Article {
   id: string;
@@ -126,11 +127,15 @@ export default function SupportPage() {
             {/* Left: Logo */}
             <div className="flex items-center">
               <button
-                onClick={() => router.push('/')}
-                className="text-2xl font-bold text-white hover:text-[#99afa7] transition-colors"
+                onClick={() => router.push('/auth/login')}
+                className="hover:opacity-80 transition-opacity"
                 style={{ cursor: 'pointer' }}
               >
-                CampusKinect
+                <img
+                  src={KinectLogo.src}
+                  alt="CampusKinect"
+                  className="h-10 w-auto"
+                />
               </button>
             </div>
             
