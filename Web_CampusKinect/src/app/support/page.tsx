@@ -244,26 +244,26 @@ export default function SupportPage() {
               )}
             </div>
           </div>
-          
-          <div className="max-w-xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      
+          <div className="max-w-xs mx-auto">
+            <div className="grid grid-cols-2 gap-2">
               {categories.map((category) => (
                 <div
                   key={category.id}
                   className="p-3 bg-grey-light rounded-xl border border-gray-600 aspect-square flex flex-col"
                   style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                 >
-                <div className="flex items-center mb-2">
-                  <div className="p-1 rounded-lg mr-2" style={{ backgroundColor: '#99afa7' }}>
-                    <div className="text-white text-xs">{category.icon}</div>
+                <div className="flex items-center mb-3">
+                  <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: '#99afa7' }}>
+                    <div className="text-white">{category.icon}</div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-white truncate">{category.title}</h3>
-                    <p className="text-gray-300 text-xs mt-0.5 truncate">{category.description}</p>
+                  <div>
+                    <h3 className="text-base font-bold text-white">{category.title}</h3>
+                    <p className="text-gray-300 text-sm mt-1">{category.description}</p>
                   </div>
                 </div>
                 
-                <div className="space-y-1 flex-1">
+                <div className="space-y-2 flex-1">
                   {category.articles.map((article) => (
                     <button
                       key={article.id}
@@ -279,14 +279,14 @@ export default function SupportPage() {
                           router.push(guidePath);
                         }
                       }}
-                      className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-600 transition-colors text-left"
+                      className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-600 transition-colors text-left"
                       style={{ cursor: 'pointer' }}
                     >
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-white font-medium text-xs truncate">{article.title}</h4>
-                        <p className="text-gray-300 text-xs mt-0.5 truncate">{article.description}</p>
+                      <div>
+                        <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                        <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                       </div>
-                      <ChevronRight size={12} className="text-[#99afa7] ml-1 flex-shrink-0" />
+                      <ChevronRight size={16} className="text-[#99afa7]" />
                     </button>
                   ))}
                 </div>
