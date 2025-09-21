@@ -335,10 +335,10 @@ export default function SupportPage() {
 
 
         {/* 4. Contact & Support Section */}
-        <div className="mb-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="mb-16 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column: Need more help? */}
-            <div className="bg-grey-light rounded-xl p-8 border border-gray-600">
+            <div className="bg-grey-light rounded-xl p-6 border border-gray-600">
               <h3 className="text-2xl font-bold text-white mb-4">Need more help?</h3>
               <p className="text-gray-300 mb-6">
                 Can't find what you're looking for? Get in touch with our support team.
@@ -346,7 +346,7 @@ export default function SupportPage() {
               <div className="space-y-4">
                 <button
                   onClick={() => setShowContactForm(!showContactForm)}
-                  className="py-4 px-8 text-white font-medium rounded-lg transition-colors cursor-pointer text-lg w-full"
+                  className="py-3 px-6 text-white font-medium rounded-lg transition-colors cursor-pointer text-base w-3/4 mx-auto block"
                   style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#5a7268';
@@ -460,7 +460,7 @@ export default function SupportPage() {
             </div>
 
             {/* Right Column: Community */}
-            <div className="bg-grey-light rounded-xl p-8 border border-gray-600">
+            <div className="bg-grey-light rounded-xl p-6 border border-gray-600">
               <h3 className="text-2xl font-bold text-white mb-4">Community</h3>
               <p className="text-gray-300 mb-6">
                 Connect with other CampusKinect users and stay updated.
@@ -468,7 +468,7 @@ export default function SupportPage() {
               <div className="space-y-4">
                 <button
                   onClick={() => window.open('mailto:campuskinect01@gmail.com', '_blank')}
-                  className="py-4 px-8 text-white font-medium rounded-lg transition-colors cursor-pointer text-lg w-full"
+                  className="py-3 px-6 text-white font-medium rounded-lg transition-colors cursor-pointer text-base w-3/4 mx-auto block"
                   style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#5a7268';
