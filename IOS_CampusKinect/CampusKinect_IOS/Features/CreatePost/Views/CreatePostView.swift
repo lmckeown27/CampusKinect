@@ -22,6 +22,9 @@ struct CreatePostView: View {
     // Offer/Request selection (required for Goods, Services, Housing)
     @State private var selectedOfferRequest: String? = nil
     
+    // Category selection modal state
+    @State private var showingCategorySelection = false
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -67,74 +70,56 @@ struct CreatePostView: View {
                         }
                     }
                     
-                    // Category Selection
+                    // Category Selection Button
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Category")
                             .font(.headline)
                             .fontWeight(.semibold)
                         
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: 12) {
-                            ForEach(PostCategory.allCategories, id: \.id) { category in
-                                CategoryButton(
-                                    category: category,
-                                    isSelected: selectedCategory?.id == category.id
-                                ) {
-                                    selectedCategory = category
-                                    selectedSubcategory = nil
-                                    // Clear offer/request selection when changing categories
-                                    selectedOfferRequest = nil
-                                }
-                            }
-                        }
-                        
-                        // Subcategory Selection
-                        if let selectedCategory = selectedCategory {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Subcategory")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.secondary)
-                                
-                                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
-                                    ForEach(selectedCategory.subcategories, id: \.id) { subcategory in
-                                        SubcategoryButton(
-                                            subcategory: subcategory,
-                                            isSelected: selectedSubcategory?.id == subcategory.id
-                                        ) {
-                                            selectedSubcategory = subcategory
+                        Button(action: {
+                            showingCategorySelection = true
+                        }) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    if let selectedCategory = selectedCategory {
+                                        Text(selectedCategory.displayName)
+                                            .font(.body)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.primary)
+                                        
+                                        if let selectedSubcategory = selectedSubcategory {
+                                            Text(selectedSubcategory.displayName)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
                                         }
+                                        
+                                        if let selectedOfferRequest = selectedOfferRequest {
+                                            Text(selectedOfferRequest.capitalized)
+                                                .font(.caption)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 2)
+                                                .background(Color("BrandPrimary"))
+                                                .foregroundColor(.white)
+                                                .cornerRadius(4)
+                                        }
+                                    } else {
+                                        Text("Select Category")
+                                            .font(.body)
+                                            .foregroundColor(.secondary)
                                     }
                                 }
-                            }
-                            .padding(.top, 8)
-                        }
-                        
-                        // Offer/Request Selection (for Goods, Services, Housing only)
-                        if requiresOfferRequestSelection {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Type")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.secondary)
                                 
-                                HStack(spacing: 12) {
-                                    OfferRequestButton(
-                                        title: "Offer",
-                                        isSelected: selectedOfferRequest == "offer"
-                                    ) {
-                                        selectedOfferRequest = "offer"
-                                    }
-                                    
-                                    OfferRequestButton(
-                                        title: "Request",
-                                        isSelected: selectedOfferRequest == "request"
-                                    ) {
-                                        selectedOfferRequest = "request"
-                                    }
-                                }
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
-                            .padding(.top, 8)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
                         }
+                        .buttonStyle(PlainButtonStyle())
                     }
                     
                     // Location Input
@@ -202,6 +187,14 @@ struct CreatePostView: View {
                 }
                 .disabled(viewModel.isLoading)
                 }
+            }
+            .sheet(isPresented: $showingCategorySelection) {
+                CategorySelectionView(
+                    selectedCategory: $selectedCategory,
+                    selectedSubcategory: $selectedSubcategory,
+                    selectedOfferRequest: $selectedOfferRequest,
+                    isPresented: $showingCategorySelection
+                )
             }
             .alert("Post Created!", isPresented: $showingSuccess) {
                 Button("OK") {
