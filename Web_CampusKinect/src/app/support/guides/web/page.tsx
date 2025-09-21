@@ -22,12 +22,14 @@ import {
   Smartphone,
   Tablet
 } from 'lucide-react';
+import SupportHeader from '@/components/layout/SupportHeader';
 
 export default function WebGuide() {
   const router = useRouter();
 
   return (
     <div className="min-h-screen bg-grey-medium">
+      <SupportHeader />
       {/* Header */}
       <div className="py-12" style={{ backgroundColor: '#708d81' }}>
         <div className="max-w-4xl mx-auto px-6">

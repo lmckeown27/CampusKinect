@@ -2,10 +2,13 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Camera, DollarSign, Tag, MapPin, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import SupportHeader from '@/components/layout/SupportHeader';
+
 export default function PostItemGuide() {
   const router = useRouter();
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
+      <SupportHeader />
       {/* Header */}
       <div className="py-8" style={{ backgroundColor: '#708d81' }}>
         <div className="max-w-4xl mx-auto px-6">
