@@ -336,10 +336,10 @@ export default function SupportPage() {
 
         {/* 4. Contact & Support Section */}
         <div className="mb-16 max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col items-center gap-6">
             {/* Left Column: Need more help? */}
             <div className="bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden p-5 m-4 mx-auto"
-                 style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '200px', height: '200px', minWidth: '200px', minHeight: '200px', maxWidth: '200px', maxHeight: '200px' }}>
+                 style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '400px', height: '200px', minWidth: '400px', minHeight: '200px', maxWidth: '400px', maxHeight: '200px' }}>
               <div className="flex flex-col items-center mb-2 text-center">
                 <h3 className="text-white font-medium text-sm mb-1">Need more help?</h3>
                 <p className="text-gray-300 text-xs">
@@ -457,7 +457,7 @@ export default function SupportPage() {
 
             {/* Right Column: Community */}
             <div className="bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden p-5 m-4 mx-auto"
-                 style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '200px', height: '200px', minWidth: '200px', minHeight: '200px', maxWidth: '200px', maxHeight: '200px' }}>
+                 style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '400px', height: '200px', minWidth: '400px', minHeight: '200px', maxWidth: '400px', maxHeight: '200px' }}>
               <div className="flex flex-col items-center mb-2 text-center">
                 <h3 className="text-white font-medium text-sm mb-1">Community</h3>
                 <p className="text-gray-300 text-xs">
