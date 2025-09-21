@@ -159,13 +159,21 @@ export default function SupportPage() {
           </p>
           
           {/* Quick Link Buttons */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-8">
             {quickLinks.map((link, index) => (
               <button
                 key={index}
                 onClick={() => router.push(link.path)}
-                className="px-6 py-3 bg-white text-[#708d81] rounded-lg font-semibold hover:bg-gray-100 transition-all duration-200"
+                className="px-6 py-3 bg-white text-[#708d81] rounded-lg font-semibold transition-all duration-200"
                 style={{ cursor: 'pointer' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#99afa7';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.color = '#708d81';
+                }}
               >
                 {link.title}
               </button>
@@ -215,8 +223,16 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
                         style={{ cursor: 'pointer' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#99afa7';
+                          e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.color = 'white';
+                        }}
                       >
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
                       </button>
@@ -255,8 +271,16 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
                         style={{ cursor: 'pointer' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#99afa7';
+                          e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.color = 'white';
+                        }}
                       >
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
                       </button>
@@ -288,8 +312,16 @@ export default function SupportPage() {
               <div className="space-y-2">
                 <button
                   onClick={() => setShowContactForm(!showContactForm)}
-                  className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                  className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
                   style={{ cursor: 'pointer' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#99afa7';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'white';
+                  }}
                 >
                   <h4 className="text-white font-medium text-sm">Contact Support</h4>
                 </button>
@@ -406,8 +438,16 @@ export default function SupportPage() {
               <div className="space-y-2">
                 <button
                   onClick={() => window.open('mailto:campuskinect01@gmail.com', '_blank')}
-                  className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                  className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
                   style={{ cursor: 'pointer' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#99afa7';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'white';
+                  }}
                 >
                   <h4 className="text-white font-medium text-sm">Send Feedback</h4>
                 </button>
