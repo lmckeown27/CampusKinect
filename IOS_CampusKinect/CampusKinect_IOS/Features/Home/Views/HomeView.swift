@@ -18,9 +18,21 @@ struct HomeView: View {
                 CategoryButtonSection()
                     .environmentObject(viewModel)
                 
-                // Active Filter Bar (only shows when tags are selected)
+                // Active Filter Bar (only shows when tags are selected and filter bar is visible)
                 if viewModel.hasTagsSelected {
                     ActiveFilterBar()
+                        .environmentObject(viewModel)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                } else if !viewModel.selectedCategories.isEmpty && !viewModel.showingFilterBar {
+                    // Compact indicator when filters are active but hidden
+                    CompactFilterIndicator()
+                        .environmentObject(viewModel)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                } else if !viewModel.selectedCategories.isEmpty && !viewModel.showingFilterBar {
+                    // Compact indicator when filters are active but hidden
+                    CompactFilterIndicator()
                         .environmentObject(viewModel)
                         .padding(.horizontal)
                         .padding(.top, 8)
@@ -306,6 +318,46 @@ struct OfferRequestToggle: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color("BrandPrimary"), lineWidth: 1)
         )
+    }
+}
+
+// MARK: - Compact Filter Indicator
+struct CompactFilterIndicator: View {
+    @EnvironmentObject var viewModel: HomeViewModel
+    
+    var body: some View {
+        HStack {
+            HStack(spacing: 8) {
+                Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                    .font(.caption)
+                    .foregroundColor(Color("BrandPrimary"))
+                
+                Text("Filters Active")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(Color("BrandPrimary"))
+                
+                // Show count of selected categories
+                if !viewModel.selectedCategories.isEmpty {
+                    Text("(\(viewModel.selectedCategories.count))")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            Button("Show") {
+                viewModel.showingFilterBar = true
+            }
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundColor(Color("BrandPrimary"))
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color("BrandPrimary").opacity(0.1))
+        .cornerRadius(8)
     }
 }
 
