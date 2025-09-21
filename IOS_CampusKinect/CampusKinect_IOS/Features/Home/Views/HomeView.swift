@@ -75,7 +75,7 @@ struct CategoryButtonSection: View {
                 ForEach(PostCategory.allCategories) { category in
                     CategoryButton(
                         category: category,
-                        isSelected: viewModel.selectedCategory == category.id),
+                        isSelected: viewModel.selectedCategory == category.id,
                         onTap: {
                             viewModel.selectCategory(category.id)
                         }
@@ -86,7 +86,7 @@ struct CategoryButtonSection: View {
             
             // Subcategory Tags (shown when category is selected)
             ForEach(PostCategory.allCategories) { category in
-                if viewModel.selectedCategory == category.id) {
+                if viewModel.selectedCategory == category.id {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("\(category.displayName) Tags")
@@ -130,7 +130,7 @@ struct CategoryButtonSection: View {
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategories)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategory)
         .padding(.vertical, 8)
     }
 }
@@ -305,7 +305,7 @@ struct CompactFilterIndicator: View {
                 
                 // Show count of selected categories
                 if viewModel.selectedCategory != nil {
-                    Text("(\(viewModel.selectedCategories.count))")
+                    Text("(\(PostCategory.allCategories.first(where: { $0.id == viewModel.selectedCategory })?.displayName ?? viewModel.selectedCategory ?? ""))")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
