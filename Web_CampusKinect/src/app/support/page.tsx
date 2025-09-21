@@ -421,7 +421,7 @@ export default function SupportPage() {
       {/* 5. Footer */}
       <div className="bg-grey-light border-t border-gray-600">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex flex-wrap justify-center items-center space-x-8 text-sm text-gray-300">
+          <div className="flex flex-wrap justify-center items-center space-x-8 text-sm">
             <button
               onClick={() => router.push('/privacy')}
               className="text-white hover:text-[#99afa7] transition-colors"
