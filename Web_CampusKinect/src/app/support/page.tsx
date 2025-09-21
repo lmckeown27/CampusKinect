@@ -252,7 +252,7 @@ export default function SupportPage() {
                   <div
                     key={category.id}
                     className="w-44 h-44 min-w-44 min-h-44 max-w-44 max-h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
-                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
+                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '176px', height: '176px', minWidth: '176px', minHeight: '176px', maxWidth: '176px', maxHeight: '176px' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
                     <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
@@ -261,7 +261,7 @@ export default function SupportPage() {
                     <p className="text-gray-300 text-sm">{category.description}</p>
                   </div>
                   
-                  <div className="space-y-2 flex-1">
+                  <div className="space-y-2">
                     {category.articles.map((article) => (
                       <button
                         key={article.id}
@@ -295,7 +295,7 @@ export default function SupportPage() {
                   <div
                     key={category.id}
                     className="w-44 h-44 min-w-44 min-h-44 max-w-44 max-h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
-                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
+                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '176px', height: '176px', minWidth: '176px', minHeight: '176px', maxWidth: '176px', maxHeight: '176px' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
                     <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
@@ -304,7 +304,7 @@ export default function SupportPage() {
                     <p className="text-gray-300 text-sm">{category.description}</p>
                   </div>
                   
-                  <div className="space-y-2 flex-1">
+                  <div className="space-y-2">
                     {category.articles.map((article) => (
                       <button
                         key={article.id}
