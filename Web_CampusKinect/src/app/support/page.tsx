@@ -251,7 +251,7 @@ export default function SupportPage() {
                 {categories.slice(0, 2).map((category) => (
                   <div
                     key={category.id}
-                    className="w-44 h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                    className="w-44 h-44 min-w-44 min-h-44 max-w-44 max-h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
                     style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
@@ -294,7 +294,7 @@ export default function SupportPage() {
                 {categories.slice(2, 4).map((category) => (
                   <div
                     key={category.id}
-                    className="w-44 h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col"
+                    className="w-44 h-44 min-w-44 min-h-44 max-w-44 max-h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
                     style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
