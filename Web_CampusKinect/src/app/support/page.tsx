@@ -426,6 +426,12 @@ export default function SupportPage() {
               onClick={() => router.push('/privacy')}
               className="text-white hover:text-[#99afa7] transition-colors bg-transparent border-none"
               style={{ cursor: 'pointer', backgroundColor: 'transparent', border: 'none', color: 'white' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#99afa7';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'white';
+              }}
             >
               Privacy Policy
             </button>
@@ -433,6 +439,12 @@ export default function SupportPage() {
               onClick={() => router.push('/terms')}
               className="text-white hover:text-[#99afa7] transition-colors bg-transparent border-none"
               style={{ cursor: 'pointer', backgroundColor: 'transparent', border: 'none', color: 'white' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#99afa7';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'white';
+              }}
             >
               Terms of Service
             </button>
