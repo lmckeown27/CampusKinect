@@ -2,10 +2,12 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Mail, CheckCircle, AlertCircle, Clock, Shield } from 'lucide-react';
+import SupportHeader from '@/components/layout/SupportHeader';
 export default function VerifyEmailGuide() {
   const router = useRouter();
   return (
     <div className="min-h-screen bg-grey-medium">
+      <SupportHeader />
       {/* Header */}
       <div className="py-8" style={{ backgroundColor: '#708d81' }}>
         <div className="max-w-4xl mx-auto px-6">
