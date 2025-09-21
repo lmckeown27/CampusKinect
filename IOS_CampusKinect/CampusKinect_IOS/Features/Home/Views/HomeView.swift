@@ -145,7 +145,7 @@ struct ActiveFilterBar: View {
                                 .foregroundColor(Color("BrandPrimary"))
                             
                             Button("✕") {
-                                viewModel.removeTagOnly(tag)
+                                viewModel.hideFilterBar()
                             }
                             .font(.caption2)
                             .foregroundColor(Color("BrandPrimary"))

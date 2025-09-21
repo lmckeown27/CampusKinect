@@ -24,6 +24,9 @@ class HomeViewModel: ObservableObject {
     @Published var selectedTags: Set<String> = []
     @Published var selectedCategories: Set<String> = []
     
+    // Filter bar visibility (separate from actual selection)
+    @Published var showingFilterBar = true
+    
     // Post type toggle (Offers vs Requests)
     @Published var showingOffers = true // Default to offers
     
@@ -158,7 +161,7 @@ extension HomeViewModel {
     }
     
     var hasTagsSelected: Bool {
-        return !selectedTags.isEmpty || !selectedCategories.isEmpty
+        return (!selectedTags.isEmpty || !selectedCategories.isEmpty) && showingFilterBar
     }
     
     var shouldShowOfferRequestToggle: Bool {
@@ -175,6 +178,8 @@ extension HomeViewModel {
             selectedTags.remove(tag)
         } else {
             selectedTags.insert(tag)
+            // Show filter bar when new tags are selected
+            showingFilterBar = true
         }
     }
     
@@ -183,17 +188,20 @@ extension HomeViewModel {
             selectedCategories.remove(category)
         } else {
             selectedCategories.insert(category)
+            // Show filter bar when new categories are selected
+            showingFilterBar = true
         }
     }
     
-    func removeTagOnly(_ tag: String) {
-        // Only remove the tag, keep the main category selected
-        selectedTags.remove(tag)
+    func hideFilterBar() {
+        // Only hide the filter bar display, keep all selections intact
+        showingFilterBar = false
     }
     
     func clearAllTags() {
         selectedTags.removeAll()
         selectedCategories.removeAll()
+        showingFilterBar = true // Reset visibility when clearing
     }
     
     // MARK: - Post Type Toggle Methods
