@@ -64,7 +64,7 @@ export default function SupportPage() {
       id: 'getting-started',
       title: 'Getting Started',
       icon: <User size={24} />,
-      description: 'Account setup and verification',
+      description: 'Account & verification',
       articles: [
         { id: 'verify-email', title: 'Email Verification', category: 'Getting Started', description: 'Step-by-step email verification guide' }
       ]
@@ -73,7 +73,7 @@ export default function SupportPage() {
       id: 'marketplace',
       title: 'Marketplace',
       icon: <ShoppingBag size={24} />,
-      description: 'Buy and sell items',
+      description: 'Buy & sell items',
       articles: [
         { id: 'post-item-detailed', title: 'Create Listing', category: 'Marketplace', description: 'Create and manage listings' }
       ]
@@ -82,7 +82,7 @@ export default function SupportPage() {
       id: 'messaging',
       title: 'Messaging',
       icon: <MessageCircle size={24} />,
-      description: 'Chat with other users',
+      description: 'Chat with users',
       articles: [
         { id: 'message-users', title: 'Send Messages', category: 'Messaging', description: 'Start conversations and manage chats' }
       ]
@@ -91,7 +91,7 @@ export default function SupportPage() {
       id: 'safety',
       title: 'Safety & Trust',
       icon: <Shield size={24} />,
-      description: 'Stay safe while trading',
+      description: 'Safe trading tips',
       articles: [
         { id: 'safe-trading', title: 'Safety Guide', category: 'Safety', description: 'Essential safety tips and reporting' }
       ]
