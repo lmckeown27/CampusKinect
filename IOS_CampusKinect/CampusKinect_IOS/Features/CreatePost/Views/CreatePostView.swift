@@ -29,168 +29,11 @@ struct CreatePostView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Title Input
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Post Title")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        
-                        TextField("Enter a catchy title for your post", text: $title)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .font(.body)
-                        
-                        HStack {
-                            Spacer()
-                            Text("\(title.count)/100")
-                                .font(.caption)
-                                .foregroundColor(title.count > 100 ? .red : .secondary)
-                        }
-                    }
-                    
-                    // Content Input
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Description")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        
-                        TextEditor(text: $content)
-                            .frame(minHeight: 120)
-                            .padding(12)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
-                            .onTapGesture {
-                                // Helps with focus management
-                            }
-                        
-                        HStack {
-                            Spacer()
-                            Text("\(content.count)/\(AppConstants.maxPostLength)")
-                                .font(.caption)
-                                .foregroundColor(content.count > AppConstants.maxPostLength ? .red : .secondary)
-                        }
-                    }
-                    
-                    // Category Selection Button
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Category")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        
-                        Button(action: {
-                            showingCategorySelection = true
-                        }) {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    if let selectedCategory = selectedCategory {
-                                        Text(selectedCategory.displayName)
-                                            .font(.body)
-                                            .fontWeight(.medium)
-                                            .foregroundColor(.primary)
-                                        
-                                        if let selectedSubcategory = selectedSubcategory {
-                                            Text(selectedSubcategory.displayName)
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    } else {
-                                        Text("Select Category")
-                                            .font(.body)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                
-                                Spacer()
-                                
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        
-                        // Show selected category as a tag if one is selected
-                        if let selectedCategory = selectedCategory {
-                            HStack {
-                                HStack(spacing: 6) {
-                                    Image(systemName: selectedCategory.systemIconName)
-                                        .font(.caption)
-                                    Text(selectedCategory.displayName)
-                                        .font(.caption)
-                                        .fontWeight(.medium)
-                                    
-                                    Button(action: {
-                                        // Deselect category and clear related selections
-                                        selectedCategory = nil
-                                        selectedSubcategory = nil
-                                        selectedOfferRequest = nil
-                                    }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color(hex: selectedCategory.color)?.opacity(0.1) ?? Color(.systemGray6))
-                                .foregroundColor(Color(hex: selectedCategory.color) ?? .primary)
-                                .cornerRadius(16)
-                                
-                                Spacer()
-                            }
-                        }
-                        
-                        // Offer/Request Selection (visible on main screen for Goods, Services, Housing)
-                        if requiresOfferRequestSelection {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Type")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.secondary)
-                                
-                                HStack(spacing: 12) {
-                                    OfferRequestButton(
-                                        title: "Offer",
-                                        isSelected: selectedOfferRequest == "offer"
-                                    ) {
-                                        selectedOfferRequest = "offer"
-                                    }
-                                    
-                                    OfferRequestButton(
-                                        title: "Request",
-                                        isSelected: selectedOfferRequest == "request"
-                                    ) {
-                                        selectedOfferRequest = "request"
-                                    }
-                                }
-                            }
-                            .padding(.top, 8)
-                        }
-                    }
-                    
-                    // Location Input
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Location (Optional)")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        
-                        TextField("Add a location...", text: $location)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                    }
-                                }
-                            }
-                    }
-                    
-                    // Image Selection
+                    titleInputSection
+                    contentInputSection
+                    categorySelectionSection
+                    locationInputSection
                     ImagePickerView(selectedImages: $selectedImages)
-                    
                     Spacer(minLength: 20)
                 }
                 .padding()
@@ -207,33 +50,7 @@ struct CreatePostView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                                    Button(action: {
-                    if isValidPost {
-                        Task {
-                            await createPost()
-                        }
-                    } else {
-                        validateAndShowErrors()
-                    }
-                }) {
-                    HStack {
-                        if viewModel.isLoading {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                                .foregroundColor(.white)
-                        }
-                        Text(viewModel.isLoading ? "Posting..." : "Post")
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(.white)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 16)
-                    .background(
-                        viewModel.isLoading ? Color.gray : Color("BrandPrimary")
-                    )
-                    .cornerRadius(12)
-                }
-                .disabled(viewModel.isLoading)
+                    postButton
                 }
             }
             .sheet(isPresented: $showingCategorySelection) {
@@ -266,6 +83,211 @@ struct CreatePostView: View {
                 Text(viewModel.errorMessage ?? "")
             }
         }
+    }
+    
+    // MARK: - UI Sections
+    
+    private var titleInputSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Post Title")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            TextField("Enter a catchy title for your post", text: $title)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .font(.body)
+            
+            HStack {
+                Spacer()
+                Text("\(title.count)/100")
+                    .font(.caption)
+                    .foregroundColor(title.count > 100 ? .red : .secondary)
+            }
+        }
+    }
+    
+    private var contentInputSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Description")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            TextEditor(text: $content)
+                .frame(minHeight: 120)
+                .padding(12)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .onTapGesture {
+                    // Helps with focus management
+                }
+            
+            HStack {
+                Spacer()
+                Text("\(content.count)/\(AppConstants.maxPostLength)")
+                    .font(.caption)
+                    .foregroundColor(content.count > AppConstants.maxPostLength ? .red : .secondary)
+            }
+        }
+    }
+    
+    private var categorySelectionSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Category")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            categorySelectionButton
+            selectedCategoryTag
+            offerRequestSelector
+        }
+    }
+    
+    private var categorySelectionButton: some View {
+        Button(action: {
+            showingCategorySelection = true
+        }) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    if let selectedCategory = selectedCategory {
+                        Text(selectedCategory.displayName)
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .foregroundColor(.primary)
+                        
+                        if let selectedSubcategory = selectedSubcategory {
+                            Text(selectedSubcategory.displayName)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Text("Select Category")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    @ViewBuilder
+    private var selectedCategoryTag: some View {
+        if let selectedCategory = selectedCategory {
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: selectedCategory.systemIconName)
+                        .font(.caption)
+                    Text(selectedCategory.displayName)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                    
+                    Button(action: {
+                        // Deselect category and clear related selections
+                        self.selectedCategory = nil
+                        selectedSubcategory = nil
+                        selectedOfferRequest = nil
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color(hex: selectedCategory.color)?.opacity(0.1) ?? Color(.systemGray6))
+                .foregroundColor(Color(hex: selectedCategory.color) ?? .primary)
+                .cornerRadius(16)
+                
+                Spacer()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var offerRequestSelector: some View {
+        if requiresOfferRequestSelection {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Type")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                
+                HStack(spacing: 12) {
+                    OfferRequestButton(
+                        title: "Offer",
+                        isSelected: selectedOfferRequest == "offer"
+                    ) {
+                        selectedOfferRequest = "offer"
+                    }
+                    
+                    OfferRequestButton(
+                        title: "Request",
+                        isSelected: selectedOfferRequest == "request"
+                    ) {
+                        selectedOfferRequest = "request"
+                    }
+                }
+            }
+            .padding(.top, 8)
+        }
+    }
+    
+    private var locationInputSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Location (Optional)")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            TextField("Add a location...", text: $location)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        }
+                    }
+                }
+        }
+    }
+    
+    private var postButton: some View {
+        Button(action: {
+            if isValidPost {
+                Task {
+                    await createPost()
+                }
+            } else {
+                validateAndShowErrors()
+            }
+        }) {
+            HStack {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .foregroundColor(.white)
+                }
+                Text(viewModel.isLoading ? "Posting..." : "Post")
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(.white)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .background(
+                viewModel.isLoading ? Color.gray : Color("BrandPrimary")
+            )
+            .cornerRadius(12)
+        }
+        .disabled(viewModel.isLoading)
     }
     
     private var requiresOfferRequestSelection: Bool {
