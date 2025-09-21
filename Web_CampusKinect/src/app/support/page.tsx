@@ -338,7 +338,7 @@ export default function SupportPage() {
         <div className="mb-16 max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column: Need more help? */}
-            <div className="bg-grey-light rounded-xl p-6 border border-gray-600">
+            <div className="bg-grey-light rounded-xl p-6 border border-gray-600 max-w-md mx-auto">
               <h3 className="text-2xl font-bold text-white mb-4">Need more help?</h3>
               <p className="text-gray-300 mb-6">
                 Can't find what you're looking for? Get in touch with our support team.
@@ -460,7 +460,7 @@ export default function SupportPage() {
             </div>
 
             {/* Right Column: Community */}
-            <div className="bg-grey-light rounded-xl p-6 border border-gray-600">
+            <div className="bg-grey-light rounded-xl p-6 border border-gray-600 max-w-md mx-auto">
               <h3 className="text-2xl font-bold text-white mb-4">Community</h3>
               <p className="text-gray-300 mb-6">
                 Connect with other CampusKinect users and stay updated.
