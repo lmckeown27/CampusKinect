@@ -129,12 +129,10 @@ extension HomeViewModel {
         // Start with all posts
         var filtered = posts
         
-        // Apply category filtering if any categories are selected
-        if !selectedCategories.isEmpty {
+        // Apply category filtering if a category is selected
+        if let selectedCategoryId = selectedCategory {
             filtered = filtered.filter { post in
-                return selectedCategories.contains { selectedCategory in
-                    return post.postType.lowercased() == selectedCategory.lowercased()
-                }
+                return post.postType.lowercased() == selectedCategoryId.lowercased()
             }
         }
         

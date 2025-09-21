@@ -89,7 +89,7 @@ struct CategoryButtonSection: View {
             if let selectedCategoryId = viewModel.selectedCategory,
                viewModel.isCategoryExpanded,
                let category = PostCategory.allCategories.first(where: { $0.id == selectedCategoryId }) {
-                    VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("\(category.displayName) Tags")
                                 .font(.caption)
@@ -97,8 +97,8 @@ struct CategoryButtonSection: View {
                             
                             Spacer()
                             
-                            Button("Remove \(category.displayName)") {
-                                viewModel.toggleCategory(category.id)
+                            Button("Clear All") {
+                                viewModel.clearCategory()
                             }
                             .font(.caption2)
                             .foregroundColor(.red)
@@ -132,7 +132,6 @@ struct CategoryButtonSection: View {
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategory)
         .padding(.vertical, 8)
     }
 }
