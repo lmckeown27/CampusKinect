@@ -277,11 +277,11 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full mx-auto flex flex-col items-center justify-center p-3 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
                         <div>
-                          <h4 className="text-white font-medium text-base">{article.title}</h4>
+                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
                           <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                         </div>
                       </button>
@@ -320,11 +320,11 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full mx-auto flex flex-col items-center justify-center p-3 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
                         <div>
-                          <h4 className="text-white font-medium text-base">{article.title}</h4>
+                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
                           <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                         </div>
                       </button>
