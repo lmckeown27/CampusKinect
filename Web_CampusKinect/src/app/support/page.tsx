@@ -18,7 +18,6 @@ import {
   Users,
   Lock,
   ArrowLeft,
-  Search,
   ExternalLink
 } from 'lucide-react';
 import KinectLogo from '@/assets/logos/KinectLogo.png';
@@ -41,7 +40,7 @@ interface Category {
 
 export default function SupportPage() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+
   const [showContactForm, setShowContactForm] = useState(false);
   const [contactForm, setContactForm] = useState({
     name: '',
@@ -111,12 +110,7 @@ export default function SupportPage() {
     setContactForm({ name: '', email: '', campus: '', issueType: '', description: '' });
   };
 
-  const filteredArticles = searchQuery 
-    ? categories.flatMap(cat => cat.articles).filter(article =>
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.description.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
+
 
   return (
     <div className="min-h-screen bg-grey-medium">
@@ -187,62 +181,7 @@ export default function SupportPage() {
             Browse by Topic
           </h2>
           
-          {/* Search Bar */}
-          <div className="mb-12">
-            <div className="max-w-lg mx-auto">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Search CampusKinect Support"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-xl border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-[#708d81]"
-                  style={{ backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
-                />
-              </div>
-              
-              {/* Search Results */}
-              {searchQuery && (
-                <div className="mt-6 bg-grey-light rounded-xl p-6 border border-gray-600">
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    Search Results for "{searchQuery}"
-                  </h3>
-                  {filteredArticles.length > 0 ? (
-                    <div className="space-y-3">
-                      {filteredArticles.map((article) => (
-                        <button
-                          key={article.id}
-                          onClick={() => {
-                            const guideMap: { [key: string]: string } = {
-                              'verify-email': '/support/guides/verify-email',
-                              'post-item-detailed': '/support/guides/post-item',
-                              'message-users': '/support/guides/messaging',
-                              'safe-trading': '/support/guides/safety'
-                            };
-                            const guidePath = guideMap[article.id];
-                            if (guidePath) {
-                              router.push(guidePath);
-                            }
-                          }}
-                          className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-gray-600 transition-colors text-left"
-                          style={{ cursor: 'pointer' }}
-                        >
-                          <div>
-                            <span className="text-sm text-[#99afa7] font-medium">{article.category}</span>
-                            <h4 className="text-white font-medium">{article.title}</h4>
-                          </div>
-                          <ChevronRight size={18} className="text-[#99afa7]" />
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-400">No articles found matching your search.</p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+
                       
           <div className="flex justify-center w-full">
             <div className="flex flex-col items-center space-y-12 max-w-4xl">
@@ -485,14 +424,14 @@ export default function SupportPage() {
           <div className="flex flex-wrap justify-center items-center space-x-8 text-sm text-gray-300">
             <button
               onClick={() => router.push('/privacy')}
-              className="hover:text-white transition-colors"
+              className="text-white hover:text-[#99afa7] transition-colors"
               style={{ cursor: 'pointer' }}
             >
               Privacy Policy
             </button>
             <button
               onClick={() => router.push('/terms')}
-              className="hover:text-white transition-colors"
+              className="text-white hover:text-[#99afa7] transition-colors"
               style={{ cursor: 'pointer' }}
             >
               Terms of Service
