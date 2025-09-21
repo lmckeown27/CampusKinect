@@ -231,7 +231,6 @@ export default function SupportPage() {
                           <div>
                             <span className="text-sm text-[#99afa7] font-medium">{article.category}</span>
                             <h4 className="text-white font-medium">{article.title}</h4>
-                            <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                           </div>
                           <ChevronRight size={18} className="text-[#99afa7]" />
                         </button>
@@ -282,7 +281,6 @@ export default function SupportPage() {
                       >
                         <div>
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
-                          <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                         </div>
                       </button>
                     ))}
@@ -325,7 +323,6 @@ export default function SupportPage() {
                       >
                         <div>
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
-                          <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                         </div>
                       </button>
                     ))}
