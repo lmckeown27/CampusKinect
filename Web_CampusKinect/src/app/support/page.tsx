@@ -168,7 +168,7 @@ export default function SupportPage() {
                 style={{ cursor: 'pointer' }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#99afa7';
-                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.color = '';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'white';
@@ -227,11 +227,11 @@ export default function SupportPage() {
                         style={{ cursor: 'pointer' }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = '#99afa7';
-                          e.currentTarget.style.color = 'white';
+                          e.currentTarget.style.color = '';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = 'white';
+                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.color = '';
                         }}
                       >
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
@@ -275,11 +275,11 @@ export default function SupportPage() {
                         style={{ cursor: 'pointer' }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = '#99afa7';
-                          e.currentTarget.style.color = 'white';
+                          e.currentTarget.style.color = '';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = 'white';
+                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.color = '';
                         }}
                       >
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
@@ -316,11 +316,11 @@ export default function SupportPage() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#99afa7';
-                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.color = '';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.backgroundColor = '';
+                    e.currentTarget.style.color = '';
                   }}
                 >
                   <h4 className="text-white font-medium text-sm">Contact Support</h4>
@@ -442,11 +442,11 @@ export default function SupportPage() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#99afa7';
-                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.color = '';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.backgroundColor = '';
+                    e.currentTarget.style.color = '';
                   }}
                 >
                   <h4 className="text-white font-medium text-sm">Send Feedback</h4>
@@ -470,7 +470,7 @@ export default function SupportPage() {
                 e.currentTarget.style.color = '#99afa7';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'white';
+                e.currentTarget.style.color = '';
               }}
             >
               Privacy Policy
@@ -483,7 +483,7 @@ export default function SupportPage() {
                 e.currentTarget.style.color = '#99afa7';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'white';
+                e.currentTarget.style.color = '';
               }}
             >
               Terms of Service
