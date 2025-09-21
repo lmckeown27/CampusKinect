@@ -470,7 +470,7 @@ export default function SupportPage() {
                 e.currentTarget.style.color = '#99afa7';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = '';
+                e.currentTarget.style.color = 'white';
               }}
             >
               Privacy Policy
@@ -483,7 +483,7 @@ export default function SupportPage() {
                 e.currentTarget.style.color = '#99afa7';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = '';
+                e.currentTarget.style.color = 'white';
               }}
             >
               Terms of Service
