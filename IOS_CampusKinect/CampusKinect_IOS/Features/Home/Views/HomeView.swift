@@ -102,11 +102,11 @@ struct CategoryButtonSection: View {
                             
                             Spacer()
                             
-                            Button("✕") {
+                            Button("Remove \(category.displayName)") {
                                 viewModel.toggleCategory(category.id)
                             }
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(.caption2)
+                            .foregroundColor(.red)
                         }
                         .padding(.horizontal)
                         
@@ -360,6 +360,7 @@ struct CompactFilterIndicator: View {
         .cornerRadius(8)
     }
 }
+
 
 #Preview {
     HomeView()
