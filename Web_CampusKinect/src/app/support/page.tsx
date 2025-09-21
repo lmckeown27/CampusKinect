@@ -138,7 +138,6 @@ export default function SupportPage() {
                   style={{ backgroundColor: '#708d81' }}
                 />
               </button>
-            </div>
             
             {/* Right: Top-level navigation */}
             <div className="hidden md:flex items-center space-x-6">
@@ -149,10 +148,6 @@ export default function SupportPage() {
               >
                 Contact Support
               </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* 2. Hero Section */}
       <div className="py-16" style={{ backgroundColor: '#708d81' }}>
@@ -176,9 +171,6 @@ export default function SupportPage() {
                 {link.title}
               </button>
             ))}
-          </div>
-        </div>
-      </div>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* 3. Key Topics Grid */}
@@ -200,7 +192,6 @@ export default function SupportPage() {
                   className="w-full pl-12 pr-4 py-4 rounded-xl border-0 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-[#708d81]"
                   style={{ backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
                 />
-              </div>
               
               {/* Search Results */}
               {searchQuery && (
@@ -228,21 +219,15 @@ export default function SupportPage() {
                           className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-gray-600 transition-colors text-left"
                           style={{ cursor: 'pointer' }}
                         >
-                          <div>
                             <span className="text-sm text-[#99afa7] font-medium">{article.category}</span>
                             <h4 className="text-white font-medium">{article.title}</h4>
-                          </div>
                           <ChevronRight size={18} className="text-[#99afa7]" />
                         </button>
                       ))}
-                    </div>
                   ) : (
                     <p className="text-gray-400">No articles found matching your search.</p>
                   )}
-                </div>
               )}
-            </div>
-          </div>
                       
           <div className="flex justify-center w-full">
             <div className="flex flex-col items-center space-y-12 max-w-4xl">
@@ -256,9 +241,7 @@ export default function SupportPage() {
                   <div className="flex flex-col items-center mb-2 text-center">
                     <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
                       <div className="text-white text-lg">{category.icon}</div>
-                    </div>
                     <p className="text-gray-300 text-sm">{category.description}</p>
-                  </div>
                   
                   <div className="space-y-2">
                     {category.articles.map((article) => (
@@ -279,15 +262,10 @@ export default function SupportPage() {
                         className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
-                        <div>
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
-                        </div>
                       </button>
                     ))}
-                  </div>
-                </div>
               ))}
-              </div>
               <div className="flex space-x-12">
                 {categories.slice(2, 4).map((category) => (
                   <div
@@ -298,9 +276,7 @@ export default function SupportPage() {
                   <div className="flex flex-col items-center mb-2 text-center">
                     <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
                       <div className="text-white text-lg">{category.icon}</div>
-                    </div>
                     <p className="text-gray-300 text-sm">{category.description}</p>
-                  </div>
                   
                   <div className="space-y-2">
                     {category.articles.map((article) => (
@@ -321,18 +297,10 @@ export default function SupportPage() {
                         className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
-                        <div>
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
-                        </div>
                       </button>
                     ))}
-                  </div>
-                </div>
               ))}
-              </div>
-            </div>
-          </div>
-        </div>
 
 
 
@@ -362,7 +330,6 @@ export default function SupportPage() {
                   Contact Support
                 </button>
 
-              </div>
               
               {/* Contact Form Dropdown */}
               {showContactForm && (
@@ -373,7 +340,6 @@ export default function SupportPage() {
                   
                   <form onSubmit={handleContactFormSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
                         <label className="block text-white font-medium mb-2">Name</label>
                         <input
                           type="text"
@@ -382,8 +348,6 @@ export default function SupportPage() {
                           onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
                           className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
                         />
-                      </div>
-                      <div>
                         <label className="block text-white font-medium mb-2">Email</label>
                         <input
                           type="email"
@@ -392,10 +356,7 @@ export default function SupportPage() {
                           onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
                           className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
                         />
-                      </div>
-                    </div>
                     
-                    <div>
                       <label className="block text-white font-medium mb-2">Campus</label>
                       <input
                         type="text"
@@ -404,9 +365,7 @@ export default function SupportPage() {
                         onChange={(e) => setContactForm({...contactForm, campus: e.target.value})}
                         className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
                       />
-                    </div>
                     
-                    <div>
                       <label className="block text-white font-medium mb-2">Issue Type</label>
                       <select
                         required
@@ -421,9 +380,7 @@ export default function SupportPage() {
                         <option value="bug">Bug Report</option>
                         <option value="other">Other</option>
                       </select>
-                    </div>
                     
-                    <div>
                       <label className="block text-white font-medium mb-2">Description</label>
                       <textarea
                         required
@@ -433,7 +390,6 @@ export default function SupportPage() {
                         className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white resize-none"
                         placeholder="Please describe your issue in detail..."
                       />
-                    </div>
                     
                     <div className="flex justify-end space-x-4">
                       <button
@@ -457,11 +413,8 @@ export default function SupportPage() {
                       >
                         Send Message
                       </button>
-                    </div>
                   </form>
-                </div>
               )}
-            </div>
 
             {/* Right Column: Community */}
             <div className="bg-grey-light rounded-xl p-8 border border-gray-600">
@@ -484,11 +437,6 @@ export default function SupportPage() {
                   Send Feedback
                 </button>
 
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
 
       {/* 5. Footer */}
@@ -511,14 +459,9 @@ export default function SupportPage() {
             </button>
 
             <span className="text-gray-400">Version 1.0.0</span>
-          </div>
           <div className="text-center mt-4">
             <p className="text-gray-400 text-sm">
               © 2025 CampusKinect. All rights reserved.
             </p>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 } 
