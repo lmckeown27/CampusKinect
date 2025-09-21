@@ -165,7 +165,7 @@ export default function SupportPage() {
                 key={index}
                 onClick={() => router.push(link.path)}
                 className="px-6 py-3 bg-white text-[#708d81] rounded-lg font-semibold transition-all duration-200"
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', color: '#708d81' }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#99afa7';
                   e.currentTarget.style.color = 'white';
