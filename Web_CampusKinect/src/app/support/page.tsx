@@ -338,26 +338,22 @@ export default function SupportPage() {
         <div className="mb-16 max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column: Need more help? */}
-            <div className="bg-grey-light rounded-xl p-6 border border-gray-600 max-w-md mx-auto">
-              <h3 className="text-2xl font-bold text-white mb-4">Need more help?</h3>
-              <p className="text-gray-300 mb-6">
-                Can't find what you're looking for? Get in touch with our support team.
-              </p>
-              <div className="space-y-4">
+            <div className="bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden p-5 m-4 mx-auto"
+                 style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '200px', height: '200px', minWidth: '200px', minHeight: '200px', maxWidth: '200px', maxHeight: '200px' }}>
+              <div className="flex flex-col items-center mb-2 text-center">
+                <h3 className="text-white font-medium text-sm mb-1">Need more help?</h3>
+                <p className="text-gray-300 text-xs">
+                  Can't find what you're looking for?
+                </p>
+              </div>
+              <div className="space-y-2">
                 <button
                   onClick={() => setShowContactForm(!showContactForm)}
-                  className="py-3 px-6 text-white font-medium rounded-lg transition-colors cursor-pointer text-base w-3/4 mx-auto block"
-                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#5a7268';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#708d81';
-                  }}
+                  className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                  style={{ cursor: 'pointer' }}
                 >
-                  Contact Support
+                  <h4 className="text-white font-medium text-sm">Contact Support</h4>
                 </button>
-
               </div>
               
               {/* Contact Form Dropdown */}
@@ -460,26 +456,22 @@ export default function SupportPage() {
             </div>
 
             {/* Right Column: Community */}
-            <div className="bg-grey-light rounded-xl p-6 border border-gray-600 max-w-md mx-auto">
-              <h3 className="text-2xl font-bold text-white mb-4">Community</h3>
-              <p className="text-gray-300 mb-6">
-                Connect with other CampusKinect users and stay updated.
-              </p>
-              <div className="space-y-4">
+            <div className="bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden p-5 m-4 mx-auto"
+                 style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '200px', height: '200px', minWidth: '200px', minHeight: '200px', maxWidth: '200px', maxHeight: '200px' }}>
+              <div className="flex flex-col items-center mb-2 text-center">
+                <h3 className="text-white font-medium text-sm mb-1">Community</h3>
+                <p className="text-gray-300 text-xs">
+                  Connect with other users
+                </p>
+              </div>
+              <div className="space-y-2">
                 <button
                   onClick={() => window.open('mailto:campuskinect01@gmail.com', '_blank')}
-                  className="py-3 px-6 text-white font-medium rounded-lg transition-colors cursor-pointer text-base w-3/4 mx-auto block"
-                  style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#5a7268';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#708d81';
-                  }}
+                  className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                  style={{ cursor: 'pointer' }}
                 >
-                  Send Feedback
+                  <h4 className="text-white font-medium text-sm">Send Feedback</h4>
                 </button>
-
               </div>
             </div>
           </div>
