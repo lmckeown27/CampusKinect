@@ -25,6 +25,9 @@ struct CreatePostView: View {
     // Category selection modal state
     @State private var showingCategorySelection = false
     
+    // Category tag display visibility (separate from actual selection)
+    @State private var showingCategoryTag = true
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -60,6 +63,12 @@ struct CreatePostView: View {
                     selectedOfferRequest: $selectedOfferRequest,
                     isPresented: $showingCategorySelection
                 )
+            }
+            .onChange(of: selectedCategory) { _, _ in
+                // Show the tag again when a category is selected
+                if selectedCategory != nil {
+                    showingCategoryTag = true
+                }
             }
             .alert("Post Created!", isPresented: $showingSuccess) {
                 Button("OK") {
@@ -136,7 +145,32 @@ struct CreatePostView: View {
                 .font(.headline)
                 .fontWeight(.semibold)
             
-            categorySelectionButton
+            HStack(spacing: 12) {
+                categorySelectionButton
+                
+                if selectedCategory != nil {
+                    Button(action: {
+                        // Deselect category and clear related selections
+                        selectedCategory = nil
+                        selectedSubcategory = nil
+                        selectedOfferRequest = nil
+                        showingCategoryTag = true // Reset tag visibility
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "xmark")
+                                .font(.caption)
+                            Text("Clear")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                }
+            }
+            
             selectedCategoryTag
             offerRequestSelector
         }
@@ -181,7 +215,7 @@ struct CreatePostView: View {
     
     @ViewBuilder
     private var selectedCategoryTag: some View {
-        if let selectedCategory = selectedCategory {
+        if let selectedCategory = selectedCategory, showingCategoryTag {
             HStack {
                 HStack(spacing: 6) {
                     Image(systemName: selectedCategory.systemIconName)
@@ -191,10 +225,8 @@ struct CreatePostView: View {
                         .fontWeight(.medium)
                     
                     Button(action: {
-                        // Deselect category and clear related selections
-                        self.selectedCategory = nil
-                        selectedSubcategory = nil
-                        selectedOfferRequest = nil
+                        // Only hide the tag display, don't deselect the category
+                        showingCategoryTag = false
                     }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.caption)
