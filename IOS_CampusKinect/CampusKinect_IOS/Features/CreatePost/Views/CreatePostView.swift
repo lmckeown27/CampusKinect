@@ -92,16 +92,6 @@ struct CreatePostView: View {
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
                                         }
-                                        
-                                        if let selectedOfferRequest = selectedOfferRequest {
-                                            Text(selectedOfferRequest.capitalized)
-                                                .font(.caption)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 2)
-                                                .background(Color("BrandPrimary"))
-                                                .foregroundColor(.white)
-                                                .cornerRadius(4)
-                                        }
                                     } else {
                                         Text("Select Category")
                                             .font(.body)
@@ -120,6 +110,64 @@ struct CreatePostView: View {
                             .cornerRadius(12)
                         }
                         .buttonStyle(PlainButtonStyle())
+                        
+                        // Show selected category as a tag if one is selected
+                        if let selectedCategory = selectedCategory {
+                            HStack {
+                                HStack(spacing: 6) {
+                                    Image(systemName: selectedCategory.systemIconName)
+                                        .font(.caption)
+                                    Text(selectedCategory.displayName)
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                    
+                                    Button(action: {
+                                        // Deselect category and clear related selections
+                                        selectedCategory = nil
+                                        selectedSubcategory = nil
+                                        selectedOfferRequest = nil
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color(hex: selectedCategory.color)?.opacity(0.1) ?? Color(.systemGray6))
+                                .foregroundColor(Color(hex: selectedCategory.color) ?? .primary)
+                                .cornerRadius(16)
+                                
+                                Spacer()
+                            }
+                        }
+                        
+                        // Offer/Request Selection (visible on main screen for Goods, Services, Housing)
+                        if requiresOfferRequestSelection {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Type")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.secondary)
+                                
+                                HStack(spacing: 12) {
+                                    OfferRequestButton(
+                                        title: "Offer",
+                                        isSelected: selectedOfferRequest == "offer"
+                                    ) {
+                                        selectedOfferRequest = "offer"
+                                    }
+                                    
+                                    OfferRequestButton(
+                                        title: "Request",
+                                        isSelected: selectedOfferRequest == "request"
+                                    ) {
+                                        selectedOfferRequest = "request"
+                                    }
+                                }
+                            }
+                            .padding(.top, 8)
+                        }
                     }
                     
                     // Location Input
