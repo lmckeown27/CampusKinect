@@ -32,7 +32,7 @@ class HomeViewModel: ObservableObject {
     
     // Post type toggle (Offers vs Requests)
     @Published var showingOffers = true // Default to offers
-    
+    @Published var selectedOfferRequest: String? = nil
     private var cancellables = Set<AnyCancellable>()
     private let apiService = APIService.shared
     
