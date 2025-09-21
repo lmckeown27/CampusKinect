@@ -66,7 +66,7 @@ export default function SupportPage() {
       icon: <User size={24} />,
       description: 'Account setup and verification',
       articles: [
-        { id: 'verify-email', title: 'Verify Your University Email', category: 'Getting Started', description: 'Step-by-step email verification guide' }
+        { id: 'verify-email', title: 'Email Verification', category: 'Getting Started', description: 'Step-by-step email verification guide' }
       ]
     },
     {
@@ -75,7 +75,7 @@ export default function SupportPage() {
       icon: <ShoppingBag size={24} />,
       description: 'Buy and sell items',
       articles: [
-        { id: 'post-item-detailed', title: 'Post an Item for Sale', category: 'Marketplace', description: 'Create and manage listings' }
+        { id: 'post-item-detailed', title: 'Create Listing', category: 'Marketplace', description: 'Create and manage listings' }
       ]
     },
     {
@@ -84,7 +84,7 @@ export default function SupportPage() {
       icon: <MessageCircle size={24} />,
       description: 'Chat with other users',
       articles: [
-        { id: 'message-users', title: 'How to Message Users', category: 'Messaging', description: 'Start conversations and manage chats' }
+        { id: 'message-users', title: 'Send Messages', category: 'Messaging', description: 'Start conversations and manage chats' }
       ]
     },
     {
@@ -93,7 +93,7 @@ export default function SupportPage() {
       icon: <Shield size={24} />,
       description: 'Stay safe while trading',
       articles: [
-        { id: 'safe-trading', title: 'Safety Guidelines', category: 'Safety', description: 'Essential safety tips and reporting' }
+        { id: 'safe-trading', title: 'Safety Guide', category: 'Safety', description: 'Essential safety tips and reporting' }
       ]
     }
   ];
@@ -276,7 +276,7 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
                         <div>
@@ -318,7 +318,7 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
                         <div>
