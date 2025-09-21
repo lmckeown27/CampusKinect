@@ -186,6 +186,11 @@ extension HomeViewModel {
         }
     }
     
+    func removeTagOnly(_ tag: String) {
+        // Only remove the tag, keep the main category selected
+        selectedTags.remove(tag)
+    }
+    
     func clearAllTags() {
         selectedTags.removeAll()
         selectedCategories.removeAll()
