@@ -424,15 +424,15 @@ export default function SupportPage() {
           <div className="flex flex-wrap justify-center items-center space-x-8 text-sm">
             <button
               onClick={() => router.push('/privacy')}
-              className="text-white hover:text-[#99afa7] transition-colors"
-              style={{ cursor: 'pointer' }}
+              className="text-white hover:text-[#99afa7] transition-colors bg-transparent border-none"
+              style={{ cursor: 'pointer', backgroundColor: 'transparent', border: 'none', color: 'white' }}
             >
               Privacy Policy
             </button>
             <button
               onClick={() => router.push('/terms')}
-              className="text-white hover:text-[#99afa7] transition-colors"
-              style={{ cursor: 'pointer' }}
+              className="text-white hover:text-[#99afa7] transition-colors bg-transparent border-none"
+              style={{ cursor: 'pointer', backgroundColor: 'transparent', border: 'none', color: 'white' }}
             >
               Terms of Service
             </button>
