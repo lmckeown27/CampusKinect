@@ -168,7 +168,7 @@ export default function SupportPage() {
                 style={{ cursor: 'pointer' }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#99afa7';
-                  e.currentTarget.style.color = '';
+                  e.currentTarget.style.color = 'white';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'white';
@@ -227,14 +227,14 @@ export default function SupportPage() {
                         style={{ cursor: 'pointer' }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = '#99afa7';
-                          e.currentTarget.style.color = '';
+                          e.currentTarget.style.color = 'white';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = '';
-                          e.currentTarget.style.color = '';
+                          e.currentTarget.style.color = 'black';
                         }}
                       >
-                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                          <h4 className="text-black font-medium text-sm">{article.title}</h4>
                       </button>
                     ))}
                   </div>
@@ -275,14 +275,14 @@ export default function SupportPage() {
                         style={{ cursor: 'pointer' }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = '#99afa7';
-                          e.currentTarget.style.color = '';
+                          e.currentTarget.style.color = 'white';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = '';
-                          e.currentTarget.style.color = '';
+                          e.currentTarget.style.color = 'black';
                         }}
                       >
-                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                          <h4 className="text-black font-medium text-sm">{article.title}</h4>
                       </button>
                     ))}
                   </div>
@@ -316,7 +316,7 @@ export default function SupportPage() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#99afa7';
-                    e.currentTarget.style.color = '';
+                    e.currentTarget.style.color = 'white';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = '';
@@ -442,7 +442,7 @@ export default function SupportPage() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#99afa7';
-                    e.currentTarget.style.color = '';
+                    e.currentTarget.style.color = 'white';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = '';
