@@ -22,7 +22,10 @@ class HomeViewModel: ObservableObject {
     
     // Tag-based filtering
     @Published var selectedTags: Set<String> = []
-    @Published var selectedCategories: Set<String> = []
+    @Published var selectedCategory: String? = nil // Single category selection
+    
+    // Category expansion state
+    @Published var isCategoryExpanded = false
     
     // Filter bar visibility (separate from actual selection)
     @Published var showingFilterBar = true
@@ -161,15 +164,14 @@ extension HomeViewModel {
     }
     
     var hasTagsSelected: Bool {
-        return (!selectedTags.isEmpty || !selectedCategories.isEmpty) && showingFilterBar
+        return (!selectedTags.isEmpty || selectedCategory != nil) && showingFilterBar
     }
     
     var shouldShowOfferRequestToggle: Bool {
         // Only show toggle when goods, services, or housing categories are selected
+        guard let category = selectedCategory else { return false }
         let offerRequestCategories = ["goods", "services", "housing"]
-        return selectedCategories.contains { category in
-            offerRequestCategories.contains(category.lowercased())
-        }
+        return offerRequestCategories.contains(category.lowercased())
     }
     
     // MARK: - Tag Management Methods
@@ -183,14 +185,24 @@ extension HomeViewModel {
         }
     }
     
-    func toggleCategory(_ category: String) {
-        if selectedCategories.contains(category) {
-            selectedCategories.remove(category)
+    func selectCategory(_ category: String) {
+        if selectedCategory == category {
+            // If same category, toggle expansion
+            isCategoryExpanded.toggle()
         } else {
-            selectedCategories.insert(category)
-            // Show filter bar when new categories are selected
+            // Select new category and expand
+            selectedCategory = category
+            isCategoryExpanded = true
+            selectedTags.removeAll() // Clear previous tags
             showingFilterBar = true
         }
+    }
+    
+    func clearCategory() {
+        selectedCategory = nil
+        isCategoryExpanded = false
+        selectedTags.removeAll()
+        showingFilterBar = true
     }
     
     func hideFilterBar() {
@@ -200,7 +212,8 @@ extension HomeViewModel {
     
     func clearAllTags() {
         selectedTags.removeAll()
-        selectedCategories.removeAll()
+        selectedCategory = nil
+        isCategoryExpanded = false
         showingFilterBar = true // Reset visibility when clearing
     }
     

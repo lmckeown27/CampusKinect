@@ -24,19 +24,12 @@ struct HomeView: View {
                         .environmentObject(viewModel)
                         .padding(.horizontal)
                         .padding(.top, 8)
-                } else if !viewModel.selectedCategories.isEmpty && !viewModel.showingFilterBar {
+                } else if viewModel.selectedCategory != nil && !viewModel.showingFilterBar {
                     // Compact indicator when filters are active but hidden
                     CompactFilterIndicator()
                         .environmentObject(viewModel)
                         .padding(.horizontal)
                         .padding(.top, 8)
-                } else if !viewModel.selectedCategories.isEmpty && !viewModel.showingFilterBar {
-                    // Compact indicator when filters are active but hidden
-                    CompactFilterIndicator()
-                        .environmentObject(viewModel)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                }
                 
                 // Posts List
                 PostsList()
@@ -77,23 +70,25 @@ struct CategoryButtonSection: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            // Main Category Buttons (Visual Style from CreatePost)
+            // Main Category Buttons (Single Selection with Dropdown)
             HStack(spacing: 16) {
                 ForEach(PostCategory.allCategories) { category in
-                    CategoryButton(
+                    CategoryDropdownButton(
                         category: category,
-                        isSelected: viewModel.selectedCategories.contains(category.id),
+                        isSelected: viewModel.selectedCategory == category.id,
+                        isExpanded: viewModel.selectedCategory == category.id && viewModel.isCategoryExpanded,
                         onTap: {
-                            viewModel.toggleCategory(category.id)
+                            viewModel.selectCategory(category.id)
                         }
                     )
                 }
             }
             .padding(.horizontal)
             
-            // Subcategory Tags (shown when category is selected)
-            ForEach(PostCategory.allCategories) { category in
-                if viewModel.selectedCategories.contains(category.id) {
+            // Subcategory Tags (shown when category is selected and expanded)
+            if let selectedCategoryId = viewModel.selectedCategory,
+               viewModel.isCategoryExpanded,
+               let category = PostCategory.allCategories.first(where: { $0.id == selectedCategoryId }) {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("\(category.displayName) Tags")
@@ -137,7 +132,7 @@ struct CategoryButtonSection: View {
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategories)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategory)
         .padding(.vertical, 8)
     }
 }
@@ -337,9 +332,9 @@ struct CompactFilterIndicator: View {
                     .fontWeight(.medium)
                     .foregroundColor(Color("BrandPrimary"))
                 
-                // Show count of selected categories
-                if !viewModel.selectedCategories.isEmpty {
-                    Text("(\(viewModel.selectedCategories.count))")
+                // Show selected category
+                if let category = viewModel.selectedCategory {
+                    Text("(\(category))")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
@@ -361,6 +356,48 @@ struct CompactFilterIndicator: View {
     }
 }
 
+// MARK: - Category Dropdown Button
+struct CategoryDropdownButton: View {
+    let category: PostCategory
+    let isSelected: Bool
+    let isExpanded: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 6) {
+                HStack(spacing: 4) {
+                    Image(systemName: category.systemIconName)
+                        .font(.title3)
+                    
+                    if isSelected {
+                        Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                            .font(.caption2)
+                            .foregroundColor(isSelected ? .white : Color(hex: category.color))
+                    }
+                }
+                
+                Text(category.displayName)
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            .foregroundColor(isSelected ? .white : Color(hex: category.color))
+            .frame(width: 80, height: 70)
+            .background(
+                isSelected ? Color(hex: category.color) : Color(hex: category.color)?.opacity(0.1)
+            )
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(
+                        isSelected ? Color.clear : Color(hex: category.color)?.opacity(0.3) ?? Color.clear,
+                        lineWidth: 1
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
 
 #Preview {
     HomeView()
