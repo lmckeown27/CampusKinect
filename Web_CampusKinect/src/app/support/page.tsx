@@ -279,9 +279,7 @@ export default function SupportPage() {
                         className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
-                        <div>
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
-                        </div>
                       </button>
                     ))}
                   </div>
@@ -321,9 +319,7 @@ export default function SupportPage() {
                         className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
-                        <div>
                           <h4 className="text-white font-medium text-sm">{article.title}</h4>
-                        </div>
                       </button>
                     ))}
                   </div>
