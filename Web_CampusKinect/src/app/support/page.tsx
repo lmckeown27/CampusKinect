@@ -251,8 +251,8 @@ export default function SupportPage() {
                 {categories.slice(0, 2).map((category) => (
                   <div
                     key={category.id}
-                    className="w-44 h-44 min-w-44 min-h-44 max-w-44 max-h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
-                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '176px', height: '176px', minWidth: '176px', minHeight: '176px', maxWidth: '176px', maxHeight: '176px' }}
+                    className="w-50 h-50 min-w-50 min-h-50 max-w-50 max-h-50 p-5 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
+                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '200px', height: '200px', minWidth: '200px', minHeight: '200px', maxWidth: '200px', maxHeight: '200px' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
                     <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
@@ -277,11 +277,11 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full mx-auto flex flex-col items-center justify-center p-3 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
                         <div>
-                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                          <h4 className="text-white font-medium text-base">{article.title}</h4>
                           <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                         </div>
                       </button>
@@ -294,8 +294,8 @@ export default function SupportPage() {
                 {categories.slice(2, 4).map((category) => (
                   <div
                     key={category.id}
-                    className="w-44 h-44 min-w-44 min-h-44 max-w-44 max-h-44 p-4 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
-                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '176px', height: '176px', minWidth: '176px', minHeight: '176px', maxWidth: '176px', maxHeight: '176px' }}
+                    className="w-50 h-50 min-w-50 min-h-50 max-w-50 max-h-50 p-5 m-4 bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden"
+                    style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '200px', height: '200px', minWidth: '200px', minHeight: '200px', maxWidth: '200px', maxHeight: '200px' }}
                   >
                   <div className="flex flex-col items-center mb-2 text-center">
                     <div className="p-2 rounded-lg mb-1" style={{ backgroundColor: '#99afa7' }}>
@@ -320,11 +320,11 @@ export default function SupportPage() {
                             router.push(guidePath);
                           }
                         }}
-                        className="w-full mx-auto flex flex-col items-center justify-center p-2 rounded hover:bg-gray-600 transition-colors text-center"
+                        className="w-full mx-auto flex flex-col items-center justify-center p-3 rounded hover:bg-gray-600 transition-colors text-center"
                         style={{ cursor: 'pointer' }}
                       >
                         <div>
-                          <h4 className="text-white font-medium text-sm">{article.title}</h4>
+                          <h4 className="text-white font-medium text-base">{article.title}</h4>
                           <p className="text-gray-300 text-sm mt-1">{article.description}</p>
                         </div>
                       </button>
