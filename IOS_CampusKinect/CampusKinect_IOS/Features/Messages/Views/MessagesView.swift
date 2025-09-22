@@ -184,18 +184,18 @@ struct MessagesView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
-        }        }
+        }
         .navigationTitle("Messages")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar(content: {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingNewMessage = true
-                    }) {
-                        Image(systemName: "square.and.pencil")
-                    }
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingNewMessage = true
+                }) {
+                    Image(systemName: "square.and.pencil")
                 }
-            })
+            }
+        }
             .sheet(isPresented: $showingNewMessage) {
                 NewMessageView { user in
                     selectedUser = user
