@@ -12,6 +12,13 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @State private var showingSettings = false
     @State private var selectedTab: ProfileTab = .posts
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     enum ProfileTab: String, CaseIterable {
         case posts = "Posts"
@@ -20,8 +27,9 @@ struct ProfileView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ScrollView {
+        NavigationStack {
+            GeometryReader { geometry in
+                ScrollView {
                 VStack(spacing: 20) {
                     // Profile Header
                     ProfileHeader(user: authManager.currentUser)
@@ -68,6 +76,12 @@ struct ProfileView: View {
                 .animation(.spring(), value: viewModel.showingToast),
                 alignment: .bottom
             )
+            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+            .frame(maxHeight: .infinity)
+            .clipped()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
         }
     }
 }

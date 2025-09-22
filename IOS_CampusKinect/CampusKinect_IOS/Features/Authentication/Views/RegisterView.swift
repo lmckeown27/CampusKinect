@@ -23,13 +23,28 @@ struct RegisterView: View {
     @State private var isConfirmPasswordVisible = false
     @State private var showingVerification = false
     @FocusState private var focusedField: RegisterField?
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     enum RegisterField {
         case username, firstName, lastName, email, password, confirmPassword
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
+            GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 0) {
                     // Header Section

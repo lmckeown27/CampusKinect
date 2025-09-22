@@ -17,9 +17,17 @@ struct SettingsView: View {
     @State private var showingTerms = false
     @State private var showingMailComposer = false
     @State private var showingNotificationSettings = false
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
+            GeometryReader { geometry in
             List {
                 // Profile Section
                 Section {
@@ -165,6 +173,12 @@ struct SettingsView: View {
             .sheet(isPresented: $showingNotificationSettings) {
                 NotificationSettingsView()
             }
+            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+            .frame(maxHeight: .infinity)
+            .clipped()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
         }
     }
 }

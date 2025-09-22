@@ -12,9 +12,17 @@ struct CategorySelectionView: View {
     @Binding var selectedSubcategory: PostSubcategory?
     @Binding var selectedOfferRequest: String?
     @Binding var isPresented: Bool
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
+            GeometryReader { geometry in
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Category Selection

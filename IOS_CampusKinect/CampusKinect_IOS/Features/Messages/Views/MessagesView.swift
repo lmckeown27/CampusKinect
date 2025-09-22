@@ -461,7 +461,7 @@ struct MessagesView: View {
                 request.toUser?.displayName.localizedCaseInsensitiveContains(searchText) == true
         }
     }
-}
+
 
 // MARK: - Conversation Row
 struct ConversationRow: View {

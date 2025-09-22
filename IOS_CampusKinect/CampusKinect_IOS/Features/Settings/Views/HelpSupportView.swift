@@ -9,9 +9,24 @@ import SwiftUI
 
 struct HelpSupportView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
+            GeometryReader { geometry in
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     // Getting Started

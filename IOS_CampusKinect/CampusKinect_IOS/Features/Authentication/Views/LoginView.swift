@@ -16,13 +16,21 @@ struct LoginView: View {
     @State private var isEmailFocused = false
     @State private var isPasswordFocused = false
     @FocusState private var focusedField: LoginField?
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     enum LoginField {
         case email, password
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
+            GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 0) {
                     // Header Section
