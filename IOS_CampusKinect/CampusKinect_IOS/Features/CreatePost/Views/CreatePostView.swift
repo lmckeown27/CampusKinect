@@ -18,6 +18,8 @@ struct CreatePostView: View {
     @State private var selectedImages: [LocalImage] = []
     @State private var showingValidationAlert = false
     @State private var validationMessage = ""
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
     
     // Offer/Request selection (required for Goods, Services, Housing)
     @State private var selectedOfferRequest: String? = nil
@@ -28,9 +30,15 @@ struct CreatePostView: View {
     // Category tag display visibility (separate from actual selection)
     @State private var showingCategoryTag = true
     
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    
     var body: some View {
-        NavigationView {
-            ScrollView {
+        NavigationStack {
+            GeometryReader { geometry in
+                ScrollView {
                 VStack(spacing: 20) {
                     titleInputSection
                     contentInputSection
@@ -40,8 +48,12 @@ struct CreatePostView: View {
                     Spacer(minLength: 20)
                 }
                 .padding()
+                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 700) : .infinity)
             }
-            .navigationTitle("Create Post")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+        }
+        .navigationTitle("Create Post")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {

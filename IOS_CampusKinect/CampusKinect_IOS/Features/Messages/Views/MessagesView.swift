@@ -17,6 +17,13 @@ struct MessagesView: View {
     @State private var shouldNavigateToChat = false
     @State private var isViewReady = false // Track when view is fully initialized
     @State private var pendingNotification: [AnyHashable: Any]? // Queue notification if received before ready
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     enum MessageTab: String, CaseIterable {
         case incoming = "Incoming"
@@ -25,7 +32,8 @@ struct MessagesView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            GeometryReader { geometry in
+                VStack(spacing: 0) {
                 // Search Bar
                 HStack {
                     Image(systemName: "magnifyingglass")

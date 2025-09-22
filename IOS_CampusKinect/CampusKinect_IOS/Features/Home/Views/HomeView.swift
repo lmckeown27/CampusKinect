@@ -10,9 +10,17 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject var authManager: AuthenticationManager
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Computed property to determine if we're on iPad
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
+            GeometryReader { geometry in
             VStack(spacing: 0) {
                 // Category Button Section with collapse/expand arrow
                 VStack(spacing: 0) {
@@ -39,11 +47,19 @@ struct HomeView: View {
                         .padding(.horizontal)
                         .padding(.top, 8)
                 
-                }                // Posts List
+                }
+                
+                // Posts List
                 PostsList()
                     .environmentObject(viewModel)
             }
-            .navigationTitle("")
+            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
+            .frame(maxHeight: .infinity)
+            .clipped()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
+        .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
