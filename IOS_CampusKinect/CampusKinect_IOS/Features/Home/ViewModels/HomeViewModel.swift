@@ -27,6 +27,9 @@ class HomeViewModel: ObservableObject {
     // Category expansion state
     @Published var isCategoryExpanded = false
     
+    // Category section visibility (controls entire category section)
+    @Published var showingCategorySection = true
+    
     // Filter bar visibility (separate from actual selection)
     @Published var showingFilterBar = true
     
@@ -185,17 +188,13 @@ extension HomeViewModel {
     
     func selectCategory(_ category: String) {
         if selectedCategory == category {
-            if isCategoryExpanded {
-                // If expanded, collapse first
-                isCategoryExpanded = false
-            } else {
-                // If collapsed, deselect entirely (show all posts)
-                selectedCategory = nil
-                isCategoryExpanded = false
-                selectedTags.removeAll()
-                showingFilterBar = true
-            }
-        } else {            // Select new category and expand
+            // Single tap to deselect - show all posts
+            selectedCategory = nil
+            isCategoryExpanded = false
+            selectedTags.removeAll()
+            showingFilterBar = true
+        } else {
+            // Select new category and expand
             selectedCategory = category
             isCategoryExpanded = true
             selectedTags.removeAll() // Clear previous tags
@@ -220,6 +219,10 @@ extension HomeViewModel {
         selectedCategory = nil
         isCategoryExpanded = false
         showingFilterBar = true // Reset visibility when clearing
+    }
+    
+    func toggleCategorySectionVisibility() {
+        showingCategorySection.toggle()
     }
     
     // MARK: - Post Type Toggle Methods
