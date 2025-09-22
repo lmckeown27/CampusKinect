@@ -121,7 +121,10 @@ class HomeViewModel: ObservableObject {
     
     // MARK: - Private Methods
     // Search functionality removed - now using tag-based filtering
+}
 
+// MARK: - Home View Model Extensions
+extension HomeViewModel {
     var filteredPosts: [Post] {
         // Start with all posts
         var filtered = posts
@@ -191,7 +194,6 @@ class HomeViewModel: ObservableObject {
                 isCategoryExpanded = false
                 selectedTags.removeAll()
                 showingFilterBar = true
-            }
         } else {
             // Select new category and expand
             selectedCategory = category
@@ -199,6 +201,7 @@ class HomeViewModel: ObservableObject {
             selectedTags.removeAll() // Clear previous tags
             showingFilterBar = true
         }
+    }
     
     func clearCategory() {
         selectedCategory = nil
