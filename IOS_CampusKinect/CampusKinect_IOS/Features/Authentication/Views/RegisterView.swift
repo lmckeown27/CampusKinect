@@ -10,7 +10,6 @@ import SwiftUI
 struct RegisterView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @Environment(\.dismiss) private var dismiss
-    
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
@@ -18,7 +17,6 @@ struct RegisterView: View {
     @State private var lastName = ""
     @State private var username = ""
     @State private var showingAlert = false
-    @State private var alertMessage = ""
     @State private var isPasswordVisible = false
     @State private var isConfirmPasswordVisible = false
     @State private var showingVerification = false
@@ -26,7 +24,7 @@ struct RegisterView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
-    // Computed property to determine if we're on iPad
+    // iPad detection
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
@@ -39,14 +37,16 @@ struct RegisterView: View {
         NavigationStack {
             GeometryReader { geometry in
                 ScrollView {
-                    VStack(spacing: 0) {
+                    VStack(spacing: 32) {
                         headerSection
-                        formSection
-                        registerButtonSection
+                        registrationForm
+                        registerButton
+                        footerSection
                     }
-                    .padding()
+                    .padding(.horizontal, isIPad ? 40 : 24)
+                    .padding(.vertical, 40)
                 }
-                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 600) : .infinity)
                 .frame(maxHeight: .infinity)
                 .clipped()
             }
@@ -79,165 +79,228 @@ struct RegisterView: View {
         }
     }
     
-    // MARK: - View Components
+    // MARK: - Components
     
     private var headerSection: some View {
         VStack(spacing: 16) {
             Spacer()
-                .frame(height: 40)
+                .frame(height: isIPad ? 40 : 20)
             
             Image("Logo")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(height: 80)
+                .frame(height: isIPad ? 80 : 60)
             
             VStack(spacing: 8) {
                 Text("Join CampusKinect")
-                    .font(.title)
+                    .font(isIPad ? .largeTitle : .title)
                     .fontWeight(.bold)
                     .foregroundColor(.primary)
                 
                 Text("Connect with your campus community")
-                    .font(.subheadline)
+                    .font(isIPad ? .title3 : .subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
-            
-            Spacer()
-                .frame(height: 20)
         }
     }
     
-    private var formSection: some View {
+    private var registrationForm: some View {
         VStack(spacing: 20) {
-            usernameField
-            nameFields
-            emailField
-            passwordFields
-        }
-    }
-    
-    private var usernameField: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Username")
-                .font(.headline)
-                .fontWeight(.semibold)
-            
-            TextField("Choose a username", text: $username)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .focused($focusedField, equals: .username)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-        }
-    }
-    
-    private var nameFields: some View {
-        HStack(spacing: 12) {
+            // Username Field
             VStack(alignment: .leading, spacing: 8) {
-                Text("First Name")
+                Text("Username")
                     .font(.headline)
                     .fontWeight(.semibold)
                 
-                TextField("First name", text: $firstName)
+                TextField("Choose a username", text: $username)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .focused($focusedField, equals: .firstName)
+                    .focused($focusedField, equals: .username)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
             }
             
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Last Name")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                TextField("Last name", text: $lastName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .focused($focusedField, equals: .lastName)
-            }
-        }
-    }
-    
-    private var emailField: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("University Email")
-                .font(.headline)
-                .fontWeight(.semibold)
-            
-            TextField("your.email@university.edu", text: $email)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .focused($focusedField, equals: .email)
-                .keyboardType(.emailAddress)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-        }
-    }
-    
-    private var passwordFields: some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Password")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                if isPasswordVisible {
-                    TextField("Password", text: $password)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .focused($focusedField, equals: .password)
-                } else {
-                    SecureField("Password", text: $password)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .focused($focusedField, equals: .password)
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Confirm Password")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                if isConfirmPasswordVisible {
-                    TextField("Confirm Password", text: $confirmPassword)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .focused($focusedField, equals: .confirmPassword)
-                } else {
-                    SecureField("Confirm Password", text: $confirmPassword)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .focused($focusedField, equals: .confirmPassword)
-                }
-            }
-        }
-    }
-    
-    private var registerButtonSection: some View {
-        VStack(spacing: 16) {
-            Button(action: {
-                Task {
-                    await registerUser()
-                }
-            }) {
-                HStack {
-                    if authManager.isLoading {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                            .foregroundColor(.white)
-                    }
-                    Text(authManager.isLoading ? "Creating Account..." : "Create Account")
+            // Name Fields
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("First Name")
+                        .font(.headline)
                         .fontWeight(.semibold)
+                    
+                    TextField("First name", text: $firstName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($focusedField, equals: .firstName)
                 }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(
-                    isFormValid ? Color("BrandPrimary") : Color.gray
-                )
-                .cornerRadius(12)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Last Name")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    
+                    TextField("Last name", text: $lastName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($focusedField, equals: .lastName)
+                }
             }
-            .disabled(!isFormValid || authManager.isLoading)
+            
+            // Email Field
+            VStack(alignment: .leading, spacing: 8) {
+                Text("University Email")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                TextField("your.email@university.edu", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .email)
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                
+                if !email.isEmpty && !isValidUniversityEmail {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.red)
+                            .font(.caption)
+                        Text("Please use your university email address")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+            
+            // Password Fields
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Password")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    
+                    HStack {
+                        if isPasswordVisible {
+                            TextField("Password", text: $password)
+                                .focused($focusedField, equals: .password)
+                        } else {
+                            SecureField("Password", text: $password)
+                                .focused($focusedField, equals: .password)
+                        }
+                        
+                        Button(action: {
+                            isPasswordVisible.toggle()
+                        }) {
+                            Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    
+                    if !password.isEmpty && password.count < 6 {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.red)
+                                .font(.caption)
+                            Text("Password must be at least 6 characters")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Confirm Password")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    
+                    HStack {
+                        if isConfirmPasswordVisible {
+                            TextField("Confirm Password", text: $confirmPassword)
+                                .focused($focusedField, equals: .confirmPassword)
+                        } else {
+                            SecureField("Confirm Password", text: $confirmPassword)
+                                .focused($focusedField, equals: .confirmPassword)
+                        }
+                        
+                        Button(action: {
+                            isConfirmPasswordVisible.toggle()
+                        }) {
+                            Image(systemName: isConfirmPasswordVisible ? "eye.slash" : "eye")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    
+                    if !confirmPassword.isEmpty && password != confirmPassword {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.red)
+                                .font(.caption)
+                            Text("Passwords do not match")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private var registerButton: some View {
+        Button(action: {
+            focusedField = nil
+            Task {
+                await performRegistration()
+            }
+        }) {
+            HStack {
+                if authManager.isLoading {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .foregroundColor(.white)
+                }
+                Text(authManager.isLoading ? "Creating Account..." : "Create Account")
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(
+                isFormValid ? Color("BrandPrimary") : Color.gray
+            )
+            .cornerRadius(12)
+        }
+        .disabled(!isFormValid || authManager.isLoading)
+    }
+    
+    private var footerSection: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(.secondary.opacity(0.3))
+                
+                Text("or")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 16)
+                
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(.secondary.opacity(0.3))
+            }
+            
+            Button(action: { dismiss() }) {
+                Text("Already have an account? Sign In")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(Color("BrandPrimary"))
+            }
             
             Spacer()
-                .frame(height: 40)
+                .frame(height: isIPad ? 40 : 20)
         }
     }
     
     // MARK: - Computed Properties
+    
     private var isValidUniversityEmail: Bool {
         email.contains("@") && email.hasSuffix(".edu")
     }
@@ -248,14 +311,13 @@ struct RegisterView: View {
         !firstName.isEmpty &&
         !lastName.isEmpty &&
         isValidUniversityEmail &&
-        password.count >= AppConstants.minPasswordLength &&
+        password.count >= 6 &&
         password == confirmPassword
     }
     
-    private func registerUser() async {
-        // Dismiss keyboard before registration
-        focusedField = nil
-        
+    // MARK: - Methods
+    
+    private func performRegistration() async {
         let success = await authManager.register(
             username: username,
             email: email,
@@ -265,7 +327,6 @@ struct RegisterView: View {
         )
         
         if success {
-            // Navigate to verification view
             showingVerification = true
         } else {
             showingAlert = true
@@ -273,62 +334,10 @@ struct RegisterView: View {
     }
 }
 
-// MARK: - Enhanced Custom Text Field with Placeholder Support
-struct CustomTextFieldWithPlaceholder: View {
-    let title: String
-    @Binding var text: String
-    let isSecure: Bool
-    let isFocused: Bool
-    let keyboardType: UIKeyboardType
-    let onFocusChange: (Bool) -> Void
-    let placeholder: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(
-                        isFocused ? Color("BrandPrimary") : Color("BrandPrimary").opacity(0.3),
-                        lineWidth: isFocused ? 2 : 1
-                    )
-                    .frame(height: 56)
-                    .animation(.easeInOut(duration: 0.2), value: isFocused)
-                
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        Text(title)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(isFocused ? Color("BrandPrimary") : .primary)
-                            .padding(.horizontal, 4)
-                            .background(Color(.systemBackground))
-                            .scaleEffect(isFocused || !text.isEmpty ? 1.0 : 0.9)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused || !text.isEmpty)
-                        Spacer()
-                    }
-                    .offset(y: -8)
-                    .padding(.leading, 12)
-                    
-                    TextField(placeholder, text: $text)
-                        .font(.system(size: 16))
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .keyboardType(keyboardType)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(keyboardType != .emailAddress)
-                        .padding(.horizontal, 16)
-                        .padding(.top, -8)
-                }
-            }
-            .contentShape(Rectangle()) // Make entire area tappable
-            .onTapGesture {
-                onFocusChange(true)
-            }
-        }
+struct RegisterView_Previews: PreviewProvider {
+    static var previews: some View {
+        RegisterView()
+            .environmentObject(AuthenticationManager())
     }
-}
-
-#Preview {
-    RegisterView()
-        .environmentObject(AuthenticationManager())
 }
 

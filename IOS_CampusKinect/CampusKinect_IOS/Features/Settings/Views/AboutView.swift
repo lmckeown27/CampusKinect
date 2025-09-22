@@ -177,3 +177,6 @@ struct ContactRow: View {
     AboutView()
 }
 
+}
+}
+}

@@ -291,4 +291,4 @@ struct ContactOption: View {
 
 #Preview {
     HelpSupportView()
-} 
+} }

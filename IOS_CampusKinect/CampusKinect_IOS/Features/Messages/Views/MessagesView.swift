@@ -587,3 +587,6 @@ struct MessageRequestRow: View {
     MessagesView()
 }
 
+}
+}
+}
