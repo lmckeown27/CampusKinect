@@ -15,6 +15,14 @@ struct ChatView: View {
     @StateObject private var viewModel: ChatViewModel
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isTextFieldFocused: Bool
+    @State private var messageText = ""
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // iPad detection
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     init(userId: Int, userName: String) {
         self.userId = userId
@@ -23,179 +31,178 @@ struct ChatView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Messages List
-            messagesScrollView
-            
-            // Message Input
-            messageInputView
+        NavigationStack {
+            GeometryReader { geometry in
+                VStack(spacing: 0) {
+                    messagesList
+                    messageInputSection
+                }
+                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
+                .frame(maxHeight: .infinity)
+                .clipped()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
         }
         .navigationTitle(userName)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .gesture(
-            DragGesture()
-                .onEnded { value in
-                    // Swipe right to dismiss (like Instagram DM)
-                    if value.translation.width > 100 && abs(value.translation.height) < 50 {
-                        dismiss()
-                    }
-                }
-        )
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { dismiss() }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .medium))
-                        Text("Messages")
-                            .font(.body)
-                    }
-                    .foregroundColor(Color(hex: "708d81") ?? .blue)
-                }
-            }
-            
             ToolbarItem(placement: .navigationBarTrailing) {
-                if let otherUser = viewModel.otherUser {
-                    AsyncImage(url: otherUser.profileImageURL) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Circle()
-                            .fill(Color.gray.opacity(0.3))
-                            .overlay(
-                                Text(otherUser.initials)
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.gray)
-                            )
-                    }
-                    .frame(width: 32, height: 32)
-                    .clipShape(Circle())
+                Button(action: {
+                    // Handle user profile or options
+                }) {
+                    Image(systemName: "person.circle")
                 }
             }
         }
-        .task {
-            if let currentUser = authManager.currentUser {
-                viewModel.setCurrentUserId(currentUser.id)
+        .onAppear {
+            Task {
+                await viewModel.loadChat(with: userId)
             }
-            await viewModel.loadChat(with: userId)
         }
-        .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+        .alert("Error", isPresented: Binding<Bool>(
+            get: { viewModel.error != nil },
+            set: { _ in viewModel.error = nil }
+        )) {
             Button("OK") {
                 viewModel.error = nil
             }
         } message: {
-            Text(viewModel.error?.localizedDescription ?? "An error occurred")
+            Text(viewModel.error?.localizedDescription ?? "An error occurred.")
         }
     }
     
-    // MARK: - Messages Scroll View
-    private var messagesScrollView: some View {
+    // MARK: - Components
+    
+    private var messagesList: some View {
         ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(spacing: 4) {
-                    if viewModel.isLoading && viewModel.messages.isEmpty {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .padding()
-                    } else if viewModel.messages.isEmpty {
-                        emptyStateView
-                    } else {
-                        ForEach(Array(viewModel.messages.enumerated()), id: \.element.id) { index, message in
-                            MessageBubbleView(
-                                message: message,
-                                isFromCurrentUser: viewModel.isMessageFromCurrentUser(message),
-                                showTimestamp: viewModel.shouldShowTimestamp(for: message, at: index),
-                                showAvatar: viewModel.shouldShowAvatar(for: message, at: index),
-                                otherUser: viewModel.otherUser
-                            )
-                            .id(message.id)
-                        }
-                    }
+            List {
+                ForEach(viewModel.messages) { message in
+                    MessageBubbleView(
+                        message: message,
+                        isCurrentUser: message.senderId == authManager.currentUser?.id
+                    )
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(
+                        top: 4,
+                        leading: isIPad ? 40 : 16,
+                        bottom: 4,
+                        trailing: isIPad ? 40 : 16
+                    ))
+                    .id(message.id)
                 }
-                .padding(.vertical, 8)
+                
+                if viewModel.isLoading {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .padding()
+                        Spacer()
+                    }
+                    .listRowSeparator(.hidden)
+                }
             }
+            .listStyle(PlainListStyle())
+            .scrollIndicators(.hidden)
             .onChange(of: viewModel.messages.count) { _, _ in
-                // Auto-scroll to bottom when new messages arrive
                 if let lastMessage = viewModel.messages.last {
-                    withAnimation(.easeOut(duration: 0.3)) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
                         proxy.scrollTo(lastMessage.id, anchor: .bottom)
                     }
                 }
             }
         }
-        .background(Color(.systemBackground))
     }
     
-    // MARK: - Empty State View
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "message.circle")
-                .font(.system(size: 60))
-                .foregroundColor(.gray.opacity(0.5))
-            
-            VStack(spacing: 8) {
-                Text("Start a conversation")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                Text("Send a message to \(userName) to start chatting")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(40)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
-    // MARK: - Message Input View
-    private var messageInputView: some View {
+    private var messageInputSection: some View {
         VStack(spacing: 0) {
             Divider()
             
             HStack(spacing: 12) {
-                // Text Input
-                TextField("Type a message...", text: $viewModel.newMessageText, axis: .vertical)
-                    .textFieldStyle(.plain)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(.systemGray6))
-                    )
+                TextField("Type a message...", text: $messageText, axis: .vertical)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(20)
                     .focused($isTextFieldFocused)
                     .lineLimit(1...4)
                 
-                // Send Button
                 Button(action: {
-                    Task {
-                        await viewModel.sendMessage()
-                    }
+                    sendMessage()
                 }) {
                     Image(systemName: "arrow.up.circle.fill")
-                        .font(.system(size: 32))
-                        .foregroundColor(
-                            viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                            ? .gray.opacity(0.5)
-                            : Color(hex: "708d81") ?? .blue
-                        )
+                        .font(.title2)
+                        .foregroundColor(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : Color("BrandPrimary"))
                 }
-                .disabled(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, isIPad ? 40 : 16)
             .padding(.vertical, 12)
         }
         .background(Color(.systemBackground))
     }
+    
+    // MARK: - Methods
+    
+    private func sendMessage() {
+        let trimmedMessage = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedMessage.isEmpty else { return }
+        
+        Task {
+            await viewModel.sendMessage(
+                content: trimmedMessage,
+                to: userId,
+                from: authManager.currentUser?.id ?? ""
+            )
+            
+            // Clear the text field on successful send
+            if viewModel.error == nil {
+                messageText = ""
+            }
+        }
+    }
 }
 
-// MARK: - Preview
-#Preview {
-    NavigationStack {
-        ChatView(userId: 2, userName: "John Doe")
+// MARK: - Message Bubble View
+struct MessageBubbleView: View {
+    let message: Message
+    let isCurrentUser: Bool
+    
+    var body: some View {
+        HStack {
+            if isCurrentUser {
+                Spacer(minLength: 50)
+            }
+            
+            VStack(alignment: isCurrentUser ? .trailing : .leading, spacing: 4) {
+                Text(message.content)
+                    .font(.body)
+                    .foregroundColor(isCurrentUser ? .white : .primary)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(
+                        isCurrentUser ? Color("BrandPrimary") : Color(.systemGray5)
+                    )
+                    .cornerRadius(18)
+                
+                Text(message.createdAt, formatter: DateFormatter.messageTimeFormatter)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 4)
+            }
+            
+            if !isCurrentUser {
+                Spacer(minLength: 50)
+            }
+        }
+    }
+}
+
+struct ChatView_Previews: PreviewProvider {
+    static var previews: some View {
+        ChatView(userId: 1, userName: "John Doe")
+            .environmentObject(AuthenticationManager())
     }
 }
 

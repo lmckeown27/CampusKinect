@@ -1,10 +1,3 @@
-//
-//  NewMessageView.swift
-//  CampusKinect_IOS
-//
-//  Created by Liam McKeown on 9/12/25.
-//
-
 import SwiftUI
 
 struct NewMessageView: View {
@@ -16,6 +9,13 @@ struct NewMessageView: View {
     @State private var isLoading = false
     @State private var error: APIError?
     @State private var searchTask: Task<Void, Never>?
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // iPad detection
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
     
     private let apiService = APIService.shared
     
@@ -24,149 +24,154 @@ struct NewMessageView: View {
     }
     
     var body: some View {
-        NavigationView {
-            VStack {
-                // Search Bar
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                    
-                    TextField("Search users...", text: $searchText)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .onChange(of: searchText) { oldValue, newValue in
-                            print("🔄 Search text changed from '\(oldValue)' to '\(newValue)'")
-                            
-                            // Cancel previous search task
-                            searchTask?.cancel()
-                            
-                            // Start new search with debouncing
-                            searchTask = Task {
-                                print("⏱️ Starting debounced search for '\(newValue)'")
-                                try? await Task.sleep(nanoseconds: 150_000_000) // 150ms delay for faster response
-                                if !Task.isCancelled {
-                                    print("🚀 Executing search for '\(newValue)'")
-                                    await searchUsers(query: newValue)
-                                } else {
-                                    print("❌ Search cancelled for '\(newValue)'")
-                                }
-                            }
-                        }
+        NavigationStack {
+            GeometryReader { geometry in
+                VStack(spacing: 0) {
+                    searchSection
+                    usersList
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(10)
-                .padding()
-                
-                // Users List
-                if isLoading {
-                    VStack {
-                        ProgressView()
-                            .padding()
-                        Text("Loading users...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                } else if let error = error {
-                    VStack {
-                        Text("Error loading users")
-                            .font(.headline)
-                            .foregroundColor(.red)
-                        Text(error.localizedDescription)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                        Button("Retry") {
-                            Task {
-                                await searchUsers(query: searchText)
-                            }
-                        }
-                        .padding(.top)
-                    }
-                    .padding()
-                } else if filteredUsers.isEmpty {
-                    EmptyStateView(
-                        title: searchText.isEmpty ? "Search for Users" : "No Search Results",
-                        message: searchText.isEmpty ? "Start typing a name to find users from your campus" : "No users found matching '\(searchText)'",
-                        systemImage: searchText.isEmpty ? "magnifyingglass" : "person.2"
-                    )
-                } else {
-                    List {
-                        ForEach(filteredUsers) { user in
-                            UserRow(user: user) {
-                                // Start conversation
-                                onUserSelected?(user)
-                                dismiss()
-                            }
-                            .listRowSeparator(.hidden)
-                        }
-                    }
-                    .listStyle(PlainListStyle())
-                }
-                
-                Spacer()
+                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+                .frame(maxHeight: .infinity)
+                .clipped()
             }
-            .navigationTitle("New Message")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+        }
+        .navigationTitle("New Message")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
+                }
+                .foregroundColor(Color("BrandPrimary"))
+            }
+        }
+        .alert("Error", isPresented: Binding<Bool>(
+            get: { error != nil },
+            set: { _ in error = nil }
+        )) {
+            Button("OK") {
+                error = nil
+            }
+        } message: {
+            Text(error?.localizedDescription ?? "An error occurred.")
+        }
+    }
+    
+    // MARK: - Components
+    
+    private var searchSection: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.gray)
+                
+                TextField("Search users...", text: $searchText)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .onChange(of: searchText) { _, newValue in
+                        searchUsers(query: newValue)
+                    }
+                
+                if !searchText.isEmpty {
+                    Button(action: {
+                        searchText = ""
+                        users = []
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.gray)
                     }
                 }
             }
-            .onAppear {
-                // Don't load users on appear - only when user searches
-                // The backend requires a non-empty search query
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(.systemGray6))
+            .cornerRadius(8)
+            .padding(.horizontal, isIPad ? 40 : 16)
+            .padding(.vertical, 16)
+            
+            Divider()
+        }
+    }
+    
+    private var usersList: some View {
+        Group {
+            if isLoading {
+                LoadingView()
+            } else if users.isEmpty && !searchText.isEmpty {
+                EmptyStateView(
+                    title: "No Users Found",
+                    message: "Try searching with a different name or username.",
+                    systemImage: "person.2.slash"
+                )
+            } else if searchText.isEmpty {
+                EmptyStateView(
+                    title: "Search for Users",
+                    message: "Start typing to search for users to message.",
+                    systemImage: "magnifyingglass"
+                )
+            } else {
+                List {
+                    ForEach(users) { user in
+                        UserRow(user: user) {
+                            onUserSelected?(user)
+                            dismiss()
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(
+                            top: 8,
+                            leading: isIPad ? 40 : 16,
+                            bottom: 8,
+                            trailing: isIPad ? 40 : 16
+                        ))
+                    }
+                }
+                .listStyle(PlainListStyle())
+                .scrollIndicators(.hidden)
             }
         }
     }
     
-    private var filteredUsers: [User] {
-        if searchText.isEmpty {
-            return users
-        } else {
-            return users.filter { user in
-                user.displayName.localizedCaseInsensitiveContains(searchText) ||
-                (user.major?.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                user.firstName.localizedCaseInsensitiveContains(searchText) ||
-                user.lastName.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-    }
+    // MARK: - Methods
     
-    @MainActor
-    private func searchUsers(query: String) async {
-        // Clear users and error when search is empty
+    private func searchUsers(query: String) {
+        // Cancel previous search task
+        searchTask?.cancel()
+        
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             users = []
-            error = nil
-            isLoading = false
             return
         }
         
-        // Search immediately when user types any character
-        // This provides better UX with immediate feedback
-        
-        isLoading = true
-        error = nil
-        
-        do {
-            print("🔍 Searching for users with query: '\(query)'")
-            let response = try await apiService.fetchUsers(search: query)
-            print("✅ Successfully found \(response.data.users.count) users")
-            print("📋 Users found: \(response.data.users.map { $0.displayName })")
-            users = response.data.users.map { $0.asUser }
-        } catch {
-            self.error = error as? APIError ?? .unknown(0)
-            print("❌ Failed to search users: \(error)")
-            if let apiError = error as? APIError {
-                print("❌ API Error details: \(apiError)")
+        searchTask = Task {
+            isLoading = true
+            error = nil
+            
+            do {
+                // Simulate API delay
+                try await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
+                
+                // Check if task was cancelled
+                try Task.checkCancellation()
+                
+                let searchResults = try await apiService.searchUsers(query: query)
+                
+                // Check if task was cancelled after API call
+                try Task.checkCancellation()
+                
+                await MainActor.run {
+                    self.users = searchResults
+                    self.isLoading = false
+                }
+            } catch is CancellationError {
+                // Task was cancelled, do nothing
+            } catch {
+                await MainActor.run {
+                    self.error = error as? APIError ?? APIError.networkError
+                    self.isLoading = false
+                }
             }
-            // Also print the raw error for more details
-            print("❌ Raw error: \(error.localizedDescription)")
         }
-        
-        isLoading = false
     }
 }
 
@@ -178,64 +183,31 @@ struct UserRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                // Profile Picture
-                if let profilePicture = user.profilePicture, !profilePicture.isEmpty {
-                    AsyncImage(url: URL(string: "\(APIConstants.baseURL)\(profilePicture)")) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Circle()
-                            .fill(Color("BrandPrimary"))
-                            .overlay(
-                                Text(user.initials)
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.white)
-                            )
-                    }
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(Color("BrandPrimary"))
-                        .frame(width: 40, height: 40)
-                        .overlay(
-                            Text(user.initials)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.white)
-                        )
-                }
+                ProfileImageView(imageUrl: user.profileImageUrl, size: .medium)
                 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(user.displayName)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(user.fullName)
                         .font(.headline)
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
                         .foregroundColor(.primary)
                     
-                    HStack {
-                        if let year = user.year {
-                            Text(year)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        if user.major != nil && user.year != nil {
-                            Text("•")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        if let major = user.major {
-                            Text(major)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                    Text("@\(user.username)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    if let bio = user.bio, !bio.isEmpty {
+                        Text(bio)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
                     }
                 }
                 
                 Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
             .padding(.vertical, 8)
         }
@@ -243,10 +215,10 @@ struct UserRow: View {
     }
 }
 
-
-
-#Preview {
-    NewMessageView()
-}
-
-
+struct NewMessageView_Previews: PreviewProvider {
+    static var previews: some View {
+        NewMessageView { user in
+            print("Selected user: \(user.fullName)")
+        }
+    }
+} 

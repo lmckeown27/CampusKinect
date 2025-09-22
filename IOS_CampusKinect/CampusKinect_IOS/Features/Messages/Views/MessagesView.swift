@@ -1,10 +1,3 @@
-//
-//  MessagesView.swift
-//  CampusKinect_IOS
-//
-//  Created by Liam McKeown on 9/12/25.
-//
-
 import SwiftUI
 
 struct MessagesView: View {
@@ -34,149 +27,9 @@ struct MessagesView: View {
         NavigationStack {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
-                // Search Bar
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                    
-                    TextField(searchPlaceholder, text: $searchText)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .toolbar {
-                            ToolbarItemGroup(placement: .keyboard) {
-                                Spacer()
-                                Button("Done") {
-                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                }
-                            }
-                        }
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color(.systemGray6))
-                .cornerRadius(10)
-                .padding(.horizontal)
-                .padding(.top, 8)
-                
-                // Tab Navigation
-                HStack(spacing: 0) {
-                    ForEach(MessageTab.allCases, id: \.self) { tab in
-                        Button(action: {
-                            activeTab = tab
-                        }) {
-                            Text(tab.rawValue)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(activeTab == tab ? .white : Color("BrandPrimary"))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .background(
-                                    activeTab == tab ? Color("BrandPrimary") : Color.clear
-                                )
-                        }
-                    }
-                }
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-                .padding(.horizontal)
-                .padding(.top, 16)
-                
-                // Content
-                if viewModel.isLoading {
-                    ProgressView("Loading...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    switch activeTab {
-                    case .incoming:
-                        if filteredConversations.isEmpty {
-                            EmptyStateView(
-                                title: emptyStateTitle,
-                                message: emptyStateMessage,
-                                systemImage: "message",
-                                actionTitle: "New Message"
-                            ) {
-                                showingNewMessage = true
-                            }
-                        } else {
-                            List {
-                                ForEach(filteredConversations) { conversation in
-                                    NavigationLink(destination: ChatView(
-                                        userId: conversation.otherUser.id,
-                                        userName: conversation.otherUser.displayName
-                                    )) {
-                                        ConversationRow(conversation: conversation)
-                                    }
-                                    .listRowSeparator(.hidden)
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                        Button(role: .destructive) {
-                                            Task {
-                                                await viewModel.deleteConversation(conversationId: conversation.id)
-                                            }
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
-                                    }
-                                }
-                            }
-                            .listStyle(PlainListStyle())
-                            .refreshable {
-                                await viewModel.refreshConversations()
-                            }
-                        }
-                    case .sent:
-                        if filteredConversations.isEmpty {
-                            EmptyStateView(
-                                title: emptyStateTitle,
-                                message: emptyStateMessage,
-                                systemImage: "paperplane",
-                                actionTitle: "New Message"
-                            ) {
-                                showingNewMessage = true
-                            }
-                        } else {
-                            List {
-                                ForEach(filteredConversations) { conversation in
-                                    ConversationRow(conversation: conversation)
-                                        .listRowSeparator(.hidden)
-                                        .onTapGesture {
-                                            selectedUser = User(
-                                                id: conversation.otherUser.id,
-                                                username: conversation.otherUser.username,
-                                                email: nil,
-                                                firstName: conversation.otherUser.firstName,
-                                                lastName: conversation.otherUser.lastName,
-                                                displayName: conversation.otherUser.displayName,
-                                                profilePicture: conversation.otherUser.profilePicture,
-                                                year: nil,
-                                                major: nil,
-                                                hometown: nil,
-                                                bio: nil,
-                                                universityId: 0,
-                                                universityName: conversation.otherUser.university,
-                                                universityDomain: nil,
-                                                isVerified: false,
-                                                isActive: true,
-                                                createdAt: Date(),
-                                                updatedAt: nil
-                                            )
-                                            shouldNavigateToChat = true
-                                        }
-                                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                            Button(role: .destructive) {
-                                                Task {
-                                                    await viewModel.deleteConversation(conversationId: conversation.id)
-                                                }
-                                            } label: {
-                                                Label("Delete", systemImage: "trash")
-                                            }
-                                        }
-                                }
-                            }
-                            .listStyle(PlainListStyle())
-                            .refreshable {
-                                await viewModel.refreshConversations()
-                            }
-                        }
-                    }
+                    searchSection
+                    tabSection
+                    conversationsList
                 }
                 .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
                 .frame(maxHeight: .infinity)
@@ -196,272 +49,176 @@ struct MessagesView: View {
                 }
             }
         }
-            .sheet(isPresented: $showingNewMessage) {
-                NewMessageView { user in
-                    selectedUser = user
-                    shouldNavigateToChat = true
-                }
+        .sheet(isPresented: $showingNewMessage) {
+            NewMessageView { user in
+                selectedUser = user
+                shouldNavigateToChat = true
             }
-            .navigationDestination(isPresented: $shouldNavigateToChat) {
-                if let selectedUser = selectedUser {
-                    ChatView(userId: selectedUser.id, userName: selectedUser.displayName)
-                }
+        }
+        .navigationDestination(isPresented: $shouldNavigateToChat) {
+            if let user = selectedUser {
+                ChatView(userId: Int(user.id) ?? 0, userName: user.username)
             }
-            .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
-                print("💬 MessagesView: Received navigateToChat notification")
-                print("💬 MessagesView: Notification userInfo: \(notification.userInfo ?? [:])")
-                
-                if isViewReady {
-                    if let userId = notification.userInfo?["userId"] as? Int,
-                       let userName = notification.userInfo?["userName"] as? String {
-                        print("💬 MessagesView: Creating chat with user: \(userName) (ID: \(userId))")
-                        // Create a user object for navigation
-                        let user = User(
-                            id: userId,
-                            username: userName,
-                            email: "",
-                            firstName: "",
-                            lastName: "",
-                            displayName: userName,
-                            profilePicture: nil,
-                            year: nil,
-                            major: nil,
-                            hometown: nil,
-                            bio: nil,
-                            universityId: 0,
-                            universityName: "",
-                            universityDomain: "",
-                            isVerified: nil,
-                            isActive: true,
-                            createdAt: Date(),
-                            updatedAt: nil
-                        )
-                        selectedUser = user
-                        shouldNavigateToChat = true
-                        print("💬 MessagesView: Navigation state updated - shouldNavigateToChat: \(shouldNavigateToChat)")
-                    } else {
-                        print("❌ MessagesView: Failed to extract userId or userName from notification")
-                        print("❌ MessagesView: Available keys: \(notification.userInfo?.keys.map { String(describing: $0) } ?? [])")
-                    }
-                } else {
-                    print("�� MessagesView: View not ready to process navigateToChat notification.")
-                    pendingNotification = notification.userInfo
-                }
+        }
+        .onAppear {
+            print("📱 MessagesView appeared. isViewReady = true")
+            isViewReady = true
+            Task {
+                await viewModel.loadConversations()
             }
-            .onAppear {
-                print("💬 MessagesView: onAppear called - initializing...")
-                Task {
-                    switch activeTab {
-                    case .incoming:
-                        await viewModel.loadConversations()
-                    case .sent:
-                        await viewModel.loadConversations()
-                    }
-                    print("💬 MessagesView: Initial data loading completed")
-                    
-                    // Mark view as ready after data loading
-                    await MainActor.run {
-                        isViewReady = true
-                        print("💬 MessagesView: View marked as ready - can now receive notifications")
-                        
-                        // Check for pending navigation in UserDefaults (backup for first-boot)
-                        if let pendingUserId = UserDefaults.standard.object(forKey: "pendingChatUserId") as? Int,
-                           let pendingUserName = UserDefaults.standard.string(forKey: "pendingChatUserName") {
-                            print("💬 MessagesView: Found pending navigation in UserDefaults: \(pendingUserName) (ID: \(pendingUserId))")
-                            
-                            // Clear the stored values
-                            UserDefaults.standard.removeObject(forKey: "pendingChatUserId")
-                            UserDefaults.standard.removeObject(forKey: "pendingChatUserName")
-                            
-                            // Create user and navigate
-                            let user = User(
-                                id: pendingUserId,
-                                username: pendingUserName,
-                                email: "",
-                                firstName: "",
-                                lastName: "",
-                                displayName: pendingUserName,
-                                profilePicture: nil,
-                                year: nil,
-                                major: nil,
-                                hometown: nil,
-                                bio: nil,
-                                universityId: 0,
-                                universityName: "",
-                                universityDomain: "",
-                                isVerified: nil,
-                                isActive: true,
-                                createdAt: Date(),
-                                updatedAt: nil
-                            )
-                            selectedUser = user
-                            shouldNavigateToChat = true
-                            print("💬 MessagesView: Navigation triggered from UserDefaults backup")
-                        }
-                        
-                        // Process any pending notification
-                        if let pending = pendingNotification {
-                            print("💬 MessagesView: Processing pending notification: \(pending)")
-                            if let userId = pending["userId"] as? Int,
-                               let userName = pending["userName"] as? String {
-                                print("💬 MessagesView: Creating chat with user from pending: \(userName) (ID: \(userId))")
-                                let user = User(
-                                    id: userId,
-                                    username: userName,
-                                    email: "",
-                                    firstName: "",
-                                    lastName: "",
-                                    displayName: userName,
-                                    profilePicture: nil,
-                                    year: nil,
-                                    major: nil,
-                                    hometown: nil,
-                                    bio: nil,
-                                    universityId: 0,
-                                    universityName: "",
-                                    universityDomain: "",
-                                    isVerified: nil,
-                                    isActive: true,
-                                    createdAt: Date(),
-                                    updatedAt: nil
-                                )
-                                selectedUser = user
+            if let notification = pendingNotification {
+                handlePushNotification(notification)
+                pendingNotification = nil
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .messageNotificationReceived)) { notification in
+            print("📱 MessagesView received push notification: \(notification.userInfo ?? [:])")
+            if isViewReady {
+                handlePushNotification(notification.userInfo ?? [:])
+            } else {
+                pendingNotification = notification.userInfo ?? [:]
+                print("📱 MessagesView not ready, queuing notification.")
+            }
+        }
+        .alert("Error", isPresented: Binding<Bool>(
+            get: { viewModel.error != nil },
+            set: { _ in viewModel.error = nil }
+        )) {
+            Button("OK") {
+                viewModel.error = nil
+            }
+        } message: {
+            Text(viewModel.error?.localizedDescription ?? "An unknown error occurred.")
+        }
+    }
+    
+    // MARK: - Components
+    
+    private var searchSection: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+            
+            TextField(searchPlaceholder, text: $searchText)
+                .textFieldStyle(PlainTextFieldStyle())
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+        .padding(.horizontal, isIPad ? 40 : 16)
+        .padding(.top, 8)
+    }
+    
+    private var tabSection: some View {
+        Picker("Message Tab", selection: $activeTab) {
+            ForEach(MessageTab.allCases, id: \.self) { tab in
+                Text(tab.rawValue).tag(tab)
+            }
+        }
+        .pickerStyle(SegmentedPickerStyle())
+        .padding(.horizontal, isIPad ? 40 : 16)
+        .padding(.vertical, 8)
+    }
+    
+    private var conversationsList: some View {
+        Group {
+            if viewModel.isLoadingConversations && viewModel.conversations.isEmpty {
+                LoadingView()
+            } else if viewModel.conversations.isEmpty {
+                EmptyStateView(
+                    title: "No \(activeTab.rawValue) Messages",
+                    message: "You don't have any \(activeTab.rawValue.lowercased()) messages yet.",
+                    systemImage: activeTab == .incoming ? "envelope.badge" : "paperplane"
+                )
+            } else {
+                List {
+                    ForEach(filteredConversations) { conversation in
+                        ConversationRow(conversation: conversation)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(
+                                top: 8,
+                                leading: isIPad ? 40 : 16,
+                                bottom: 8,
+                                trailing: isIPad ? 40 : 16
+                            ))
+                            .onTapGesture {
+                                selectedUser = conversation.otherUser
                                 shouldNavigateToChat = true
-                                print("💬 MessagesView: Navigation state updated from pending - shouldNavigateToChat: \(shouldNavigateToChat)")
                             }
-                            pendingNotification = nil
-                        }
                     }
+                    
+                    if viewModel.isLoadingConversations && !viewModel.conversations.isEmpty {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .padding()
+                            Spacer()
+                        }
+                        .listRowSeparator(.hidden)
+                    }
+                }
+                .listStyle(PlainListStyle())
+                .scrollIndicators(.hidden)
+                .refreshable {
+                    await viewModel.refreshConversations()
                 }
             }
-            .onChange(of: activeTab) { oldValue, newValue in
-                Task {
-                    switch newValue {
-                    case .incoming:
-                        await viewModel.loadConversations()
-                    case .sent:
-                        await viewModel.loadConversations()
-                    }
-                }
+        }
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var searchPlaceholder: String {
+        activeTab == .incoming ? "Search incoming messages..." : "Search sent messages..."
+    }
+    
+    private var filteredConversations: [Conversation] {
+        let conversationsToFilter = activeTab == .incoming ? viewModel.incomingConversations : viewModel.sentConversations
+        
+        if searchText.isEmpty {
+            return conversationsToFilter
+        } else {
+            return conversationsToFilter.filter { conversation in
+                conversation.otherUser.fullName.localizedCaseInsensitiveContains(searchText) ||
+                conversation.lastMessage?.content.localizedCaseInsensitiveContains(searchText) ?? false
             }
         }
     }
     
     // MARK: - Methods
-    private func handleMessageRequestTap(_ request: MessageRequest) {
-        print("Tapped message request from \(request.fromUser.displayName)")
-        
-        // Check if this is a post report (contains "REPORTED POST")
-        if request.content.contains("🚨 REPORTED POST") {
-            // This is a post report, not a regular message request
-            // For now, we'll show an alert. In the future, this could navigate to a report details view
-            // TODO: Implement proper post report handling
-            return
-        }
-        
-        // For regular message requests, we can either:
-        // 1. Navigate to chat with the user
-        // 2. Show a request details view with accept/reject options
-        
-        // Option 1: Navigate to chat (simpler approach)
-        if let userId = request.fromUser.id {
-            selectedUser = User(
-                id: userId,
-                username: request.fromUser.username,
-                email: nil,
-                firstName: request.fromUser.firstName,
-                lastName: request.fromUser.lastName,
-                displayName: request.fromUser.displayName,
-                profilePicture: request.fromUser.profilePicture,
-                year: nil,
-                major: nil,
-                hometown: nil,
+    
+    private func handlePushNotification(_ userInfo: [AnyHashable: Any]) {
+        print("📱 Handling push notification in MessagesView: \(userInfo)")
+        if let aps = userInfo["aps"] as? [String: Any],
+           let alert = aps["alert"] as? [String: Any],
+           let title = alert["title"] as? String,
+           let body = alert["body"] as? String,
+           let senderId = userInfo["senderId"] as? String,
+           let senderUsername = userInfo["senderUsername"] as? String {
+            
+            let senderUser = User(
+                id: senderId,
+                username: senderUsername,
+                email: "",
+                firstName: senderUsername,
+                lastName: "",
+                profileImageUrl: nil,
                 bio: nil,
                 universityId: nil,
-                universityName: request.fromUser.university,
-                universityDomain: nil,
-                isVerified: false,
-                isActive: true,
                 createdAt: Date(),
-                updatedAt: nil
+                updatedAt: Date()
             )
+            
+            selectedUser = senderUser
             shouldNavigateToChat = true
-        }
-    }
-    
-    // MARK: - Computed Properties
-    private var searchPlaceholder: String {
-        switch activeTab {
-        case .incoming:
-            return "Search incoming messages"
-        case .sent:
-            return "Search sent messages"
-        }
-    }
-    
-    private var emptyStateTitle: String {
-        switch activeTab {
-        case .incoming:
-            return "No Unread Messages"
-        case .sent:
-            return "No Recent Conversations"
-        }
-    }
-    
-    private var emptyStateMessage: String {
-        switch activeTab {
-        case .incoming:
-            return "Messages you haven't responded to will appear here"
-        case .sent:
-            return "Conversations where you sent the last message will appear here"
-        }
-    }
-    
-    private var filteredConversations: [Conversation] {
-        guard let currentUserId = authManager.currentUser?.id else {
-            return []
-        }
-        
-        switch activeTab {
-        case .incoming:
-            // Incoming: Show conversations where the last message was sent TO the current user (from someone else)
-            return viewModel.conversations.filter { conversation in
-                let matchesSearch = searchText.isEmpty || 
-                    conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText)
-                
-                // Check if last message was sent by someone else (incoming)
-                let isIncomingMessage = conversation.lastMessage?.senderId != currentUserId
-                
-                return matchesSearch && isIncomingMessage
-            }
-        case .sent:
-            // Sent: Show conversations where the last message was sent BY the current user (outgoing)
-            return viewModel.conversations.filter { conversation in
-                let matchesSearch = searchText.isEmpty || 
-                    conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText)
-                
-                // Check if last message was sent by current user (outgoing)
-                let isOutgoingMessage = conversation.lastMessage?.senderId == currentUserId
-                
-                return matchesSearch && isOutgoingMessage
+            
+            Task {
+                await viewModel.refreshConversations()
             }
         }
     }
-    
-    private var filteredMessageRequests: [MessageRequest] {
-        return viewModel.messageRequests.filter { request in
-            searchText.isEmpty || 
-                request.fromUser.displayName.localizedCaseInsensitiveContains(searchText)
-        }
-    }
-    
-    private var filteredSentMessageRequests: [MessageRequest] {
-        return viewModel.sentMessageRequests.filter { request in
-            searchText.isEmpty || 
-                request.toUser?.displayName.localizedCaseInsensitiveContains(searchText) == true
-        }
-    }
-
+}
 
 // MARK: - Conversation Row
 struct ConversationRow: View {
@@ -469,120 +226,46 @@ struct ConversationRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Profile Picture
-            AsyncImage(url: conversation.otherUser.profileImageURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Circle()
-                    .fill(Color("BrandPrimary"))
-                    .overlay(
-                        Text(conversation.otherUser.initials)
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                    )
-            }
-            .frame(width: 50, height: 50)
-            .clipShape(Circle())
+            ProfileImageView(imageUrl: conversation.otherUser.profileImageUrl, size: .medium)
             
             VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(conversation.otherUser.displayName)
-                        .font(.headline)
-                        .fontWeight(conversation.unreadCountInt > 0 ? .semibold : .medium)
-                    
-                    Spacer()
-                    
-                    Text(conversation.timeAgo)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                Text(conversation.otherUser.fullName)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
                 
                 Text(conversation.lastMessage?.content ?? "No messages yet")
                     .font(.subheadline)
-                    .foregroundColor(conversation.unreadCountInt > 0 ? .primary : .secondary)
-                    .lineLimit(2)
-            }
-            
-            if conversation.unreadCountInt > 0 {
-                Circle()
-                    .fill(Color("AccentColor"))
-                    .frame(width: 8, height: 8)
-            }
-        }
-        .padding(.vertical, 8)
-        .contentShape(Rectangle())
-    }
-}
-
-// MARK: - Message Request Row
-struct MessageRequestRow: View {
-    let request: MessageRequest
-    let onTap: () -> Void
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            // Profile Picture
-            AsyncImage(url: request.fromUser.profileImageURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Circle()
-                    .fill(Color("BrandPrimary"))
-                    .overlay(
-                        Text(request.fromUser.initials)
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                    )
-            }
-            .frame(width: 50, height: 50)
-            .clipShape(Circle())
-            
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(request.fromUser.displayName)
-                        .font(.headline)
-                        .fontWeight(.medium)
-                    
-                    Spacer()
-                    
-                    Text(request.timeAgo)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Text(request.content)
-                    .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .lineLimit(2)
+                    .lineLimit(1)
                 
-                if let postTitle = request.postTitle {
-                    Text("Re: \(postTitle)")
+                if let lastMessageDate = conversation.lastMessage?.createdAt {
+                    Text(lastMessageDate, formatter: DateFormatter.messageDateFormatter)
                         .font(.caption)
-                        .foregroundColor(.blue)
-                        .padding(.top, 2)
+                        .foregroundColor(.tertiary)
                 }
             }
             
-            // Status indicator
-            if request.status == "pending" {
-                Circle()
-                    .fill(Color.orange)
-                    .frame(width: 8, height: 8)
+            Spacer()
+            
+            if conversation.unreadCount > 0 {
+                Text("\(conversation.unreadCount)")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color("BrandPrimary"))
+                    .cornerRadius(10)
             }
         }
         .padding(.vertical, 8)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            onTap()
-        }
     }
 }
 
-#Preview {
-    MessagesView()
-}
+struct MessagesView_Previews: PreviewProvider {
+    static var previews: some View {
+        MessagesView()
+            .environmentObject(AuthenticationManager())
+    }
+} 
