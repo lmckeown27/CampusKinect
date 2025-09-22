@@ -323,7 +323,3 @@ struct CustomSecureField: View {
     LoginView()
         .environmentObject(AuthenticationManager())
 }
-#Preview {
-    LoginView()
-        .environmentObject(AuthenticationManager())
-}
