@@ -178,8 +178,13 @@ struct MessagesView: View {
                         }
                     }
                 }
+                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
+                .frame(maxHeight: .infinity)
+                .clipped()
             }
-            .navigationTitle("Messages")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+        .navigationTitle("Messages")
             .navigationBarTitleDisplayMode(.large)
             .toolbar(content: {
                 ToolbarItem(placement: .navigationBarTrailing) {
