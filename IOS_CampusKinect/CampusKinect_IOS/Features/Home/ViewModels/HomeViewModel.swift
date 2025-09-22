@@ -194,8 +194,8 @@ extension HomeViewModel {
                 isCategoryExpanded = false
                 selectedTags.removeAll()
                 showingFilterBar = true
-        } else {
-            // Select new category and expand
+            }
+        } else {            // Select new category and expand
             selectedCategory = category
             isCategoryExpanded = true
             selectedTags.removeAll() // Clear previous tags
@@ -232,4 +232,3 @@ extension HomeViewModel {
     }
 }
 
-}
