@@ -184,6 +184,7 @@ struct MessagesView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
+        }        }
         .navigationTitle("Messages")
             .navigationBarTitleDisplayMode(.large)
             .toolbar(content: {
