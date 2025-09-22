@@ -134,3 +134,4 @@ struct CategorySelectionView: View {
     )
 }
 
+}

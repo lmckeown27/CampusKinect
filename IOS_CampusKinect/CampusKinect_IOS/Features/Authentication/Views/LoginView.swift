@@ -13,13 +13,11 @@ struct LoginView: View {
     @State private var password = ""
     @State private var showingAlert = false
     @State private var isPasswordVisible = false
-    @State private var isEmailFocused = false
-    @State private var isPasswordFocused = false
     @FocusState private var focusedField: LoginField?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
-    // Computed property to determine if we're on iPad
+    // iPad detection
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
@@ -31,164 +29,26 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Header Section
-                    VStack(spacing: 16) {
-                        Spacer()
-                            .frame(height: 60)
-                        
-                        // Logo
-                        Image("Logo")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 48, height: 48)
-                            .cornerRadius(12)
-                            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
-                        
-                        // Title
-                        Text("CampusKinect")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("BrandPrimary"))
-                        
-                        // Subtitle
-                        Text("Your Go-To University Marketplace")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
+                ScrollView {
+                    VStack(spacing: 32) {
+                        headerSection
+                        loginForm
+                        loginButton
+                        footerSection
                     }
-                    .padding(.bottom, 40)
-                    
-                    // Login Form Card
-                    VStack(spacing: 0) {
-                        VStack(spacing: 24) {
-                            // Email Field
-                            CustomTextField(
-                                title: "Username or University Email",
-                                text: $email,
-                                isSecure: false,
-                                isFocused: focusedField == .email,
-                                keyboardType: .default,
-                                onFocusChange: { focused in
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        isEmailFocused = focused
-                                        if focused {
-                                            focusedField = .email
-                                        }
-                                    }
-                                }
-                            )
-                            .focused($focusedField, equals: .email)
-                            
-                            // Password Field
-                            CustomSecureField(
-                                title: "Password",
-                                text: $password,
-                                isVisible: isPasswordVisible,
-                                isFocused: focusedField == .password,
-                                onVisibilityToggle: {
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        isPasswordVisible.toggle()
-                                    }
-                                },
-                                onFocusChange: { focused in
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        isPasswordFocused = focused
-                                        if focused {
-                                            focusedField = .password
-                                        }
-                                    }
-                                }
-                            )
-                            .focused($focusedField, equals: .password)
-                            
-                            // Login Button
-                            LoadingButton(
-                                title: "Sign In",
-                                isLoading: authManager.isLoading
-                            ) {
-                                // Dismiss keyboard before login
-                                focusedField = nil
-                                
-                                Task {
-                                    let success = await authManager.login(
-                                        email: email,
-                                        password: password
-                                    )
-                                    
-                                    if !success {
-                                        showingAlert = true
-                                    }
-                                }
-                            }
-                            .disabled(email.isEmpty || password.isEmpty)
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 32)
-                    }
-                    .background(Color(.systemBackground))
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 16, x: 0, y: 4)
-                    .padding(.horizontal, 32)
-                    
-                    // Sign Up Link
-                    VStack(spacing: 16) {
-                        NavigationLink(destination: RegisterView()) {
-                            Text("← Don't have an Account?")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(Color("BrandPrimary"))
-                        }
-                        
-                        // Footer
-                        VStack(spacing: 4) {
-                            Text("By logging in, you agree to our")
-                                .font(.caption)
-                                .foregroundColor(Color("BrandPrimary"))
-                            
-                            HStack(spacing: 4) {
-                                Button("Terms of Service") {
-                                    // Handle terms navigation
-                                }
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(Color("BrandPrimary"))
-                                
-                                Text("and")
-                                    .font(.caption)
-                                    .foregroundColor(Color("BrandPrimary"))
-                                
-                                Button("Privacy Policy") {
-                                    // Handle privacy navigation
-                                }
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(Color("BrandPrimary"))
-                            }
-                        }
-                    }
-                    .padding(.top, 24)
-                    
-                    Spacer()
+                    .padding(.horizontal, isIPad ? 40 : 24)
+                    .padding(.vertical, 40)
                 }
+                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 600) : .infinity)
+                .frame(maxHeight: .infinity)
+                .clipped()
             }
-            .background(
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color("BrandPrimary").opacity(0.05),
-                        Color.clear,
-                        Color("BrandPrimary").opacity(0.1)
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .navigationBarHidden(true)
-            .onTapGesture {
-                // Dismiss keyboard when tapping outside
-                focusedField = nil
-            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+        }
+        .navigationBarHidden(true)
+        .onTapGesture {
+            focusedField = nil
         }
         .alert("Login Failed", isPresented: $showingAlert) {
             Button("OK") {
@@ -198,123 +58,153 @@ struct LoginView: View {
             Text(authManager.authError?.userFriendlyMessage ?? "An error occurred")
         }
     }
-}
-
-// MARK: - Custom Text Field
-struct CustomTextField: View {
-    let title: String
-    @Binding var text: String
-    let isSecure: Bool
-    let isFocused: Bool
-    let keyboardType: UIKeyboardType
-    let onFocusChange: (Bool) -> Void
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(
-                        isFocused ? Color("BrandPrimary") : Color("BrandPrimary").opacity(0.3),
-                        lineWidth: isFocused ? 2 : 1
-                    )
-                    .frame(height: 56)
-                    .animation(.easeInOut(duration: 0.2), value: isFocused)
+    // MARK: - Components
+    
+    private var headerSection: some View {
+        VStack(spacing: 16) {
+            Spacer()
+                .frame(height: isIPad ? 60 : 40)
+            
+            Image("Logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: isIPad ? 100 : 80)
+            
+            VStack(spacing: 8) {
+                Text("Welcome Back")
+                    .font(isIPad ? .largeTitle : .title)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        Text(title)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(isFocused ? Color("BrandPrimary") : .primary)
-                            .padding(.horizontal, 4)
-                            .background(Color(.systemBackground))
-                            .scaleEffect(isFocused || !text.isEmpty ? 1.0 : 0.9)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused || !text.isEmpty)
-                        Spacer()
-                    }
-                    .offset(y: -8)
-                    .padding(.leading, 12)
-                    
-                    TextField("", text: $text)
-                        .font(.system(size: 16))
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .keyboardType(keyboardType)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                        .padding(.horizontal, 16)
-                        .padding(.top, -8)
-                }
-            }
-            .contentShape(Rectangle()) // Make entire area tappable
-            .onTapGesture {
-                onFocusChange(true)
+                Text("Sign in to your account")
+                    .font(isIPad ? .title3 : .subheadline)
+                    .foregroundColor(.secondary)
             }
         }
     }
-}
-
-// MARK: - Custom Secure Field
-struct CustomSecureField: View {
-    let title: String
-    @Binding var text: String
-    let isVisible: Bool
-    let isFocused: Bool
-    let onVisibilityToggle: () -> Void
-    let onFocusChange: (Bool) -> Void
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(
-                        isFocused ? Color("BrandPrimary") : Color("BrandPrimary").opacity(0.3),
-                        lineWidth: isFocused ? 2 : 1
-                    )
-                    .frame(height: 56)
-                    .animation(.easeInOut(duration: 0.2), value: isFocused)
+    private var loginForm: some View {
+        VStack(spacing: 20) {
+            // Email Field
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Username or Email")
+                    .font(.headline)
+                    .fontWeight(.semibold)
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        Text(title)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(isFocused ? Color("BrandPrimary") : .primary)
-                            .padding(.horizontal, 4)
-                            .background(Color(.systemBackground))
-                            .scaleEffect(isFocused || !text.isEmpty ? 1.0 : 0.9)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused || !text.isEmpty)
-                        Spacer()
-                    }
-                    .offset(y: -8)
-                    .padding(.leading, 12)
+                TextField("Enter your username or email", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .email)
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+            }
+            
+            // Password Field
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Password")
+                        .font(.headline)
+                        .fontWeight(.semibold)
                     
-                    HStack {
-                        if isVisible {
-                            TextField("", text: $text)
-                                .font(.system(size: 16))
-                                .textFieldStyle(PlainTextFieldStyle())
-                        } else {
-                            SecureField("", text: $text)
-                                .font(.system(size: 16))
-                                .textFieldStyle(PlainTextFieldStyle())
-                        }
-                        
-                        Button(action: onVisibilityToggle) {
-                            Image(systemName: isVisible ? "eye.slash" : "eye")
-                                .foregroundColor(Color("BrandPrimary"))
-                                .font(.system(size: 16))
-                                .scaleEffect(isFocused ? 1.1 : 1.0)
-                                .animation(.easeInOut(duration: 0.2), value: isFocused)
-                        }
+                    Spacer()
+                    
+                    Button("Forgot?") {
+                        // Handle forgot password
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, -8)
+                    .font(.caption)
+                    .foregroundColor(Color("BrandPrimary"))
                 }
+                
+                HStack {
+                    if isPasswordVisible {
+                        TextField("Enter your password", text: $password)
+                            .focused($focusedField, equals: .password)
+                    } else {
+                        SecureField("Enter your password", text: $password)
+                            .focused($focusedField, equals: .password)
+                    }
+                    
+                    Button(action: {
+                        isPasswordVisible.toggle()
+                    }) {
+                        Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .textFieldStyle(RoundedBorderTextFieldStyle())
             }
-            .contentShape(Rectangle()) // Make entire area tappable
-            .onTapGesture {
-                onFocusChange(true)
+        }
+    }
+    
+    private var loginButton: some View {
+        Button(action: {
+            focusedField = nil
+            Task {
+                await performLogin()
             }
+        }) {
+            HStack {
+                if authManager.isLoading {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .foregroundColor(.white)
+                }
+                Text(authManager.isLoading ? "Signing In..." : "Sign In")
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(
+                isFormValid ? Color("BrandPrimary") : Color.gray
+            )
+            .cornerRadius(12)
+        }
+        .disabled(!isFormValid || authManager.isLoading)
+    }
+    
+    private var footerSection: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(.secondary.opacity(0.3))
+                
+                Text("or")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 16)
+                
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(.secondary.opacity(0.3))
+            }
+            
+            NavigationLink(destination: RegisterView()) {
+                Text("Don't have an account? Sign Up")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(Color("BrandPrimary"))
+            }
+            
+            Spacer()
+                .frame(height: isIPad ? 40 : 20)
+        }
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var isFormValid: Bool {
+        !email.isEmpty && !password.isEmpty && password.count >= 6
+    }
+    
+    // MARK: - Methods
+    
+    private func performLogin() async {
+        let success = await authManager.login(email: email, password: password)
+        if !success {
+            showingAlert = true
         }
     }
 }
@@ -324,5 +214,4 @@ struct LoginView_Previews: PreviewProvider {
         LoginView()
             .environmentObject(AuthenticationManager())
     }
-}
 }
