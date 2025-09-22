@@ -335,6 +335,8 @@ struct CompactFilterIndicator: View {
     }
 }
 
+
+
 // MARK: - Category Toggle Arrow
 struct CategoryToggleArrow: View {
     @EnvironmentObject var viewModel: HomeViewModel
@@ -351,7 +353,6 @@ struct CategoryToggleArrow: View {
                 Image(systemName: viewModel.showingCategorySection ? "chevron.up" : "chevron.down")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.secondary)
-                    .rotationEffect(.degrees(viewModel.showingCategorySection ? 0 : 180))
                 
                 Spacer()
             }
@@ -366,4 +367,5 @@ struct CategoryToggleArrow: View {
     HomeView()
         .environmentObject(AuthenticationManager())
 }
+
 
