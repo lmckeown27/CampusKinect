@@ -164,40 +164,6 @@ struct ChatView: View {
     }
 }
 
-// MARK: - Message Bubble View
-struct MessageBubbleView: View {
-    let message: Message
-    let isCurrentUser: Bool
-    
-    var body: some View {
-        HStack {
-            if isCurrentUser {
-                Spacer(minLength: 50)
-            }
-            
-            VStack(alignment: isCurrentUser ? .trailing : .leading, spacing: 4) {
-                Text(message.content)
-                    .font(.body)
-                    .foregroundColor(isCurrentUser ? .white : .primary)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(
-                        isCurrentUser ? Color("BrandPrimary") : Color(.systemGray5)
-                    )
-                    .cornerRadius(18)
-                
-                Text(message.createdAt, formatter: DateFormatter.messageTimeFormatter)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 4)
-            }
-            
-            if !isCurrentUser {
-                Spacer(minLength: 50)
-            }
-        }
-    }
-}
 
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {
@@ -205,4 +171,3 @@ struct ChatView_Previews: PreviewProvider {
             .environmentObject(AuthenticationManager())
     }
 }
-

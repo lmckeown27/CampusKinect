@@ -154,13 +154,27 @@ struct NewMessageView: View {
                 // Check if task was cancelled
                 try Task.checkCancellation()
                 
-                let searchResults = try await apiService.searchUsers(query: query)
+                let usersResponse = try await apiService.fetchUsers(search: query)
+                let searchResults = usersResponse.users
                 
                 // Check if task was cancelled after API call
                 try Task.checkCancellation()
                 
                 await MainActor.run {
-                    self.users = searchResults
+                    self.users = usersResponse.data.users.map { searchUser in
+                        User(
+                            id: searchUser.id,
+                            username: searchUser.username,
+                            email: searchUser.email,
+                            firstName: searchUser.firstName,
+                            lastName: searchUser.lastName,
+                            profileImageUrl: nil,
+                            bio: searchUser.bio,
+                            universityId: searchUser.universityId,
+                            createdAt: searchUser.createdAt,
+                            updatedAt: searchUser.updatedAt
+                        )
+                    }
                     self.isLoading = false
                 }
             } catch is CancellationError {
