@@ -319,15 +319,11 @@ struct CustomSecureField: View {
     }
 }
 
-// MARK: - Authentication Flow Container
-struct AuthenticationFlow: View {
-    var body: some View {
-        LoginView()
-    }
-}
-
 #Preview {
     LoginView()
         .environmentObject(AuthenticationManager())
 }
-
+#Preview {
+    LoginView()
+        .environmentObject(AuthenticationManager())
+}

@@ -25,7 +25,7 @@ struct ContentView: View {
                         }
                     }
             } else {
-                AuthenticationFlow()
+                LoginView()
             }
         }
         .overlay(alignment: .top) {
