@@ -155,12 +155,25 @@ struct NewMessageView: View {
                 try Task.checkCancellation()
                 
                 let usersResponse = try await apiService.fetchUsers(search: query)
+                let searchResults = usersResponse.data.users.map { searchUser in
+                    User(
+                        id: searchUser.id,
+                        username: searchUser.username,
+                        email: searchUser.email,
+                        firstName: searchUser.firstName,
+                        lastName: searchUser.lastName,
+                        profileImageUrl: nil,
+                        bio: searchUser.bio,
+                        universityId: searchUser.universityId,
+                        createdAt: searchUser.createdAt,
+                        updatedAt: searchUser.updatedAt
+                    )
+                }
                 
                 // Check if task was cancelled after API call
                 try Task.checkCancellation()
                 
                 await MainActor.run {
-                    // Use the asUser property to convert SearchUser to User
                     self.users = usersResponse.data.users.map { searchUser in
                         searchUser.asUser
                     }
@@ -170,7 +183,7 @@ struct NewMessageView: View {
                 // Task was cancelled, do nothing
             } catch {
                 await MainActor.run {
-                    self.error = error as? APIError ?? APIError.networkError(error.localizedDescription)
+                    self.error = error as? APIError ?? APIError.networkError
                     self.isLoading = false
                 }
             }
@@ -186,7 +199,7 @@ struct UserRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                ProfileImageView(imageUrl: user.profilePicture, size: .medium)
+                ProfileImageView(imageUrl: user.profileImageUrl, size: .medium)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(user.fullName)
@@ -194,11 +207,9 @@ struct UserRow: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
                     
-                    if let username = user.username {
-                        Text("@\(username)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
+                    Text("@\(user.username)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     
                     if let bio = user.bio, !bio.isEmpty {
                         Text(bio)

@@ -112,12 +112,16 @@ struct MessageBubbleView_Previews: PreviewProvider {
             // Current user message
             MessageBubbleView(
                 message: Message(
-                    id: "1",
+                    id: 1,
+                    conversationId: 1,
+                    senderId: 1,
+                    receiverId: 2,
                     content: "Hey! How are you doing today?",
-                    senderId: "current",
-                    receiverId: "other",
+                    messageType: .text,
+                    isRead: true,
                     createdAt: Date(),
-                    updatedAt: Date()
+                    updatedAt: Date(),
+                    metadata: nil
                 ),
                 isCurrentUser: true
             )
@@ -125,12 +129,16 @@ struct MessageBubbleView_Previews: PreviewProvider {
             // Other user message
             MessageBubbleView(
                 message: Message(
-                    id: "2",
+                    id: 2,
+                    conversationId: 1,
+                    senderId: 2,
+                    receiverId: 1,
                     content: "I'm doing great! Thanks for asking. How about you?",
-                    senderId: "other",
-                    receiverId: "current",
+                    messageType: .text,
+                    isRead: false,
                     createdAt: Date(),
-                    updatedAt: Date()
+                    updatedAt: Date(),
+                    metadata: nil
                 ),
                 isCurrentUser: false
             )
@@ -138,12 +146,16 @@ struct MessageBubbleView_Previews: PreviewProvider {
             // Long message example
             MessageBubbleView(
                 message: Message(
-                    id: "3",
+                    id: 3,
+                    conversationId: 1,
+                    senderId: 1,
+                    receiverId: 2,
                     content: "This is a longer message to test how the bubble handles multiple lines of text and wrapping on different screen sizes.",
-                    senderId: "current",
-                    receiverId: "other",
+                    messageType: .text,
+                    isRead: false,
                     createdAt: Date(),
-                    updatedAt: Date()
+                    updatedAt: Date(),
+                    metadata: nil
                 ),
                 isCurrentUser: true
             )

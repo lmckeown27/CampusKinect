@@ -57,7 +57,7 @@ struct MessagesView: View {
         }
         .navigationDestination(isPresented: $shouldNavigateToChat) {
             if let user = selectedUser {
-                ChatView(userId: Int(user.id) ?? 0, userName: user.username)
+                ChatView(userId: Int(user.id) ?? 0, userName: user.username ?? user.fullName)
             }
         }
         .onAppear {
@@ -122,8 +122,8 @@ struct MessagesView: View {
     }
     
     private var conversationsList: some View {
-        Group {
-            if viewModel.isLoadingConversations && viewModel.conversations.isEmpty {
+        VStack {
+            if viewModel.isLoading && viewModel.conversations.isEmpty {
                 LoadingView()
             } else if viewModel.conversations.isEmpty {
                 EmptyStateView(
@@ -143,12 +143,12 @@ struct MessagesView: View {
                                 trailing: isIPad ? 40 : 16
                             ))
                             .onTapGesture {
-                                selectedUser = conversation.otherUser
+                                selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
                                 shouldNavigateToChat = true
                             }
                     }
                     
-                    if viewModel.isLoadingConversations && !viewModel.conversations.isEmpty {
+                    if viewModel.isLoading && !viewModel.conversations.isEmpty {
                         HStack {
                             Spacer()
                             ProgressView()
@@ -174,13 +174,13 @@ struct MessagesView: View {
     }
     
     private var filteredConversations: [Conversation] {
-        let conversationsToFilter = activeTab == .incoming ? viewModel.incomingConversations : viewModel.sentConversations
+        let conversationsToFilter = viewModel.conversations
         
         if searchText.isEmpty {
             return conversationsToFilter
         } else {
             return conversationsToFilter.filter { conversation in
-                conversation.otherUser.fullName.localizedCaseInsensitiveContains(searchText) ||
+                conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
                 conversation.lastMessage?.content.localizedCaseInsensitiveContains(searchText) ?? false
             }
         }
@@ -198,16 +198,22 @@ struct MessagesView: View {
            let senderUsername = userInfo["senderUsername"] as? String {
             
             let senderUser = User(
-                id: senderId,
+                id: Int(senderId) ?? 0,
                 username: senderUsername,
                 email: "",
-                firstName: senderUsername,
+                firstName: senderUsername ?? "Unknown",
                 lastName: "",
-                profileImageUrl: nil,
-                bio: nil,
+                displayName: senderUsername ?? "Unknown User",
+                profilePicture: nil,
+                year: nil,
+                major: nil,
+                hometown: nil,                bio: nil,
                 universityId: nil,
-                createdAt: Date(),
-                updatedAt: Date()
+                universityName: nil,
+                universityDomain: nil,
+                isVerified: nil,
+                isActive: nil,                createdAt: Date(),
+                updatedAt: nil
             )
             
             selectedUser = senderUser
@@ -226,10 +232,10 @@ struct ConversationRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            ProfileImageView(imageUrl: conversation.otherUser.profileImageUrl, size: .medium)
+            ProfileImageView(imageUrl: conversation.otherUser.profilePicture, size: .medium)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(conversation.otherUser.fullName)
+                Text(conversation.otherUser.displayName)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
@@ -239,17 +245,12 @@ struct ConversationRow: View {
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                 
-                if let lastMessageDate = conversation.lastMessage?.createdAt {
-                    Text(lastMessageDate, formatter: DateFormatter.messageDateFormatter)
-                        .font(.caption)
-                        .foregroundColor(.tertiary)
-                }
             }
             
             Spacer()
             
-            if conversation.unreadCount > 0 {
-                Text("\(conversation.unreadCount)")
+            if conversation.unreadCountInt > 0 {
+                Text("\(conversation.unreadCountInt)")
                     .font(.caption2)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
