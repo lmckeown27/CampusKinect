@@ -339,6 +339,18 @@ struct RegisterView: View {
                 // Dismiss keyboard when tapping outside
                 focusedField = nil
             }
+            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+            .frame(maxHeight: .infinity)
+            .clipped()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
+            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+            .frame(maxHeight: .infinity)
+            .clipped()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
         }
         .alert("Registration Failed", isPresented: $showingAlert) {
             Button("OK") {
