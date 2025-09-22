@@ -30,13 +30,6 @@ struct RegisterView: View {
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.verticalSizeClass) var verticalSizeClass
-    
-    // Computed property to determine if we're on iPad
-    private var isIPad: Bool {
-        horizontalSizeClass == .regular && verticalSizeClass == .regular
-    }
     
     enum RegisterField {
         case username, firstName, lastName, email, password, confirmPassword
@@ -45,8 +38,81 @@ struct RegisterView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        headerSection
+                        formSection
+                        registerButtonSection
+                    }
+                    .padding()
+                }
+                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+                .frame(maxHeight: .infinity)
+                .clipped()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+            }
+            .navigationTitle("Sign Up")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(Color("BrandPrimary"))
+                }
+            }
+            .onTapGesture {
+                focusedField = nil
+            }
+        }
+        .alert("Registration Failed", isPresented: $showingAlert) {
+            Button("OK") {
+                authManager.clearError()
+            }
+        } message: {
+            Text(authManager.authError?.userFriendlyMessage ?? "An error occurred")
+        }
+        .fullScreenCover(isPresented: $showingVerification) {
+            VerificationView(email: email)
+        }
+    }
+    
+    // MARK: - View Components
+    
+    private var headerSection: some View {
+        VStack(spacing: 16) {
+            Spacer()
+                .frame(height: 40)
+            
+            // Logo
+            Image("Logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 80)
+            
+            // Title and subtitle
+            VStack(spacing: 8) {
+                Text("Join CampusKinect")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Text("Connect with your campus community")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Spacer()
+                .frame(height: 20)
+        }
+    }
+    
+    private var formSection: some View {
+        VStack(spacing: 20) {
                     // Header Section
                     VStack(spacing: 16) {
                         Spacer()
