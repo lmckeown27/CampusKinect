@@ -704,3 +704,4 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
 
 #Preview {
     ImagePickerView(selectedImages: .constant([]))
+}

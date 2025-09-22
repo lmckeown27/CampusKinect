@@ -125,13 +125,13 @@ struct CategorySelectionView: View {
     }
 }
 
-#Preview {
-    CategorySelectionView(
-        selectedCategory: .constant(nil),
-        selectedSubcategory: .constant(nil),
-        selectedOfferRequest: .constant(nil),
-        isPresented: .constant(true)
-    )
-}
-
+struct CategorySelectionView_Previews: PreviewProvider {
+    static var previews: some View {
+        CategorySelectionView(
+            selectedCategory: .constant(nil),
+            selectedSubcategory: .constant(nil),
+            selectedOfferRequest: .constant(nil),
+            isPresented: .constant(true)
+        )
+    }
 }

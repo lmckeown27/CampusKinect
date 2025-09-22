@@ -586,7 +586,3 @@ struct MessageRequestRow: View {
 #Preview {
     MessagesView()
 }
-
-}
-}
-}
