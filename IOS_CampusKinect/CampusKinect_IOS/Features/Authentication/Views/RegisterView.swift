@@ -52,21 +52,20 @@ struct RegisterView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
-            }
-            .navigationTitle("Sign Up")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .foregroundColor(Color("BrandPrimary"))
+        }
+        .navigationTitle("Sign Up")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
                 }
+                .foregroundColor(Color("BrandPrimary"))
             }
-            .onTapGesture {
-                focusedField = nil
-            }
+        }
+        .onTapGesture {
+            focusedField = nil
         }
         .alert("Registration Failed", isPresented: $showingAlert) {
             Button("OK") {
@@ -87,13 +86,11 @@ struct RegisterView: View {
             Spacer()
                 .frame(height: 40)
             
-            // Logo
             Image("Logo")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 80)
             
-            // Title and subtitle
             VStack(spacing: 8) {
                 Text("Join CampusKinect")
                     .font(.title)
@@ -113,320 +110,130 @@ struct RegisterView: View {
     
     private var formSection: some View {
         VStack(spacing: 20) {
-                    // Header Section
-                    VStack(spacing: 16) {
-                        Spacer()
-                            .frame(height: 40)
-                        
-                        // Logo
-                        Image("Logo")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 48, height: 48)
-                            .cornerRadius(12)
-                            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
-                        
-                        // Title
-                        Text("CampusKinect")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("BrandPrimary"))
-                        
-                        // Subtitle
-                        Text("Create your account to get started")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.bottom, 32)
-                    
-                    // Registration Form Card
-                    VStack(spacing: 0) {
-                        VStack(spacing: 20) {
-                            // Username Field
-                            CustomTextFieldWithPlaceholder(
-                                title: "Username",
-                                text: $username,
-                                isSecure: false,
-                                isFocused: focusedField == .username,
-                                keyboardType: .default,
-                                onFocusChange: { focused in
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        if focused {
-                                            focusedField = .username
-                                        }
-                                    }
-                                },
-                                placeholder: "your_username"
-                            )
-                            .focused($focusedField, equals: .username)
-                            
-                            // Name Fields Row
-                            HStack(spacing: 12) {
-                                // First Name
-                                CustomTextField(
-                                    title: "First Name",
-                                    text: $firstName,
-                                    isSecure: false,
-                                    isFocused: focusedField == .firstName,
-                                    keyboardType: .default,
-                                    onFocusChange: { focused in
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            if focused {
-                                                focusedField = .firstName
-                                            }
-                                        }
-                                    }
-                                )
-                                .focused($focusedField, equals: .firstName)
-                                
-                                // Last Name
-                                CustomTextField(
-                                    title: "Last Name",
-                                    text: $lastName,
-                                    isSecure: false,
-                                    isFocused: focusedField == .lastName,
-                                    keyboardType: .default,
-                                    onFocusChange: { focused in
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            if focused {
-                                                focusedField = .lastName
-                                            }
-                                        }
-                                    }
-                                )
-                                .focused($focusedField, equals: .lastName)
-                            }
-                            
-                            // University Email Field
-                            VStack(alignment: .leading, spacing: 8) {
-                                CustomTextFieldWithPlaceholder(
-                                    title: "University Email",
-                                    text: $email,
-                                    isSecure: false,
-                                    isFocused: focusedField == .email,
-                                    keyboardType: .emailAddress,
-                                    onFocusChange: { focused in
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            if focused {
-                                                focusedField = .email
-                                            }
-                                        }
-                                    },
-                                    placeholder: "yourname@yourcollege.edu"
-                                )
-                                .focused($focusedField, equals: .email)
-                                
-                                if !email.isEmpty && !isValidUniversityEmail {
-                                    HStack {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundColor(.red)
-                                            .font(.caption)
-                                        Text("Please use your university email address")
-                                            .font(.caption)
-                                            .foregroundColor(.red)
-                                    }
-                                    .padding(.leading, 4)
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-                                }
-                            }
-                            
-                            // Password Field
-                            VStack(alignment: .leading, spacing: 8) {
-                                CustomSecureField(
-                                    title: "Password",
-                                    text: $password,
-                                    isVisible: isPasswordVisible,
-                                    isFocused: focusedField == .password,
-                                    onVisibilityToggle: {
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            isPasswordVisible.toggle()
-                                        }
-                                    },
-                                    onFocusChange: { focused in
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            if focused {
-                                                focusedField = .password
-                                            }
-                                        }
-                                    }
-                                )
-                                .focused($focusedField, equals: .password)
-                                
-                                if !password.isEmpty && password.count < AppConstants.minPasswordLength {
-                                    HStack {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundColor(.red)
-                                            .font(.caption)
-                                        Text("Password must be at least \(AppConstants.minPasswordLength) characters")
-                                            .font(.caption)
-                                            .foregroundColor(.red)
-                                    }
-                                    .padding(.leading, 4)
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-                                }
-                            }
-                            
-                            // Confirm Password Field
-                            VStack(alignment: .leading, spacing: 8) {
-                                CustomSecureField(
-                                    title: "Confirm Password",
-                                    text: $confirmPassword,
-                                    isVisible: isConfirmPasswordVisible,
-                                    isFocused: focusedField == .confirmPassword,
-                                    onVisibilityToggle: {
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            isConfirmPasswordVisible.toggle()
-                                        }
-                                    },
-                                    onFocusChange: { focused in
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            if focused {
-                                                focusedField = .confirmPassword
-                                            }
-                                        }
-                                    }
-                                )
-                                .focused($focusedField, equals: .confirmPassword)
-                                
-                                if !confirmPassword.isEmpty && password != confirmPassword {
-                                    HStack {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundColor(.red)
-                                            .font(.caption)
-                                        Text("Passwords do not match")
-                                            .font(.caption)
-                                            .foregroundColor(.red)
-                                    }
-                                    .padding(.leading, 4)
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-                                }
-                            }
-                            
-                            // Register Button
-                            LoadingButton(
-                                title: "Create Account",
-                                isLoading: authManager.isLoading
-                            ) {
-                                // Dismiss keyboard before registration
-                                focusedField = nil
-                                
-                                Task {
-                                    let success = await authManager.register(
-                                        username: username,
-                                        email: email,
-                                        password: password,
-                                        firstName: firstName,
-                                        lastName: lastName
-                                    )
-                                    
-                                    if success {
-                                        // Navigate to verification view
-                                        showingVerification = true
-                                    } else {
-                                        showingAlert = true
-                                    }
-                                }
-                            }
-                            .disabled(!isFormValid)
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 32)
-                    }
-                    .background(Color(.systemBackground))
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 16, x: 0, y: 4)
-                    .padding(.horizontal, 32)
-                    
-                    // Sign In Link
-                    VStack(spacing: 16) {
-                        Button(action: { dismiss() }) {
-                            Text("← Have an Account?")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(Color("BrandPrimary"))
-                        }
-                        
-                        // Footer
-                        VStack(spacing: 4) {
-                            Text("By creating an account, you agree to our")
-                                .font(.caption)
-                                .foregroundColor(Color("BrandPrimary"))
-                            
-                            HStack(spacing: 4) {
-                                Button("Terms of Service") {
-                                    // Handle terms navigation
-                                }
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(Color("BrandPrimary"))
-                                
-                                Text("and")
-                                    .font(.caption)
-                                    .foregroundColor(Color("BrandPrimary"))
-                                
-                                Button("Privacy Policy") {
-                                    // Handle privacy navigation
-                                }
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(Color("BrandPrimary"))
-                            }
-                        }
-                    }
-                    .padding(.top, 24)
-                    
-                    Spacer()
+            usernameField
+            nameFields
+            emailField
+            passwordFields
+        }
+    }
+    
+    private var usernameField: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Username")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            TextField("Choose a username", text: $username)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .focused($focusedField, equals: .username)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+        }
+    }
+    
+    private var nameFields: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("First Name")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                TextField("First name", text: $firstName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .firstName)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Last Name")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                TextField("Last name", text: $lastName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focusedField, equals: .lastName)
+            }
+        }
+    }
+    
+    private var emailField: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("University Email")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            TextField("your.email@university.edu", text: $email)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .focused($focusedField, equals: .email)
+                .keyboardType(.emailAddress)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+        }
+    }
+    
+    private var passwordFields: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Password")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                if isPasswordVisible {
+                    TextField("Password", text: $password)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($focusedField, equals: .password)
+                } else {
+                    SecureField("Password", text: $password)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($focusedField, equals: .password)
                 }
             }
-            .background(
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color("BrandPrimary").opacity(0.05),
-                        Color.clear,
-                        Color("BrandPrimary").opacity(0.1)
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Confirm Password")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                if isConfirmPasswordVisible {
+                    TextField("Confirm Password", text: $confirmPassword)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($focusedField, equals: .confirmPassword)
+                } else {
+                    SecureField("Confirm Password", text: $confirmPassword)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($focusedField, equals: .confirmPassword)
+                }
+            }
+        }
+    }
+    
+    private var registerButtonSection: some View {
+        VStack(spacing: 16) {
+            Button(action: {
+                Task {
+                    await registerUser()
+                }
+            }) {
+                HStack {
+                    if authManager.isLoading {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .foregroundColor(.white)
+                    }
+                    Text(authManager.isLoading ? "Creating Account..." : "Create Account")
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(
+                    isFormValid ? Color("BrandPrimary") : Color.gray
                 )
-            )
-            .navigationTitle("Sign Up")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .foregroundColor(Color("BrandPrimary"))
-                }
+                .cornerRadius(12)
             }
-            .onTapGesture {
-                // Dismiss keyboard when tapping outside
-                focusedField = nil
-            }
-            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
-            .frame(maxHeight: .infinity)
-            .clipped()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
-            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
-            .frame(maxHeight: .infinity)
-            .clipped()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
-        }
-        .alert("Registration Failed", isPresented: $showingAlert) {
-            Button("OK") {
-                authManager.clearError()
-            }
-        } message: {
-            Text(authManager.authError?.userFriendlyMessage ?? "An error occurred")
-        }
-        .fullScreenCover(isPresented: $showingVerification) {
-            VerificationView(email: email)
+            .disabled(!isFormValid || authManager.isLoading)
+            
+            Spacer()
+                .frame(height: 40)
         }
     }
     
@@ -443,6 +250,26 @@ struct RegisterView: View {
         isValidUniversityEmail &&
         password.count >= AppConstants.minPasswordLength &&
         password == confirmPassword
+    }
+    
+    private func registerUser() async {
+        // Dismiss keyboard before registration
+        focusedField = nil
+        
+        let success = await authManager.register(
+            username: username,
+            email: email,
+            password: password,
+            firstName: firstName,
+            lastName: lastName
+        )
+        
+        if success {
+            // Navigate to verification view
+            showingVerification = true
+        } else {
+            showingAlert = true
+        }
     }
 }
 
