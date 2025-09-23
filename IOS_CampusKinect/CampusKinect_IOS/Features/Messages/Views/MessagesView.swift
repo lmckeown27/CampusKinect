@@ -57,7 +57,7 @@ struct MessagesView: View {
         }
         .navigationDestination(isPresented: $shouldNavigateToChat) {
             if let user = selectedUser {
-                ChatView(userId: Int(user.id) ?? 0, userName: user.username ?? user.fullName)
+                ChatView(userId: user.id, userName: user.username ?? user.fullName)
             }
         }
         .onAppear {
@@ -184,8 +184,6 @@ struct MessagesView: View {
         print("📱 Handling push notification in MessagesView: \(userInfo)")
         if let aps = userInfo["aps"] as? [String: Any],
            let alert = aps["alert"] as? [String: Any],
-           let title = alert["title"] as? String,
-           let body = alert["body"] as? String,
            let senderId = userInfo["senderId"] as? String,
            let senderUsername = userInfo["senderUsername"] as? String {
             
@@ -193,9 +191,9 @@ struct MessagesView: View {
                 id: Int(senderId) ?? 0,
                 username: senderUsername,
                 email: "",
-                firstName: senderUsername ?? "Unknown",
+                firstName: senderUsername,
                 lastName: "",
-                displayName: senderUsername ?? "Unknown User",
+                displayName: senderUsername,
                 profilePicture: nil,
                 year: nil,
                 major: nil,

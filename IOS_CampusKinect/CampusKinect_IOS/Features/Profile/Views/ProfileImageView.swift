@@ -23,8 +23,22 @@ struct ProfileImageView: View {
         }
     }
     
+    // Computed property to construct full URL
+    private var fullImageURL: URL? {
+        guard let imageUrl = imageUrl, !imageUrl.isEmpty else { return nil }
+        
+        // If it's already a full URL, use it as-is
+        if imageUrl.hasPrefix("http") {
+            return URL(string: imageUrl)
+        }
+        
+        // If it's a relative path, prepend the base URL
+        let fullURLString = "\(APIConstants.baseURL)\(imageUrl)"
+        return URL(string: fullURLString)
+    }
+    
     var body: some View {
-        AsyncImage(url: URL(string: imageUrl ?? "")) { image in
+        AsyncImage(url: fullImageURL) { image in
             image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
