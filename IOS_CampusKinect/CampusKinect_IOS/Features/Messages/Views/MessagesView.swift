@@ -134,18 +134,10 @@ struct MessagesView: View {
             } else {
                 List {
                     ForEach(filteredConversations) { conversation in
-                        ConversationRow(conversation: conversation)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(
-                                top: 8,
-                                leading: isIPad ? 40 : 16,
-                                bottom: 8,
-                                trailing: isIPad ? 40 : 16
-                            ))
-                            .onTapGesture {
-                                selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
-                                shouldNavigateToChat = true
-                            }
+                        ConversationRow(conversation: conversation) {
+                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
+                            shouldNavigateToChat = true
+                        }
                     }
                     
                     if viewModel.isLoading && !viewModel.conversations.isEmpty {
@@ -229,38 +221,46 @@ struct MessagesView: View {
 // MARK: - Conversation Row
 struct ConversationRow: View {
     let conversation: Conversation
+    let onTap: () -> Void
     
     var body: some View {
-        HStack(spacing: 12) {
-            ProfileImageView(imageUrl: conversation.otherUser.profilePicture, size: .medium)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(conversation.otherUser.displayName)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                ProfileImageView(imageUrl: conversation.otherUser.profilePicture, size: .medium)
                 
-                Text(conversation.lastMessage?.content ?? "No messages yet")
-                    .font(.subheadline)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(conversation.otherUser.displayName)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+
+                    Text(conversation.lastMessage?.content ?? "No messages yet")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+
+                }
+
+                Spacer()
+
+                if conversation.unreadCountInt > 0 {
+                    Text("\(conversation.unreadCountInt)")
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color("BrandPrimary"))
+                        .cornerRadius(10)
+                }
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
                     .foregroundColor(.secondary)
-                    .lineLimit(1)
-                
             }
-            
-            Spacer()
-            
-            if conversation.unreadCountInt > 0 {
-                Text("\(conversation.unreadCountInt)")
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color("BrandPrimary"))
-                    .cornerRadius(10)
-            }
+            .padding(.vertical, 8)
         }
-        .padding(.vertical, 8)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
