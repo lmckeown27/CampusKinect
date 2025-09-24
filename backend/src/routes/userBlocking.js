@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { query } = require('../config/database');
 const auth = require('../middleware/auth');
+const { validate } = require('../middleware/validation');
 const router = express.Router();
 
 // @route   POST /api/v1/users/block
@@ -9,7 +10,9 @@ const router = express.Router();
 // @access  Private
 router.post('/block', [
   auth,
-  body('userId').isInt().withMessage('User ID must be an integer')
+  body('userId').isInt().withMessage('User ID must be an integer'),
+  validate,
+  validate
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -103,7 +106,8 @@ router.post('/block', [
 // @access  Private
 router.post('/unblock', [
   auth,
-  body('userId').isInt().withMessage('User ID must be an integer')
+  body('userId').isInt().withMessage('User ID must be an integer'),
+  validate
 ], async (req, res) => {
   try {
     const errors = validationResult(req);

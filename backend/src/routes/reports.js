@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { query } = require('../config/database');
 const auth = require('../middleware/auth');
+const { validate } = require('../middleware/validation');
 const router = express.Router();
 
 // @route   POST /api/v1/reports
@@ -15,7 +16,8 @@ router.post('/', [
     'harassment', 'hate_speech', 'spam', 'inappropriate_content', 
     'scam', 'violence', 'sexual_content', 'false_information', 'other'
   ]).withMessage('Invalid report reason'),
-  body('details').optional().isLength({ max: 1000 }).withMessage('Details must be less than 1000 characters')
+  body('details').optional().isLength({ max: 1000 }).withMessage('Details must be less than 1000 characters'),
+  validate
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -32,106 +34,55 @@ router.post('/', [
     const { contentId, contentType, reason, details } = req.body;
     const reporterId = req.user.id;
 
-    // Check if user has already reported this content
-    const existingReport = await query(`
-      SELECT id FROM content_reports 
-      WHERE reporter_id = $1 AND content_id = $2 AND content_type = $3
-    `, [reporterId, contentId, contentType]);
-
-    if (existingReport.rows.length > 0) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'You have already reported this content'
-        }
-      });
-    }
-
-    // Verify content exists based on type
-    let contentExists = false;
-    let contentAuthorId = null;
-
+    // Determine the reported_user_id based on content type
+    let reportedUserId = null;
     if (contentType === 'post') {
-      const postCheck = await query('SELECT user_id FROM posts WHERE id = $1 AND is_active = true', [contentId]);
-      if (postCheck.rows.length > 0) {
-        contentExists = true;
-        contentAuthorId = postCheck.rows[0].user_id;
+      const postResult = await query('SELECT user_id FROM posts WHERE id = $1', [contentId]);
+      if (postResult.rows.length > 0) {
+        reportedUserId = postResult.rows[0].user_id;
       }
     } else if (contentType === 'message') {
-      const messageCheck = await query('SELECT sender_id FROM messages WHERE id = $1', [contentId]);
-      if (messageCheck.rows.length > 0) {
-        contentExists = true;
-        contentAuthorId = messageCheck.rows[0].sender_id;
+      const messageResult = await query('SELECT sender_id FROM messages WHERE id = $1', [contentId]);
+      if (messageResult.rows.length > 0) {
+        reportedUserId = messageResult.rows[0].sender_id;
       }
     } else if (contentType === 'user') {
-      const userCheck = await query('SELECT id FROM users WHERE id = $1 AND is_active = true', [contentId]);
-      if (userCheck.rows.length > 0) {
-        contentExists = true;
-        contentAuthorId = contentId;
-      }
+      reportedUserId = contentId;
     }
 
-    if (!contentExists) {
+    if (!reportedUserId) {
       return res.status(404).json({
         success: false,
-        error: {
-          message: 'Content not found or no longer available'
-        }
+        error: { message: 'Reported content or user not found.' }
       });
     }
 
-    // Prevent users from reporting their own content
-    if (contentAuthorId === reporterId) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'You cannot report your own content'
-        }
-      });
-    }
+    const result = await query(
+      `INSERT INTO content_reports (reporter_id, reported_user_id, content_id, content_type, reason, details)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [reporterId, reportedUserId, contentId, contentType, reason, details]
+    );
 
-    // Create the report
-    const result = await query(`
-      INSERT INTO content_reports (
-        reporter_id, content_id, content_type, reason, details, 
-        content_author_id, status, created_at
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, 'pending', NOW())
-      RETURNING id, created_at
-    `, [reporterId, contentId, contentType, reason, details, contentAuthorId]);
+    console.log(`🚨 New content report received:
+      Reporter ID: ${reporterId}
+      Reported User ID: ${reportedUserId}
+      Content Type: ${contentType}
+      Content ID: ${contentId}
+      Reason: ${reason}
+      Details: ${details || 'N/A'}
+    `);
 
-    const report = result.rows[0];
-
-    // Log the report for moderation team
-    console.log(`🚨 NEW CONTENT REPORT:`, {
-      reportId: report.id,
-      contentType,
-      contentId,
-      reason,
-      reporterId,
-      contentAuthorId,
-      timestamp: report.created_at
-    });
-
-    // TODO: Send notification to moderation team
-    // TODO: Auto-moderate based on content filters
-    
     res.status(201).json({
       success: true,
-      message: 'Report submitted successfully. Our moderation team will review this within 24 hours.',
-      data: {
-        reportId: report.id,
-        status: 'pending'
-      }
+      message: 'Content report submitted successfully. Our team will review it within 24 hours.',
+      report: result.rows[0]
     });
 
   } catch (error) {
-    console.error('Error creating content report:', error);
+    console.error('Error submitting content report:', error);
     res.status(500).json({
       success: false,
-      error: {
-        message: 'Failed to submit report. Please try again.'
-      }
+      error: { message: 'Failed to submit report.' }
     });
   }
 });
