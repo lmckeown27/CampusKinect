@@ -154,21 +154,11 @@ struct AboutView: View {
                 }
                 
                 HStack {
-                    Text("Build Number:")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text("100")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                }
-                
-                HStack {
                     Text("Release Date:")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text("2024")
+                    Text("2025")
                         .font(.subheadline)
                         .fontWeight(.medium)
                 }

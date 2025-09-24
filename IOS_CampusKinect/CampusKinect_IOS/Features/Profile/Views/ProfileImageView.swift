@@ -38,18 +38,40 @@ struct ProfileImageView: View {
     }
     
     var body: some View {
-        AsyncImage(url: fullImageURL) { image in
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-        } placeholder: {
-            Circle()
-                .fill(Color(.systemGray4))
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .font(.system(size: size.dimension * 0.4))
-                        .foregroundColor(.white)
-                )
+        AsyncImage(url: fullImageURL) { phase in
+            switch phase {
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            case .failure(_):
+                // Show placeholder on error
+                Circle()
+                    .fill(Color(.systemGray4))
+                    .overlay(
+                        Image(systemName: "person.fill")
+                            .font(.system(size: size.dimension * 0.4))
+                            .foregroundColor(.white)
+                    )
+            case .empty:
+                // Show placeholder while loading
+                Circle()
+                    .fill(Color(.systemGray4))
+                    .overlay(
+                        Image(systemName: "person.fill")
+                            .font(.system(size: size.dimension * 0.4))
+                            .foregroundColor(.white)
+                    )
+            @unknown default:
+                // Fallback for future cases
+                Circle()
+                    .fill(Color(.systemGray4))
+                    .overlay(
+                        Image(systemName: "person.fill")
+                            .font(.system(size: size.dimension * 0.4))
+                            .foregroundColor(.white)
+                    )
+            }
         }
         .frame(width: size.dimension, height: size.dimension)
         .clipShape(Circle())

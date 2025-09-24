@@ -37,7 +37,19 @@ struct MessagesView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
-        }
+            .navigationDestination(isPresented: $shouldNavigateToChat) {
+                if let user = selectedUser {
+                    ChatView(userId: user.id, userName: user.username ?? user.fullName)
+                        .onAppear {
+                            print("📱 ChatView appeared successfully")
+                        }
+                        .onDisappear {
+                            print("📱 ChatView disappeared, resetting navigation state")
+                            // Reset navigation state when user navigates back
+                            shouldNavigateToChat = false
+                            selectedUser = nil
+                        }                }
+            }        }
         .navigationTitle("Messages")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -53,11 +65,6 @@ struct MessagesView: View {
             NewMessageView { user in
                 selectedUser = user
                 shouldNavigateToChat = true
-            }
-        }
-        .navigationDestination(isPresented: $shouldNavigateToChat) {
-            if let user = selectedUser {
-                ChatView(userId: user.id, userName: user.username ?? user.fullName)
             }
         }
         .onAppear {
@@ -135,8 +142,10 @@ struct MessagesView: View {
                 List {
                     ForEach(filteredConversations) { conversation in
                         ConversationRow(conversation: conversation) {
+                            print("📱 ConversationRow tapped for user: \(conversation.otherUser.displayName)")
                             selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
                             shouldNavigateToChat = true
+                            print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), shouldNavigateToChat=\(shouldNavigateToChat)")
                         }
                     }
                     
@@ -166,24 +175,30 @@ struct MessagesView: View {
     }
     
     private var filteredConversations: [Conversation] {
-        let conversationsToFilter = viewModel.conversations
+        let allConversations = viewModel.conversations
         
-        if searchText.isEmpty {
-            return conversationsToFilter
-        } else {
-            return conversationsToFilter.filter { conversation in
-                conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
-                conversation.lastMessage?.content.localizedCaseInsensitiveContains(searchText) ?? false
-            }
+        // Filter by search text first
+        let searchFiltered = searchText.isEmpty ? allConversations : allConversations.filter { conversation in
+            conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
+            conversation.lastMessage?.content.localizedCaseInsensitiveContains(searchText) ?? false
         }
-    }
-    
+        
+        // Then filter by incoming/sent based on activeTab
+        return searchFiltered.filter { conversation in
+            guard let currentUserId = authManager.currentUser?.id,
+                  let lastMessage = conversation.lastMessage else { return true }
+            
+            return activeTab == .incoming ?
+                lastMessage.senderId != currentUserId :
+                lastMessage.senderId == currentUserId
+        }
+    }    
     // MARK: - Methods
     
     private func handlePushNotification(_ userInfo: [AnyHashable: Any]) {
         print("📱 Handling push notification in MessagesView: \(userInfo)")
         if let aps = userInfo["aps"] as? [String: Any],
-           let alert = aps["alert"] as? [String: Any],
+           let _ = aps["alert"] as? [String: Any],
            let senderId = userInfo["senderId"] as? String,
            let senderUsername = userInfo["senderUsername"] as? String {
             
@@ -240,6 +255,7 @@ struct ConversationRow: View {
                 }
 
                 Spacer()
+                    .contentShape(Rectangle())
 
                 if conversation.unreadCountInt > 0 {
                     Text("\(conversation.unreadCountInt)")
@@ -256,10 +272,16 @@ struct ConversationRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .padding(.vertical, 8)
+            .contentShape(Rectangle())            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
         }
         .buttonStyle(PlainButtonStyle())
-    }
+        .contentShape(Rectangle())
+        .background(Color.clear)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.clear)
+        )    }
 }
 
 struct MessagesView_Previews: PreviewProvider {

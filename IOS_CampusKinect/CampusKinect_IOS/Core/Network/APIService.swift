@@ -21,6 +21,12 @@ class APIService: NSObject, ObservableObject {
         config.timeoutIntervalForResource = APIConstants.timeout * 2
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
         
+        // Add performance optimizations to prevent hangs
+        config.waitsForConnectivity = false
+        config.allowsCellularAccess = true
+        config.allowsExpensiveNetworkAccess = true
+        config.allowsConstrainedNetworkAccess = true
+        
         self.session = URLSession(configuration: config)
         self.decoder = JSONDecoder()
         self.encoder = JSONEncoder()
@@ -563,6 +569,64 @@ extension APIService {
         )
         return response.data.count
     }
+    
+    // MARK: - Content Moderation & Safety
+    
+    /// Report objectionable content
+    func reportContent(contentId: Int, contentType: String, reason: String, details: String?) async throws -> Bool {
+        let request = ReportContentRequest(
+            contentId: contentId,
+            contentType: contentType,
+            reason: reason,
+            details: details
+        )
+        
+        let body = try encoder.encode(request)
+        let response: MessageResponse = try await performRequest(
+            endpoint: "/reports",
+            method: .POST,
+            body: body
+        )
+        
+        return response.success
+    }
+    
+    /// Block a user
+    func blockUser(userId: Int) async throws -> Bool {
+        let request = BlockUserRequest(userId: userId)
+        let body = try encoder.encode(request)
+        
+        let response: MessageResponse = try await performRequest(
+            endpoint: "/users/block",
+            method: .POST,
+            body: body
+        )
+        
+        return response.success
+    }
+    
+    /// Unblock a user
+    func unblockUser(userId: Int) async throws -> Bool {
+        let request = BlockUserRequest(userId: userId)
+        let body = try encoder.encode(request)
+        
+        let response: MessageResponse = try await performRequest(
+            endpoint: "/users/unblock",
+            method: .POST,
+            body: body
+        )
+        
+        return response.success
+    }
+    
+    /// Get list of blocked users
+    func getBlockedUsers() async throws -> [BlockedUser] {
+        let response: BlockedUsersResponse = try await performRequest(
+            endpoint: "/users/blocked"
+        )
+        
+        return response.data
+    }
 }
 
 // MARK: - Notification Request/Response Models
@@ -625,4 +689,23 @@ struct SendMessageToConversationRequest: Codable {
     let messageType: MessageType
     let mediaUrl: String?
 }
+
+// MARK: - Content Moderation Request/Response Models
+
+struct ReportContentRequest: Codable {
+    let contentId: Int
+    let contentType: String
+    let reason: String
+    let details: String?
+}
+
+struct BlockUserRequest: Codable {
+    let userId: Int
+}
+
+struct BlockedUsersResponse: Codable {
+    let success: Bool
+    let data: [BlockedUser]
+}
+
 

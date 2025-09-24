@@ -274,7 +274,9 @@ class AuthenticationManager: ObservableObject {
         
         NotificationCenter.default.post(name: .userDidLogout, object: nil)
         
-        isLoading = false
+        // Small delay to ensure all UI updates and notifications complete
+        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+                isLoading = false
     }
     
     // MARK: - Update Profile

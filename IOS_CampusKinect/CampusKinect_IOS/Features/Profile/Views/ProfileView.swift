@@ -261,10 +261,10 @@ struct PostsTabContent: View {
             } else {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.userPosts) { post in
-                        SwipeablePostCard(
+                        ProfilePostCard(
                             post: post,
-                            swipeAction: .delete,
-                            onSwipeAction: { postId in
+                            action: .delete,
+                            onAction: { postId in
                                 await viewModel.deletePost(postId)
                             },
                             onUndo: { postId in
@@ -312,10 +312,10 @@ struct RepostsTabContent: View {
             } else {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.userReposts) { post in
-                        SwipeablePostCard(
+                        ProfilePostCard(
                             post: post,
-                            swipeAction: .removeRepost,
-                            onSwipeAction: { postId in
+                            action: .removeRepost,
+                            onAction: { postId in
                                 await viewModel.removeRepost(postId)
                             },
                             onUndo: { postId in
@@ -352,10 +352,10 @@ struct BookmarksTabContent: View {
             } else {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.userBookmarks) { post in
-                        SwipeablePostCard(
+                        ProfilePostCard(
                             post: post,
-                            swipeAction: .removeBookmark,
-                            onSwipeAction: { postId in
+                            action: .removeBookmark,
+                            onAction: { postId in
                                 await viewModel.removeBookmark(postId)
                             },
                             onUndo: { postId in

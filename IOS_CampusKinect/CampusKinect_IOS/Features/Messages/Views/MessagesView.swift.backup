@@ -57,7 +57,7 @@ struct MessagesView: View {
         }
         .navigationDestination(isPresented: $shouldNavigateToChat) {
             if let user = selectedUser {
-                ChatView(userId: Int(user.id) ?? 0, userName: user.username)
+                ChatView(userId: user.id, userName: user.username ?? user.fullName)
             }
         }
         .onAppear {
@@ -122,8 +122,8 @@ struct MessagesView: View {
     }
     
     private var conversationsList: some View {
-        Group {
-            if viewModel.isLoadingConversations && viewModel.conversations.isEmpty {
+        VStack {
+            if viewModel.isLoading && viewModel.conversations.isEmpty {
                 LoadingView()
             } else if viewModel.conversations.isEmpty {
                 EmptyStateView(
@@ -134,21 +134,12 @@ struct MessagesView: View {
             } else {
                 List {
                     ForEach(filteredConversations) { conversation in
-                        ConversationRow(conversation: conversation)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(
-                                top: 8,
-                                leading: isIPad ? 40 : 16,
-                                bottom: 8,
-                                trailing: isIPad ? 40 : 16
-                            ))
-                            .onTapGesture {
-                                selectedUser = conversation.otherUser
-                                shouldNavigateToChat = true
-                            }
-                    }
+                        ConversationRow(conversation: conversation) {
+                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
+                            shouldNavigateToChat = true
+                        }
                     
-                    if viewModel.isLoadingConversations && !viewModel.conversations.isEmpty {
+                    if viewModel.isLoading && !viewModel.conversations.isEmpty {
                         HStack {
                             Spacer()
                             ProgressView()
@@ -174,40 +165,50 @@ struct MessagesView: View {
     }
     
     private var filteredConversations: [Conversation] {
-        let conversationsToFilter = activeTab == .incoming ? viewModel.incomingConversations : viewModel.sentConversations
+        let allConversations = viewModel.conversations
         
-        if searchText.isEmpty {
-            return conversationsToFilter
-        } else {
-            return conversationsToFilter.filter { conversation in
-                conversation.otherUser.fullName.localizedCaseInsensitiveContains(searchText) ||
-                conversation.lastMessage?.content.localizedCaseInsensitiveContains(searchText) ?? false
-            }
+        // Filter by search text first
+        let searchFiltered = searchText.isEmpty ? allConversations : allConversations.filter { conversation in
+            conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
+            conversation.lastMessage?.content.localizedCaseInsensitiveContains(searchText) ?? false
         }
-    }
-    
+        
+        // Then filter by incoming/sent based on activeTab
+        return searchFiltered.filter { conversation in
+            guard let currentUserId = authManager.currentUser?.id,
+                  let lastMessage = conversation.lastMessage else { return true }
+            
+            return activeTab == .incoming ?
+                lastMessage.senderId != currentUserId :
+                lastMessage.senderId == currentUserId
+        }
+    }    
     // MARK: - Methods
     
     private func handlePushNotification(_ userInfo: [AnyHashable: Any]) {
         print("📱 Handling push notification in MessagesView: \(userInfo)")
         if let aps = userInfo["aps"] as? [String: Any],
-           let alert = aps["alert"] as? [String: Any],
-           let title = alert["title"] as? String,
-           let body = alert["body"] as? String,
+           let _ = aps["alert"] as? [String: Any],
            let senderId = userInfo["senderId"] as? String,
            let senderUsername = userInfo["senderUsername"] as? String {
             
             let senderUser = User(
-                id: senderId,
+                id: Int(senderId) ?? 0,
                 username: senderUsername,
                 email: "",
                 firstName: senderUsername,
                 lastName: "",
-                profileImageUrl: nil,
-                bio: nil,
+                displayName: senderUsername,
+                profilePicture: nil,
+                year: nil,
+                major: nil,
+                hometown: nil,                bio: nil,
                 universityId: nil,
-                createdAt: Date(),
-                updatedAt: Date()
+                universityName: nil,
+                universityDomain: nil,
+                isVerified: nil,
+                isActive: nil,                createdAt: Date(),
+                updatedAt: nil
             )
             
             selectedUser = senderUser
@@ -223,43 +224,52 @@ struct MessagesView: View {
 // MARK: - Conversation Row
 struct ConversationRow: View {
     let conversation: Conversation
+    let onTap: () -> Void
     
     var body: some View {
-        HStack(spacing: 12) {
-            ProfileImageView(imageUrl: conversation.otherUser.profileImageUrl, size: .medium)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(conversation.otherUser.fullName)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                ProfileImageView(imageUrl: conversation.otherUser.profilePicture, size: .medium)
                 
-                Text(conversation.lastMessage?.content ?? "No messages yet")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-                
-                if let lastMessageDate = conversation.lastMessage?.createdAt {
-                    Text(lastMessageDate, formatter: DateFormatter.messageDateFormatter)
-                        .font(.caption)
-                        .foregroundColor(.tertiary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(conversation.otherUser.displayName)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+
+                    Text(conversation.lastMessage?.content ?? "No messages yet")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+
                 }
+
+                Spacer()
+
+                if conversation.unreadCountInt > 0 {
+                    Text("\(conversation.unreadCountInt)")
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color("BrandPrimary"))
+                        .cornerRadius(10)
+                }
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
-            
-            Spacer()
-            
-            if conversation.unreadCount > 0 {
-                Text("\(conversation.unreadCount)")
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color("BrandPrimary"))
-                    .cornerRadius(10)
-            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .contentShape(Rectangle()) // Makes entire area tappable
         }
-        .padding(.vertical, 8)
+        .buttonStyle(PlainButtonStyle())
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.clear)
+        ) // Ensures background responds to taps
     }
 }
 

@@ -32,16 +32,21 @@ struct TermsView: View {
                             .font(.title3)
                             .fontWeight(.semibold)
                         
-                        Text("You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. You agree not to:")
+                        Text("CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior. CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior. You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. You agree not to:")
                             .font(.body)
+                            .fontWeight(.semibold)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             BulletPoint("Post false, misleading, or fraudulent information")
                             BulletPoint("Harass, bully, or discriminate against other users")
                             BulletPoint("Share inappropriate, offensive, or illegal content")
+                            BulletPoint("Post content that is hateful, threatening, or promotes violence")
+                            BulletPoint("Share sexually explicit or suggestive content")
+                            BulletPoint("Post spam, scams, or fraudulent offers")
                             BulletPoint("Attempt to gain unauthorized access to other accounts")
                             BulletPoint("Use the platform for commercial purposes without permission")
                             BulletPoint("Violate any applicable laws or regulations")
+                            BulletPoint("Engage in any form of abusive behavior toward other users")
                         }
                         .padding(.leading, 16)
                     }
@@ -59,7 +64,7 @@ struct TermsView: View {
                             .font(.body)
                             .fontWeight(.medium)
                         
-                        Text("Content Moderation: The website reserves the right to monitor all posts and at its discretion to takedown posts that violates our content moderation policy. We maintain the authority to review, edit, or remove any content that we deem inappropriate, harmful, or in violation of these terms.")
+                        Text("Content Moderation: We actively monitor all user-generated content and will act on objectionable content reports within 24 hours by removing the content and ejecting users who provide offending content. We maintain the authority to review, edit, or remove any content that we deem inappropriate, harmful, or in violation of these terms. Users who violate our content policies will be immediately suspended or permanently banned from the platform.")
                             .font(.body)
                             .fontWeight(.medium)
                         

@@ -30,7 +30,8 @@ const gradingRoutes = require('./routes/grading');
 const reshuffleRoutes = require('./routes/reshuffle');
 const marketSizeRoutes = require('./routes/marketSize');
 const notificationsRoutes = require('./routes/notifications');
-// Optional mobile routes - only load if dependencies are available
+const reportsRoutes = require('./routes/reports');
+const userBlockingRoutes = require('./routes/userBlocking');// Optional mobile routes - only load if dependencies are available
 let mobileRoutes;
 try {
   mobileRoutes = require('./routes/mobile');
@@ -181,7 +182,8 @@ app.use(`/api/${process.env.API_VERSION || 'v1'}/grading`, gradingRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/reshuffle`, reshuffleRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/market-size`, marketSizeRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/notifications`, notificationsRoutes);
-// Only register mobile routes if they loaded successfully
+app.use(`/api/${process.env.API_VERSION || 'v1'}/reports`, reportsRoutes);
+app.use(`/api/${process.env.API_VERSION || 'v1'}/users`, userBlockingRoutes);// Only register mobile routes if they loaded successfully
 if (mobileRoutes) {
   app.use(`/api/${process.env.API_VERSION || 'v1'}/mobile`, mobileRoutes);
 }

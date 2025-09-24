@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var showingTerms = false
     @State private var showingMailComposer = false
     @State private var showingNotificationSettings = false
+    @State private var showingBlockedUsers = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -111,7 +112,36 @@ struct SettingsView: View {
                     }
                 }
                 
-                // Account Actions
+                // Privacy & Safety
+                Section("Privacy & Safety") {
+                    SettingsRow(
+                        icon: "person.crop.circle.badge.xmark",
+                        title: "Blocked Users",
+                        subtitle: "Manage blocked users"
+                    ) {
+                        showingBlockedUsers = true
+                    }
+                    
+                    SettingsRow(
+                        icon: "exclamationmark.shield",
+                        title: "Report Content",
+                        subtitle: "Report inappropriate content"
+                    ) {
+                        // This will be handled per-content item
+                    }
+                }
+                
+                // Privacy & Safety
+                Section("Privacy & Safety") {
+                    SettingsRow(
+                        icon: "person.crop.circle.badge.xmark",
+                        title: "Blocked Users",
+                        subtitle: "Manage blocked users"
+                    ) {
+                        showingBlockedUsers = true
+                    }
+                }
+                                // Account Actions
                 Section {
                     Button(action: {
                         showingLogoutAlert = true
@@ -171,7 +201,12 @@ struct SettingsView: View {
                 )
             }
             .sheet(isPresented: $showingNotificationSettings) {
-                NotificationSettingsView()
+        }
+        .sheet(isPresented: $showingBlockedUsers) {
+            BlockedUsersView()
+        }
+        .sheet(isPresented: $showingNotificationSettings) {
+            NotificationSettingsView()
             }
             .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
             .frame(maxHeight: .infinity)

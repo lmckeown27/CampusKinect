@@ -45,9 +45,9 @@ struct RegisterView: View {
                     }
                     .padding(.horizontal, isIPad ? 40 : 24)
                     .padding(.vertical, 40)
-                }
                 .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 600) : .infinity)
-                .frame(maxHeight: .infinity)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

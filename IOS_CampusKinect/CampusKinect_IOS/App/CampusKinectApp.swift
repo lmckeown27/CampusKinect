@@ -41,14 +41,15 @@ struct CampusKinectApp: App {
         // Start network monitoring
         networkMonitor.startMonitoring()
         
-        // Request push notification permissions immediately on app launch
+        // Request push notification permissions and check authentication sequentially
         Task {
             let granted = await PushNotificationManager.shared.requestPermission()
             print("📱 App Launch: Push notification permission \(granted ? "granted" : "denied")")
-        }
-        
-        // Check for existing authentication
-        Task {
+            
+            // Small delay to ensure push notification setup completes
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+            
+            // Check for existing authentication
             await authManager.checkExistingAuth()
         }
     }

@@ -40,7 +40,9 @@ class PushNotificationManager: NSObject, ObservableObject {
             
             if granted {
                 print("🔔 PushNotificationManager: Permission granted, registering for remote notifications...")
-                await registerForRemoteNotifications()
+                await MainActor.run {
+                    registerForRemoteNotifications()
+                }
             } else {
                 print("🔔 PushNotificationManager: Permission denied by user")
                 // Remove any existing device token from backend when permission is denied
@@ -145,10 +147,11 @@ class PushNotificationManager: NSObject, ObservableObject {
         
         print("📱 Device token received: \(tokenString)")
         
-        // Register token with backend
-        Task {
-            await registerDeviceToken(tokenString)
-        }
+        // TODO: Register token with backend after user authentication
+        // Temporarily disabled to prevent unauthorized error during login
+        // Task {
+        //     await registerDeviceToken(tokenString)
+        // }        // }
     }
     
     func handleRegistrationError(_ error: Error) {

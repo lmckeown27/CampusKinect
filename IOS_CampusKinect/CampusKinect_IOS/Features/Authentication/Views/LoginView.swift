@@ -13,6 +13,8 @@ struct LoginView: View {
     @State private var password = ""
     @State private var showingAlert = false
     @State private var isPasswordVisible = false
+    @State private var shouldNavigateToRegister = false
+    @State private var showingForgotPasswordAlert = false
     @FocusState private var focusedField: LoginField?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -38,24 +40,24 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, isIPad ? 40 : 24)
                     .padding(.vertical, 40)
+                    .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 600) : .infinity)
                 }
-                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 600) : .infinity)
-                .frame(maxHeight: .infinity)
-                .clipped()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
         }
         .navigationBarHidden(true)
-        .onTapGesture {
-            focusedField = nil
-        }
         .alert("Login Failed", isPresented: $showingAlert) {
             Button("OK") {
                 authManager.clearError()
             }
         } message: {
             Text(authManager.authError?.userFriendlyMessage ?? "An error occurred")
+        }
+        .alert("Forgot Password", isPresented: $showingForgotPasswordAlert) {
+            Button("OK") { }
+        } message: {
+            Text("Email campuskinect01@gmail.com")
         }
     }
     
@@ -110,7 +112,7 @@ struct LoginView: View {
                     Spacer()
                     
                     Button("Forgot?") {
-                        // Handle forgot password
+                        showingForgotPasswordAlert = true
                     }
                     .font(.caption)
                     .foregroundColor(Color("BrandPrimary"))

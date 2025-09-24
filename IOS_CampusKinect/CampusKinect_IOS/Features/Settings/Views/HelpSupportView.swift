@@ -120,19 +120,6 @@ struct HelpSupportView: View {
                     action: { openEmailSupport() }
                 )
                 
-                ContactOptionView(
-                    icon: "message.fill",
-                    title: "Live Chat",
-                    description: "Chat with our support team",
-                    action: { openLiveChat() }
-                )
-                
-                ContactOptionView(
-                    icon: "phone.fill",
-                    title: "Phone Support",
-                    description: "Call us during business hours",
-                    action: { openPhoneSupport() }
-                )
             }
         }
         .padding()
@@ -143,20 +130,11 @@ struct HelpSupportView: View {
     // MARK: - Methods
     
     private func openEmailSupport() {
-        if let url = URL(string: "mailto:support@campuskinect.com") {
+        if let url = URL(string: "mailto:campuskinect01@gmail.com") {
             UIApplication.shared.open(url)
         }
     }
     
-    private func openLiveChat() {
-        // Implement live chat functionality
-    }
-    
-    private func openPhoneSupport() {
-        if let url = URL(string: "tel:+1-555-CAMPUS") {
-            UIApplication.shared.open(url)
-        }
-    }
 }
 
 // MARK: - Help Section View
