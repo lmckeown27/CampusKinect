@@ -25,7 +25,8 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
 import { apiService } from '../../services/api';
 import ImageLightbox from './ImageLightbox';
-
+import ReportContentModal from './ReportContentModal';
+import BlockUserModal from './BlockUserModal';
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
   const yearLabels: { [key: number]: string } = {
@@ -54,7 +55,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [repostCount, setRepostCount] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showBlockModal, setShowBlockModal] = useState(false);  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
   
   // Inline editing state
@@ -545,7 +547,40 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
 
   // Fixed text sizing - no dynamic sizing based on content length
 
-  const handleReport = async () => {
+  const handleReport = () => {
+    setShowOptions(false);
+    setShowReportModal(true);
+  };
+
+  const handleBlockUser = () => {
+    setShowOptions(false);
+    setShowBlockModal(true);
+  };
+
+  const handleReportSubmit = async (reportData: any) => {
+    try {
+      await apiService.reportContent(
+        reportData.contentId,
+        reportData.contentType,
+        reportData.reason,
+        reportData.details
+      );
+    } catch (error) {
+      console.error('Failed to submit report:', error);
+      throw error;
+    }
+  };
+
+  const handleBlockSubmit = async (userId: string) => {
+    try {
+      await apiService.blockUser(userId);
+    } catch (error) {
+      console.error('Failed to block user:', error);
+      throw error;
+    }
+  };
+
+  const oldHandleReport = async () => {
     // Confirm the user wants to report this post
     const confirmReport = confirm(
       `Are you sure you want to report this post?\n\n` +
@@ -687,7 +722,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                   }}
                 >
                   {/* Only show Report Post button for posts not owned by current user */}
+                  )}
                   {!isCurrentUserPost && (
+                    <button 
+                      onClick={handleBlockUser}
+                      className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                      style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                    >
+                      Block User
+                    </button>                  {!isCurrentUserPost && (
                     <button 
                       onClick={handleReport}
                       className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
@@ -696,7 +741,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
                     >
                       Report Post
-                    </button>
+                  )}
+                  {!isCurrentUserPost && (
+                    <button 
+                      onClick={handleBlockUser}
+                      className="w-32 text-left px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                      style={{ backgroundColor: '#708d81', color: 'white', border: '2px solid #708d81', cursor: 'pointer' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#a8c4a2'; e.currentTarget.style.border = '2px solid #a8c4a2'; e.currentTarget.style.cursor = 'pointer'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#708d81'; e.currentTarget.style.border = '2px solid #708d81'; e.currentTarget.style.cursor = 'pointer'; }}
+                    >
+                      Block User
+                    </button>                    </button>
                   )}
                   <button 
                     onClick={handleShare}
@@ -1341,4 +1396,25 @@ const PostCard: React.FC<PostCardProps> = ({ post, showDeleteButton = false, onD
   );
 };
 
+      {/* Safety Modals */}
+      <ReportContentModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        contentId={post.id.toString()}
+        contentType="post"
+        contentAuthor={post.poster?.displayName || 'Unknown User'}
+        onSubmit={handleReportSubmit}
+      />
+      
+      <BlockUserModal
+        isOpen={showBlockModal}
+        onClose={() => setShowBlockModal(false)}
+        userId={post.poster?.id?.toString() || '0'}
+        userName={post.poster?.displayName || 'Unknown User'}
+        userProfilePicture={post.poster?.profilePicture}
+        onSubmit={handleBlockSubmit}
+      />
+    </div>
+  );
+};
 export default PostCard; 

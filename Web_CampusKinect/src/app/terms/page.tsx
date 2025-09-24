@@ -69,14 +69,18 @@ export default function TermsOfServicePage() {
               {/* Acceptable Use */}
               <section>
                 <h3 className="text-xl font-semibold text-white mb-4">3. Acceptable Use</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. 
+                <p className="text-gray-300 leading-relaxed mb-4 font-semibold">
+                  <strong className="text-red-400">CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior.</strong> You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. 
                   You agree not to:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
                   <li>Post false, misleading, or fraudulent information</li>
                   <li>Harass, bully, or discriminate against other users</li>
                   <li>Share inappropriate, offensive, or illegal content</li>
+                  <li>Post content that is hateful, threatening, or promotes violence</li>
+                  <li>Share sexually explicit or suggestive content</li>
+                  <li>Post spam, scams, or fraudulent offers</li>
+                  <li>Engage in any form of abusive behavior toward other users</li>
                   <li>Attempt to gain unauthorized access to other accounts</li>
                   <li>Use the platform for commercial purposes without permission</li>
                   <li>Violate any applicable laws or regulations</li>
@@ -94,7 +98,7 @@ export default function TermsOfServicePage() {
                   <strong>Third-Party Content Disclaimer:</strong> The contents requested or offered on this website is sole property of the third party individual and not in any way affiliated with the platform. CampusKinect does not endorse, guarantee, or assume responsibility for any user-generated content, including but not limited to goods, services, housing, events, or any other listings.
                 </p>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  <strong>Content Moderation:</strong> The website reserves the right to monitor all posts and at its discretion to takedown posts that violates our content moderation policy. We maintain the authority to review, edit, or remove any content that we deem inappropriate, harmful, or in violation of these terms.
+                  <strong>Content Moderation:</strong> We actively monitor all user-generated content and will act on objectionable content reports within 24 hours by removing the content and ejecting users who provide offending content. We maintain the authority to review, edit, or remove any content that we deem inappropriate, harmful, or in violation of these terms. Users who violate our content policies will be immediately suspended or permanently banned from the platform.
                 </p>
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <div className="flex items-start space-x-3">

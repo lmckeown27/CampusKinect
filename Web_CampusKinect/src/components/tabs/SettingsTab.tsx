@@ -38,15 +38,18 @@ const SettingsTab: React.FC = () => {
   };
 
   const handleContactUs = () => {
-    window.location.href = 'mailto:support@campuskinect.net?subject=CampusKinect Support Request';
+    window.location.href = 'mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request';
   };
 
   const handleReportBug = () => {
-    window.location.href = 'mailto:bugs@campuskinect.net?subject=Bug Report - CampusKinect Web';
+    window.location.href = 'mailto:campuskinect01@gmail.com?subject=Bug Report - CampusKinect Web';
   };
 
   const handleFeedback = () => {
-    window.location.href = 'mailto:feedback@campuskinect.net?subject=Feedback - CampusKinect';
+  };
+
+  const handleBlockedUsers = () => {
+    router.push('/settings/blocked-users');    window.location.href = 'mailto:campuskinect01@gmail.com?subject=Feedback - CampusKinect';
   };
 
   return (
@@ -211,7 +214,46 @@ const SettingsTab: React.FC = () => {
               </div>
             </div>
 
-            {/* Support & Help - 3rd Section */}
+            {/* Privacy & Safety - 3rd Section */}
+            <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
+              <div className="px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center">
+                  <ShieldCheck size={20} className="text-[#708d81]" />
+                  <div className="w-3"></div>
+                  <h2 className="text-lg font-semibold text-gray-900">Privacy & Safety</h2>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                {/* Blocked Users Button */}
+                <button
+                  onClick={handleBlockedUsers}
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                  style={{ 
+                    backgroundColor: '#525252',
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252';
+                  }}
+                >
+                  <User size={18} className="text-white" />
+                  <div className="w-3"></div>
+                  <div>
+                    <div className="text-white font-medium">Blocked Users</div>
+                    <div className="text-gray-300 text-sm">Manage users you have blocked</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Support & Help - 4th Section */}            {/* Support & Help - 3rd Section */}
             <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">

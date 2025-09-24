@@ -11,7 +11,7 @@ const LoginForm: React.FC = () => {
   const { login, isLoading, error } = useAuthStore();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);  const [formData, setFormData] = useState({
     usernameOrEmail: '',
     password: '',
   });
@@ -125,10 +125,34 @@ const LoginForm: React.FC = () => {
                     <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                       <p style={{ color: 'red', fontSize: '14px', fontWeight: '500' }}>Use university email</p>
                     </div>
-                  )}
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>                  )}
                 </div>
-              </div>
-            </div>
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>              </div>
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>            </div>
 
             <div className="space-y-3" style={{ marginBottom: '2rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
@@ -158,7 +182,15 @@ const LoginForm: React.FC = () => {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-            </div>
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>            </div>
           </div>
 
             {errorDisplay && (
@@ -176,9 +208,25 @@ const LoginForm: React.FC = () => {
                       Resend verification code
                     </Link>
                   </div>
-                )}
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>                )}
               </div>
-            )}
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>            )}
 
             <div className="pt-4">
               <div style={{ width: '320px', margin: '0 auto', display: 'block' }}>
@@ -203,7 +251,15 @@ const LoginForm: React.FC = () => {
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </button>
               </div>
-            </div>
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>            </div>
           </form>
 
           <div className="mt-6 text-center">
@@ -240,4 +296,29 @@ const LoginForm: React.FC = () => {
   );
 };
 
+      {/* Forgot Password Modal */}
+      {showForgotPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Forgot Password</h3>
+              <p className="text-sm text-gray-600 mb-6">
+                For password reset assistance, please email:
+              </p>
+              <p className="text-lg font-semibold text-blue-600 mb-6">
+                campuskinect01@gmail.com
+              </p>
+              <button
+                onClick={() => setShowForgotPasswordModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 export default LoginForm; 

@@ -920,6 +920,82 @@ class ApiService {
     
     throw new Error(response.data.message || 'Failed to fetch reposts');
   }
+
+  // Safety & Moderation Methods
+  public async reportContent(contentId: string, contentType: string, reason: string, details?: string): Promise<boolean> {
+    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/reports', {
+      contentId: parseInt(contentId),
+      contentType,
+      reason,
+      details
+    });
+
+    return response.data.success;
+  }
+
+  public async blockUser(userId: string): Promise<boolean> {
+    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/users/block', {
+      userId: parseInt(userId)
+    });
+
+    return response.data.success;
+  }
+
+  public async unblockUser(userId: string): Promise<boolean> {
+    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/users/unblock', {
+      userId: parseInt(userId)
+    });
+
+    return response.data.success;
+  }
+
+  public async getBlockedUsers(): Promise<any[]> {
+    const response: AxiosResponse<ApiResponse<any[]>> = await this.api.get('/users/blocked');
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch blocked users');
+  }  }
+
+  // Safety & Moderation Methods
+  public async reportContent(contentId: string, contentType: string, reason: string, details?: string): Promise<boolean> {
+    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/reports', {
+      contentId: parseInt(contentId),
+      contentType,
+      reason,
+      details
+    });
+
+    return response.data.success;
+  }
+
+  public async blockUser(userId: string): Promise<boolean> {
+    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/users/block', {
+      userId: parseInt(userId)
+    });
+
+    return response.data.success;
+  }
+
+  public async unblockUser(userId: string): Promise<boolean> {
+    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/users/unblock', {
+      userId: parseInt(userId)
+    });
+
+    return response.data.success;
+  }
+
+  public async getBlockedUsers(): Promise<any[]> {
+    const response: AxiosResponse<ApiResponse<any[]>> = await this.api.get('/users/blocked');
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch blocked users');
+  }
 }
 
 export const apiService = new ApiService();
