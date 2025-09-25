@@ -182,6 +182,8 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       checkAuth: async () => {
+        set({ isLoading: true });
+        
         try {
           // Check if we have stored auth data
           const { user, isAuthenticated } = get();
@@ -206,7 +208,12 @@ export const useAuthStore = create<AuthStore>()(
               });
             }
           } else {
-            set({ isLoading: false });
+            // No user or not authenticated - clear auth state
+            set({ 
+              user: null, 
+              isAuthenticated: false, 
+              isLoading: false 
+            });
           }
         } catch (error) {
           // If there's an error, clear the auth state
