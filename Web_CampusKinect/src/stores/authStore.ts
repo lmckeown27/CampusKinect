@@ -20,6 +20,7 @@ interface AuthActions {
   updateProfilePicture: (profilePictureUrl: string) => Promise<void>;
   verifyEmail: (verificationCode: string) => Promise<void>;
   resendVerificationCode: (email: string) => Promise<void>;
+  attemptTokenRefresh: () => Promise<boolean>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -189,18 +190,37 @@ export const useAuthStore = create<AuthStore>()(
           const { user, isAuthenticated } = get();
           
           if (user && isAuthenticated) {
-            // Only verify token if we don't have user data or if token is missing
-            // This reduces unnecessary API calls on every page load
-            const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-            if (token) {
-              // Set as authenticated without API call to reduce rate limiting
+            // HYBRID APPROACH: Check for access token in sessionStorage
+            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+            const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+            
+            if (accessToken) {
+              // Access token exists - user is authenticated
               set({ 
                 user, 
                 isAuthenticated: true, 
                 isLoading: false 
               });
+            } else if (refreshToken) {
+              // No access token but refresh token exists - try to refresh
+              const refreshSuccess = await get().attemptTokenRefresh();
+              if (refreshSuccess) {
+                // Refresh successful - user is authenticated
+                set({ 
+                  user, 
+                  isAuthenticated: true, 
+                  isLoading: false 
+                });
+              } else {
+                // Refresh failed - clear auth state
+                set({ 
+                  user: null, 
+                  isAuthenticated: false, 
+                  isLoading: false 
+                });
+              }
             } else {
-              // No token, user needs to log in
+              // No tokens at all - user needs to log in
               set({ 
                 user: null, 
                 isAuthenticated: false, 
@@ -337,19 +357,38 @@ export const useAuthStore = create<AuthStore>()(
           throw error;
         }
       },
+
+      attemptTokenRefresh: async (): Promise<boolean> => {
+        try {
+          const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+          if (!refreshToken) return false;
+
+          const newTokens = await apiService.refreshAccessToken();
+          if (newTokens) {
+            // Refresh successful - keep current user state
+            return true;
+          }
+          return false;
+        } catch (error) {
+          return false;
+        }
+      },
     }),
     {
       name: 'auth-storage',
       storage: {
         getItem: (key: string) => {
-          const value = sessionStorage.getItem(key);
+          if (typeof window === 'undefined') return null;
+          const value = localStorage.getItem(key);
           return value ? JSON.parse(value) : null;
         },
         setItem: (key: string, value: unknown) => {
-          sessionStorage.setItem(key, JSON.stringify(value));
+          if (typeof window === 'undefined') return;
+          localStorage.setItem(key, JSON.stringify(value));
         },
         removeItem: (key: string) => {
-          sessionStorage.removeItem(key);
+          if (typeof window === 'undefined') return;
+          localStorage.removeItem(key);
         },
       },
       partialize: (state) => ({ 

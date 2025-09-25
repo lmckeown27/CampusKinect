@@ -86,17 +86,22 @@ class ApiService {
   // Token management
   private getAccessToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('accessToken');
+    // Access tokens in sessionStorage (cleared on tab close)
+    return sessionStorage.getItem('accessToken');
   }
 
   private getRefreshToken(): string | null {
     if (typeof window === 'undefined') return null;
+    // Refresh tokens in localStorage (persist across sessions)
     return localStorage.getItem('refreshToken');
   }
 
   private setTokens(tokens: AuthTokens): void {
     if (typeof window === 'undefined') return;
-    localStorage.setItem('accessToken', tokens.accessToken);
+    // HYBRID APPROACH:
+    // Short-lived access token in sessionStorage (auto-cleared on tab close)
+    sessionStorage.setItem('accessToken', tokens.accessToken);
+    // Long-lived refresh token in localStorage (persists across sessions)
     localStorage.setItem('refreshToken', tokens.refreshToken);
   }
 
@@ -115,9 +120,15 @@ class ApiService {
     }
   }
 
+  public async refreshAccessToken(): Promise<AuthTokens | null> {
+    return await this.refreshToken();
+  }
+
   public logout(): void {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem('accessToken');
+    // Clear access token from sessionStorage
+    sessionStorage.removeItem('accessToken');
+    // Clear refresh token and user data from localStorage
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   }
