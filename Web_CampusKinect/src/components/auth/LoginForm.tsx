@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, AlertCircle, Shield } from 'lucide-react';
 import { LoginForm as LoginFormType } from '../../types';
-import { apiService } from '../../services/api';
+import { useAuthStore } from '../../stores/authStore';
 import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
+  const { login } = useAuthStore();
   const [formData, setFormData] = useState<LoginFormType>({
     usernameOrEmail: '',
     password: ''
@@ -34,7 +35,7 @@ const LoginForm: React.FC = () => {
     setError(null);
 
     try {
-      const result = await apiService.login(formData);
+      await login(formData);
       
       // Login successful, redirect to home
       router.push('/home');

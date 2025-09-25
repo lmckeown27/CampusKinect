@@ -51,6 +51,12 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error: any) {
           let errorMessage = 'Login failed';
           
+          // Handle banned user error (comes from apiService with BANNED: prefix)
+          if (error.message && error.message.startsWith('BANNED:')) {
+            // Re-throw banned error so LoginForm can handle the popup
+            throw error;
+          }
+          
           // Handle specific error scenarios
           if (error.response?.status === 400) {
             // Handle validation errors (including unsupported university)
