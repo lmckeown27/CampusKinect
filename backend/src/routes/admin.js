@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../config/database');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 
 // Admin authentication middleware - Restricted to specific user
 const adminAuth = async (req, res, next) => {
