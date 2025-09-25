@@ -585,15 +585,15 @@ router.post('/login', [
   try {
     const { usernameOrEmail, password } = req.body;
 
-    // Check if user exists (by username or email) and is not banned
-    const result = await query(`
+    // First check if user exists at all (including banned users)
+    const userCheck = await query(`
       SELECT u.*, un.name as university_name, un.domain as university_domain
       FROM users u
       JOIN universities un ON u.university_id = un.id
-      WHERE (u.username = $1 OR u.email = $1) AND u.is_active = true AND u.banned_at IS NULL
+      WHERE (u.username = $1 OR u.email = $1) AND u.is_active = true
     `, [usernameOrEmail]);
 
-    if (result.rows.length === 0) {
+    if (userCheck.rows.length === 0) {
       return res.status(401).json({
         success: false,
         error: {
@@ -602,7 +602,20 @@ router.post('/login', [
       });
     }
 
-    const user = result.rows[0];
+    const user = userCheck.rows[0];
+
+    // Check if user is banned
+    if (user.banned_at) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          message: 'Account Banned',
+          details: `Your account has been permanently banned from CampusKinect${user.ban_reason ? ` for: ${user.ban_reason}` : ''}. If you believe this is an error, please contact support at campuskinect01@gmail.com for assistance.`,
+          code: 'ACCOUNT_BANNED',
+          contactEmail: 'campuskinect01@gmail.com'
+        }
+      });
+    }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);

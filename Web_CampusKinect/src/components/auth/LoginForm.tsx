@@ -39,7 +39,14 @@ const LoginForm: React.FC = () => {
       // Login successful, redirect to home
       router.push('/home');
     } catch (error: any) {
-      setError(error.message || 'Login failed. Please try again.');
+      // Handle banned user with special popup
+      if (error.message && error.message.startsWith('BANNED:')) {
+        const bannedMessage = error.message.replace('BANNED: ', '');
+        alert(`🚫 Account Banned\n\n${bannedMessage}`);
+        setError('Your account has been banned. Please check the popup message for details.');
+      } else {
+        setError(error.message || 'Login failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

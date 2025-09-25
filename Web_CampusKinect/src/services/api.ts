@@ -135,18 +135,33 @@ class ApiService {
 
   // Authentication
   public async login(credentials: LoginForm): Promise<{ user: User; tokens: AuthTokens }> {
-    const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
-      await this.api.post('/auth/login', credentials);
-    
-    if (response.data.success && response.data.data) {
-      this.setTokens(response.data.data.tokens);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    try {
+      const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
+        await this.api.post('/auth/login', credentials);
+      
+      if (response.data.success && response.data.data) {
+        this.setTokens(response.data.data.tokens);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        }
+        return response.data.data;
       }
-      return response.data.data;
+      
+      throw new Error(response.data.message || 'Login failed');
+    } catch (error: any) {
+      // Handle banned user specifically
+      if (error.response?.status === 403 && error.response?.data?.error?.code === 'ACCOUNT_BANNED') {
+        const errorData = error.response.data.error;
+        throw new Error(`BANNED: ${errorData.details}`);
+      }
+      
+      // Handle other errors
+      if (error.response?.data?.error?.message) {
+        throw new Error(error.response.data.error.message);
+      }
+      
+      throw new Error(error.message || 'Login failed');
     }
-    
-    throw new Error(response.data.message || 'Login failed');
   }
 
   public async register(userData: RegisterApiData): Promise<any> {
