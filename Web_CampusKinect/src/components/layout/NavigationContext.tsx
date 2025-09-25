@@ -40,29 +40,30 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
   };
 
   // Set initial navigation state based on device type
-  const [showNavigation, setShowNavigation] = useState(!isMobileDevice()); // Closed on mobile, open on desktop
+  const [showNavigation, setShowNavigation] = useState(true); // Force show for debugging
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   // Update navigation state when window resizes (orientation change, etc.)
-  useEffect(() => {
-    const handleResize = () => {
-      // Auto-close navigation on mobile devices
-      if (isMobileDevice()) {
-        setShowNavigation(false);
-      } else {
-        // Auto-open navigation on desktop
-        setShowNavigation(true);
-      }
-    };
+  // Temporarily disabled for debugging
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     // Auto-close navigation on mobile devices
+  //     if (isMobileDevice()) {
+  //       setShowNavigation(false);
+  //     } else {
+  //       // Auto-open navigation on desktop
+  //       setShowNavigation(true);
+  //     }
+  //   };
 
-    // Listen for resize events
-    window.addEventListener('resize', handleResize);
+  //   // Listen for resize events
+  //   window.addEventListener('resize', handleResize);
     
-    // Run once on mount to set correct initial state
-    handleResize();
+  //   // Run once on mount to set correct initial state
+  //   handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
 
   // Close navigation on mobile when user logs in
   useEffect(() => {
