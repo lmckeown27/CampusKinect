@@ -585,12 +585,12 @@ router.post('/login', [
   try {
     const { usernameOrEmail, password } = req.body;
 
-    // Check if user exists (by username or email)
+    // Check if user exists (by username or email) and is not banned
     const result = await query(`
       SELECT u.*, un.name as university_name, un.domain as university_domain
       FROM users u
       JOIN universities un ON u.university_id = un.id
-      WHERE (u.username = $1 OR u.email = $1) AND u.is_active = true
+      WHERE (u.username = $1 OR u.email = $1) AND u.is_active = true AND u.banned_at IS NULL
     `, [usernameOrEmail]);
 
     if (result.rows.length === 0) {

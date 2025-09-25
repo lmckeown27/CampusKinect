@@ -45,7 +45,7 @@ const auth = async (req, res, next) => {
     if (!user) {
       // If not in cache, get from database
       const result = await query(
-        'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active FROM users WHERE id = $1 AND is_active = true',
+        'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_reason FROM users WHERE id = $1 AND is_active = true AND banned_at IS NULL',
         [decoded.userId]
       );
 
@@ -120,7 +120,7 @@ const optionalAuth = async (req, res, next) => {
 
         if (!user) {
           const result = await query(
-            'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active FROM users WHERE id = $1 AND is_active = true',
+            'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_reason FROM users WHERE id = $1 AND is_active = true AND banned_at IS NULL',
             [decoded.userId]
           );
 
