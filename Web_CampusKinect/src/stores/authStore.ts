@@ -21,6 +21,8 @@ interface AuthActions {
   verifyEmail: (verificationCode: string) => Promise<void>;
   resendVerificationCode: (email: string) => Promise<void>;
   attemptTokenRefresh: () => Promise<boolean>;
+  debugUserData: () => void;
+  forceLogout: () => void;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -372,6 +374,53 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error) {
           return false;
         }
+      },
+
+      // DEBUG: Check for user data inconsistencies
+      debugUserData: () => {
+        if (typeof window === 'undefined') return;
+        
+        const storeUser = get().user;
+        const localStorageUser = localStorage.getItem('user');
+        const accessToken = sessionStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+        
+        console.log('🔍 AUTH DEBUG:');
+        console.log('Store User:', storeUser);
+        console.log('LocalStorage User:', localStorageUser ? JSON.parse(localStorageUser) : null);
+        console.log('Access Token exists:', !!accessToken);
+        console.log('Refresh Token exists:', !!refreshToken);
+        
+        // Check for mismatch
+        if (localStorageUser && storeUser) {
+          const lsUser = JSON.parse(localStorageUser);
+          if (lsUser.username !== storeUser.username) {
+            console.error('🚨 USER MISMATCH DETECTED!');
+            console.error('LocalStorage username:', lsUser.username);
+            console.error('Store username:', storeUser.username);
+          }
+        }
+      },
+
+      // Force clear all auth data (for debugging user mismatch)
+      forceLogout: () => {
+        if (typeof window === 'undefined') return;
+        
+        // Clear all storage
+        sessionStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        localStorage.removeItem('auth-storage'); // Zustand persistence
+        
+        // Clear store state
+        set({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null
+        });
+        
+        console.log('🧹 FORCE LOGOUT: All auth data cleared');
       },
     }),
     {
