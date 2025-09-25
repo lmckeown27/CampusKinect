@@ -191,7 +191,7 @@ export const useAuthStore = create<AuthStore>()(
           if (user && isAuthenticated) {
             // Only verify token if we don't have user data or if token is missing
             // This reduces unnecessary API calls on every page load
-            const token = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+            const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
             if (token) {
               // Set as authenticated without API call to reduce rate limiting
               set({ 
