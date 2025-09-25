@@ -43,10 +43,14 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div style={{ backgroundColor: '#525252', minHeight: '100vh' }}>
       <Header />
+      {/* Debug indicator */}
+      <div style={{ position: 'fixed', top: '70px', left: '10px', zIndex: 1000, background: 'red', color: 'white', padding: '5px', fontSize: '12px' }}>
+        Nav: {showNavigation ? 'SHOWN' : 'HIDDEN'} | Profile: {showProfileDropdown ? 'SHOWN' : 'HIDDEN'}
+      </div>
       <div className="flex pt-16">
         {/* Left Sidebar - Navigation */}
         {showNavigation && (
-          <div className="w-80 flex-shrink-0 bg-grey-medium border-r border-gray-200 h-screen overflow-y-auto pt-4">
+          <div className="w-80 flex-shrink-0 bg-gray-100 border-r-4 border-primary h-screen overflow-y-auto pt-4" style={{ backgroundColor: '#f3f4f6', borderRight: '4px solid #708d81' }}>
             <div className="p-6">
               <Navigationbar />
             </div>

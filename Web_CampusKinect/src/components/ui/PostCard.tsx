@@ -159,7 +159,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <div
-      className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8"
+      className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8 max-w-2xl mx-auto"
       style={{ marginBottom: "2rem" }}
     >
       {/* Post Header */}
