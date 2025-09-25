@@ -197,9 +197,9 @@ router.post('/register', [
     const { username, email, password, firstName, lastName, year, major, hometown } = req.body;
 
     // Check if this is a test bypass account (password-based bypass)
-    const isTestBypass = process.env.NODE_ENV === 'development' && 
-                        password === 'Test12345';
-
+    // DISABLED: This was causing authentication bugs where all users logged in as cmckeown
+    const isTestBypass = false; // FORCE DISABLED - was causing auth bug
+    
     // Check if this is a hardcoded test account (lmckeown@calpoly.edu)
     const isHardcodedTest = false; // Disabled for testing verification flow
 
