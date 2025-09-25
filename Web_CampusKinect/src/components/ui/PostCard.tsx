@@ -52,7 +52,6 @@ const PostCard: React.FC<PostCardProps> = ({
   const router = useRouter();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Content moderation states
@@ -60,6 +59,23 @@ const PostCard: React.FC<PostCardProps> = ({
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [isUserBlocked, setIsUserBlocked] = useState(false);
   const [isLoadingBlockStatus, setIsLoadingBlockStatus] = useState(false);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
+        setShowOptions(false);
+      }
+    };
+
+    if (showOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showOptions]);
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -247,15 +263,6 @@ const PostCard: React.FC<PostCardProps> = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-
-                  if (!showOptions && buttonRef.current) {
-                    const rect = buttonRef.current.getBoundingClientRect();
-                    setDropdownPosition({
-                      top: rect.bottom + 4,
-                      left: rect.right - 208, // 208px is the width of the dropdown (w-52)
-                    });
-                  }
-
                   setShowOptions(!showOptions);
                 }}
                 className="p-2 rounded-lg transition-all duration-200"
@@ -279,17 +286,13 @@ const PostCard: React.FC<PostCardProps> = ({
                 <MoreHorizontal size={18} />
               </button>
 
-              {/* Dropdown menu positioned with fixed positioning */}
+              {/* Dropdown menu positioned relative to button */}
               {showOptions && (
                 <div
-                  className="w-52 bg-white rounded-lg shadow-lg border border-gray-200 py-2 flex flex-col items-center"
+                  className="absolute right-0 top-full mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-200 py-2 flex flex-col items-center"
                   style={{
-                    position: "fixed",
-                    top: `${dropdownPosition.top}px`,
-                    left: `${dropdownPosition.left}px`,
-                    zIndex: 9999,
-                    boxShadow:
-                      "0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)",
+                    zIndex: 50,
+                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)",
                     gap: "8px",
                   }}
                 >
@@ -714,13 +717,7 @@ const PostCard: React.FC<PostCardProps> = ({
         </div>
       </div>
 
-      {/* Click outside to close options */}
-      {showOptions && (
-        <div
-          className="fixed inset-0 z-0"
-          onClick={() => setShowOptions(false)}
-        />
-      )}
+
 
       {/* Content Moderation Modals */}
       <ReportModal
