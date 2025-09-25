@@ -1002,11 +1002,11 @@ class ApiService {
   }
 
   public async isUserBlocked(userId: string): Promise<boolean> {
-    const response: AxiosResponse<ApiResponse<{ data: { isBlocked: boolean } }>> = 
+    const response: AxiosResponse<ApiResponse<{ isBlocked: boolean }>> = 
       await this.api.get(`/users/is-blocked/${userId}`);
     
     if (response.data.success && response.data.data) {
-      return response.data.data.data.isBlocked;
+      return response.data.data.isBlocked;
     }
     
     return false;

@@ -78,7 +78,11 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
 };
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  return <MainLayoutContent>{children}</MainLayoutContent>;
+  return (
+    <NavigationProvider>
+      <MainLayoutContent>{children}</MainLayoutContent>
+    </NavigationProvider>
+  );
 };
 
 export default MainLayout; 
