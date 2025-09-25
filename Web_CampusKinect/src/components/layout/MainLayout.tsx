@@ -48,14 +48,14 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
         Nav: {showNavigation ? 'SHOWN' : 'HIDDEN'} | Profile: {showProfileDropdown ? 'SHOWN' : 'HIDDEN'}
       </div>
       <div className="flex pt-16">
-        {/* Left Sidebar - Navigation */}
-        {showNavigation && (
-          <div className="w-80 flex-shrink-0 bg-gray-100 border-r-4 border-primary h-screen overflow-y-auto pt-4" style={{ backgroundColor: '#f3f4f6', borderRight: '4px solid #708d81' }}>
-            <div className="p-6">
-              <Navigationbar />
-            </div>
+        {/* Left Sidebar - Navigation - ALWAYS SHOW FOR DEBUG */}
+        <div className="w-80 flex-shrink-0 bg-red-200 border-r-4 border-red-500 h-screen overflow-y-auto pt-4" style={{ backgroundColor: '#fecaca', borderRight: '4px solid #ef4444' }}>
+          <div className="p-6">
+            <div style={{ color: 'black', fontWeight: 'bold' }}>NAVIGATION DEBUG</div>
+            <div style={{ color: 'black' }}>showNavigation: {String(showNavigation)}</div>
+            <Navigationbar />
           </div>
-        )}
+        </div>
 
         {/* Center Column - Main Content */}
         <main className={`flex-1 transition-all duration-300 ${
@@ -64,18 +64,18 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
           {children}
         </main>
 
-        {/* Right Sidebar - Profile Dropdown (when open) */}
-        {showProfileDropdown && (
-          <div className="w-80 flex-shrink-0 bg-grey-medium border-l border-gray-200 h-screen overflow-y-auto pt-4">
-            <div className="p-6">
-              <Profilebar 
-                showProfileDropdown={showProfileDropdown} 
-                setShowProfileDropdown={setShowProfileDropdown} 
-                user={user} 
-              />
-            </div>
+        {/* Right Sidebar - Profile Dropdown - ALWAYS SHOW FOR DEBUG */}
+        <div className="w-80 flex-shrink-0 bg-blue-200 border-l-4 border-blue-500 h-screen overflow-y-auto pt-4" style={{ backgroundColor: '#bfdbfe', borderLeft: '4px solid #3b82f6' }}>
+          <div className="p-6">
+            <div style={{ color: 'black', fontWeight: 'bold' }}>PROFILE DEBUG</div>
+            <div style={{ color: 'black' }}>showProfileDropdown: {String(showProfileDropdown)}</div>
+            <Profilebar 
+              showProfileDropdown={showProfileDropdown} 
+              setShowProfileDropdown={setShowProfileDropdown} 
+              user={user} 
+            />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

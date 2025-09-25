@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { User, LogOut, Settings } from 'lucide-react';
+import { User, LogOut, Settings, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface ProfilebarProps {
@@ -11,6 +11,7 @@ interface ProfilebarProps {
     firstName: string;
     lastName: string;
     username: string;
+    email?: string;
     profilePicture?: string;
   } | null;
 }
@@ -123,6 +124,30 @@ const Profilebar: React.FC<ProfilebarProps> = ({
             <Settings size={16} />
             <span>&nbsp;Settings</span>
           </button>
+          
+          {/* Admin Button - Only for liam_mckeown38 */}
+          {(user?.email === 'lmckeown@calpoly.edu' || user?.username === 'liam_mckeown38') && (
+            <button
+              onClick={() => {
+                setShowProfileDropdown(false);
+                router.push('/admin');
+              }}
+              className="w-full flex items-center space-x-4 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer shadow-md hover:shadow-lg"
+              style={{ backgroundColor: '#dc2626', color: 'white', marginBottom: '16px', cursor: 'pointer' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#991b1b';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#dc2626';
+                e.currentTarget.style.color = 'white';
+              }}
+            >
+              <Shield size={16} />
+              <span>&nbsp;Admin Panel</span>
+            </button>
+          )}
+          
           <button
             onClick={() => {
               setShowProfileDropdown(false);
