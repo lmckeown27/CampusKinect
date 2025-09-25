@@ -28,7 +28,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-grey-medium border-b border-[#708d81] z-50">
+    <header className="fixed top-0 left-0 right-0 bg-gray-800 border-b-4 border-primary z-50" style={{ backgroundColor: '#374151', borderBottom: '4px solid #708d81' }}>
 
       
       <div className="px-4 py-3 flex items-center justify-between">
@@ -36,30 +36,23 @@ const Header: React.FC = () => {
         <div className="flex items-center">
           <button
             onClick={toggleNavigation}
-            className="p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-10 h-10 flex items-center justify-center transform hover:scale-105 hover:shadow-md"
+            className="p-3 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-12 h-12 flex items-center justify-center transform hover:scale-105 hover:shadow-md border-2"
             style={{ 
-              backgroundColor: showNavigation ? 'transparent' : '#708d81',
+              backgroundColor: showNavigation ? '#708d81' : '#dc2626',
+              borderColor: '#ffffff',
               transition: 'background-color 300ms ease-in-out',
               cursor: 'pointer',
-              color: showNavigation ? '#708d81' : 'white', // Dark green when open, white when closed
+              color: 'white',
               WebkitTapHighlightColor: 'transparent',
               WebkitTouchCallout: 'none',
               WebkitUserSelect: 'none',
               userSelect: 'none'
             }}
             onMouseEnter={(e) => {
-              if (showNavigation) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-              } else {
-                e.currentTarget.style.backgroundColor = '#5a7268';
-              }
+              e.currentTarget.style.backgroundColor = '#991b1b';
             }}
             onMouseLeave={(e) => {
-              if (showNavigation) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-              } else {
-                e.currentTarget.style.backgroundColor = '#708d81';
-              }
+              e.currentTarget.style.backgroundColor = showNavigation ? '#708d81' : '#dc2626';
             }}
             title={showNavigation ? "Hide Navigation" : "Show Navigation"}
           >
@@ -96,30 +89,23 @@ const Header: React.FC = () => {
               ref={profileIconRef}
               data-profile-icon="true"
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-              className="p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-10 h-10 flex items-center justify-center transform hover:scale-105 hover:shadow-md"
+              className="p-3 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-12 h-12 flex items-center justify-center transform hover:scale-105 hover:shadow-md border-2"
               style={{ 
-                backgroundColor: showProfileDropdown ? 'transparent' : '#708d81',
+                backgroundColor: showProfileDropdown ? '#708d81' : '#dc2626',
+                borderColor: '#ffffff',
                 transition: 'background-color 300ms ease-in-out',
                 cursor: 'pointer',
-                color: showProfileDropdown ? '#708d81' : 'white', // Dark green when open, white when closed
+                color: 'white',
                 WebkitTapHighlightColor: 'transparent',
                 WebkitTouchCallout: 'none',
                 WebkitUserSelect: 'none',
                 userSelect: 'none'
               }}
               onMouseEnter={(e) => {
-                if (showProfileDropdown) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                } else {
-                  e.currentTarget.style.backgroundColor = '#5a7268';
-                }
+                e.currentTarget.style.backgroundColor = '#991b1b';
               }}
               onMouseLeave={(e) => {
-                if (showProfileDropdown) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                } else {
-                  e.currentTarget.style.backgroundColor = '#708d81';
-                }
+                e.currentTarget.style.backgroundColor = showProfileDropdown ? '#708d81' : '#dc2626';
               }}
             >
               <div className={`transition-all duration-300 ease-in-out transform ${showProfileDropdown ? 'rotate-12 scale-110' : 'rotate-0 scale-100'}`}>
