@@ -2727,7 +2727,33 @@ router.post('/create', [
     const userId = req.user.id;
     const universityId = req.user.university_id;
 
-    // Validate tag selections based on post type
+
+    // Content Safety Filter - Apple Guideline 1.2 Compliance
+    const prohibitedTerms = [
+      // Drugs
+      "weed", "marijuana", "cannabis", "drug", "cocaine", "heroin", "meth", "pills", "adderall", "xanax",
+      // Prostitution/Adult Services
+      "escort", "massage", "hookup", "sugar daddy", "sugar baby", "onlyfans", "cam girl",
+      // Violence
+      "kill", "murder", "bomb", "weapon", "gun", "knife", "fight", "violence",
+      // Hate Speech
+      "nazi", "hitler", "kkk", "terrorist", "suicide",
+      // Scams
+      "get rich quick", "easy money", "pyramid", "mlm", "bitcoin scam"
+    ];
+
+    const contentLower = content.toLowerCase();
+    const foundProhibited = prohibitedTerms.find(term => contentLower.includes(term));
+    
+    if (foundProhibited) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: "Content violates community guidelines",
+          details: "Your post contains prohibited content and cannot be published."
+        }
+      });
+    }    // Validate tag selections based on post type
     let validationErrors = [];
     
     if (postType === 'goods-services') {

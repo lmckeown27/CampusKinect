@@ -16,10 +16,13 @@ struct RegisterView: View {
     @State private var firstName = ""
     @State private var lastName = ""
     @State private var username = ""
+    @State private var agreeToTerms = false
     @State private var showingAlert = false
     @State private var isPasswordVisible = false
     @State private var isConfirmPasswordVisible = false
     @State private var showingVerification = false
+    @State private var showingTerms = false
+    @State private var showingPrivacy = false
     @FocusState private var focusedField: RegisterField?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -40,6 +43,8 @@ struct RegisterView: View {
                     VStack(spacing: 32) {
                         headerSection
                         registrationForm
+                        complianceBanner
+                        termsAgreementSection
                         registerButton
                         footerSection
                     }
@@ -76,6 +81,32 @@ struct RegisterView: View {
         }
         .fullScreenCover(isPresented: $showingVerification) {
             VerificationView(email: email)
+        }
+        .sheet(isPresented: $showingTerms) {
+            NavigationView {
+                TermsView()
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingTerms = false
+                            }
+                        }
+                    }
+            }
+        }
+        .sheet(isPresented: $showingPrivacy) {
+            NavigationView {
+                PrivacyView()
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingPrivacy = false
+                            }
+                        }
+                    }
+            }
         }
     }
     
@@ -299,6 +330,109 @@ struct RegisterView: View {
         }
     }
     
+    // MARK: - Apple Guideline 1.2 Compliance Banner
+    private var complianceBanner: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "shield.fill")
+                    .foregroundColor(.red)
+                    .font(.title2)
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("ZERO TOLERANCE POLICY")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                    
+                    Text("CampusKinect maintains ABSOLUTE ZERO TOLERANCE for objectionable content or abusive behavior of any kind.")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        CompliancePoint("All content is actively monitored and filtered")
+                        CompliancePoint("Reports are reviewed and acted upon within 24 hours")
+                        CompliancePoint("Violating users are immediately ejected from the platform")
+                        CompliancePoint("Content removal is swift and permanent")
+                    }
+                    .padding(.top, 4)
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.red.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.red.opacity(0.3), lineWidth: 2)
+                )
+        )
+    }
+    
+    private var termsAgreementSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top, spacing: 12) {
+                Button(action: {
+                    agreeToTerms.toggle()
+                }) {
+                    Image(systemName: agreeToTerms ? "checkmark.square.fill" : "square")
+                        .foregroundColor(agreeToTerms ? Color("BrandPrimary") : .secondary)
+                        .font(.title3)
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("I agree to the Terms of Service and Privacy Policy")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
+                    HStack(spacing: 4) {
+                        Text("By creating an account, you agree to our")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Button("Terms of Service") {
+                            showingTerms = true
+                        }
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color("BrandPrimary"))
+                        
+                        Text("and")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Button("Privacy Policy") {
+                            showingPrivacy = true
+                        }
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color("BrandPrimary"))
+                    }
+                }
+            }
+            
+            // Additional compliance notice
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.orange)
+                    .font(.caption)
+                
+                Text("Agreement to these terms includes acknowledgment of our zero-tolerance policy for objectionable content and abusive behavior. Violations result in immediate account termination.")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.top, 8)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemGray6))
+        )
+    }
+    
     // MARK: - Computed Properties
     
     private var isValidUniversityEmail: Bool {
@@ -312,7 +446,8 @@ struct RegisterView: View {
         !lastName.isEmpty &&
         isValidUniversityEmail &&
         password.count >= 6 &&
-        password == confirmPassword
+        password == confirmPassword &&
+        agreeToTerms // ✅ MANDATORY TERMS AGREEMENT
     }
     
     // MARK: - Methods
@@ -330,6 +465,29 @@ struct RegisterView: View {
             showingVerification = true
         } else {
             showingAlert = true
+        }
+    }
+}
+
+// MARK: - Supporting Views
+
+struct CompliancePoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 6) {
+            Text("•")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundColor(.red)
+            
+            Text(text)
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
     }
 }

@@ -53,6 +53,49 @@ export interface Post {
   updatedAt: string;
   poster?: User;
   university?: University;
+  // Content safety fields
+  isFlagged?: boolean;
+  flagReason?: string;
+  flaggedAt?: string;
+  contentSafetyScore?: number;
+}
+
+// Content Moderation Types
+export interface ContentReport {
+  id: string;
+  reporterId: string;
+  reportedUserId: string;
+  contentId: string;
+  contentType: 'post' | 'message' | 'user';
+  reason: 'harassment' | 'hate_speech' | 'spam' | 'inappropriate_content' | 'scam' | 'violence' | 'sexual_content' | 'false_information' | 'other';
+  details?: string;
+  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
+  moderatorId?: string;
+  moderatorNotes?: string;
+  createdAt: string;
+  resolvedAt?: string;
+}
+
+export interface CreateReportForm {
+  contentId: string;
+  contentType: 'post' | 'message' | 'user';
+  reason: 'harassment' | 'hate_speech' | 'spam' | 'inappropriate_content' | 'scam' | 'violence' | 'sexual_content' | 'false_information' | 'other';
+  details?: string;
+}
+
+export interface UserBlock {
+  id: string;
+  blockerId: string;
+  blockedId: string;
+  createdAt: string;
+}
+
+export interface BlockedUser {
+  id: string;
+  username: string;
+  displayName: string;
+  profilePicture?: string;
+  blockedAt: string;
 }
 
 export interface Message {

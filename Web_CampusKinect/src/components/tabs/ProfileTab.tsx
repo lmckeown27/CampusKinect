@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { Edit2, Camera, X, Repeat, Bookmark } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { Post, CreatePostForm, User } from '../../types';
-import PostCard from '../ui/PostCard';
+import { PostCard } from '../ui';
 import EditPostModal from '../ui/EditPostModal';
 
 // Helper function to get year label

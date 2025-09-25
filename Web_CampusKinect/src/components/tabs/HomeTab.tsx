@@ -3,8 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Filter, MapPin, Calendar, Tag, X, Plus } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
-import PostCard from '../ui/PostCard';
-import TagSelector from '../ui/TagSelector';
+import { PostCard, TagSelector } from '../ui';
 
 const HomeTab: React.FC = () => {
   const { 

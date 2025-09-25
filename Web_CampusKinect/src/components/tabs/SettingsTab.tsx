@@ -49,7 +49,11 @@ const SettingsTab: React.FC = () => {
   };
 
   const handleBlockedUsers = () => {
-    router.push('/settings/blocked-users');    window.location.href = 'mailto:campuskinect01@gmail.com?subject=Feedback - CampusKinect';
+    router.push('/settings/blocked-users');
+  };
+
+  const handleFeedbackEmail = () => {
+    window.location.href = 'mailto:campuskinect01@gmail.com?subject=Feedback - CampusKinect';
   };
 
   return (

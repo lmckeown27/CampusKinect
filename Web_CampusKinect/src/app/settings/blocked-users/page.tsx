@@ -1,16 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, UserX, Shield } from 'lucide-react';
+import { ArrowLeft, UserX, Shield, AlertTriangle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-interface BlockedUser {
-  id: number;
-  username?: string;
-  displayName: string;
-  profilePicture?: string;
-  blockedAt: string;
-}
+import { apiService } from '../../../services/api';
+import { BlockedUser } from '../../../types';
 
 const BlockedUsersPage: React.FC = () => {
   const router = useRouter();
@@ -27,18 +21,8 @@ const BlockedUsersPage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/users/blocked', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to load blocked users');
-      }
-
-      const data = await response.json();
-      setBlockedUsers(data.data || []);
+      const response = await apiService.getBlockedUsers();
+      setBlockedUsers(response.data || []);
     } catch (err: any) {
       setError(err.message || 'Failed to load blocked users');
       console.error('Failed to load blocked users:', err);
@@ -47,25 +31,13 @@ const BlockedUsersPage: React.FC = () => {
     }
   };
 
-  const handleUnblock = async (userId: number, displayName: string) => {
+  const handleUnblock = async (userId: string, displayName: string) => {
     if (!confirm(`Are you sure you want to unblock ${displayName}? They will be able to see your content and message you again.`)) {
       return;
     }
 
     try {
-      const response = await fetch('/api/v1/users/unblock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify({ userId })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to unblock user');
-      }
-
+      await apiService.unblockUser(userId);
       // Remove from local list
       setBlockedUsers(prev => prev.filter(user => user.id !== userId));
     } catch (err: any) {
@@ -130,7 +102,7 @@ const BlockedUsersPage: React.FC = () => {
           ) : error ? (
             <div className="p-8 text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <UserX className="h-6 w-6 text-red-600" />
+                <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Blocked Users</h3>
               <p className="text-sm text-gray-500 mb-4">{error}</p>

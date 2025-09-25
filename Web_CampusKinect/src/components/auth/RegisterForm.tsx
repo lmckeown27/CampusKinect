@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
-import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, CheckCircle, Shield } from 'lucide-react';
 import { User } from '../../types';
 import KinectLogo from '@/assets/logos/KinectLogo.png';
 
@@ -502,9 +502,23 @@ const RegisterForm: React.FC = () => {
           </div>
         </div>
 
+        {/* Apple Guideline 1.2 Compliance Notice */}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-6">
+          <div className="flex items-start space-x-3">
+            <Shield size={20} className="text-red-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-red-800 font-semibold text-sm">Zero Tolerance Policy</p>
+              <p className="text-red-700 text-xs mt-1">
+                CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior. 
+                All content is monitored and violations result in immediate account termination.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Footer */}
         <div className="text-center text-xs text-[#708d81] mt-8">
-          <p>By creating an account, you agree to our{' '}
+          <p className="font-semibold mb-2">By creating an account, you agree to our{' '}
             <Link href="/terms" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
               Terms of Service
             </Link>{' '}

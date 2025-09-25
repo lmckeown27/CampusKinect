@@ -9,7 +9,10 @@ import {
   RegisterApiData,
   ApiResponse,
   PaginatedResponse,
-  AuthTokens 
+  AuthTokens,
+  ContentReport,
+  CreateReportForm,
+  BlockedUser
 } from '../types';
 
 class ApiService {
@@ -921,42 +924,160 @@ class ApiService {
     throw new Error(response.data.message || 'Failed to fetch reposts');
   }
 
-  // Safety & Moderation Methods
-  public async reportContent(contentId: string, contentType: string, reason: string, details?: string): Promise<boolean> {
-    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/reports', {
-      contentId: parseInt(contentId),
-      contentType,
-      reason,
-      details
-    });
+  // Content Moderation & Safety Methods
+  public async reportContent(reportData: CreateReportForm): Promise<ContentReport> {
+    const response: AxiosResponse<ApiResponse<{ report: ContentReport }>> = 
+      await this.api.post('/reports', {
+        contentId: parseInt(reportData.contentId),
+        contentType: reportData.contentType,
+        reason: reportData.reason,
+        details: reportData.details
+      });
 
-    return response.data.success;
+    if (response.data.success && response.data.data) {
+      return response.data.data.report;
+    }
+    
+    throw new Error(response.data.message || 'Failed to submit report');
   }
 
-  public async blockUser(userId: string): Promise<boolean> {
-    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/users/block', {
-      userId: parseInt(userId)
+  public async getUserReports(page: number = 1, limit: number = 20): Promise<PaginatedResponse<ContentReport>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
     });
 
-    return response.data.success;
+    const response: AxiosResponse<ApiResponse<{ data: ContentReport[], pagination: any }>> = 
+      await this.api.get(`/reports/my-reports?${params}`);
+    
+    if (response.data.success && response.data.data) {
+      return {
+        data: response.data.data.data,
+        pagination: response.data.data.pagination
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch reports');
   }
 
-  public async unblockUser(userId: string): Promise<boolean> {
-    const response: AxiosResponse<ApiResponse<any>> = await this.api.post('/users/unblock', {
-      userId: parseInt(userId)
+  public async blockUser(userId: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post('/users/block', {
+        userId: parseInt(userId)
+      });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to block user');
+    }
+  }
+
+  public async unblockUser(userId: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post('/users/unblock', {
+        userId: parseInt(userId)
+      });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to unblock user');
+    }
+  }
+
+  public async getBlockedUsers(page: number = 1, limit: number = 20): Promise<PaginatedResponse<BlockedUser>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
     });
 
-    return response.data.success;
+    const response: AxiosResponse<ApiResponse<{ data: BlockedUser[], pagination: any }>> = 
+      await this.api.get(`/users/blocked?${params}`);
+    
+    if (response.data.success && response.data.data) {
+      return {
+        data: response.data.data.data,
+        pagination: response.data.data.pagination
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch blocked users');
   }
 
-  public async getBlockedUsers(): Promise<any[]> {
-    const response: AxiosResponse<ApiResponse<any[]>> = await this.api.get('/users/blocked');
+  public async isUserBlocked(userId: string): Promise<boolean> {
+    const response: AxiosResponse<ApiResponse<{ data: { isBlocked: boolean } }>> = 
+      await this.api.get(`/users/is-blocked/${userId}`);
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data.data.isBlocked;
+    }
+    
+    return false;
+  }
+
+  // =============================================================================
+  // Admin Moderation Methods (Apple Guideline 1.2 Compliance)
+  // =============================================================================
+  
+  public async getPendingReports(page: number = 1, limit: number = 20): Promise<PaginatedResponse<ContentReport>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    const response: AxiosResponse<ApiResponse<{ data: ContentReport[], pagination: any }>> = 
+      await this.api.get(`/admin/reports/pending?${params}`);
+    
+    if (response.data.success && response.data.data) {
+      return {
+        data: response.data.data.data,
+        pagination: response.data.data.pagination
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch pending reports');
+  }
+
+  public async getModerationStats(): Promise<{
+    pendingReports: number;
+    resolvedToday: number;
+    averageResponseTime: number;
+    totalUsers: number;
+    bannedUsers: number;
+  }> {
+    const response: AxiosResponse<ApiResponse<{
+      pendingReports: number;
+      resolvedToday: number;
+      averageResponseTime: number;
+      totalUsers: number;
+      bannedUsers: number;
+    }>> = await this.api.get('/admin/moderation/stats');
     
     if (response.data.success && response.data.data) {
       return response.data.data;
     }
     
-    throw new Error(response.data.message || 'Failed to fetch blocked users');
+    throw new Error(response.data.message || 'Failed to fetch moderation stats');
+  }
+
+  public async moderateReport(reportId: string, action: 'approve' | 'dismiss', moderatorNotes?: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post(`/admin/reports/${reportId}/moderate`, {
+        action,
+        moderatorNotes
+      });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to moderate report');
+    }
+  }
+
+  public async banUser(userId: string, reason: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post(`/admin/users/${userId}/ban`, {
+        reason
+      });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to ban user');
+    }
   }
 }
 

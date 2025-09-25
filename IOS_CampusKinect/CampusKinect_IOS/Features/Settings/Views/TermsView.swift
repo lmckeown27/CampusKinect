@@ -26,13 +26,51 @@ struct TermsView: View {
                         content: "CampusKinect is exclusively for university students with valid educational email addresses. You must have a valid educational email address (.edu, .ac.uk, .ca, .edu.au, .de, .fr) to create an account and use CampusKinect."
                     )
                     
-                    // Acceptable Use
-                    VStack(alignment: .leading, spacing: 12) {
+                    // Acceptable Use with Apple Guideline 1.2 Compliance Banner
+                    VStack(alignment: .leading, spacing: 16) {
                         Text("3. Acceptable Use")
                             .font(.title3)
                             .fontWeight(.semibold)
                         
-                        Text("CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior. CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior. You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. You agree not to:")
+                        // Apple Guideline 1.2 Compliance Banner
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(alignment: .top, spacing: 12) {
+                                Image(systemName: "shield.fill")
+                                    .foregroundColor(.red)
+                                    .font(.title2)
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("ZERO TOLERANCE POLICY")
+                                        .font(.headline)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.red)
+                                    
+                                    Text("CampusKinect maintains ABSOLUTE ZERO TOLERANCE for objectionable content or abusive behavior of any kind.")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.white)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        ZeroTolerancePoint("All content is actively monitored and filtered")
+                                        ZeroTolerancePoint("Reports are reviewed and acted upon within 24 hours")
+                                        ZeroTolerancePoint("Violating users are immediately ejected from the platform")
+                                        ZeroTolerancePoint("Content removal is swift and permanent")
+                                    }
+                                    .padding(.top, 4)
+                                }
+                            }
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.red.opacity(0.9))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.red, lineWidth: 2)
+                                )
+                        )
+                        
+                        Text("You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. You agree not to:")
                             .font(.body)
                             .fontWeight(.semibold)
                         
@@ -101,69 +139,46 @@ struct TermsView: View {
                             .font(.title3)
                             .fontWeight(.semibold)
                         
-                        Text("We are committed to maintaining a safe and secure platform for all users. We implement various security measures to protect your information and maintain platform integrity.")
+                        Text("We are committed to maintaining a safe and secure platform for all users. We implement various security measures and content moderation policies to protect our community.")
                             .font(.body)
                         
-                        Text("If you encounter any suspicious activity or security concerns, please report them immediately through our support channels.")
+                        Text("Reporting and Blocking: Users can report inappropriate content or behavior through our reporting system. You can also block users who engage in abusive behavior. All reports are reviewed promptly, and appropriate action is taken within 24 hours.")
                             .font(.body)
-                    }
-                    
-                    // Account Termination
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("7. Account Termination")
-                            .font(.title3)
-                            .fontWeight(.semibold)
+                            .fontWeight(.medium)
                         
                         Text("We reserve the right to suspend or terminate your account if you violate these Terms of Service or engage in behavior that is harmful to our community.")
-                            .font(.body)
-                        
-                        Text("You may also terminate your account at any time by contacting our support team.")
                             .font(.body)
                     }
                     
                     // Changes to Terms
                     TermsSection(
-                        title: "8. Changes to Terms",
+                        title: "7. Changes to Terms",
                         content: "We may update these Terms of Service from time to time. We will notify you of any material changes via email or through our platform. Your continued use of CampusKinect after such changes constitutes acceptance of the new terms."
                     )
                     
                     // Contact Information
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("9. Contact Information")
+                        Text("8. Contact Us")
                             .font(.title3)
                             .fontWeight(.semibold)
                         
                         Text("If you have any questions about these Terms of Service, please contact us at:")
                             .font(.body)
                         
-                        // Contact Box
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("CampusKinect Support")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Email: support@campuskinect.com")
+                                .font(.body)
+                                .fontWeight(.medium)
                             
-                            Text("Email: campuskinect01@gmail.com")
+                            Text("Address: CampusKinect, Inc.")
+                                .font(.body)
+                            
+                            Text("Last updated: September 2024")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
-                            Text("Response time: Whenever I get around to it")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                                .padding(.top, 8)
                         }
-                        .padding()
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(8)
                     }
-                    
-                    // Footer
-                    VStack(spacing: 8) {
-                        Divider()
-                        
-                        Text("Last updated: August 2025")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.top, 24)
                 }
                 .padding()
             }
@@ -180,13 +195,14 @@ struct TermsView: View {
     }
 }
 
-// MARK: - Helper Views
+// MARK: - Supporting Views
+
 struct TermsSection: View {
     let title: String
     let content: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.title3)
                 .fontWeight(.semibold)
@@ -208,11 +224,31 @@ struct BulletPoint: View {
         HStack(alignment: .top, spacing: 8) {
             Text("•")
                 .font(.body)
+                .fontWeight(.bold)
             
             Text(text)
                 .font(.body)
+        }
+    }
+}
+
+struct ZeroTolerancePoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 6) {
+            Text("•")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
             
-            Spacer()
+            Text(text)
+                .font(.caption)
+                .foregroundColor(.white)
         }
     }
 }

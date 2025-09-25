@@ -253,7 +253,7 @@ export default function PrivacyPolicyPage() {
                   <p className="text-blue-800 font-medium">CampusKinect Privacy Team</p>
                   <p className="text-blue-700 text-sm mt-1">
                     Email: campuskinect01@gmail.com<br />
-                    Response time: Whenever I get around to it
+                    Response time: 2-6 pm
                   </p>
                 </div>
               </section>

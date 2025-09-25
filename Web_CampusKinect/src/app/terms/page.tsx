@@ -69,8 +69,28 @@ export default function TermsOfServicePage() {
               {/* Acceptable Use */}
               <section>
                 <h3 className="text-xl font-semibold text-white mb-4">3. Acceptable Use</h3>
+                
+                {/* Apple Guideline 1.2 Compliance Banner */}
+                <div className="bg-red-900 border-2 border-red-600 rounded-lg p-6 mb-6">
+                  <div className="flex items-start space-x-3">
+                    <Shield size={24} className="text-red-400 mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="text-lg font-bold text-red-200 mb-2">ZERO TOLERANCE POLICY</h4>
+                      <p className="text-red-100 font-semibold mb-3">
+                        CampusKinect maintains ABSOLUTE ZERO TOLERANCE for objectionable content or abusive behavior of any kind.
+                      </p>
+                      <ul className="text-red-100 text-sm space-y-1">
+                        <li>• All content is actively monitored and filtered</li>
+                        <li>• Reports are reviewed and acted upon within 24 hours</li>
+                        <li>• Violating users are immediately ejected from the platform</li>
+                        <li>• Content removal is swift and permanent</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
                 <p className="text-gray-300 leading-relaxed mb-4 font-semibold">
-                  <strong className="text-red-400">CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior.</strong> You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. 
+                  You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. 
                   You agree not to:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
@@ -169,7 +189,7 @@ export default function TermsOfServicePage() {
                   <p className="text-blue-800 font-medium">CampusKinect Support</p>
                   <p className="text-blue-700 text-sm mt-1">
                     Email: campuskinect01@gmail.com<br />
-                    Response time: Whenever I get around to it
+                    Response time: 2-6 pm
                   </p>
                 </div>
               </section>

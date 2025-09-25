@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { MessageCircle, ArrowLeft } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { Post, User } from '../../types';
-import PostCard from '../ui/PostCard';
+import { PostCard } from '../ui';
 import { useRouter } from 'next/navigation';
 
 // Helper function to get year label
