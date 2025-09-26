@@ -8,14 +8,25 @@ class AdminAPIService: ObservableObject {
     
     // MARK: - Authentication
     private func getAuthHeaders() -> [String: String] {
-        guard let token = AuthenticationManager.shared.currentToken else {
-            return [:]
-        }
-        
+        // For now, return basic headers - token will be added in each method
         return [
-            "Authorization": "Bearer \(token)",
             "Content-Type": "application/json"
         ]
+    }
+    
+    private func addAuthToken(to request: URLRequest) -> AnyPublisher<URLRequest, Error> {
+        return Future { promise in
+            Task {
+                if let token = await KeychainManager.shared.getAccessToken() {
+                    var authenticatedRequest = request
+                    authenticatedRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+                    promise(.success(authenticatedRequest))
+                } else {
+                    promise(.failure(URLError(.userAuthenticationRequired)))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
     }
     
     // MARK: - Get Pending Reports
@@ -29,11 +40,14 @@ class AdminAPIService: ObservableObject {
         request.httpMethod = "GET"
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: PaginatedResponse<ContentReport>.self, decoder: JSONDecoder())
-            .compactMap { response in
-                response.success ? response : nil
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: PaginatedResponse<ContentReport>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? response : nil
+                    }
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -50,11 +64,14 @@ class AdminAPIService: ObservableObject {
         request.httpMethod = "GET"
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: APIResponse<ModerationStats>.self, decoder: JSONDecoder())
-            .compactMap { response in
-                response.success ? response.data : nil
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<ModerationStats>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? response.data : nil
+                    }
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -78,11 +95,14 @@ class AdminAPIService: ObservableObject {
                 .eraseToAnyPublisher()
         }
         
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
-            .compactMap { response in
-                response.success ? () : nil
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? () : nil
+                    }
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
