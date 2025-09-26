@@ -288,8 +288,11 @@ struct ReportDetailView: View {
         guard let action = selectedAction else { return }
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
-        let vm = viewModel
-        vm.moderateReport(report, action: action, notes: notes)
+        
+        // Call method in MainActor context
+        Task { @MainActor in
+            viewModel.moderateReport(report, action: action, notes: notes)
+        }
     }
     
     private func formatFullDate(_ dateString: String) -> String {
