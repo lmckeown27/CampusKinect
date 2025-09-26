@@ -51,12 +51,12 @@ struct ReportDetailView: View {
             ) {
                 Button("Remove Content & Ban User", role: .destructive) {
                     selectedAction = .approve
-                    moderateReport()
+                    handleModerationAction()
                 }
                 
                 Button("Dismiss Report") {
                     selectedAction = .dismiss
-                    moderateReport()
+                    handleModerationAction()
                 }
                 
                 Button("Cancel", role: .cancel) { }
@@ -284,7 +284,7 @@ struct ReportDetailView: View {
     }
     
     // MARK: - Helper Methods
-    private func moderateReport() {
+    private func handleModerationAction() {
         guard let action = selectedAction else { return }
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
