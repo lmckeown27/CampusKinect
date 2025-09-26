@@ -1105,6 +1105,37 @@ class ApiService {
       throw new Error(response.data.message || 'Failed to ban user');
     }
   }
+
+  public async getAnalyticsData(): Promise<any> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get('/admin/analytics');
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch analytics data');
+  }
+
+  public async getBannedUsers(): Promise<{ data: any[] }> {
+    const response: AxiosResponse<ApiResponse<{ users: any[] }>> = 
+      await this.api.get('/admin/users/banned');
+    
+    if (response.data.success && response.data.data) {
+      return { data: response.data.data.users };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch banned users');
+  }
+
+  public async unbanUser(userId: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post(`/admin/users/${userId}/unban`);
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to unban user');
+    }
+  }
 }
 
 export const apiService = new ApiService();

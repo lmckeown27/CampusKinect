@@ -24,9 +24,6 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#525252' }}>
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, backgroundColor: '#f59e0b', color: 'white', padding: '10px', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-          DEBUG: LOADING AUTHENTICATION...
-        </div>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#708d81] mx-auto mb-4"></div>
           <p className="text-[#708d81]">Loading CampusKinect...</p>
@@ -38,47 +35,14 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
-        {/* DEBUG: Show header even when not authenticated */}
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, backgroundColor: '#dc2626', color: 'white', padding: '10px', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-          DEBUG: NOT AUTHENTICATED - Header would be here
-        </div>
-        <div style={{ paddingTop: '60px' }}>
-          {children}
-        </div>
+        {children}
       </div>
     );
   }
 
   return (
     <div style={{ backgroundColor: '#525252', minHeight: '100vh' }}>
-      {/* DEBUG: Show authentication status and user info */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backgroundColor: '#10b981', color: 'white', padding: '5px', textAlign: 'center', fontSize: '12px', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>DEBUG: AUTHENTICATED - User: {user?.username || 'NO_USERNAME'} | Email: {user?.email || 'NO_EMAIL'} | University: {user?.universityId || 'NO_UNI'}</span>
-        <div style={{ display: 'flex', gap: '5px' }}>
-          <button 
-            onClick={() => {
-              const { debugUserData } = useAuthStore.getState();
-              debugUserData();
-            }}
-            style={{ backgroundColor: '#dc2626', color: 'white', border: 'none', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer' }}
-          >
-            Debug Auth
-          </button>
-          <button 
-            onClick={() => {
-              const { forceLogout } = useAuthStore.getState();
-              forceLogout();
-              window.location.reload();
-            }}
-            style={{ backgroundColor: '#7c2d12', color: 'white', border: 'none', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer' }}
-          >
-            Force Logout
-          </button>
-        </div>
-      </div>
-      <div style={{ paddingTop: '30px' }}>
-        <Header />
-      </div>
+      <Header />
 
       <div className="flex pt-16">
         {/* Left Sidebar - Navigation */}
