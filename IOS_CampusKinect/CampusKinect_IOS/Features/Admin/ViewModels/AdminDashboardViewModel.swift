@@ -80,7 +80,7 @@ class AdminDashboardViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         self?.reports = reportsResponse.data
                         self?.stats = stats
-                        self?.hasMoreReports = reportsResponse.pagination.hasMore
+                        self?.hasMoreReports = reportsResponse.pagination.hasNext
                         self?.currentPage = 1
                     }
                 }
@@ -105,7 +105,7 @@ class AdminDashboardViewModel: ObservableObject {
                 receiveValue: { [weak self] response in
                     DispatchQueue.main.async {
                         self?.reports.append(contentsOf: response.data)
-                        self?.hasMoreReports = response.pagination.hasMore
+                        self?.hasMoreReports = response.pagination.hasNext
                         self?.currentPage = nextPage
                     }
                 }

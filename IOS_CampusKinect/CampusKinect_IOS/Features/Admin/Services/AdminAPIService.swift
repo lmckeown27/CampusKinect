@@ -31,9 +31,9 @@ class AdminAPIService: ObservableObject {
         
         return session.dataTaskPublisher(for: request)
             .map(\.data)
-            .decode(type: APIResponse<PaginatedResponse<ContentReport>>.self, decoder: JSONDecoder())
+            .decode(type: PaginatedResponse<ContentReport>.self, decoder: JSONDecoder())
             .compactMap { response in
-                response.success ? response.data : nil
+                response.success ? response : nil
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

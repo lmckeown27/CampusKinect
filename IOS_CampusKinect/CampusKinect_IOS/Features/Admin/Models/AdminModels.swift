@@ -159,21 +159,7 @@ struct ModerationAction: Codable {
 }
 
 // MARK: - API Response Models
-struct PaginatedResponse<T: Codable>: Codable {
-    let data: [T]
-    let pagination: PaginationInfo
-}
-
-struct PaginationInfo: Codable {
-    let page: Int
-    let limit: Int
-    let total: Int
-    let pages: Int
-    
-    var hasMore: Bool {
-        return page < pages
-    }
-}
+// Note: PaginatedResponse and PaginationInfo are defined in Features/Shared/Models/PaginationModel.swift
 
 // MARK: - Admin User Verification
 struct AdminUser {
