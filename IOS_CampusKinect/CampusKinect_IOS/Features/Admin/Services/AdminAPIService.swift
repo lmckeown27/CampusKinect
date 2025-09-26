@@ -128,11 +128,14 @@ class AdminAPIService: ObservableObject {
                 .eraseToAnyPublisher()
         }
         
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
-            .compactMap { response in
-                response.success ? () : nil
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? () : nil
+                    }
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -149,11 +152,14 @@ class AdminAPIService: ObservableObject {
         request.httpMethod = "GET"
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: APIResponse<AnalyticsData>.self, decoder: JSONDecoder())
-            .compactMap { response in
-                response.success ? response.data : nil
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<AnalyticsData>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? response.data : nil
+                    }
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -170,11 +176,14 @@ class AdminAPIService: ObservableObject {
         request.httpMethod = "GET"
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: APIResponse<BannedUsersResponse>.self, decoder: JSONDecoder())
-            .compactMap { response in
-                response.success ? response.data?.users : nil
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<BannedUsersResponse>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? response.data?.users : nil
+                    }
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -191,11 +200,14 @@ class AdminAPIService: ObservableObject {
         request.httpMethod = "POST"
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
-            .compactMap { response in
-                response.success ? () : nil
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? () : nil
+                    }
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
