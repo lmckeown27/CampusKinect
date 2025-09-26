@@ -73,6 +73,13 @@ class AdminDashboardViewModel: ObservableObject {
         impactFeedback.impactOccurred()
     }
     
+    private func checkAdminAuthorization() -> Bool {
+        // Try to get user data from keychain/storage
+        // For now, we'll use a simple approach and let the backend handle the real authorization
+        // The API calls will fail if the user is not authorized
+        return true
+    }
+    
     // MARK: - Computed Properties
     var urgentReports: [ContentReport] {
         reports.filter { $0.isUrgent || $0.isOverdue }
@@ -309,13 +316,6 @@ class AdminDashboardViewModel: ObservableObject {
     var isAuthorizedAdmin: Bool {
         // Check authorization using stored user data
         return checkAdminAuthorization()
-    }
-    
-    private func checkAdminAuthorization() -> Bool {
-        // Try to get user data from keychain/storage
-        // For now, we'll use a simple approach and let the backend handle the real authorization
-        // The API calls will fail if the user is not authorized
-        return true
     }
     
     // MARK: - Cleanup
