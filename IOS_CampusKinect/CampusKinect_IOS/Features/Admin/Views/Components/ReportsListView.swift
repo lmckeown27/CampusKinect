@@ -38,7 +38,7 @@ struct ReportsListView: View {
         .listStyle(.plain)
         .overlay {
             if isLoading && reports.isEmpty {
-                LoadingView()
+                ReportsLoadingView()
             }
         }
     }
@@ -218,8 +218,8 @@ struct EmptyReportsView: View {
     }
 }
 
-// MARK: - Loading View
-struct LoadingView: View {
+// MARK: - Reports Loading View
+struct ReportsLoadingView: View {
     var body: some View {
         VStack(spacing: 16) {
             ProgressView()
