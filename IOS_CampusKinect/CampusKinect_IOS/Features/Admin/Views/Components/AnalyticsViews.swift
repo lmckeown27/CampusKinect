@@ -109,7 +109,8 @@ struct UniversityStatsView: View {
                     ForEach(Array(universities.prefix(5).enumerated()), id: \.element.id) { index, university in
                         UniversityRowView(
                             rank: index + 1,
-                            university: university
+                            university: university,
+                            maxUserCount: universities.first?.userCount ?? 1
                         )
                     }
                 }
@@ -125,6 +126,7 @@ struct UniversityStatsView: View {
 struct UniversityRowView: View {
     let rank: Int
     let university: AnalyticsData.UniversityStats
+    let maxUserCount: Int
     
     var body: some View {
         HStack {
@@ -153,7 +155,7 @@ struct UniversityRowView: View {
                     .font(.caption)
                     .fontWeight(.semibold)
                 
-                ProgressView(value: Double(university.userCount), total: Double(universities.first?.userCount ?? 1))
+                ProgressView(value: Double(university.userCount), total: Double(maxUserCount))
                     .frame(width: 60)
             }
         }
