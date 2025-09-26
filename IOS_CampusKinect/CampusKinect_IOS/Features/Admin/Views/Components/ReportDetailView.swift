@@ -289,10 +289,8 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Call method using explicit wrapped value access
-        Task { @MainActor in
-            _viewModel.wrappedValue.moderateReport(report, action: action, notes: notes)
-        }
+        // Simple direct call - let's see what error we get
+        viewModel.moderateReport(report, action: action, notes: notes)
     }
     
     private func formatFullDate(_ dateString: String) -> String {
