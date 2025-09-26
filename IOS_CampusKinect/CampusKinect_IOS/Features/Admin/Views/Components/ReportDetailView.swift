@@ -289,9 +289,12 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Access the wrapped value directly to bypass @ObservedObject wrapper
+        // Try with explicit parameter labels
         Task { @MainActor in
-            _viewModel.wrappedValue.moderateReport(report, action: action, notes: notes)
+            let vm = _viewModel.wrappedValue
+            
+            // Call with new method name to test if naming was the issue
+            vm.handleReportModeration(report, action: action, notes: notes)
         }
     }
     

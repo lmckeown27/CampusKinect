@@ -228,7 +228,7 @@ class AdminDashboardViewModel: ObservableObject {
         showingReportDetail = true
     }
     
-    func moderateReport(_ report: ContentReport, action: ModerationAction.ActionType, notes: String? = nil) {
+    func handleReportModeration(_ report: ContentReport, action: ModerationAction.ActionType, notes: String? = nil) {
         isLoadingAction = true
         errorMessage = nil
         
