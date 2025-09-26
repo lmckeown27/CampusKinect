@@ -129,6 +129,9 @@ const Profilebar: React.FC<ProfilebarProps> = ({
           {(user?.email === 'lmckeown@calpoly.edu' || user?.username === 'liam_mckeown38') && (
             <button
               onClick={() => {
+                console.log('🔍 ADMIN BUTTON CLICKED');
+                console.log('User data:', user);
+                console.log('Navigating to /admin...');
                 setShowProfileDropdown(false);
                 router.push('/admin');
               }}

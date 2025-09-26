@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { ContentReport } from '../../types';
+import { useAuthStore } from '../../stores/authStore';
 
 interface ModerationStats {
   pendingReports: number;
@@ -40,6 +41,7 @@ interface BannedUser {
 }
 
 export default function AdminModerationPage() {
+  const { user } = useAuthStore(); // Use the same user source as Profilebar
   const [reports, setReports] = useState<ContentReport[]>([]);
   const [stats, setStats] = useState<ModerationStats | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
@@ -59,33 +61,37 @@ export default function AdminModerationPage() {
 
   const checkAdminAuthorization = async () => {
     try {
+      console.log('🔍 ADMIN PAGE: Starting authorization check...');
+      console.log('🔍 ADMIN PAGE: User from authStore:', user);
       setAuthLoading(true);
       
-      // Check if user is logged in and is the authorized admin
-      const userStr = localStorage.getItem('user');
-      if (!userStr) {
-        // Redirect to home without any indication
+      // Check if user is logged in and is the authorized admin (use same source as Profilebar)
+      if (!user) {
+        console.log('❌ ADMIN PAGE: No user in authStore, redirecting to /home');
         window.location.href = '/home';
         return;
       }
 
-      const user = JSON.parse(userStr);
+      console.log('🔍 ADMIN PAGE: User email:', user.email);
+      console.log('🔍 ADMIN PAGE: User username:', user.username);
+      
       const isAuthorizedAdmin = user.email === 'lmckeown@calpoly.edu' || user.username === 'liam_mckeown38';
+      console.log('🔍 ADMIN PAGE: Is authorized admin?', isAuthorizedAdmin);
       
       if (!isAuthorizedAdmin) {
-        // Silently redirect to home - no indication admin page exists
+        console.log('❌ ADMIN PAGE: User not authorized, redirecting to /home');
         window.location.href = '/home';
         return;
       }
 
+      console.log('✅ ADMIN PAGE: User authorized, loading admin dashboard');
       setIsAuthorized(true);
       setAuthLoading(false);
       
       // Only load moderation data if authorized
       loadModerationData();
     } catch (error) {
-      console.error('Error checking admin authorization:', error);
-      // Redirect on any error
+      console.error('❌ ADMIN PAGE: Error checking admin authorization:', error);
       window.location.href = '/home';
     }
   };
