@@ -80,11 +80,7 @@ const nextConfig = {
   // Redirects for production
   async redirects() {
     return [
-      {
-        source: '/admin',
-        destination: '/profile',
-        permanent: false,
-      },
+      // Removed admin -> profile redirect to allow admin page access
     ]
   },
   
