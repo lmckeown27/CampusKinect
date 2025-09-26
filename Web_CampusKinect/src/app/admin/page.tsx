@@ -192,10 +192,9 @@ export default function AdminModerationPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Shield className="h-8 w-8 text-red-600" />
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">🛡️ CampusKinect Admin Dashboard</h1>
-                  <p className="text-gray-600">Data Analytics & Content Moderation - Apple Guideline 1.2 Compliance</p>
+                  <h1 className="text-2xl font-bold text-gray-900">CampusKinect Admin Dashboard</h1>
+                  <p className="text-gray-600">Data Analytics & Content Moderation</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
