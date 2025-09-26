@@ -225,9 +225,9 @@ struct ReportDetailView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             
-            TextField("Enter your notes here...", text: $moderatorNotes, axis: .vertical)
+            TextField("Enter your notes here...", text: $moderatorNotes)
                 .textFieldStyle(.roundedBorder)
-                .lineLimit(3...6)
+                .lineLimit(5)
         }
     }
     
