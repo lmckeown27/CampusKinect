@@ -289,8 +289,10 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Simple direct call - let's see what error we get
-        viewModel.moderateReport(report, action: action, notes: notes)
+        // Access the wrapped value directly to bypass @ObservedObject wrapper
+        Task { @MainActor in
+            _viewModel.wrappedValue.moderateReport(report, action: action, notes: notes)
+        }
     }
     
     private func formatFullDate(_ dateString: String) -> String {
