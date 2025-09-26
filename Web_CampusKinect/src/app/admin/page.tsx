@@ -184,14 +184,19 @@ export default function AdminModerationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* DEBUG: Visual indicator that we're on admin page */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999, backgroundColor: '#dc2626', color: 'white', padding: '10px', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>
+        🛡️ ADMIN PAGE LOADED - This is the admin dashboard, not profile page!
+      </div>
+      
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b" style={{ marginTop: '50px' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Shield className="h-8 w-8 text-red-600" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">CampusKinect Admin Dashboard</h1>
+                <h1 className="text-2xl font-bold text-gray-900">🛡️ CampusKinect Admin Dashboard</h1>
                 <p className="text-gray-600">Data Analytics & Content Moderation - Apple Guideline 1.2 Compliance</p>
               </div>
             </div>
