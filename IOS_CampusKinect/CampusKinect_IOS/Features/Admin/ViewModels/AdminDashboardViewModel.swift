@@ -80,6 +80,11 @@ class AdminDashboardViewModel: ObservableObject {
         return true
     }
     
+    // MARK: - Cleanup
+    deinit {
+        cancellables.removeAll()
+    }
+    
     // MARK: - Computed Properties
     var urgentReports: [ContentReport] {
         reports.filter { $0.isUrgent || $0.isOverdue }
@@ -316,10 +321,5 @@ class AdminDashboardViewModel: ObservableObject {
     var isAuthorizedAdmin: Bool {
         // Check authorization using stored user data
         return checkAdminAuthorization()
-    }
-    
-    // MARK: - Cleanup
-    deinit {
-        cancellables.removeAll()
     }
 } 
