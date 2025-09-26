@@ -7,11 +7,18 @@ class AdminDashboardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var reports: [ContentReport] = []
     @Published var stats: ModerationStats?
+    @Published var analytics: AnalyticsData?
+    @Published var bannedUsers: [BannedUser] = []
     @Published var selectedReport: ContentReport?
+    @Published var selectedTab: AdminTab = .overview
     @Published var isLoading = false
     @Published var isLoadingAction = false
+    @Published var isLoadingAnalytics = false
+    @Published var isLoadingBannedUsers = false
     @Published var errorMessage: String?
     @Published var showingReportDetail = false
+    @Published var showingUnbanConfirmation = false
+    @Published var userToUnban: BannedUser?
     @Published var currentPage = 1
     @Published var hasMoreReports = true
     
@@ -108,7 +115,54 @@ class AdminDashboardViewModel: ObservableObject {
     
     func refreshData() {
         loadInitialData()
+        loadAnalyticsData()
+        loadBannedUsers()
     }
+    
+    // MARK: - Analytics Data Loading
+    func loadAnalyticsData() {
+        isLoadingAnalytics = true
+        
+        apiService.getAnalyticsData()
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    DispatchQueue.main.async {
+                        self?.isLoadingAnalytics = false
+                        if case .failure(let error) = completion {
+                            self?.errorMessage = self?.formatError(error)
+                        }
+                    }
+                },
+                receiveValue: { [weak self] analytics in
+                    DispatchQueue.main.async {
+                        self?.analytics = analytics
+                    }
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Banned Users Data Loading
+    func loadBannedUsers() {
+        isLoadingBannedUsers = true
+        
+        apiService.getBannedUsers()
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    DispatchQueue.main.async {
+                        self?.isLoadingBannedUsers = false
+                        if case .failure(let error) = completion {
+                            self?.errorMessage = self?.formatError(error)
+                        }
+                    }
+                },
+                receiveValue: { [weak self] users in
+                    DispatchQueue.main.async {
+                        self?.bannedUsers = users
+                    }
+                }
+            )
+            .store(in: &cancellables)
     
     // MARK: - Report Actions
     func selectReport(_ report: ContentReport) {
@@ -155,12 +209,54 @@ class AdminDashboardViewModel: ObservableObject {
                         self?.isLoadingAction = false
                         if case .failure(let error) = completion {
                             self?.errorMessage = self?.formatError(error)
+                        } else {
+                            // Refresh banned users list and stats
+                            self?.loadBannedUsers()
+                            self?.refreshStats()
                         }
                     }
                 },
                 receiveValue: { _ in }
             )
             .store(in: &cancellables)
+    }
+    
+    // MARK: - Unban User Actions
+    func requestUnbanUser(_ user: BannedUser) {
+        userToUnban = user
+        showingUnbanConfirmation = true
+    }
+    
+    func confirmUnbanUser() {
+        guard let user = userToUnban else { return }
+        
+        isLoadingAction = true
+        showingUnbanConfirmation = false
+        
+        apiService.unbanUser(userId: user.id)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    DispatchQueue.main.async {
+                        self?.isLoadingAction = false
+                        if case .failure(let error) = completion {
+                            self?.errorMessage = self?.formatError(error)
+                        } else {
+                            // Remove user from banned list and refresh stats
+                            self?.bannedUsers.removeAll { $0.id == user.id }
+                            self?.refreshStats()
+                            self?.showSuccessMessage(for: .dismiss) // Reuse dismiss message
+                        }
+                        self?.userToUnban = nil
+                    }
+                },
+                receiveValue: { _ in }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func cancelUnban() {
+        userToUnban = nil
+        showingUnbanConfirmation = false
     }
     
     // MARK: - Helper Methods

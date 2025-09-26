@@ -185,25 +185,112 @@ struct AdminUser {
     }
 }
 
+// MARK: - Analytics Data Models
+struct AnalyticsData: Codable {
+    let totalPosts: Int
+    let totalMessages: Int
+    let activeUsers: Int
+    let newUsersToday: Int
+    let postsToday: Int
+    let averageMessagesPerDay: Double
+    let topUniversities: [UniversityStats]
+    let contentTrends: [ContentTrend]
+    let reportsByReason: [ReasonStats]
+    let userGrowth: [GrowthData]
+    
+    struct UniversityStats: Codable, Identifiable {
+        let id = UUID()
+        let name: String
+        let userCount: Int
+        let postCount: Int
+        
+        private enum CodingKeys: String, CodingKey {
+            case name, userCount, postCount
+        }
+    }
+    
+    struct ContentTrend: Codable, Identifiable {
+        let id = UUID()
+        let date: String
+        let posts: Int
+        let messages: Int
+        
+        private enum CodingKeys: String, CodingKey {
+            case date, posts, messages
+        }
+    }
+    
+    struct ReasonStats: Codable, Identifiable {
+        let id = UUID()
+        let reason: String
+        let count: Int
+        
+        private enum CodingKeys: String, CodingKey {
+            case reason, count
+        }
+    }
+    
+    struct GrowthData: Codable, Identifiable {
+        let id = UUID()
+        let date: String
+        let newUsers: Int
+        let totalUsers: Int
+        
+        private enum CodingKeys: String, CodingKey {
+            case date, newUsers, totalUsers
+        }
+    }
+}
+
+// MARK: - Banned User Models
+struct BannedUser: Codable, Identifiable {
+    let id: String
+    let username: String
+    let email: String
+    let bannedAt: String
+    let banReason: String
+    let university: String
+    
+    var bannedDate: Date? {
+        return ISO8601DateFormatter().date(from: bannedAt)
+    }
+    
+    var formattedBanDate: String {
+        guard let date = bannedDate else { return "Unknown" }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+    
+    var daysSinceBan: Int {
+        guard let date = bannedDate else { return 0 }
+        return Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
+    }
+}
+
 // MARK: - Admin Navigation
 enum AdminTab: String, CaseIterable {
-    case dashboard = "dashboard"
+    case overview = "overview"
     case reports = "reports"
-    case statistics = "statistics"
+    case users = "users"
+    case analytics = "analytics"
     
     var displayName: String {
         switch self {
-        case .dashboard: return "Dashboard"
+        case .overview: return "Overview"
         case .reports: return "Reports"
-        case .statistics: return "Statistics"
+        case .users: return "Users"
+        case .analytics: return "Analytics"
         }
     }
     
     var iconName: String {
         switch self {
-        case .dashboard: return "shield"
+        case .overview: return "house"
         case .reports: return "flag"
-        case .statistics: return "chart.bar"
+        case .users: return "person.2"
+        case .analytics: return "chart.bar"
         }
     }
 } 

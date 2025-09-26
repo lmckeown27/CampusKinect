@@ -28,6 +28,18 @@ struct AdminDashboardView: View {
                 ReportDetailView(report: report, viewModel: viewModel)
             }
         }
+        .alert("Unban User", isPresented: $viewModel.showingUnbanConfirmation) {
+            Button("Cancel", role: .cancel) {
+                viewModel.cancelUnban()
+            }
+            Button("Unban", role: .destructive) {
+                viewModel.confirmUnbanUser()
+            }
+        } message: {
+            if let user = viewModel.userToUnban {
+                Text("Are you sure you want to unban \(user.username)? They will be able to access the platform again.")
+            }
+        }
         .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
             Button("OK") {
                 viewModel.errorMessage = nil
@@ -37,13 +49,17 @@ struct AdminDashboardView: View {
                 Text(errorMessage)
             }
         }
+        .onAppear {
+            viewModel.loadAnalyticsData()
+            viewModel.loadBannedUsers()
+        }
     }
     
     // MARK: - Admin Content
     private var adminContent: some View {
         Group {
             if horizontalSizeClass == .regular {
-                // iPad Layout - Split View
+                // iPad Layout - Split View with Sidebar
                 iPadLayout
             } else {
                 // iPhone Layout - Tab View
@@ -55,67 +71,90 @@ struct AdminDashboardView: View {
     // MARK: - iPad Layout
     private var iPadLayout: some View {
         NavigationSplitView {
-            // Sidebar with stats and report list
+            // Sidebar with tabs
             VStack(spacing: 0) {
-                // Statistics Header
-                if let stats = viewModel.stats {
-                    AdminStatsHeaderView(stats: stats)
-                        .padding()
-                        .background(Color(.systemGroupedBackground))
+                // Header
+                VStack(spacing: 8) {
+                    Text("CampusKinect")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    Text("Admin Dashboard")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
+                .padding()
+                .background(Color(.systemGroupedBackground))
                 
                 Divider()
                 
-                // Reports List
-                ReportsListView(
-                    reports: viewModel.sortedReports,
-                    isLoading: viewModel.isLoading,
-                    onReportTap: viewModel.selectReport,
-                    onLoadMore: viewModel.loadMoreReports,
-                    hasMore: viewModel.hasMoreReports
-                )
+                // Tab Selection
+                List(AdminTab.allCases, id: \.self, selection: $viewModel.selectedTab) { tab in
+                    Label(tab.displayName, systemImage: tab.iconName)
+                        .tag(tab)
+                }
+                .listStyle(SidebarListStyle())
             }
-            .navigationTitle("Reports")
+            .navigationTitle("Admin")
             .navigationBarTitleDisplayMode(.inline)
         } detail: {
-            // Detail view
-            if let selectedReport = viewModel.selectedReport {
-                ReportDetailView(report: selectedReport, viewModel: viewModel)
-            } else {
-                AdminEmptyStateView()
+            // Detail view based on selected tab
+            Group {
+                switch viewModel.selectedTab {
+                case .overview:
+                    OverviewTabView(viewModel: viewModel)
+                case .reports:
+                    ReportsTabView(viewModel: viewModel)
+                case .users:
+                    UsersTabView(viewModel: viewModel)
+                case .analytics:
+                    AnalyticsTabView(viewModel: viewModel)
+                }
             }
         }
     }
     
     // MARK: - iPhone Layout
     private var iPhoneLayout: some View {
-        TabView {
-            // Dashboard Tab
+        TabView(selection: $viewModel.selectedTab) {
+            // Overview Tab
             NavigationView {
-                DashboardTabView(viewModel: viewModel)
+                OverviewTabView(viewModel: viewModel)
             }
             .tabItem {
-                Image(systemName: "shield")
-                Text("Dashboard")
+                Image(systemName: AdminTab.overview.iconName)
+                Text(AdminTab.overview.displayName)
             }
+            .tag(AdminTab.overview)
             
             // Reports Tab
             NavigationView {
                 ReportsTabView(viewModel: viewModel)
             }
             .tabItem {
-                Image(systemName: "flag")
-                Text("Reports")
+                Image(systemName: AdminTab.reports.iconName)
+                Text(AdminTab.reports.displayName)
             }
+            .tag(AdminTab.reports)
             
-            // Statistics Tab
+            // Users Tab
             NavigationView {
-                StatisticsTabView(viewModel: viewModel)
+                UsersTabView(viewModel: viewModel)
             }
             .tabItem {
-                Image(systemName: "chart.bar")
-                Text("Statistics")
+                Image(systemName: AdminTab.users.iconName)
+                Text(AdminTab.users.displayName)
             }
+            .tag(AdminTab.users)
+            
+            // Analytics Tab
+            NavigationView {
+                AnalyticsTabView(viewModel: viewModel)
+            }
+            .tabItem {
+                Image(systemName: AdminTab.analytics.iconName)
+                Text(AdminTab.analytics.displayName)
+            }
+            .tag(AdminTab.analytics)
         }
         .accentColor(.red)
     }
@@ -145,13 +184,13 @@ struct AdminDashboardView: View {
     }
 }
 
-// MARK: - Dashboard Tab (iPhone)
-struct DashboardTabView: View {
+// MARK: - Overview Tab
+struct OverviewTabView: View {
     @ObservedObject var viewModel: AdminDashboardViewModel
     
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 16) {
+            LazyVStack(spacing: 20) {
                 // Statistics Cards
                 if let stats = viewModel.stats {
                     AdminStatsGridView(stats: stats)
@@ -173,17 +212,23 @@ struct DashboardTabView: View {
                     onReportTap: viewModel.selectReport
                 )
                 .padding(.horizontal)
+                
+                // Quick Analytics Preview
+                if let analytics = viewModel.analytics {
+                    QuickAnalyticsView(analytics: analytics)
+                        .padding(.horizontal)
+                }
             }
             .padding(.vertical)
         }
-        .navigationTitle("Admin Dashboard")
+        .navigationTitle("Overview")
         .refreshable {
             viewModel.refreshData()
         }
     }
 }
 
-// MARK: - Reports Tab (iPhone)
+// MARK: - Reports Tab
 struct ReportsTabView: View {
     @ObservedObject var viewModel: AdminDashboardViewModel
     
@@ -195,56 +240,110 @@ struct ReportsTabView: View {
             onLoadMore: viewModel.loadMoreReports,
             hasMore: viewModel.hasMoreReports
         )
-        .navigationTitle("All Reports")
+        .navigationTitle("Reports")
         .refreshable {
             viewModel.refreshData()
         }
     }
 }
 
-// MARK: - Statistics Tab (iPhone)
-struct StatisticsTabView: View {
+// MARK: - Users Tab
+struct UsersTabView: View {
     @ObservedObject var viewModel: AdminDashboardViewModel
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                if let stats = viewModel.stats {
-                    AdminStatsDetailView(stats: stats)
-                } else if viewModel.isLoading {
-                    ProgressView("Loading statistics...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    Text("No statistics available")
+        Group {
+            if viewModel.isLoadingBannedUsers {
+                ProgressView("Loading banned users...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.bannedUsers.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.shield")
+                        .font(.system(size: 50))
+                        .foregroundColor(.green)
+                    
+                    Text("No Banned Users")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    Text("All users are currently in good standing.")
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List(viewModel.bannedUsers) { user in
+                    BannedUserRowView(
+                        user: user,
+                        onUnban: { viewModel.requestUnbanUser(user) }
+                    )
+                }
+                .listStyle(PlainListStyle())
             }
-            .padding()
         }
-        .navigationTitle("Statistics")
+        .navigationTitle("Banned Users")
         .refreshable {
-            viewModel.refreshData()
+            viewModel.loadBannedUsers()
         }
     }
 }
 
-// MARK: - Empty State (iPad)
-struct AdminEmptyStateView: View {
+// MARK: - Analytics Tab
+struct AnalyticsTabView: View {
+    @ObservedObject var viewModel: AdminDashboardViewModel
+    
     var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "flag.slash")
-                .font(.system(size: 60))
-                .foregroundColor(.secondary)
-            
-            Text("Select a Report")
-                .font(.title2)
-                .fontWeight(.semibold)
-            
-            Text("Choose a report from the list to view details and take action.")
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+        Group {
+            if viewModel.isLoadingAnalytics {
+                ProgressView("Loading analytics...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if let analytics = viewModel.analytics {
+                ScrollView {
+                    LazyVStack(spacing: 20) {
+                        // Platform Overview
+                        PlatformOverviewView(analytics: analytics)
+                            .padding(.horizontal)
+                        
+                        // University Stats
+                        UniversityStatsView(universities: analytics.topUniversities)
+                            .padding(.horizontal)
+                        
+                        // Content Trends
+                        ContentTrendsView(trends: analytics.contentTrends)
+                            .padding(.horizontal)
+                        
+                        // Reports by Reason
+                        ReportReasonsView(reasons: analytics.reportsByReason)
+                            .padding(.horizontal)
+                    }
+                    .padding(.vertical)
+                }
+            } else {
+                VStack(spacing: 16) {
+                    Image(systemName: "chart.bar.xaxis")
+                        .font(.system(size: 50))
+                        .foregroundColor(.gray)
+                    
+                    Text("No Analytics Data")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    Text("Analytics data is not available at the moment.")
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Retry") {
+                        viewModel.loadAnalyticsData()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
-        .padding()
+        .navigationTitle("Analytics")
+        .refreshable {
+            viewModel.loadAnalyticsData()
+        }
     }
 }
 

@@ -1,0 +1,354 @@
+import SwiftUI
+import Charts
+
+// MARK: - Quick Analytics Preview
+struct QuickAnalyticsView: View {
+    let analytics: AnalyticsData
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Platform Overview")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 12) {
+                AnalyticsCard(
+                    title: "Total Posts",
+                    value: "\(analytics.totalPosts)",
+                    icon: "doc.text",
+                    color: .blue
+                )
+                
+                AnalyticsCard(
+                    title: "Active Users",
+                    value: "\(analytics.activeUsers)",
+                    icon: "person.2",
+                    color: .green
+                )
+            }
+        }
+        .padding()
+        .background(Color(.systemGroupedBackground))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Platform Overview
+struct PlatformOverviewView: View {
+    let analytics: AnalyticsData
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Platform Statistics")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 16) {
+                AnalyticsCard(
+                    title: "Total Posts",
+                    value: "\(analytics.totalPosts)",
+                    subtitle: "+\(analytics.postsToday) today",
+                    icon: "doc.text",
+                    color: .blue
+                )
+                
+                AnalyticsCard(
+                    title: "Total Messages",
+                    value: "\(analytics.totalMessages)",
+                    subtitle: String(format: "%.1f avg/day", analytics.averageMessagesPerDay),
+                    icon: "message",
+                    color: .purple
+                )
+                
+                AnalyticsCard(
+                    title: "Active Users",
+                    value: "\(analytics.activeUsers)",
+                    subtitle: "+\(analytics.newUsersToday) new today",
+                    icon: "person.2",
+                    color: .green
+                )
+                
+                AnalyticsCard(
+                    title: "New Users Today",
+                    value: "\(analytics.newUsersToday)",
+                    subtitle: "Daily signups",
+                    icon: "person.badge.plus",
+                    color: .orange
+                )
+            }
+        }
+        .padding()
+        .background(Color(.systemGroupedBackground))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - University Stats
+struct UniversityStatsView: View {
+    let universities: [AnalyticsData.UniversityStats]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Top Universities")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            if universities.isEmpty {
+                Text("No university data available")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                VStack(spacing: 12) {
+                    ForEach(Array(universities.prefix(5).enumerated()), id: \.element.id) { index, university in
+                        UniversityRowView(
+                            rank: index + 1,
+                            university: university
+                        )
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGroupedBackground))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - University Row
+struct UniversityRowView: View {
+    let rank: Int
+    let university: AnalyticsData.UniversityStats
+    
+    var body: some View {
+        HStack {
+            // Rank
+            Text("#\(rank)")
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.secondary)
+                .frame(width: 30)
+            
+            // University Info
+            VStack(alignment: .leading, spacing: 2) {
+                Text(university.name)
+                    .font(.headline)
+                
+                Text("\(university.userCount) users • \(university.postCount) posts")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Progress Bar
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(university.userCount)")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                
+                ProgressView(value: Double(university.userCount), total: Double(universities.first?.userCount ?? 1))
+                    .frame(width: 60)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Content Trends
+struct ContentTrendsView: View {
+    let trends: [AnalyticsData.ContentTrend]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Content Trends (Last 7 Days)")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            if trends.isEmpty {
+                Text("No trend data available")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                // Simple chart representation
+                VStack(spacing: 8) {
+                    ForEach(trends.suffix(7)) { trend in
+                        HStack {
+                            Text(formatDate(trend.date))
+                                .font(.caption)
+                                .frame(width: 60, alignment: .leading)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack {
+                                    Rectangle()
+                                        .fill(Color.blue)
+                                        .frame(width: CGFloat(trend.posts) * 2, height: 8)
+                                    Text("\(trend.posts) posts")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                HStack {
+                                    Rectangle()
+                                        .fill(Color.purple)
+                                        .frame(width: CGFloat(trend.messages) * 0.5, height: 8)
+                                    Text("\(trend.messages) messages")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            
+                            Spacer()
+                        }
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGroupedBackground))
+        .cornerRadius(12)
+    }
+    
+    private func formatDate(_ dateString: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        if let date = formatter.date(from: dateString) {
+            formatter.dateFormat = "MMM dd"
+            return formatter.string(from: date)
+        }
+        
+        return dateString
+    }
+}
+
+// MARK: - Report Reasons
+struct ReportReasonsView: View {
+    let reasons: [AnalyticsData.ReasonStats]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Reports by Reason")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            if reasons.isEmpty {
+                Text("No report data available")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(reasons.sorted { $0.count > $1.count }) { reason in
+                        HStack {
+                            Text(reason.reason.capitalized)
+                                .font(.subheadline)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Text("\(reason.count)")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.red)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGroupedBackground))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Analytics Card
+struct AnalyticsCard: View {
+    let title: String
+    let value: String
+    let subtitle: String?
+    let icon: String
+    let color: Color
+    
+    init(title: String, value: String, subtitle: String? = nil, icon: String, color: Color) {
+        self.title = title
+        self.value = value
+        self.subtitle = subtitle
+        self.icon = icon
+        self.color = color
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundColor(color)
+                    .font(.title2)
+                
+                Spacer()
+            }
+            
+            Text(value)
+                .font(.title)
+                .fontWeight(.bold)
+            
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            if let subtitle = subtitle {
+                Text(subtitle)
+                    .font(.caption2)
+                    .foregroundColor(color)
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(8)
+        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+    }
+}
+
+#Preview {
+    ScrollView {
+        VStack(spacing: 20) {
+            PlatformOverviewView(
+                analytics: AnalyticsData(
+                    totalPosts: 1250,
+                    totalMessages: 8500,
+                    activeUsers: 450,
+                    newUsersToday: 12,
+                    postsToday: 35,
+                    averageMessagesPerDay: 125.5,
+                    topUniversities: [
+                        AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150, postCount: 450),
+                        AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120, postCount: 380),
+                        AnalyticsData.UniversityStats(name: "Stanford", userCount: 100, postCount: 320)
+                    ],
+                    contentTrends: [],
+                    reportsByReason: [
+                        AnalyticsData.ReasonStats(reason: "spam", count: 15),
+                        AnalyticsData.ReasonStats(reason: "harassment", count: 8),
+                        AnalyticsData.ReasonStats(reason: "inappropriate_content", count: 5)
+                    ],
+                    userGrowth: []
+                )
+            )
+            
+            UniversityStatsView(
+                universities: [
+                    AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150, postCount: 450),
+                    AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120, postCount: 380),
+                    AnalyticsData.UniversityStats(name: "Stanford", userCount: 100, postCount: 320)
+                ]
+            )
+        }
+        .padding()
+    }
+} 

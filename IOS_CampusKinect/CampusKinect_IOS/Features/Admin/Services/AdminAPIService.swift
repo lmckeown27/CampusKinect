@@ -117,6 +117,69 @@ class AdminAPIService: ObservableObject {
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
+    
+    // MARK: - Get Analytics Data
+    func getAnalyticsData() -> AnyPublisher<AnalyticsData, Error> {
+        guard let url = URL(string: "\(baseURL)/analytics") else {
+            return Fail(error: URLError(.badURL))
+                .eraseToAnyPublisher()
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        
+        return session.dataTaskPublisher(for: request)
+            .map(\.data)
+            .decode(type: APIResponse<AnalyticsData>.self, decoder: JSONDecoder())
+            .compactMap { response in
+                response.success ? response.data : nil
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Get Banned Users
+    func getBannedUsers() -> AnyPublisher<[BannedUser], Error> {
+        guard let url = URL(string: "\(baseURL)/users/banned") else {
+            return Fail(error: URLError(.badURL))
+                .eraseToAnyPublisher()
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        
+        return session.dataTaskPublisher(for: request)
+            .map(\.data)
+            .decode(type: APIResponse<BannedUsersResponse>.self, decoder: JSONDecoder())
+            .compactMap { response in
+                response.success ? response.data?.users : nil
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Unban User
+    func unbanUser(userId: String) -> AnyPublisher<Void, Error> {
+        guard let url = URL(string: "\(baseURL)/users/\(userId)/unban") else {
+            return Fail(error: URLError(.badURL))
+                .eraseToAnyPublisher()
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        
+        return session.dataTaskPublisher(for: request)
+            .map(\.data)
+            .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
+            .compactMap { response in
+                response.success ? () : nil
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - Supporting Models
@@ -130,6 +193,10 @@ private struct EmptyResponse: Codable {}
 
 private struct BanUserRequest: Codable {
     let reason: String
+}
+
+private struct BannedUsersResponse: Codable {
+    let users: [BannedUser]
 }
 
 // MARK: - Admin Authentication Manager Extension
