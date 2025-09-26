@@ -27,6 +27,24 @@ class AdminDashboardViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let reportsPerPage = 20
     
+    // MARK: - Helper Methods
+    private func formatError(_ error: Error) -> String {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet:
+                return "No internet connection"
+            case .timedOut:
+                return "Request timed out"
+            case .cannotFindHost:
+                return "Cannot connect to server"
+            default:
+                return "Network error occurred"
+            }
+        }
+        
+        return error.localizedDescription
+    }
+    
     // MARK: - Computed Properties
     var urgentReports: [ContentReport] {
         reports.filter { $0.isUrgent || $0.isOverdue }
@@ -286,23 +304,6 @@ class AdminDashboardViewModel: ObservableObject {
         // Add haptic feedback
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
         impactFeedback.impactOccurred()
-    }
-    
-    private func formatError(_ error: Error) -> String {
-        if let urlError = error as? URLError {
-            switch urlError.code {
-            case .notConnectedToInternet:
-                return "No internet connection"
-            case .timedOut:
-                return "Request timed out"
-            case .cannotFindHost:
-                return "Cannot connect to server"
-            default:
-                return "Network error occurred"
-            }
-        }
-        
-        return error.localizedDescription
     }
     
     // MARK: - Admin Authorization
