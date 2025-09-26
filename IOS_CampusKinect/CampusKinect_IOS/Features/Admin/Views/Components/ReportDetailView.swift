@@ -289,9 +289,9 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Call method in MainActor context
+        // Call method using explicit wrapped value access
         Task { @MainActor in
-            viewModel.moderateReport(report, action: action, notes: notes)
+            _viewModel.wrappedValue.moderateReport(report, action: action, notes: notes)
         }
     }
     
