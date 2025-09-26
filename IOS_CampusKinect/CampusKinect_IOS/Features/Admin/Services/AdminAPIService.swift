@@ -99,7 +99,7 @@ class AdminAPIService: ObservableObject {
             .flatMap { authenticatedRequest in
                 return self.session.dataTaskPublisher(for: authenticatedRequest)
                     .map(\.data)
-                    .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
+                    .decode(type: APIResponse<AdminEmptyResponse>.self, decoder: JSONDecoder())
                     .compactMap { response in
                         response.success ? () : nil
                     }
@@ -132,7 +132,7 @@ class AdminAPIService: ObservableObject {
             .flatMap { authenticatedRequest in
                 return self.session.dataTaskPublisher(for: authenticatedRequest)
                     .map(\.data)
-                    .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
+                    .decode(type: APIResponse<AdminEmptyResponse>.self, decoder: JSONDecoder())
                     .compactMap { response in
                         response.success ? () : nil
                     }
@@ -204,7 +204,7 @@ class AdminAPIService: ObservableObject {
             .flatMap { authenticatedRequest in
                 return self.session.dataTaskPublisher(for: authenticatedRequest)
                     .map(\.data)
-                    .decode(type: APIResponse<EmptyResponse>.self, decoder: JSONDecoder())
+                    .decode(type: APIResponse<AdminEmptyResponse>.self, decoder: JSONDecoder())
                     .compactMap { response in
                         response.success ? () : nil
                     }
@@ -221,7 +221,7 @@ private struct APIResponse<T: Codable>: Codable {
     let message: String?
 }
 
-private struct EmptyResponse: Codable {}
+private struct AdminEmptyResponse: Codable {}
 
 private struct BanUserRequest: Codable {
     let reason: String
