@@ -9,6 +9,7 @@ import {
 import { apiService } from '../../services/api';
 import { ContentReport } from '../../types';
 import { useAuthStore } from '../../stores/authStore';
+import MainLayout from '../../components/layout/MainLayout';
 
 interface ModerationStats {
   pendingReports: number;
@@ -41,6 +42,7 @@ interface BannedUser {
 }
 
 export default function AdminModerationPage() {
+  console.log('🚨 ADMIN PAGE COMPONENT EXECUTING - TOP OF FUNCTION');
   const { user } = useAuthStore(); // Use the same user source as Profilebar
   const [reports, setReports] = useState<ContentReport[]>([]);
   const [stats, setStats] = useState<ModerationStats | null>(null);
@@ -183,32 +185,28 @@ export default function AdminModerationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* DEBUG: Visual indicator that we're on admin page */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999, backgroundColor: '#dc2626', color: 'white', padding: '10px', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-        🛡️ ADMIN PAGE LOADED - This is the admin dashboard, not profile page!
-      </div>
-      
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b" style={{ marginTop: '50px' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Shield className="h-8 w-8 text-red-600" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">🛡️ CampusKinect Admin Dashboard</h1>
-                <p className="text-gray-600">Data Analytics & Content Moderation - Apple Guideline 1.2 Compliance</p>
+    <MainLayout>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Shield className="h-8 w-8 text-red-600" />
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">🛡️ CampusKinect Admin Dashboard</h1>
+                  <p className="text-gray-600">Data Analytics & Content Moderation - Apple Guideline 1.2 Compliance</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="flex items-center space-x-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-600">
-                <Download className="h-4 w-4" />
-                <span>Export Data</span>
-              </button>
+              <div className="flex items-center space-x-4">
+                <button className="flex items-center space-x-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-600">
+                  <Download className="h-4 w-4" />
+                  <span>Export Data</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
       {/* Navigation Tabs */}
       <div className="bg-white border-b">
@@ -678,6 +676,7 @@ export default function AdminModerationPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </MainLayout>
   );
 } 
