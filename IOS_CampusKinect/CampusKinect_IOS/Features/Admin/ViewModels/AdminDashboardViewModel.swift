@@ -45,6 +45,34 @@ class AdminDashboardViewModel: ObservableObject {
         return error.localizedDescription
     }
     
+    private func removeReport(_ report: ContentReport) {
+        reports.removeAll { $0.id == report.id }
+    }
+    
+    private func refreshStats() {
+        apiService.getModerationStats()
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak self] stats in
+                    DispatchQueue.main.async {
+                        self?.stats = stats
+                    }
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    private func showSuccessMessage(for action: ModerationAction.ActionType) {
+        let message = action == .approve ? "Content removed and user banned" : "Report dismissed"
+        
+        // You can implement a toast/alert system here
+        print("✅ \(message)")
+        
+        // Add haptic feedback
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+    }
+    
     // MARK: - Computed Properties
     var urgentReports: [ContentReport] {
         reports.filter { $0.isUrgent || $0.isOverdue }
@@ -275,35 +303,6 @@ class AdminDashboardViewModel: ObservableObject {
     func cancelUnban() {
         userToUnban = nil
         showingUnbanConfirmation = false
-    }
-    
-    // MARK: - Helper Methods
-    private func removeReport(_ report: ContentReport) {
-        reports.removeAll { $0.id == report.id }
-    }
-    
-    private func refreshStats() {
-        apiService.getModerationStats()
-            .sink(
-                receiveCompletion: { _ in },
-                receiveValue: { [weak self] stats in
-                    DispatchQueue.main.async {
-                        self?.stats = stats
-                    }
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    private func showSuccessMessage(for action: ModerationAction.ActionType) {
-        let message = action == .approve ? "Content removed and user banned" : "Report dismissed"
-        
-        // You can implement a toast/alert system here
-        print("✅ \(message)")
-        
-        // Add haptic feedback
-        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-        impactFeedback.impactOccurred()
     }
     
     // MARK: - Admin Authorization
