@@ -290,17 +290,8 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Test if we can call ANY method on the viewModel
-        print("Testing method access...")
-        
-        // Try calling a simple test method first
-        viewModel.testMethod()
-        
-        // Try accessing a property
-        let reportsCount = viewModel.reports.count
-        print("Reports count: \(reportsCount)")
-        
-        // Skip the problematic methods for now
+        // Call the moderation method
+        viewModel.handleReportModeration(report, action: action, notes: notes)
         
         // Close the detail view
         dismiss()
