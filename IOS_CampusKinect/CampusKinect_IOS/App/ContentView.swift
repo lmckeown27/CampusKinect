@@ -12,45 +12,86 @@ struct ContentView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @StateObject private var termsManager = TermsOfServiceManager.shared
     
+    // CRITICAL: Prevent presentation conflicts
+    @State private var isTermsCheckComplete = false
+    
     var body: some View {
         ZStack {
             if authManager.isLoading {
                 LoadingView()
             } else if authManager.isAuthenticated {
-                MainTabView()
-                    .onAppear {
-                        // Check if terms popup should be shown
-                        if let user = authManager.currentUser {
-                            termsManager.checkAndShowTermsIfNeeded(for: String(user.id))
-                        }
-                        
-                        // Ensure device token is registered for authenticated users
-                        Task {
-                            let granted = await PushNotificationManager.shared.requestPermission()
-                            print("📱 Authenticated User: Push notification permission \(granted ? "granted" : "denied")")
-                        }
-                    }
-                    .sheet(isPresented: $termsManager.shouldShowTerms) {
-                        TermsOfServiceView(isPresented: $termsManager.shouldShowTerms) { shouldRememberChoice in
-                            // User accepted terms
-                            if let user = authManager.currentUser {
-                                termsManager.acceptTerms(for: String(user.id), shouldRememberChoice: shouldRememberChoice)
-                            }
-                        } onDecline: {
-                            // User declined terms - log them out
-                            print("📋 Terms declined - logging out user")
+                // CRITICAL: Only show MainTabView AFTER terms check is complete
+                // This prevents competing presentations
+                if isTermsCheckComplete && !termsManager.shouldShowTerms {
+                    MainTabView()
+                        .onAppear {
+                            // Ensure device token is registered for authenticated users
                             Task {
-                                await authManager.logout()
+                                let granted = await PushNotificationManager.shared.requestPermission()
+                                print("📱 Authenticated User: Push notification permission \(granted ? "granted" : "denied")")
                             }
                         }
-                    }
+                } else {
+                    // Show loading while terms check is in progress
+                    LoadingView()
+                        .onAppear {
+                            // CRITICAL: Check terms BEFORE showing any other UI
+                            checkTermsWithDelay()
+                        }
+                }
             } else {
                 LoginView()
+            }
+        }
+        // CRITICAL: Terms sheet has ABSOLUTE PRIORITY - no other presentations can interfere
+        .sheet(isPresented: $termsManager.shouldShowTerms) {
+            TermsOfServiceView(isPresented: $termsManager.shouldShowTerms) { shouldRememberChoice in
+                // User accepted terms
+                if let user = authManager.currentUser {
+                    termsManager.acceptTerms(for: String(user.id), shouldRememberChoice: shouldRememberChoice)
+                }
+                // CRITICAL: Mark terms check as complete
+                isTermsCheckComplete = true
+            } onDecline: {
+                // User declined terms - log them out
+                print("📋 Terms declined - logging out user")
+                Task {
+                    await authManager.logout()
+                }
+                // CRITICAL: Mark terms check as complete (user will be logged out)
+                isTermsCheckComplete = true
             }
         }
         .overlay(alignment: .top) {
             if !networkMonitor.isConnected {
                 OfflineBannerView()
+            }
+        }
+        .onChange(of: authManager.isAuthenticated) { isAuth in
+            // Reset terms check when authentication state changes
+            if !isAuth {
+                isTermsCheckComplete = false
+            }
+        }
+    }
+    
+    // CRITICAL: Delayed terms check to prevent presentation conflicts
+    private func checkTermsWithDelay() {
+        // Small delay to ensure UI is stable before checking terms
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let user = authManager.currentUser {
+                print("📋 CRITICAL: Checking terms for user \(user.id)")
+                termsManager.checkAndShowTermsIfNeeded(for: String(user.id))
+                
+                // If no terms needed, mark check as complete
+                if !termsManager.shouldShowTerms {
+                    isTermsCheckComplete = true
+                    print("📋 CRITICAL: Terms not needed - UI can proceed")
+                } else {
+                    print("📋 CRITICAL: Terms popup will be shown - blocking other UI")
+                }
+            } else {
+                isTermsCheckComplete = true
             }
         }
     }

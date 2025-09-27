@@ -5,6 +5,9 @@ class TermsOfServiceManager: ObservableObject {
     
     @Published var shouldShowTerms = false
     
+    // CRITICAL: Prevent rapid state changes that could cause auto-dismissal
+    private var isCheckingTerms = false
+    
     private let userDefaults = UserDefaults.standard
     private let hasAcceptedTermsKey = "hasAcceptedTerms"
     private let shouldRememberChoiceKey = "shouldRememberTermsChoice"
@@ -50,11 +53,27 @@ class TermsOfServiceManager: ObservableObject {
     
     /// Check if terms should be shown for current session
     func checkAndShowTermsIfNeeded(for userId: String) {
-        shouldShowTerms = shouldShowTermsPopup(for: userId)
-        if shouldShowTerms {
-            print("📋 Terms popup will be shown for user \(userId)")
-        } else {
-            print("📋 Terms popup not needed for user \(userId)")
+        // CRITICAL: Prevent multiple simultaneous checks
+        guard !isCheckingTerms else {
+            print("📋 CRITICAL: Terms check already in progress - ignoring duplicate request")
+            return
+        }
+        
+        isCheckingTerms = true
+        
+        let needsTerms = shouldShowTermsPopup(for: userId)
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.shouldShowTerms = needsTerms
+            self.isCheckingTerms = false
+            
+            if needsTerms {
+                print("📋 CRITICAL: Terms popup WILL BE SHOWN for user \(userId)")
+            } else {
+                print("📋 CRITICAL: Terms popup NOT NEEDED for user \(userId)")
+            }
         }
     }
     

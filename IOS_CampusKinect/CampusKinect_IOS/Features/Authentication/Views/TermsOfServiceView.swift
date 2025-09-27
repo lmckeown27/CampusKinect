@@ -121,6 +121,12 @@ struct TermsOfServiceView: View {
             .navigationBarHidden(true)
         }
         .interactiveDismissDisabled() // Prevent swipe to dismiss
+        .onAppear {
+            print("📋 CRITICAL: Terms of Service view appeared - preventing auto-dismissal")
+        }
+        .onDisappear {
+            print("📋 CRITICAL: Terms of Service view disappeared")
+        }
         .alert("Terms of Service Accepted", isPresented: $showingRememberChoicePopup) {
             Button("Show every time") {
                 // User wants to see terms popup every login
