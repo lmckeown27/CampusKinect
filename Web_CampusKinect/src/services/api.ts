@@ -508,28 +508,33 @@ class ApiService {
       // Transform backend format to POST-CENTRIC frontend format
       const transformed = response.data.data.conversations.map((conv: any) => {
         console.log('🔄 Frontend API: Transforming conversation (checking format):', conv);
+        console.log('🔍 Format detection - post_title:', !!conv.post_title, 'otherUser:', !!conv.otherUser, 'other_user_id:', !!conv.other_user_id);
         
         // TEMPORARY FALLBACK: Handle both old and new backend formats
-        const isOldFormat = !conv.post_title && conv.otherUser;
+        // Old format has: otherUser object, lastMessage object, no post_title
+        // New format has: post_title, other_user_id, last_message string
+        const isOldFormat = conv.otherUser && !conv.post_title && !conv.other_user_id;
         
         if (isOldFormat) {
           console.log('⚠️ FALLBACK: Using old format - migration needed on production');
+          console.log('⚠️ FALLBACK: Old conversation structure:', JSON.stringify(conv, null, 2));
+          
           // Handle OLD user-centric format temporarily
           const frontendConv: Conversation = {
-            id: conv.id?.toString() || conv.conversation_id?.toString(),
-            createdAt: conv.createdAt || conv.conversation_created,
+            id: conv.id?.toString() || conv.conversation_id?.toString() || "unknown",
+            createdAt: conv.createdAt || conv.conversation_created || new Date().toISOString(),
             lastMessageAt: conv.lastMessageTime || conv.last_message_time,
             
             // FALLBACK POST CONTEXT (using placeholder data)
             post: {
               id: "0", // Placeholder
-              title: `Conversation with ${conv.otherUser?.displayName || 'Unknown User'}`,
-              description: "Legacy conversation - post details unavailable",
+              title: `💬 Chat with ${conv.otherUser?.displayName || 'Unknown User'}`,
+              description: "⚠️ Legacy conversation - upgrade needed for post details",
               type: "general",
               location: undefined,
               expiresAt: undefined,
               isFulfilled: false,
-              createdAt: conv.createdAt || conv.conversation_created,
+              createdAt: conv.createdAt || conv.conversation_created || new Date().toISOString(),
               author: {
                 id: conv.otherUser?.id?.toString() || "0",
                 username: conv.otherUser?.username || "unknown",
@@ -551,10 +556,10 @@ class ApiService {
             },
             
             // MESSAGE INFO (from old format)
-            lastMessage: conv.lastMessage?.content || conv.last_message,
+            lastMessage: conv.lastMessage?.content || conv.last_message || "No messages yet",
             lastMessageSenderId: conv.lastMessage?.senderId?.toString() || conv.last_message_sender_id?.toString(),
             lastMessageTime: conv.lastMessageTime || conv.last_message_time,
-            unreadCount: parseInt(conv.unreadCount) || conv.unread_count || 0
+            unreadCount: parseInt(conv.unreadCount?.toString()) || conv.unread_count || 0
           };
           console.log('⚠️ FALLBACK: Converted old format to POST-CENTRIC:', frontendConv);
           return frontendConv;
@@ -604,7 +609,7 @@ class ApiService {
           console.log('✅ NEW FORMAT: Transformed to POST-CENTRIC:', frontendConv);
           return frontendConv;
         }
-      });
+      }).filter((conv: any) => conv !== null); // Remove any null conversions
       
       console.log('🔄 Frontend API: Final POST-CENTRIC conversations:', transformed);
       return transformed;
