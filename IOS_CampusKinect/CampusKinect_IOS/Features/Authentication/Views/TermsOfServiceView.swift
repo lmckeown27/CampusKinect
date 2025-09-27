@@ -3,7 +3,7 @@ import SwiftUI
 struct TermsOfServiceView: View {
     @Binding var isPresented: Bool
     @State private var hasScrolledToBottom = false
-    @State private var shouldRememberChoice = false
+    @State private var showingRememberChoicePopup = false
     
     let onAccept: (Bool) -> Void // Bool parameter for shouldRememberChoice
     let onDecline: () -> Void // Callback for when user declines terms
@@ -84,12 +84,7 @@ struct TermsOfServiceView: View {
                         .padding(.horizontal)
                     }
                     
-                    // Remember Choice Toggle
-                    HStack {
-                        Toggle("Remove for future logins?", isOn: $shouldRememberChoice)
-                            .font(.subheadline)
-                    }
-                    .padding(.horizontal)
+
                     
                     // Action Buttons
                     HStack(spacing: 12) {
@@ -106,8 +101,8 @@ struct TermsOfServiceView: View {
                         
                         // Accept Button
                         Button("Accept") {
-                            onAccept(shouldRememberChoice)
-                            isPresented = false
+                            // Show second popup asking about future logins
+                            showingRememberChoicePopup = true
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -126,6 +121,21 @@ struct TermsOfServiceView: View {
             .navigationBarHidden(true)
         }
         .interactiveDismissDisabled() // Prevent swipe to dismiss
+        .alert("Terms of Service Accepted", isPresented: $showingRememberChoicePopup) {
+            Button("Show every time") {
+                // User wants to see terms popup every login
+                onAccept(false) // shouldRememberChoice = false
+                isPresented = false
+            }
+            
+            Button("Don't show again") {
+                // User wants to disable future popups
+                onAccept(true) // shouldRememberChoice = true
+                isPresented = false
+            }
+        } message: {
+            Text("Would you like to disable the Terms of Service popup for future logins?\n\nNote: You can always review the terms in Settings.")
+        }
     }
 }
 
