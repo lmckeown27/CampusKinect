@@ -199,7 +199,7 @@ router.post('/register', [
     // Check if this is a test bypass account (password-based bypass)
     // DISABLED: This was causing authentication bugs where all users logged in as cmckeown
     const isTestBypass = false; // FORCE DISABLED - was causing auth bug
-    
+
     // Check if this is a hardcoded test account (lmckeown@calpoly.edu)
     const isHardcodedTest = false; // Disabled for testing verification flow
 

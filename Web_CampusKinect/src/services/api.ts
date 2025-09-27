@@ -136,18 +136,18 @@ class ApiService {
   // Authentication
   public async login(credentials: LoginForm): Promise<{ user: User; tokens: AuthTokens }> {
     try {
-      const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
-        await this.api.post('/auth/login', credentials);
-      
-      if (response.data.success && response.data.data) {
-        this.setTokens(response.data.data.tokens);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('user', JSON.stringify(response.data.data.user));
-        }
-        return response.data.data;
+    const response: AxiosResponse<ApiResponse<{ user: User; tokens: AuthTokens }>> = 
+      await this.api.post('/auth/login', credentials);
+    
+    if (response.data.success && response.data.data) {
+      this.setTokens(response.data.data.tokens);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
       }
-      
-      throw new Error(response.data.message || 'Login failed');
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Login failed');
     } catch (error: any) {
       // Handle banned user specifically
       if (error.response?.status === 403 && error.response?.data?.error?.code === 'ACCOUNT_BANNED') {
@@ -989,8 +989,8 @@ class ApiService {
   public async blockUser(userId: string): Promise<void> {
     const response: AxiosResponse<ApiResponse<any>> = 
       await this.api.post('/users/block', {
-        userId: parseInt(userId)
-      });
+      userId: parseInt(userId)
+    });
 
     if (!response.data.success) {
       throw new Error(response.data.message || 'Failed to block user');
@@ -1000,8 +1000,8 @@ class ApiService {
   public async unblockUser(userId: string): Promise<void> {
     const response: AxiosResponse<ApiResponse<any>> = 
       await this.api.post('/users/unblock', {
-        userId: parseInt(userId)
-      });
+      userId: parseInt(userId)
+    });
 
     if (!response.data.success) {
       throw new Error(response.data.message || 'Failed to unblock user');

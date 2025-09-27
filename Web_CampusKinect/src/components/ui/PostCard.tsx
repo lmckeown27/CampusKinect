@@ -3,10 +3,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Post, User as UserType } from "../../types";
 import { formatDate, getPostTypeColor, getPostTypeIcon } from "../../utils";
-import {
-  MessageCircle,
-  Share2,
-  Bookmark,
+import { 
+  MessageCircle, 
+  Share2, 
+  Bookmark, 
   Repeat,
   MoreHorizontal,
   MapPin,
@@ -126,7 +126,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const handleProfileClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-
+    
     if (post.userId) {
       router.push(`/user/${post.userId}`);
     }
@@ -186,7 +186,7 @@ const PostCard: React.FC<PostCardProps> = ({
           <div className="flex items-center space-x-3">
             {/* Show Post Type Badge only for non-event posts */}
             {post.postType && post.postType !== "event" && (
-              <div
+              <div 
                 className={`px-3 py-1 rounded-full text-sm font-medium ${getPostTypeColor(post.postType)}`}
                 style={{
                   border: "2px solid #374151",
@@ -205,24 +205,24 @@ const PostCard: React.FC<PostCardProps> = ({
             {post.tags &&
               (post.tags.includes("offer") ||
                 post.tags.includes("request")) && (
-                <div
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+              <div 
+                className={`px-3 py-1 rounded-full text-sm font-medium ${
                     post.tags.includes("offer")
                       ? "bg-green-100 text-green-800"
                       : "bg-blue-100 text-blue-800"
-                  }`}
+                }`}
                   style={{
                     border: "2px solid #374151",
                     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   }}
-                >
-                  <span className="mr-1">
+              >
+                <span className="mr-1">
                     {post.tags.includes("offer") ? "💰" : "🔍"}
-                  </span>
+                </span>
                   {post.tags.includes("offer") ? "Offer" : "Request"}
-                </div>
-              )}
-
+              </div>
+            )}
+            
             {/* Timestamp */}
             <div className="flex items-center space-x-1">
               <span className="text-xs text-gray-500">•</span>
@@ -288,15 +288,15 @@ const PostCard: React.FC<PostCardProps> = ({
 
               {/* Dropdown menu positioned relative to button */}
               {showOptions && (
-                <div
+                <div 
                   className="absolute right-0 top-full mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-200 py-2 flex flex-col items-center"
-                  style={{
+                  style={{ 
                     zIndex: 50,
                     boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)",
                     gap: "8px",
                   }}
                 >
-                  <button
+                  <button 
                     onClick={handleReportPost}
                     className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-red-50"
                     style={{
@@ -344,7 +344,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
                   <div className="w-44 h-px bg-gray-200 my-1" />
 
-                  <button
+                  <button 
                     onClick={handleShare}
                     className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
                     style={{
@@ -374,10 +374,10 @@ const PostCard: React.FC<PostCardProps> = ({
         {/* Bottom Row: User Info and Post Title */}
         <div className="flex items-start" style={{ gap: "20px" }}>
           {/* User Info with Profile Picture Inside - Reduced Width */}
-          <div
+          <div 
             className="min-w-0 flex items-start space-x-3 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
             onClick={handleProfileClick}
-            style={{
+            style={{ 
               border: "2px solid #d1d5db",
               borderRadius: "12px",
               paddingTop: "8px",
@@ -410,7 +410,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 style={{ border: "2px solid #708d81", cursor: "pointer" }}
               />
             ) : (
-              <div
+              <div 
                 className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
                 style={{ border: "2px solid #708d81", cursor: "pointer" }}
               >
@@ -423,54 +423,54 @@ const PostCard: React.FC<PostCardProps> = ({
               className="flex-1 min-w-0 cursor-pointer"
               style={{ cursor: "pointer" }}
             >
-              {/* Display Name - Large and Bold */}
-              <div className="flex items-center space-x-2 mb-0">
-                <p
-                  className="font-bold text-gray-900 truncate cursor-pointer"
+            {/* Display Name - Large and Bold */}
+            <div className="flex items-center space-x-2 mb-0">
+              <p 
+                className="font-bold text-gray-900 truncate cursor-pointer"
                   style={{
                     fontSize: "18px",
                     lineHeight: "20px",
                     cursor: "pointer",
                   }}
-                >
-                  {post.poster?.firstName && post.poster?.lastName
-                    ? `${post.poster.firstName} ${post.poster.lastName}`
+              >
+                {post.poster?.firstName && post.poster?.lastName 
+                  ? `${post.poster.firstName} ${post.poster.lastName}`
                     : post.poster?.displayName ||
                       post.poster?.username ||
                       "Unknown User"}
-                </p>
-              </div>
-
-              {/* Username - Small and Separate */}
-              {post.poster?.username && post.poster?.firstName && (
-                <p
-                  className="text-gray-400 truncate cursor-pointer"
+              </p>
+            </div>
+            
+            {/* Username - Small and Separate */}
+            {post.poster?.username && post.poster?.firstName && (
+              <p 
+                className="text-gray-400 truncate cursor-pointer"
                   style={{
                     fontSize: "10px",
                     lineHeight: "12px",
                     marginTop: "-2px",
                     cursor: "pointer",
                   }}
-                >
-                  @{post.poster.username}
-                </p>
-              )}
-
-              {/* Major and Year */}
-              {post.poster?.major && (
-                <p className="text-xs text-gray-500 truncate">
+              >
+                @{post.poster.username}
+              </p>
+            )}
+            
+            {/* Major and Year */}
+            {post.poster?.major && (
+              <p className="text-xs text-gray-500 truncate">
                   {post.poster?.major} •{" "}
                   {post.poster?.year
                     ? getYearLabel(post.poster.year)
                     : "Not specified"}
-                </p>
-              )}
+              </p>
+            )}
             </div>
           </div>
 
           {/* Post Title - To the right of user info */}
           <div className="flex-1 min-w-0">
-            <h3
+            <h3 
               className="text-xl font-bold text-gray-900 line-clamp-2"
               style={{
                 fontSize: "26px",
@@ -480,7 +480,7 @@ const PostCard: React.FC<PostCardProps> = ({
             >
               {post.title}
             </h3>
-
+            
             {/* Location - Underneath the title */}
             {post.location && (
               <div
@@ -627,11 +627,11 @@ const PostCard: React.FC<PostCardProps> = ({
             >
               <Repeat size={18} />
             </button>
-
+            
             <button
               onClick={handleBookmark}
               className="p-2 rounded-lg transition-all duration-200"
-              style={{
+              style={{ 
                 backgroundColor: isBookmarked ? "#a8c4a2" : "#708d81",
                 color: "white",
                 border: isBookmarked
@@ -639,12 +639,12 @@ const PostCard: React.FC<PostCardProps> = ({
                   : "2px solid #708d81",
                 cursor: "pointer",
               }}
-              onMouseEnter={(e) => {
+              onMouseEnter={(e) => { 
                 e.currentTarget.style.backgroundColor = "#a8c4a2";
                 e.currentTarget.style.border = "2px solid #a8c4a2";
                 e.currentTarget.style.cursor = "pointer";
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={(e) => { 
                 e.currentTarget.style.backgroundColor = isBookmarked
                   ? "#a8c4a2"
                   : "#708d81";
@@ -741,4 +741,4 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 };
 
-export default PostCard;
+export default PostCard; 
