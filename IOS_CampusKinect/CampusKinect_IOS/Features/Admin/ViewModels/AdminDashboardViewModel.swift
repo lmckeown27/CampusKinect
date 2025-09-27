@@ -179,6 +179,8 @@ class AdminDashboardViewModel: ObservableObject {
     }
     
     func loadAnalyticsData() {
+        print("🚀 AdminDashboard: loadAnalyticsData() called")
+        print("🔍 AdminDashboard: Setting isLoadingAnalytics = true")
         isLoadingAnalytics = true
         print("🔍 AdminDashboard: Loading analytics data...")
         
@@ -203,6 +205,8 @@ class AdminDashboardViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         print("✅ AdminDashboard: Analytics data loaded successfully")
                         print("📊 Analytics: \(analyticsData.totalPosts) posts, \(analyticsData.totalMessages) messages, \(analyticsData.activeUsers) active users")
+                        print("🔄 AdminDashboard: Setting isLoadingAnalytics = false (success case)")
+                        self?.isLoadingAnalytics = false
                         self?.analytics = analyticsData
                     }
                 }
@@ -211,6 +215,8 @@ class AdminDashboardViewModel: ObservableObject {
     }
     
     func loadBannedUsers() {
+        print("🚀 AdminDashboard: loadBannedUsers() called")
+        print("🔍 AdminDashboard: Setting isLoadingBannedUsers = true")
         isLoadingBannedUsers = true
         print("🔍 AdminDashboard: Loading banned users...")
         
@@ -228,6 +234,8 @@ class AdminDashboardViewModel: ObservableObject {
                 receiveValue: { [weak self] bannedUsers in
                     DispatchQueue.main.async {
                         print("✅ AdminDashboard: Loaded \(bannedUsers.count) banned users")
+                        print("🔄 AdminDashboard: Setting isLoadingBannedUsers = false (success case)")
+                        self?.isLoadingBannedUsers = false
                         self?.bannedUsers = bannedUsers
                     }
                 }
