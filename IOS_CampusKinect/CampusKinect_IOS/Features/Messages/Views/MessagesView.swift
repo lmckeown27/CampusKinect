@@ -179,6 +179,9 @@ struct MessagesView: View {
         
         // Filter by search text first
         let searchFiltered = searchText.isEmpty ? allConversations : allConversations.filter { conversation in
+            // POST-CENTRIC SEARCH: Search post title first, then user, then message
+            conversation.post.title.localizedCaseInsensitiveContains(searchText) ||
+            conversation.post.description.localizedCaseInsensitiveContains(searchText) ||
             conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
             conversation.lastMessage?.localizedCaseInsensitiveContains(searchText) ?? false
         }
@@ -186,11 +189,11 @@ struct MessagesView: View {
         // Then filter by incoming/sent based on activeTab
         return searchFiltered.filter { conversation in
             guard let currentUserId = authManager.currentUser?.id,
-                  let lastMessage = conversation.lastMessage else { return true }
+                  let lastMessageSenderId = conversation.lastMessageSenderId else { return true }
             
             return activeTab == .incoming ?
-                lastMessage.senderId != currentUserId :
-                lastMessage.senderId == currentUserId
+                lastMessageSenderId != currentUserId :
+                lastMessageSenderId == currentUserId
         }
     }    
     // MARK: - Methods
@@ -232,6 +235,7 @@ struct MessagesView: View {
 }
 
 // MARK: - Conversation Row
+// MARK: - POST-CENTRIC Conversation Row
 struct ConversationRow: View {
     let conversation: Conversation
     let onTap: () -> Void
@@ -239,49 +243,110 @@ struct ConversationRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                ProfileImageView(imageUrl: conversation.otherUser.profilePicture, size: .medium)
+                // POST ICON (PRIMARY VISUAL ELEMENT)
+                VStack {
+                    Image(systemName: postIcon)
+                        .font(.title2)
+                        .foregroundColor(postColor)
+                        .frame(width: 44, height: 44)
+                        .background(postColor.opacity(0.1))
+                        .cornerRadius(8)
+                    
+                    // Post status indicator
+                    Text(conversation.post.statusText)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color(conversation.post.statusColor))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color(conversation.post.statusColor).opacity(0.1))
+                        .cornerRadius(4)
+                }
                 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(conversation.otherUser.displayName)
+                VStack(alignment: .leading, spacing: 6) {
+                    // POST TITLE (PRIMARY EMPHASIS)
+                    Text(conversation.post.title)
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
-
-                    Text(conversation.lastMessage ?? "No messages yet")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
                         .lineLimit(1)
-
+                    
+                    // USER INFO (SECONDARY)
+                    HStack(spacing: 4) {
+                        ProfileImageView(imageUrl: conversation.otherUser.profilePicture, size: .small)
+                        Text("with \(conversation.otherUser.displayName)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    // LAST MESSAGE (TERTIARY)
+                    if let lastMessage = conversation.lastMessage {
+                        Text(lastMessage)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    } else {
+                        Text("Tap to start messaging about this post")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                            .italic()
+                    }
                 }
 
                 Spacer()
-                    .contentShape(Rectangle())
 
-                if conversation.unreadCountInt > 0 {
-                    Text("\(conversation.unreadCountInt)")
+                VStack(alignment: .trailing, spacing: 4) {
+                    // Time
+                    Text(conversation.timeAgo)
                         .font(.caption2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color("BrandPrimary"))
-                        .cornerRadius(10)
+                        .foregroundColor(.secondary)
+                    
+                    // Unread count
+                    if conversation.hasUnreadMessages {
+                        Text("\(conversation.unreadCount)")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.red)
+                            .cornerRadius(10)
+                    }
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
-                
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
-            .contentShape(Rectangle())            .padding(.vertical, 12)
+            .padding(.vertical, 12)
             .padding(.horizontal, 16)
         }
         .buttonStyle(PlainButtonStyle())
-        .contentShape(Rectangle())
-        .background(Color.clear)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.clear)
-        )    }
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+    }
+    
+    // MARK: - Post Visual Helpers
+    private var postIcon: String {
+        switch conversation.post.type.lowercased() {
+        case "goods": return "cube.box"
+        case "services": return "wrench.and.screwdriver"
+        case "housing": return "house"
+        case "events": return "calendar"
+        default: return "doc.text"
+        }
+    }
+    
+    private var postColor: Color {
+        switch conversation.post.type.lowercased() {
+        case "goods": return .blue
+        case "services": return .green
+        case "housing": return .orange
+        case "events": return .purple
+        default: return .gray
+        }
+    }
 }
 
 struct MessagesView_Previews: PreviewProvider {
