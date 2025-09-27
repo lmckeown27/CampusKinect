@@ -5,11 +5,6 @@ import SwiftUI
 class AdminDashboardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var reports: [ContentReport] = []
-    
-    // MARK: - Test Method
-    func testMethod() {
-        print("Test method called successfully")
-    }
     @Published var stats: ModerationStats?
     @Published var analytics: AnalyticsData?
     @Published var bannedUsers: [BannedUser] = []
@@ -289,35 +284,35 @@ class AdminDashboardViewModel: ObservableObject {
             showingUnbanConfirmation = true
         }
         
-        func confirmUnbanUser() {
-            guard let user = userToUnban else { return }
-            
-            isLoadingAction = true
-            showingUnbanConfirmation = false
-            
-            apiService.unbanUser(userId: user.id)
-                .sink(
-                    receiveCompletion: { [weak self] completion in
-                        DispatchQueue.main.async {
-                            self?.isLoadingAction = false
-                            if case .failure(let error) = completion {
-                                self?.errorMessage = self?.formatError(error)
-                            } else {
-                                // Remove user from banned list and refresh stats
-                                self?.bannedUsers.removeAll { $0.id == user.id }
-                                self?.refreshStats()
-                                self?.showSuccessMessage(for: .dismiss) // Reuse dismiss message
-                            }
-                            self?.userToUnban = nil
-                        }
-                    },
-                    receiveValue: { _ in }
-                )
-                .store(in: &cancellables)
-        }
+            func confirmUnbanUser() {
+        guard let user = userToUnban else { return }
         
-        func cancelUnban() {
-                    userToUnban = nil
+        isLoadingAction = true
+        showingUnbanConfirmation = false
+        
+        apiService.unbanUser(userId: user.id)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    DispatchQueue.main.async {
+                        self?.isLoadingAction = false
+                        if case .failure(let error) = completion {
+                            self?.errorMessage = self?.formatError(error)
+                        } else {
+                            // Remove user from banned list and refresh stats
+                            self?.bannedUsers.removeAll { $0.id == user.id }
+                            self?.refreshStats()
+                            self?.showSuccessMessage(for: .dismiss) // Reuse dismiss message
+                        }
+                        self?.userToUnban = nil
+                    }
+                },
+                receiveValue: { _ in }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func cancelUnban() {
+        userToUnban = nil
         showingUnbanConfirmation = false
     }
     
