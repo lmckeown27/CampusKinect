@@ -92,26 +92,29 @@ class AdminDashboardViewModel: ObservableObject {
         print("🔍 AdminDashboard: Loading initial data...")
         print("🔍 AdminDashboard: Current user authorization check...")
         
-        // Load both reports and stats
-        let reportsPublisher = apiService.getPendingReports()
-        let statsPublisher = apiService.getModerationStats()
-        
-        // Load reports
-        reportsPublisher
+        // Load reports (primary data for Reports tab)
+        apiService.getPendingReports()
             .sink(
                 receiveCompletion: { [weak self] completion in
                     DispatchQueue.main.async {
+                        self?.isLoading = false // Always set loading to false when request completes
                         if case .failure(let error) = completion {
                             print("❌ AdminDashboard: Failed to load reports - \(error)")
                             self?.errorMessage = self?.formatError(error)
-                            self?.isLoading = false
                         }
                     }
                 },
                 receiveValue: { [weak self] response in
                     DispatchQueue.main.async {
                         print("✅ AdminDashboard: Loaded \(response.data.count) reports")
+                        print("📋 AdminDashboard: Response success: \(response.success)")
+                        print("📄 AdminDashboard: Pagination total: \(response.pagination.total)")
+                        
                         self?.reports = response.data
+                        print("🔄 AdminDashboard: Set reports array to \(self?.reports.count ?? 0) items")
+                        
+                        // Load stats in background (not blocking the UI)
+                        self?.loadModerationStats()
                         
                         // If this is the first successful load, also load analytics
                         if self?.analytics == nil {
@@ -121,27 +124,21 @@ class AdminDashboardViewModel: ObservableObject {
                 }
             )
             .store(in: &cancellables)
-        
-        // Load stats
-        statsPublisher
+    }
+    
+    private func loadModerationStats() {
+        apiService.getModerationStats()
             .sink(
                 receiveCompletion: { [weak self] completion in
-                    DispatchQueue.main.async {
-                        self?.isLoading = false
-                        if case .failure(let error) = completion {
-                            print("❌ AdminDashboard: Failed to load stats - \(error)")
-                            // Don't overwrite reports error if it exists
-                            if self?.errorMessage == nil {
-                                self?.errorMessage = self?.formatError(error)
-                            }
-                        }
+                    if case .failure(let error) = completion {
+                        print("❌ AdminDashboard: Failed to load stats - \(error)")
+                        // Don't show error for stats since it's background data
                     }
                 },
                 receiveValue: { [weak self] stats in
                     DispatchQueue.main.async {
                         print("✅ AdminDashboard: Loaded moderation stats")
                         self?.stats = stats
-                        self?.isLoading = false
                     }
                 }
             )

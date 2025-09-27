@@ -76,13 +76,21 @@ class AdminAPIService: ObservableObject {
                     .compactMap { response in
                         print("✅ AdminAPI: Decoded pending reports response, success: \(response.success)")
                         if response.success, let reportsData = response.data {
+                            print("📊 AdminAPI: Reports data - count: \(reportsData.data.count)")
+                            print("📄 AdminAPI: Pagination - page: \(reportsData.pagination.page), total: \(reportsData.pagination.total)")
                             // Convert to PaginatedResponse format expected by the app
-                            return PaginatedResponse(
+                            let paginatedResponse = PaginatedResponse(
                                 success: true,
                                 data: reportsData.data,
                                 pagination: reportsData.pagination,
                                 message: response.message
                             )
+                            print("🔄 AdminAPI: Returning PaginatedResponse with \(paginatedResponse.data.count) reports")
+                            return paginatedResponse
+                        } else {
+                            print("❌ AdminAPI: Response not successful or data is nil")
+                            print("❌ AdminAPI: Response success: \(response.success)")
+                            print("❌ AdminAPI: Response data: \(String(describing: response.data))")
                         }
                         return nil
                     }
