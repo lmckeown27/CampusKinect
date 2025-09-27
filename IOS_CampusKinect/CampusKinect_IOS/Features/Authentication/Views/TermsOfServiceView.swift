@@ -50,14 +50,7 @@ struct TermsOfServiceView: View {
                                 }
                         }
                     }
-                    .onAppear {
-                        // Auto-scroll to bottom after a delay to show user they need to scroll
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                proxy.scrollTo("bottom", anchor: .bottom)
-                            }
-                        }
-                    }
+
                 }
                 
                 Divider()
@@ -69,7 +62,7 @@ struct TermsOfServiceView: View {
                         HStack {
                             Image(systemName: "arrow.down.circle.fill")
                                 .foregroundColor(.orange)
-                            Text("Please scroll to the bottom to continue")
+                            Text("You must scroll through and read all terms to continue")
                                 .font(.caption)
                                 .foregroundColor(.orange)
                         }
@@ -103,7 +96,7 @@ struct TermsOfServiceView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(hasScrolledToBottom ? Color.blue : Color(.systemGray4))
+                        .background(hasScrolledToBottom ? Color(red: 0.5, green: 0.5, blue: 0.0) : Color(.systemGray4))
                         .foregroundColor(.white)
                         .cornerRadius(12)
                         .disabled(!hasScrolledToBottom)
