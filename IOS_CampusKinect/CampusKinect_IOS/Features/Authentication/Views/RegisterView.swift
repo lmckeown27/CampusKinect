@@ -83,16 +83,10 @@ struct RegisterView: View {
             VerificationView(email: email)
         }
         .sheet(isPresented: $showingTerms) {
-            NavigationView {
-                TermsView()
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingTerms = false
-                            }
-                        }
-                    }
+            TermsOfServiceView(isPresented: $showingTerms) { shouldRememberChoice in
+                // For registration, we don't need to remember choice since this is first-time acceptance
+                print("📋 Terms accepted during registration")
+                agreeToTerms = true // Automatically check the agreement checkbox
             }
         }
         .sheet(isPresented: $showingPrivacy) {
