@@ -30,7 +30,12 @@ struct AdminDashboardView: View {
     // MARK: - Sub-expressions
     private var mainContent: some View {
         Group {
-            if _viewModel.wrappedValue.isAuthorizedAdmin {
+            // Test if we can access any method/property
+            let vm = _viewModel.wrappedValue
+            let testResult = vm.testAccess()
+            let isAuthorized = vm.isAuthorizedAdmin
+            
+            if isAuthorized {
                 adminContent
             } else {
                 unauthorizedView
