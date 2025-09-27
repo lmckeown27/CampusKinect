@@ -169,12 +169,12 @@ struct AdminDashboardView: View {
                             // Detail view based on selected tab
                 Group {
                     switch _viewModel.wrappedValue.selectedTab {
+                    case .analytics:
+                        AnalyticsTabView(viewModel: _viewModel.wrappedValue)
                     case .reports:
                         ReportsTabView(viewModel: _viewModel.wrappedValue)
                     case .users:
                         UsersTabView(viewModel: _viewModel.wrappedValue)
-                    case .analytics:
-                        AnalyticsTabView(viewModel: _viewModel.wrappedValue)
                     }
                 }
         }
@@ -183,7 +183,20 @@ struct AdminDashboardView: View {
             // MARK: - iPhone Layout
         private var iPhoneLayout: some View {
             TabView {
-                // Reports Tab
+                // Analytics Tab - FIRST
+                NavigationView {
+                    AnalyticsTabView(viewModel: _viewModel.wrappedValue)
+                }
+                .tabItem {
+                    Image(systemName: AdminTab.analytics.iconName)
+                    Text(AdminTab.analytics.displayName)
+                }
+                .tag(AdminTab.analytics)
+                .onAppear {
+                    print("🔍 AdminDashboard: Analytics NavigationView appeared (FIRST TAB)")
+                }
+                
+                // Reports Tab - SECOND
                 NavigationView {
                     ReportsTabView(viewModel: _viewModel.wrappedValue)
                 }
@@ -193,14 +206,14 @@ struct AdminDashboardView: View {
                 }
                 .tag(AdminTab.reports)
                 .onAppear {
-                    print("🔍 AdminDashboard: Reports NavigationView appeared")
+                    print("🔍 AdminDashboard: Reports NavigationView appeared (SECOND TAB)")
                     if _viewModel.wrappedValue.reports.isEmpty && !_viewModel.wrappedValue.isLoading {
                         print("🚀 AdminDashboard: Loading reports from NavigationView onAppear")
                         _viewModel.wrappedValue.loadInitialData()
                     }
                 }
                 
-                // Users Tab
+                // Users Tab - THIRD
                 NavigationView {
                     UsersTabView(viewModel: _viewModel.wrappedValue)
                 }
@@ -209,16 +222,6 @@ struct AdminDashboardView: View {
                     Text(AdminTab.users.displayName)
                 }
                 .tag(AdminTab.users)
-                
-                // Analytics Tab
-                NavigationView {
-                    AnalyticsTabView(viewModel: _viewModel.wrappedValue)
-                }
-                .tabItem {
-                    Image(systemName: AdminTab.analytics.iconName)
-                    Text(AdminTab.analytics.displayName)
-                }
-                .tag(AdminTab.analytics)
             }
             .accentColor(.red)
         }

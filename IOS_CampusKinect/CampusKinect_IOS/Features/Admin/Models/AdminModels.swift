@@ -255,9 +255,9 @@ struct BannedUser: Codable, Identifiable {
 
 // MARK: - Admin Navigation
 enum AdminTab: String, CaseIterable {
-    case reports = "reports"
-    case users = "users"
-    case analytics = "analytics"
+    case analytics = "analytics"  // First page
+    case reports = "reports"      // Second page
+    case users = "users"          // Third page
     
     var displayName: String {
         switch self {
