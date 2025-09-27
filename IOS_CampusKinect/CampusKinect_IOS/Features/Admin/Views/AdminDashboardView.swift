@@ -255,7 +255,7 @@ struct AdminDashboardView: View {
 
 // MARK: - Reports Tab
 struct ReportsTabView: View {
-    let viewModel: AdminDashboardViewModel
+    @ObservedObject var viewModel: AdminDashboardViewModel  // CHANGED: ObservedObject instead of let
     
     var body: some View {
         let sortedReports = viewModel.reports.sorted { $0.createdAt > $1.createdAt }
@@ -286,7 +286,7 @@ struct ReportsTabView: View {
 
 // MARK: - Users Tab
 struct UsersTabView: View {
-    let viewModel: AdminDashboardViewModel
+    @ObservedObject var viewModel: AdminDashboardViewModel  // CHANGED: ObservedObject instead of let
     
     var body: some View {
         Group {
@@ -334,7 +334,7 @@ struct UsersTabView: View {
 
 // MARK: - Analytics Tab
 struct AnalyticsTabView: View {
-    let viewModel: AdminDashboardViewModel
+    @ObservedObject var viewModel: AdminDashboardViewModel  // CHANGED: ObservedObject instead of let
     
     var body: some View {
         print("🔍 AnalyticsTabView: body render - isLoadingAnalytics=\(viewModel.isLoadingAnalytics), analytics=\(viewModel.analytics != nil)")
