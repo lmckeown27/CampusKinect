@@ -321,5 +321,4 @@ class AdminDashboardViewModel: ObservableObject {
         // Check authorization using stored user data
         return checkAdminAuthorization()
     }
-}
 } 
