@@ -22,6 +22,15 @@ struct SettingsView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
+    // Check if user has disabled Terms popup
+    private var shouldShowTermsResetButton: Bool {
+        guard let user = authManager.currentUser else { return false }
+        let status = TermsOfServiceManager.shared.getTermsStatus(for: String(user.id))
+        // Show reset button only if user chose to see terms every time (shouldRemember = false)
+        // OR if they haven't accepted terms yet
+        return !status.hasAccepted || !status.shouldRemember
+    }
+    
     // Computed property to determine if we're on iPad
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
@@ -104,12 +113,15 @@ struct SettingsView: View {
                         showingTerms = true
                     }
                     
-                    SettingsRow(
-                        icon: "arrow.clockwise.circle",
-                        title: "Reset Terms Acceptance",
-                        subtitle: "Show Terms popup again (for Apple review)"
-                    ) {
-                        TermsOfServiceManager.shared.resetAllTermsAcceptance()
+                    // Only show reset button if user hasn't disabled Terms popup
+                    if shouldShowTermsResetButton {
+                        SettingsRow(
+                            icon: "arrow.clockwise.circle",
+                            title: "Reset Terms Acceptance",
+                            subtitle: "Show Terms popup again (for Apple review)"
+                        ) {
+                            TermsOfServiceManager.shared.resetAllTermsAcceptance()
+                        }
                     }
                     
                     SettingsRow(
