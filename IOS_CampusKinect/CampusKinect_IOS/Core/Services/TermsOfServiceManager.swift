@@ -76,6 +76,23 @@ class TermsOfServiceManager: ObservableObject {
         print("📋 Terms acceptance reset for user \(userId)")
     }
     
+    /// Reset terms acceptance for all users (for Apple review preparation)
+    func resetAllTermsAcceptance() {
+        // Get all UserDefaults keys and remove terms-related ones
+        let allKeys = userDefaults.dictionaryRepresentation().keys
+        let termsKeys = allKeys.filter { key in
+            key.contains(hasAcceptedTermsKey) || 
+            key.contains(shouldRememberChoiceKey) || 
+            key.contains(termsVersionKey)
+        }
+        
+        for key in termsKeys {
+            userDefaults.removeObject(forKey: key)
+        }
+        
+        print("📋 All terms acceptance data cleared - Terms popup will show for all users")
+    }
+    
     /// Get terms acceptance status for debugging
     func getTermsStatus(for userId: String) -> (hasAccepted: Bool, shouldRemember: Bool, version: String?) {
         let userSpecificKey = "\(hasAcceptedTermsKey)_\(userId)"

@@ -105,6 +105,14 @@ struct SettingsView: View {
                     }
                     
                     SettingsRow(
+                        icon: "arrow.clockwise.circle",
+                        title: "Reset Terms Acceptance",
+                        subtitle: "Show Terms popup again (for Apple review)"
+                    ) {
+                        TermsOfServiceManager.shared.resetAllTermsAcceptance()
+                    }
+                    
+                    SettingsRow(
                         icon: "info.circle",
                         title: "About",
                         subtitle: "App version and info"
