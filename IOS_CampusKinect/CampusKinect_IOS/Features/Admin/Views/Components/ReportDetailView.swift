@@ -290,7 +290,13 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Call the moderation method properly
+        // Test if we can call ANY method on the viewModel
+        print("Testing method access...")
+        
+        // Try calling selectReport first (we know this exists)
+        viewModel.selectReport(report)
+        
+        // Then try our target method
         viewModel.handleReportModeration(report, action: action, notes: notes)
         
         // Close the detail view
