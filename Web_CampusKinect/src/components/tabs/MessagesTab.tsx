@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Send, User, MoreHorizontal, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText } from 'lucide-react';
+import { Send, User, MoreHorizontal, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -793,6 +793,17 @@ const MessagesTab: React.FC = () => {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: '#737373' }}>
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-[#708d81] rounded-full flex items-center justify-center">
+                  <MessageCircle size={32} className="text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-[#708d81] mb-2">
+                  Select a Post Conversation
+                </h3>
+                <p className="text-[#708d81] opacity-70 max-w-sm">
+                  Choose a conversation from the left to start messaging about a specific post
+                </p>
+              </div>
             </div>
           )}
         </div>
