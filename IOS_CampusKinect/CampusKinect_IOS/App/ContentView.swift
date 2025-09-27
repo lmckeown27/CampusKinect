@@ -32,8 +32,15 @@ struct ContentView: View {
                     }
                     .sheet(isPresented: $termsManager.shouldShowTerms) {
                         TermsOfServiceView(isPresented: $termsManager.shouldShowTerms) { shouldRememberChoice in
+                            // User accepted terms
                             if let user = authManager.currentUser {
                                 termsManager.acceptTerms(for: String(user.id), shouldRememberChoice: shouldRememberChoice)
+                            }
+                        } onDecline: {
+                            // User declined terms - log them out
+                            print("📋 Terms declined - logging out user")
+                            Task {
+                                await authManager.logout()
                             }
                         }
                     }

@@ -6,6 +6,7 @@ struct TermsOfServiceView: View {
     @State private var shouldRememberChoice = false
     
     let onAccept: (Bool) -> Void // Bool parameter for shouldRememberChoice
+    let onDecline: () -> Void // Callback for when user declines terms
     
     var body: some View {
         NavigationView {
@@ -86,6 +87,7 @@ struct TermsOfServiceView: View {
                     HStack(spacing: 12) {
                         // Decline Button
                         Button("Decline") {
+                            onDecline()
                             isPresented = false
                         }
                         .frame(maxWidth: .infinity)
@@ -123,5 +125,7 @@ struct TermsOfServiceView: View {
 #Preview {
     TermsOfServiceView(isPresented: .constant(true)) { shouldRemember in
         print("Terms accepted, remember choice: \(shouldRemember)")
+    } onDecline: {
+        print("Terms declined")
     }
 } 

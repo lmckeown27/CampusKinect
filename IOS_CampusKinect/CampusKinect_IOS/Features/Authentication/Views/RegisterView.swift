@@ -87,6 +87,10 @@ struct RegisterView: View {
                 // For registration, we don't need to remember choice since this is first-time acceptance
                 print("📋 Terms accepted during registration")
                 agreeToTerms = true // Automatically check the agreement checkbox
+            } onDecline: {
+                // User declined terms during registration - they stay on registration page
+                print("📋 Terms declined during registration")
+                agreeToTerms = false // Ensure checkbox is unchecked
             }
         }
         .sheet(isPresented: $showingPrivacy) {
