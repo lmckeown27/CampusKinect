@@ -18,6 +18,7 @@ struct SettingsView: View {
     @State private var showingMailComposer = false
     @State private var showingNotificationSettings = false
     @State private var showingBlockedUsers = false
+    @State private var showingAdminDashboard = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -131,14 +132,17 @@ struct SettingsView: View {
                     }
                 }
                 
-                // Privacy & Safety
-                Section("Privacy & Safety") {
-                    SettingsRow(
-                        icon: "person.crop.circle.badge.xmark",
-                        title: "Blocked Users",
-                        subtitle: "Manage blocked users"
-                    ) {
-                        showingBlockedUsers = true
+                // Admin Section - Only visible to liam_mckeown38
+                if let user = authManager.currentUser,
+                   (user.email == "lmckeown@calpoly.edu" || user.username == "liam_mckeown38") {
+                    Section("Administration") {
+                        SettingsRow(
+                            icon: "shield.lefthalf.filled",
+                            title: "Admin Dashboard",
+                            subtitle: "Content moderation & analytics"
+                        ) {
+                            showingAdminDashboard = true
+                        }
                     }
                 }
                                 // Account Actions
@@ -207,7 +211,10 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingNotificationSettings) {
             NotificationSettingsView()
-            }
+        }
+        .sheet(isPresented: $showingAdminDashboard) {
+            AdminDashboardView()
+        }
             .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
             .frame(maxHeight: .infinity)
             .clipped()
