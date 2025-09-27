@@ -6,6 +6,29 @@ struct AdminDashboardView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
+        mainContent
+            .navigationTitle("Admin Dashboard")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar { toolbarContent }
+            .sheet(isPresented: reportDetailBinding) { reportDetailSheet }
+            .alert("Unban User", isPresented: unbanConfirmationBinding) {
+                unbanAlertButtons
+            } message: {
+                unbanAlertMessage
+            }
+            .alert("Error", isPresented: errorAlertBinding) {
+                errorAlertButton
+            } message: {
+                errorAlertMessage
+            }
+            .onAppear {
+                _viewModel.wrappedValue.loadAnalyticsData()
+                _viewModel.wrappedValue.loadBannedUsers()
+            }
+    }
+    
+    // MARK: - Sub-expressions
+    private var mainContent: some View {
         Group {
             if _viewModel.wrappedValue.isAuthorizedAdmin {
                 adminContent
@@ -13,54 +36,76 @@ struct AdminDashboardView: View {
                 unauthorizedView
             }
         }
-        .navigationTitle("Admin Dashboard")
-        .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Refresh") {
-                    _viewModel.wrappedValue.refreshData()
-                }
-                .disabled(_viewModel.wrappedValue.isLoading)
+    }
+    
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button("Refresh") {
+                _viewModel.wrappedValue.refreshData()
             }
+            .disabled(_viewModel.wrappedValue.isLoading)
         }
-        .sheet(isPresented: Binding(
+    }
+    
+    private var reportDetailBinding: Binding<Bool> {
+        Binding(
             get: { _viewModel.wrappedValue.showingReportDetail },
             set: { _viewModel.wrappedValue.showingReportDetail = $0 }
-        )) {
+        )
+    }
+    
+    private var reportDetailSheet: some View {
+        Group {
             if let report = _viewModel.wrappedValue.selectedReport {
                 ReportDetailView(report: report, viewModel: _viewModel.wrappedValue)
             }
         }
-        .alert("Unban User", isPresented: Binding(
+    }
+    
+    private var unbanConfirmationBinding: Binding<Bool> {
+        Binding(
             get: { _viewModel.wrappedValue.showingUnbanConfirmation },
             set: { _viewModel.wrappedValue.showingUnbanConfirmation = $0 }
-        )) {
+        )
+    }
+    
+    private var unbanAlertButtons: some View {
+        Group {
             Button("Cancel", role: .cancel) {
                 _viewModel.wrappedValue.cancelUnban()
             }
             Button("Unban", role: .destructive) {
                 _viewModel.wrappedValue.confirmUnbanUser()
             }
-        } message: {
+        }
+    }
+    
+    private var unbanAlertMessage: some View {
+        Group {
             if let user = _viewModel.wrappedValue.userToUnban {
                 Text("Are you sure you want to unban \(user.username)? They will be able to access the platform again.")
             }
         }
-        .alert("Error", isPresented: Binding(
+    }
+    
+    private var errorAlertBinding: Binding<Bool> {
+        Binding(
             get: { _viewModel.wrappedValue.errorMessage != nil },
             set: { _ in _viewModel.wrappedValue.errorMessage = nil }
-        )) {
-            Button("OK") {
-                _viewModel.wrappedValue.errorMessage = nil
-            }
-        } message: {
+        )
+    }
+    
+    private var errorAlertButton: some View {
+        Button("OK") {
+            _viewModel.wrappedValue.errorMessage = nil
+        }
+    }
+    
+    private var errorAlertMessage: some View {
+        Group {
             if let errorMessage = _viewModel.wrappedValue.errorMessage {
                 Text(errorMessage)
             }
-        }
-        .onAppear {
-            _viewModel.wrappedValue.loadAnalyticsData()
-            _viewModel.wrappedValue.loadBannedUsers()
         }
     }
     
