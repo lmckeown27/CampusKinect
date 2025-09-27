@@ -375,7 +375,7 @@ const MessagesTab: React.FC = () => {
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
       <div className="flex min-h-screen">
         {/* Left Sidebar - Conversations */}
-        <div className="w-full sm:w-64 border-r border-[#708d81] flex flex-col rounded-lg overflow-hidden" style={{ backgroundColor: '#737373' }}>
+        <div className="w-full sm:w-80 lg:w-96 xl:w-1/3 border-r border-[#708d81] flex flex-col rounded-lg overflow-hidden" style={{ backgroundColor: '#737373' }}>
           {/* Header */}
           <div className="p-4 border-b border-[#708d81] rounded-t-lg">
             {/* Search and Plus Button */}

@@ -507,50 +507,103 @@ class ApiService {
       
       // Transform backend format to POST-CENTRIC frontend format
       const transformed = response.data.data.conversations.map((conv: any) => {
-        console.log('🔄 Frontend API: Transforming POST-CENTRIC conversation:', conv);
-        const frontendConv: Conversation = {
-          id: conv.conversation_id.toString(),
-          createdAt: conv.conversation_created,
-          lastMessageAt: conv.last_message_time,
-          
-          // POST CONTEXT (PRIMARY)
-          post: {
-            id: conv.post_id.toString(),
-            title: conv.post_title,
-            description: conv.post_description,
-            type: conv.post_type,
-            location: conv.post_location,
-            expiresAt: conv.post_expires_at,
-            isFulfilled: conv.post_is_fulfilled || false,
-            createdAt: conv.post_created_at,
-            author: {
-              id: conv.post_author_id.toString(),
-              username: conv.post_author_username,
-              firstName: conv.post_author_first_name,
-              lastName: conv.post_author_last_name,
-              displayName: conv.post_author_display_name,
-              profilePicture: conv.post_author_profile_picture
-            }
-          },
-          
-          // OTHER USER (SECONDARY)
-          otherUser: {
-            id: conv.other_user_id.toString(),
-            username: conv.other_user_username,
-            firstName: conv.other_user_first_name,
-            lastName: conv.other_user_last_name,
-            displayName: conv.other_user_display_name,
-            profilePicture: conv.other_user_profile_picture
-          },
-          
-          // MESSAGE INFO
-          lastMessage: conv.last_message,
-          lastMessageSenderId: conv.last_message_sender_id?.toString(),
-          lastMessageTime: conv.last_message_time,
-          unreadCount: conv.unread_count || 0
-        };
-        console.log('🔄 Frontend API: Transformed to POST-CENTRIC:', frontendConv);
-        return frontendConv;
+        console.log('🔄 Frontend API: Transforming conversation (checking format):', conv);
+        
+        // TEMPORARY FALLBACK: Handle both old and new backend formats
+        const isOldFormat = !conv.post_title && conv.otherUser;
+        
+        if (isOldFormat) {
+          console.log('⚠️ FALLBACK: Using old format - migration needed on production');
+          // Handle OLD user-centric format temporarily
+          const frontendConv: Conversation = {
+            id: conv.id?.toString() || conv.conversation_id?.toString(),
+            createdAt: conv.createdAt || conv.conversation_created,
+            lastMessageAt: conv.lastMessageTime || conv.last_message_time,
+            
+            // FALLBACK POST CONTEXT (using placeholder data)
+            post: {
+              id: "0", // Placeholder
+              title: `Conversation with ${conv.otherUser?.displayName || 'Unknown User'}`,
+              description: "Legacy conversation - post details unavailable",
+              type: "general",
+              location: undefined,
+              expiresAt: undefined,
+              isFulfilled: false,
+              createdAt: conv.createdAt || conv.conversation_created,
+              author: {
+                id: conv.otherUser?.id?.toString() || "0",
+                username: conv.otherUser?.username || "unknown",
+                firstName: conv.otherUser?.firstName || "",
+                lastName: conv.otherUser?.lastName || "",
+                displayName: conv.otherUser?.displayName || "Unknown User",
+                profilePicture: conv.otherUser?.profilePicture
+              }
+            },
+            
+            // OTHER USER (from old format)
+            otherUser: {
+              id: conv.otherUser?.id?.toString() || "0",
+              username: conv.otherUser?.username || "unknown",
+              firstName: conv.otherUser?.firstName || "",
+              lastName: conv.otherUser?.lastName || "",
+              displayName: conv.otherUser?.displayName || "Unknown User",
+              profilePicture: conv.otherUser?.profilePicture
+            },
+            
+            // MESSAGE INFO (from old format)
+            lastMessage: conv.lastMessage?.content || conv.last_message,
+            lastMessageSenderId: conv.lastMessage?.senderId?.toString() || conv.last_message_sender_id?.toString(),
+            lastMessageTime: conv.lastMessageTime || conv.last_message_time,
+            unreadCount: parseInt(conv.unreadCount) || conv.unread_count || 0
+          };
+          console.log('⚠️ FALLBACK: Converted old format to POST-CENTRIC:', frontendConv);
+          return frontendConv;
+        } else {
+          // Handle NEW post-centric format
+          const frontendConv: Conversation = {
+            id: conv.conversation_id.toString(),
+            createdAt: conv.conversation_created,
+            lastMessageAt: conv.last_message_time,
+            
+            // POST CONTEXT (PRIMARY)
+            post: {
+              id: conv.post_id.toString(),
+              title: conv.post_title,
+              description: conv.post_description,
+              type: conv.post_type,
+              location: conv.post_location,
+              expiresAt: conv.post_expires_at,
+              isFulfilled: conv.post_is_fulfilled || false,
+              createdAt: conv.post_created_at,
+              author: {
+                id: conv.post_author_id.toString(),
+                username: conv.post_author_username,
+                firstName: conv.post_author_first_name,
+                lastName: conv.post_author_last_name,
+                displayName: conv.post_author_display_name,
+                profilePicture: conv.post_author_profile_picture
+              }
+            },
+            
+            // OTHER USER (SECONDARY)
+            otherUser: {
+              id: conv.other_user_id.toString(),
+              username: conv.other_user_username,
+              firstName: conv.other_user_first_name,
+              lastName: conv.other_user_last_name,
+              displayName: conv.other_user_display_name,
+              profilePicture: conv.other_user_profile_picture
+            },
+            
+            // MESSAGE INFO
+            lastMessage: conv.last_message,
+            lastMessageSenderId: conv.last_message_sender_id?.toString(),
+            lastMessageTime: conv.last_message_time,
+            unreadCount: conv.unread_count || 0
+          };
+          console.log('✅ NEW FORMAT: Transformed to POST-CENTRIC:', frontendConv);
+          return frontendConv;
+        }
       });
       
       console.log('🔄 Frontend API: Final POST-CENTRIC conversations:', transformed);
