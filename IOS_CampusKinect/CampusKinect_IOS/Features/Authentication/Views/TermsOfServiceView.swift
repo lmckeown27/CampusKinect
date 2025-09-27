@@ -1,9 +1,27 @@
 import SwiftUI
 
+// MARK: - Preference Keys for Scroll Detection
+struct ViewOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+struct ContentHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct TermsOfServiceView: View {
     @Binding var isPresented: Bool
     @State private var hasScrolledToBottom = false
     @State private var shouldRememberChoice = false
+    @State private var scrollOffset: CGFloat = 0
+    @State private var contentHeight: CGFloat = 0
+    @State private var scrollViewHeight: CGFloat = 0
     
     let onAccept: (Bool) -> Void // Bool parameter for shouldRememberChoice
     let onDecline: () -> Void // Callback for when user declines terms
@@ -32,8 +50,8 @@ struct TermsOfServiceView: View {
                 
                 Divider()
                 
-                // Scrollable Terms Content
-                ScrollViewReader { proxy in
+                // Scrollable Terms Content with reliable scroll detection
+                GeometryReader { geometry in
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(TermsOfServiceContent.content)
@@ -41,16 +59,44 @@ struct TermsOfServiceView: View {
                                 .lineSpacing(4)
                                 .padding()
                             
-                            // Bottom marker for scroll detection
+                            // Bottom detection marker
                             Color.clear
                                 .frame(height: 1)
-                                .id("bottom")
-                                .onAppear {
-                                    hasScrolledToBottom = true
-                                }
+                                .background(
+                                    GeometryReader { geo in
+                                        Color.clear
+                                            .preference(key: ViewOffsetKey.self, value: geo.frame(in: .named("scroll")).minY)
+                                    }
+                                )
+                            
+                            // Extra space to ensure scrolling is always required
+                            Spacer()
+                                .frame(height: 200)
+                        }
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .preference(key: ContentHeightKey.self, value: geo.size.height)
+                            }
+                        )
+                    }
+                    .coordinateSpace(name: "scroll")
+                    .onPreferenceChange(ViewOffsetKey.self) { offset in
+                        // Check if user has scrolled close to the bottom
+                        let threshold: CGFloat = 50 // Allow some margin
+                        if offset <= threshold && !hasScrolledToBottom {
+                            hasScrolledToBottom = true
+                            print("📋 User has scrolled to bottom - Accept button enabled")
                         }
                     }
-
+                    .onPreferenceChange(ContentHeightKey.self) { height in
+                        contentHeight = height
+                    }
+                    .onAppear {
+                        hasScrolledToBottom = false
+                        scrollViewHeight = geometry.size.height
+                        print("📋 Terms view loaded - Accept disabled until scroll to bottom")
+                    }
                 }
                 
                 Divider()
