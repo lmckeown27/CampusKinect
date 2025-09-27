@@ -21,10 +21,7 @@ struct AdminDashboardView: View {
             } message: {
                 errorAlertMessage
             }
-            .onAppear {
-                _viewModel.wrappedValue.loadAnalyticsData()
-                _viewModel.wrappedValue.loadBannedUsers()
-            }
+            
     }
     
     // MARK: - Sub-expressions
@@ -167,67 +164,55 @@ struct AdminDashboardView: View {
             .navigationTitle("Admin")
             .navigationBarTitleDisplayMode(.inline)
         } detail: {
-            // Detail view based on selected tab
-            Group {
-                switch _viewModel.wrappedValue.selectedTab {
-                case .overview:
-                    OverviewTabView(viewModel: _viewModel.wrappedValue)
-                case .reports:
-                    ReportsTabView(viewModel: _viewModel.wrappedValue)
-                case .users:
-                    UsersTabView(viewModel: _viewModel.wrappedValue)
-                case .analytics:
-                    AnalyticsTabView(viewModel: _viewModel.wrappedValue)
+                            // Detail view based on selected tab
+                Group {
+                    switch _viewModel.wrappedValue.selectedTab {
+                    case .reports:
+                        ReportsTabView(viewModel: _viewModel.wrappedValue)
+                    case .users:
+                        UsersTabView(viewModel: _viewModel.wrappedValue)
+                    case .analytics:
+                        AnalyticsTabView(viewModel: _viewModel.wrappedValue)
+                    }
                 }
-            }
         }
     }
     
-    // MARK: - iPhone Layout
-    private var iPhoneLayout: some View {
-        TabView {
-            // Overview Tab
-            NavigationView {
-                OverviewTabView(viewModel: _viewModel.wrappedValue)
+            // MARK: - iPhone Layout
+        private var iPhoneLayout: some View {
+            TabView {
+                // Reports Tab
+                NavigationView {
+                    ReportsTabView(viewModel: _viewModel.wrappedValue)
+                }
+                .tabItem {
+                    Image(systemName: AdminTab.reports.iconName)
+                    Text(AdminTab.reports.displayName)
+                }
+                .tag(AdminTab.reports)
+                
+                // Users Tab
+                NavigationView {
+                    UsersTabView(viewModel: _viewModel.wrappedValue)
+                }
+                .tabItem {
+                    Image(systemName: AdminTab.users.iconName)
+                    Text(AdminTab.users.displayName)
+                }
+                .tag(AdminTab.users)
+                
+                // Analytics Tab
+                NavigationView {
+                    AnalyticsTabView(viewModel: _viewModel.wrappedValue)
+                }
+                .tabItem {
+                    Image(systemName: AdminTab.analytics.iconName)
+                    Text(AdminTab.analytics.displayName)
+                }
+                .tag(AdminTab.analytics)
             }
-            .tabItem {
-                Image(systemName: AdminTab.overview.iconName)
-                Text(AdminTab.overview.displayName)
-            }
-            .tag(AdminTab.overview)
-            
-            // Reports Tab
-            NavigationView {
-                ReportsTabView(viewModel: _viewModel.wrappedValue)
-            }
-            .tabItem {
-                Image(systemName: AdminTab.reports.iconName)
-                Text(AdminTab.reports.displayName)
-            }
-            .tag(AdminTab.reports)
-            
-            // Users Tab
-            NavigationView {
-                UsersTabView(viewModel: _viewModel.wrappedValue)
-            }
-            .tabItem {
-                Image(systemName: AdminTab.users.iconName)
-                Text(AdminTab.users.displayName)
-            }
-            .tag(AdminTab.users)
-            
-            // Analytics Tab
-            NavigationView {
-                AnalyticsTabView(viewModel: _viewModel.wrappedValue)
-            }
-            .tabItem {
-                Image(systemName: AdminTab.analytics.iconName)
-                Text(AdminTab.analytics.displayName)
-            }
-            .tag(AdminTab.analytics)
+            .accentColor(.red)
         }
-        .accentColor(.red)
-    }
     
     // MARK: - Unauthorized View
     private var unauthorizedView: some View {
@@ -254,121 +239,7 @@ struct AdminDashboardView: View {
     }
 }
 
-// MARK: - Overview Tab
-struct OverviewTabView: View {
-    let viewModel: AdminDashboardViewModel
-    
-    var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 20) {
-                // Error Display
-                if let errorMessage = viewModel.errorMessage {
-                    VStack(spacing: 12) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.system(size: 40))
-                            .foregroundColor(.orange)
-                        
-                        Text("Data Loading Error")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        
-                        Text(errorMessage)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                        
-                        Button("Retry") {
-                            viewModel.refreshData()
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                    .padding()
-                    .background(Color(.systemGroupedBackground))
-                    .cornerRadius(12)
-                    .padding(.horizontal)
-                }
-                
-                // Loading State
-                if viewModel.isLoading {
-                    VStack(spacing: 12) {
-                        ProgressView()
-                            .scaleEffect(1.2)
-                        Text("Loading admin data...")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                }
-                
-                // Statistics Cards
-                if let stats = viewModel.stats {
-                    AdminStatsGridView(stats: stats)
-                        .padding(.horizontal)
-                }
-                
-                // Urgent Reports Section
-                let urgentReports = viewModel.reports.filter { $0.isUrgent }
-                if !urgentReports.isEmpty {
-                    UrgentReportsSection(
-                        reports: urgentReports,
-                        onReportTap: viewModel.selectReport
-                    )
-                    .padding(.horizontal)
-                }
-                
-                // Recent Reports Section - Always show, handles empty state internally
-                let sortedReports = viewModel.reports.sorted { $0.createdAt > $1.createdAt }
-                RecentReportsSection(
-                    reports: Array(sortedReports.prefix(5)),
-                    onReportTap: viewModel.selectReport
-                )
-                .padding(.horizontal)
-                
-                // Quick Analytics Preview
-                if let analytics = viewModel.analytics {
-                    QuickAnalyticsView(analytics: analytics)
-                        .padding(.horizontal)
-                }
-                
-                // Empty State - Show when no data is loaded and not loading
-                if !viewModel.isLoading && 
-                   viewModel.errorMessage == nil && 
-                   viewModel.stats == nil && 
-                   viewModel.analytics == nil && 
-                   viewModel.reports.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "chart.bar.doc.horizontal")
-                            .font(.system(size: 50))
-                            .foregroundColor(.gray)
-                        
-                        Text("Welcome to Admin Dashboard")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        
-                        Text("No data available yet. This is normal for a new platform with no reports or user activity.")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                        
-                        Button("Load Data") {
-                            viewModel.refreshData()
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                    .padding()
-                    .background(Color(.systemGroupedBackground))
-                    .cornerRadius(12)
-                    .padding(.horizontal)
-                }
-            }
-            .padding(.vertical)
-        }
-        .navigationTitle("Overview")
-        .refreshable {
-            viewModel.refreshData()
-        }
-    }
-}
+
 
 // MARK: - Reports Tab
 struct ReportsTabView: View {
@@ -424,10 +295,15 @@ struct UsersTabView: View {
                 .listStyle(PlainListStyle())
             }
         }
-        .navigationTitle("Banned Users")
-        .refreshable {
-            viewModel.loadBannedUsers()
-        }
+                    .navigationTitle("Banned Users")
+            .refreshable {
+                viewModel.loadBannedUsers()
+            }
+            .onAppear {
+                if viewModel.bannedUsers.isEmpty && !viewModel.isLoadingBannedUsers {
+                    viewModel.loadBannedUsers()
+                }
+            }
     }
 }
 
@@ -483,10 +359,15 @@ struct AnalyticsTabView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .navigationTitle("Analytics")
-        .refreshable {
-            viewModel.loadAnalyticsData()
-        }
+                    .navigationTitle("Analytics")
+            .refreshable {
+                viewModel.loadAnalyticsData()
+            }
+            .onAppear {
+                if viewModel.analytics == nil && !viewModel.isLoadingAnalytics {
+                    viewModel.loadAnalyticsData()
+                }
+            }
     }
 }
 

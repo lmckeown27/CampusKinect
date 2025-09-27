@@ -9,7 +9,7 @@ class AdminDashboardViewModel: ObservableObject {
     @Published var analytics: AnalyticsData?
     @Published var bannedUsers: [BannedUser] = []
     @Published var selectedReport: ContentReport?
-    @Published var selectedTab: AdminTab = .overview
+    @Published var selectedTab: AdminTab = .reports
     @Published var isLoading = false
     @Published var isLoadingAction = false
     @Published var isLoadingAnalytics = false

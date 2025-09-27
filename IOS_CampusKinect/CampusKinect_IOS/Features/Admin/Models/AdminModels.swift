@@ -255,14 +255,12 @@ struct BannedUser: Codable, Identifiable {
 
 // MARK: - Admin Navigation
 enum AdminTab: String, CaseIterable {
-    case overview = "overview"
     case reports = "reports"
     case users = "users"
     case analytics = "analytics"
     
     var displayName: String {
         switch self {
-        case .overview: return "Overview"
         case .reports: return "Reports"
         case .users: return "Users"
         case .analytics: return "Analytics"
@@ -271,7 +269,6 @@ enum AdminTab: String, CaseIterable {
     
     var iconName: String {
         switch self {
-        case .overview: return "house"
         case .reports: return "flag"
         case .users: return "person.2"
         case .analytics: return "chart.bar"
