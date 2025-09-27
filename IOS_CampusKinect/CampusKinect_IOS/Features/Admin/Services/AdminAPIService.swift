@@ -72,10 +72,19 @@ class AdminAPIService: ObservableObject {
                         }
                     )
                     .map(\.data)
-                    .decode(type: PaginatedResponse<ContentReport>.self, decoder: JSONDecoder())
+                    .decode(type: APIResponse<PendingReportsResponse>.self, decoder: JSONDecoder())
                     .compactMap { response in
                         print("✅ AdminAPI: Decoded pending reports response, success: \(response.success)")
-                        return response.success ? response : nil
+                        if response.success, let reportsData = response.data {
+                            // Convert to PaginatedResponse format expected by the app
+                            return PaginatedResponse(
+                                success: true,
+                                data: reportsData.data,
+                                pagination: reportsData.pagination,
+                                message: response.message
+                            )
+                        }
+                        return nil
                     }
             }
             .receive(on: DispatchQueue.main)
@@ -284,6 +293,11 @@ private struct BanUserRequest: Codable {
 
 private struct BannedUsersResponse: Codable {
     let users: [BannedUser]
+}
+
+private struct PendingReportsResponse: Codable {
+    let data: [ContentReport]
+    let pagination: PaginationInfo
 }
 
 // MARK: - Admin Authentication Manager Extension
