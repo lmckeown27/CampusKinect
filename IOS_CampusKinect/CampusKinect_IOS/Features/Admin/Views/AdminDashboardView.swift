@@ -42,11 +42,19 @@ struct AdminDashboardView: View {
     }
     
     private var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            Button("Refresh") {
-                _viewModel.wrappedValue.refreshData()
+        Group {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Done") {
+                    dismiss()
+                }
             }
-            .disabled(_viewModel.wrappedValue.isLoading)
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Refresh") {
+                    _viewModel.wrappedValue.refreshData()
+                }
+                .disabled(_viewModel.wrappedValue.isLoading)
+            }
         }
     }
     
@@ -252,6 +260,45 @@ struct OverviewTabView: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 20) {
+                // Error Display
+                if let errorMessage = viewModel.errorMessage {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 40))
+                            .foregroundColor(.orange)
+                        
+                        Text("Data Loading Error")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        Text(errorMessage)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Button("Retry") {
+                            viewModel.refreshData()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    .padding()
+                    .background(Color(.systemGroupedBackground))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                }
+                
+                // Loading State
+                if viewModel.isLoading {
+                    VStack(spacing: 12) {
+                        ProgressView()
+                            .scaleEffect(1.2)
+                        Text("Loading admin data...")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                }
+                
                 // Statistics Cards
                 if let stats = viewModel.stats {
                     AdminStatsGridView(stats: stats)

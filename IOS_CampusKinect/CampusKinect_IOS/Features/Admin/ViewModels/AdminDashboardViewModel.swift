@@ -89,18 +89,22 @@ class AdminDashboardViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
+        print("🔍 AdminDashboard: Loading initial data...")
+        
         apiService.getPendingReports()
             .sink(
                 receiveCompletion: { [weak self] completion in
                     DispatchQueue.main.async {
                         self?.isLoading = false
                         if case .failure(let error) = completion {
+                            print("❌ AdminDashboard: Failed to load reports - \(error)")
                             self?.errorMessage = self?.formatError(error)
                         }
                     }
                 },
                 receiveValue: { [weak self] response in
                     DispatchQueue.main.async {
+                        print("✅ AdminDashboard: Loaded \(response.data.count) reports")
                         self?.reports = response.data
                         self?.refreshStats()
                     }
@@ -122,6 +126,7 @@ class AdminDashboardViewModel: ObservableObject {
     
     func loadAnalyticsData() {
         isLoadingAnalytics = true
+        print("🔍 AdminDashboard: Loading analytics data...")
         
         apiService.getAnalyticsData()
             .sink(
@@ -129,12 +134,14 @@ class AdminDashboardViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         self?.isLoadingAnalytics = false
                         if case .failure(let error) = completion {
+                            print("❌ AdminDashboard: Failed to load analytics - \(error)")
                             self?.errorMessage = self?.formatError(error)
                         }
                     }
                 },
                 receiveValue: { [weak self] analyticsData in
                     DispatchQueue.main.async {
+                        print("✅ AdminDashboard: Analytics data loaded successfully")
                         self?.analytics = analyticsData
                     }
                 }
@@ -144,6 +151,7 @@ class AdminDashboardViewModel: ObservableObject {
     
     func loadBannedUsers() {
         isLoadingBannedUsers = true
+        print("🔍 AdminDashboard: Loading banned users...")
         
         apiService.getBannedUsers()
             .sink(
@@ -151,12 +159,14 @@ class AdminDashboardViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         self?.isLoadingBannedUsers = false
                         if case .failure(let error) = completion {
+                            print("❌ AdminDashboard: Failed to load banned users - \(error)")
                             self?.errorMessage = self?.formatError(error)
                         }
                     }
                 },
                 receiveValue: { [weak self] bannedUsers in
                     DispatchQueue.main.async {
+                        print("✅ AdminDashboard: Loaded \(bannedUsers.count) banned users")
                         self?.bannedUsers = bannedUsers
                     }
                 }
