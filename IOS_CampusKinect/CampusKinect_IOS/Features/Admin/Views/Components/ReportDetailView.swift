@@ -1,8 +1,9 @@
 import SwiftUI
+import Combine
 
 struct ReportDetailView: View {
     let report: ContentReport
-    @ObservedObject var viewModel: AdminDashboardViewModel
+    let viewModel: AdminDashboardViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showingActionSheet = false
     @State private var moderatorNotes = ""
