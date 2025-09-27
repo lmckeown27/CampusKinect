@@ -31,7 +31,7 @@ The following content is strictly prohibited and will result in immediate accoun
 • Sexual or adult content
 • Violence or threats of violence
 • False information or misinformation
-• Content that violates university policies
+• Content that violates community standards
 • Any illegal activities or content
 
 2. USER RESPONSIBILITIES
@@ -42,7 +42,7 @@ By creating an account, you agree to:
 • Respect other users and maintain civil discourse
 • Report inappropriate content immediately
 • Use the platform only for legitimate academic and social purposes
-• Comply with your university's code of conduct
+• Follow community guidelines and standards
 • Take responsibility for all content you post
 
 3. CONTENT MODERATION
@@ -53,7 +53,7 @@ CampusKinect employs both automated and human moderation:
 • Reported content is reviewed within 24 hours
 • Violations result in immediate content removal
 • Repeat offenders face permanent account suspension
-• We cooperate with university administration when necessary
+• We maintain independent moderation standards
 
 4. REPORTING MECHANISM
 
@@ -61,7 +61,6 @@ Users can report inappropriate content through:
 
 • The report button on any post or message
 • Direct contact with moderation team
-• University administration channels
 • Email: campuskinect01@gmail.com (Response: 2-6 pm)
 
 5. USER BLOCKING
@@ -80,13 +79,12 @@ Violations may result in:
 • Content removal
 • Temporary account suspension
 • Permanent account ban
-• Reporting to university administration
 • Cooperation with law enforcement if necessary
 
 7. PRIVACY AND DATA
 
 • Your data is protected according to our Privacy Policy
-• We may share information with university administration for safety
+• We maintain strict data privacy standards
 • Content may be preserved for moderation purposes
 • Account information may be shared with law enforcement if required
 
@@ -99,11 +97,11 @@ CampusKinect is committed to maintaining a safe environment:
 • Rapid response to safety concerns
 • Continuous improvement of safety measures
 
-9. UNIVERSITY COMPLIANCE
+9. PLATFORM COMPLIANCE
 
 This platform operates in compliance with:
 
-• University codes of conduct
+• Community safety standards
 • Federal education privacy laws
 • State and local regulations
 • Apple App Store guidelines
@@ -113,7 +111,7 @@ This platform operates in compliance with:
 For questions, concerns, or reports:
 • Email: campuskinect01@gmail.com
 • Response Time: 2-6 pm
-• Emergency: Contact your university's administration
+• For emergencies: Contact local authorities
 
 11. CHANGES TO TERMS
 
@@ -123,7 +121,7 @@ For questions, concerns, or reports:
 
 12. AGREEMENT
 
-By clicking "Accept," you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and Community Guidelines. You understand that violation of these terms may result in immediate account suspension and potential reporting to university administration.
+By clicking "Accept," you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and Community Guidelines. You understand that violation of these terms may result in immediate account suspension.
 
 You also acknowledge that CampusKinect has a zero-tolerance policy for objectionable content and that the platform actively moderates content to maintain a safe educational environment.
 

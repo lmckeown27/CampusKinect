@@ -66,7 +66,7 @@ struct ReportPostView: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("@\(post.poster.username ?? "unknown")")
+                    Text("@\(post.poster.username)")
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
