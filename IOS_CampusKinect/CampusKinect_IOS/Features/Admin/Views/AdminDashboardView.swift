@@ -258,6 +258,11 @@ struct ReportsTabView: View {
         .refreshable {
             viewModel.refreshData()
         }
+        .onAppear {
+            if viewModel.reports.isEmpty && !viewModel.isLoading {
+                viewModel.loadInitialData()
+            }
+        }
     }
 }
 
