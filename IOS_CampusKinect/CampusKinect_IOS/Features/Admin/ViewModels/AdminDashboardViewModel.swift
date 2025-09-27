@@ -32,9 +32,19 @@ class AdminDashboardViewModel: ObservableObject {
         print("🏗️ AdminDashboardViewModel: Initializing...")
         print("🔍 AdminDashboardViewModel: Initial state - reports: \(reports.count), isLoading: \(isLoading)")
         print("🔍 AdminDashboardViewModel: Default selectedTab: \(selectedTab)")
-        print("🚀 AdminDashboardViewModel: About to call loadInitialData() from init")
-        loadInitialData()
-        print("✅ AdminDashboardViewModel: loadInitialData() called from init")
+        print("🚀 AdminDashboardViewModel: Loading data for first tab: \(selectedTab)")
+        
+        // Load data appropriate for the first tab
+        switch selectedTab {
+        case .analytics:
+            loadAnalyticsData()
+        case .reports:
+            loadInitialData() // This loads reports
+        case .users:
+            loadBannedUsers()
+        }
+        
+        print("✅ AdminDashboardViewModel: First tab data loading initiated")
     }
     
     // MARK: - Helper Methods

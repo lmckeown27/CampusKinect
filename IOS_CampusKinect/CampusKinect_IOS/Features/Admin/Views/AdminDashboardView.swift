@@ -323,7 +323,9 @@ struct UsersTabView: View {
                 viewModel.loadBannedUsers()
             }
             .onAppear {
+                print("🔍 UsersTabView: onAppear - bannedUsers=\(viewModel.bannedUsers.count), isLoadingBannedUsers=\(viewModel.isLoadingBannedUsers)")
                 if viewModel.bannedUsers.isEmpty && !viewModel.isLoadingBannedUsers {
+                    print("🚀 UsersTabView: Loading banned users from onAppear")
                     viewModel.loadBannedUsers()
                 }
             }
@@ -387,7 +389,9 @@ struct AnalyticsTabView: View {
                 viewModel.loadAnalyticsData()
             }
             .onAppear {
+                print("🔍 AnalyticsTabView: onAppear - analytics=\(viewModel.analytics != nil), isLoadingAnalytics=\(viewModel.isLoadingAnalytics)")
                 if viewModel.analytics == nil && !viewModel.isLoadingAnalytics {
+                    print("🚀 AnalyticsTabView: Loading analytics data from onAppear")
                     viewModel.loadAnalyticsData()
                 }
             }
