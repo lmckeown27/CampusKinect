@@ -129,7 +129,7 @@ class AdminDashboardViewModel: ObservableObject {
     private func loadModerationStats() {
         apiService.getModerationStats()
             .sink(
-                receiveCompletion: { [weak self] completion in
+                receiveCompletion: { completion in
                     if case .failure(let error) = completion {
                         print("❌ AdminDashboard: Failed to load stats - \(error)")
                         // Don't show error for stats since it's background data
