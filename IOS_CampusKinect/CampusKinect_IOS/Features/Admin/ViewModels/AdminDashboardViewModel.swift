@@ -225,99 +225,99 @@ class AdminDashboardViewModel: ObservableObject {
                 }
             )
             .store(in: &cancellables)
-    
-    // MARK: - Report Actions
-    func selectReport(_ report: ContentReport) {
-        selectedReport = report
-        showingReportDetail = true
-    }
-    
-    func handleReportModeration(_ report: ContentReport, action: ModerationAction.ActionType, notes: String? = nil) {
-        isLoadingAction = true
-        errorMessage = nil
         
-        let moderationAction = ModerationAction(action: action, moderatorNotes: notes)
+        // MARK: - Report Actions
+        func selectReport(_ report: ContentReport) {
+            selectedReport = report
+            showingReportDetail = true
+        }
         
-        apiService.moderateReport(reportId: report.id, action: moderationAction)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    DispatchQueue.main.async {
-                        self?.isLoadingAction = false
-                        if case .failure(let error) = completion {
-                            self?.errorMessage = self?.formatError(error)
-                        } else {
-                            // Success - remove report from list and refresh stats
-                            self?.removeReport(report)
-                            self?.refreshStats()
-                            self?.showingReportDetail = false
-                            
-                            // Show success feedback
-                            self?.showSuccessMessage(for: action)
+        func handleReportModeration(_ report: ContentReport, action: ModerationAction.ActionType, notes: String? = nil) {
+            isLoadingAction = true
+            errorMessage = nil
+            
+            let moderationAction = ModerationAction(action: action, moderatorNotes: notes)
+            
+            apiService.moderateReport(reportId: report.id, action: moderationAction)
+                .sink(
+                    receiveCompletion: { [weak self] completion in
+                        DispatchQueue.main.async {
+                            self?.isLoadingAction = false
+                            if case .failure(let error) = completion {
+                                self?.errorMessage = self?.formatError(error)
+                            } else {
+                                // Success - remove report from list and refresh stats
+                                self?.removeReport(report)
+                                self?.refreshStats()
+                                self?.showingReportDetail = false
+                                
+                                // Show success feedback
+                                self?.showSuccessMessage(for: action)
+                            }
                         }
-                    }
-                },
-                receiveValue: { _ in }
-            )
-            .store(in: &cancellables)
-    }
-    
-    func banUser(_ userId: String, reason: String) {
-        isLoadingAction = true
+                    },
+                    receiveValue: { _ in }
+                )
+                .store(in: &cancellables)
+        }
         
-        apiService.banUser(userId: userId, reason: reason)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    DispatchQueue.main.async {
-                        self?.isLoadingAction = false
-                        if case .failure(let error) = completion {
-                            self?.errorMessage = self?.formatError(error)
-                        } else {
-                            // Refresh banned users list and stats
-                            self?.loadBannedUsers()
-                            self?.refreshStats()
+        func banUser(_ userId: String, reason: String) {
+            isLoadingAction = true
+            
+            apiService.banUser(userId: userId, reason: reason)
+                .sink(
+                    receiveCompletion: { [weak self] completion in
+                        DispatchQueue.main.async {
+                            self?.isLoadingAction = false
+                            if case .failure(let error) = completion {
+                                self?.errorMessage = self?.formatError(error)
+                            } else {
+                                // Refresh banned users list and stats
+                                self?.loadBannedUsers()
+                                self?.refreshStats()
+                            }
                         }
-                    }
-                },
-                receiveValue: { _ in }
-            )
-            .store(in: &cancellables)
-    }
-    
-    // MARK: - Unban User Actions
-    func requestUnbanUser(_ user: BannedUser) {
-        userToUnban = user
-        showingUnbanConfirmation = true
-    }
-    
-    func confirmUnbanUser() {
-        guard let user = userToUnban else { return }
+                    },
+                    receiveValue: { _ in }
+                )
+                .store(in: &cancellables)
+        }
         
-        isLoadingAction = true
-        showingUnbanConfirmation = false
+        // MARK: - Unban User Actions
+        func requestUnbanUser(_ user: BannedUser) {
+            userToUnban = user
+            showingUnbanConfirmation = true
+        }
         
-        apiService.unbanUser(userId: user.id)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    DispatchQueue.main.async {
-                        self?.isLoadingAction = false
-                        if case .failure(let error) = completion {
-                            self?.errorMessage = self?.formatError(error)
-                        } else {
-                            // Remove user from banned list and refresh stats
-                            self?.bannedUsers.removeAll { $0.id == user.id }
-                            self?.refreshStats()
-                            self?.showSuccessMessage(for: .dismiss) // Reuse dismiss message
+        func confirmUnbanUser() {
+            guard let user = userToUnban else { return }
+            
+            isLoadingAction = true
+            showingUnbanConfirmation = false
+            
+            apiService.unbanUser(userId: user.id)
+                .sink(
+                    receiveCompletion: { [weak self] completion in
+                        DispatchQueue.main.async {
+                            self?.isLoadingAction = false
+                            if case .failure(let error) = completion {
+                                self?.errorMessage = self?.formatError(error)
+                            } else {
+                                // Remove user from banned list and refresh stats
+                                self?.bannedUsers.removeAll { $0.id == user.id }
+                                self?.refreshStats()
+                                self?.showSuccessMessage(for: .dismiss) // Reuse dismiss message
+                            }
+                            self?.userToUnban = nil
                         }
-                        self?.userToUnban = nil
-                    }
-                },
-                receiveValue: { _ in }
-            )
-            .store(in: &cancellables)
-    }
-    
-    func cancelUnban() {
-        userToUnban = nil
+                    },
+                    receiveValue: { _ in }
+                )
+                .store(in: &cancellables)
+        }
+        
+        func cancelUnban() {
+                    userToUnban = nil
         showingUnbanConfirmation = false
     }
     
@@ -326,4 +326,4 @@ class AdminDashboardViewModel: ObservableObject {
         // Check authorization using stored user data
         return checkAdminAuthorization()
     }
-} 
+}
