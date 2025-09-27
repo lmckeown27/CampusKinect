@@ -9,7 +9,7 @@ class AdminDashboardViewModel: ObservableObject {
     @Published var analytics: AnalyticsData?
     @Published var bannedUsers: [BannedUser] = []
     @Published var selectedReport: ContentReport?
-    @Published var selectedTab: AdminTab = .reports {
+    @Published var selectedTab: AdminTab = .analytics { // TEMPORARILY CHANGED FOR TESTING
         didSet {
             print("🔍 AdminDashboard: selectedTab changed to: \(selectedTab)")
         }
@@ -31,7 +31,10 @@ class AdminDashboardViewModel: ObservableObject {
     init() {
         print("🏗️ AdminDashboardViewModel: Initializing...")
         print("🔍 AdminDashboardViewModel: Initial state - reports: \(reports.count), isLoading: \(isLoading)")
+        print("🔍 AdminDashboardViewModel: Default selectedTab: \(selectedTab)")
+        print("🚀 AdminDashboardViewModel: About to call loadInitialData() from init")
         loadInitialData()
+        print("✅ AdminDashboardViewModel: loadInitialData() called from init")
     }
     
     // MARK: - Helper Methods
@@ -93,6 +96,7 @@ class AdminDashboardViewModel: ObservableObject {
     // MARK: - Data Loading Methods
     func loadInitialData() {
         print("🚀 AdminDashboard: loadInitialData() called")
+        print("🔍 AdminDashboard: Current isLoading state: \(isLoading)")
         print("🔍 AdminDashboard: Setting isLoading = true")
         isLoading = true
         errorMessage = nil
