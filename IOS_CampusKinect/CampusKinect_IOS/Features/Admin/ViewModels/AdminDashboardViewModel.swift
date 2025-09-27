@@ -32,16 +32,26 @@ class AdminDashboardViewModel: ObservableObject {
     private func formatError(_ error: Error) -> String {
         if let apiError = error as? APIError {
             switch apiError {
-            case .networkError:
-                return "Network connection error. Please check your internet connection."
-            case .serverError(let message):
-                return "Server error: \(message)"
+            case .networkError(let message):
+                return "Network connection error: \(message)"
+            case .serverError:
+                return "Server error. Please try again later."
             case .unauthorized:
                 return "You are not authorized to perform this action."
             case .notFound:
                 return "The requested resource was not found."
-            case .validationError(let message):
-                return "Validation error: \(message)"
+            case .badRequest(let message):
+                return "Bad request: \(message)"
+            case .invalidURL:
+                return "Invalid URL error."
+            case .invalidResponse:
+                return "Invalid response from server."
+            case .decodingError(let message):
+                return "Data parsing error: \(message)"
+            case .keychainError:
+                return "Authentication error. Please log in again."
+            case .unknown(let code):
+                return "Unknown error (Code: \(code))"
             }
         }
         return error.localizedDescription
@@ -145,9 +155,9 @@ class AdminDashboardViewModel: ObservableObject {
                         }
                     }
                 },
-                receiveValue: { [weak self] response in
+                receiveValue: { [weak self] bannedUsers in
                     DispatchQueue.main.async {
-                        self?.bannedUsers = response.data
+                        self?.bannedUsers = bannedUsers
                     }
                 }
             )
@@ -257,13 +267,4 @@ class AdminDashboardViewModel: ObservableObject {
     func testAccess() -> String {
         return "Access test successful"
     }
-}
-
-// MARK: - Supporting Types
-enum APIError: Error {
-    case networkError
-    case serverError(String)
-    case unauthorized
-    case notFound
-    case validationError(String)
 }
