@@ -10,18 +10,31 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @StateObject private var termsManager = TermsOfServiceManager.shared
     
     var body: some View {
-        Group {
+        ZStack {
             if authManager.isLoading {
                 LoadingView()
             } else if authManager.isAuthenticated {
                 MainTabView()
                     .onAppear {
+                        // Check if terms popup should be shown
+                        if let user = authManager.currentUser {
+                            termsManager.checkAndShowTermsIfNeeded(for: String(user.id))
+                        }
+                        
                         // Ensure device token is registered for authenticated users
                         Task {
                             let granted = await PushNotificationManager.shared.requestPermission()
                             print("📱 Authenticated User: Push notification permission \(granted ? "granted" : "denied")")
+                        }
+                    }
+                    .sheet(isPresented: $termsManager.shouldShowTerms) {
+                        TermsOfServiceView(isPresented: $termsManager.shouldShowTerms) { shouldRememberChoice in
+                            if let user = authManager.currentUser {
+                                termsManager.acceptTerms(for: String(user.id), shouldRememberChoice: shouldRememberChoice)
+                            }
                         }
                     }
             } else {
