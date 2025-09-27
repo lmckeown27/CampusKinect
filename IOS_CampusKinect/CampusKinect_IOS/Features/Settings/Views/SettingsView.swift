@@ -19,21 +19,32 @@ struct SettingsView: View {
     @State private var showingNotificationSettings = false
     @State private var showingBlockedUsers = false
     @State private var showingAdminDashboard = false
+    @State private var shouldShowTermsResetButton = true
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    
-    // Check if user has disabled Terms popup
-    private var shouldShowTermsResetButton: Bool {
-        guard let user = authManager.currentUser else { return false }
-        let status = TermsOfServiceManager.shared.getTermsStatus(for: String(user.id))
-        // Show reset button only if user chose to see terms every time (shouldRemember = false)
-        // OR if they haven't accepted terms yet
-        return !status.hasAccepted || !status.shouldRemember
-    }
     
     // Computed property to determine if we're on iPad
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    
+    // Update Terms reset button visibility based on user's choice
+    private func updateTermsResetButtonVisibility() {
+        guard let user = authManager.currentUser else { 
+            shouldShowTermsResetButton = false
+            return 
+        }
+        
+        let status = TermsOfServiceManager.shared.getTermsStatus(for: String(user.id))
+        
+        // Show reset button only if:
+        // 1. User hasn't accepted terms yet, OR
+        // 2. User chose "Show every time" (shouldRemember = false)
+        // Hide if user chose "Don't show again" (shouldRemember = true)
+        shouldShowTermsResetButton = !status.hasAccepted || !status.shouldRemember
+        
+        print("📋 Terms status - hasAccepted: \(status.hasAccepted), shouldRemember: \(status.shouldRemember)")
+        print("📋 Reset button visible: \(shouldShowTermsResetButton)")
     }
     
     var body: some View {
@@ -189,6 +200,9 @@ struct SettingsView: View {
                 Task {
                     await authManager.refreshCurrentUser()
                 }
+                
+                // Update Terms reset button visibility
+                updateTermsResetButtonVisibility()
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
