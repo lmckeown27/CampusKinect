@@ -61,7 +61,7 @@ struct PlatformOverviewView: View {
                 AnalyticsCard(
                     title: "Total Messages",
                     value: "\(analytics.totalMessages)",
-                    subtitle: String(format: "%.1f avg/day", analytics.averageMessagesPerDay),
+                    subtitle: String(format: "%d avg/day", analytics.messagesPerDay),
                     icon: "message",
                     color: .purple
                 )
@@ -142,7 +142,7 @@ struct UniversityRowView: View {
                 Text(university.name)
                     .font(.headline)
                 
-                Text("\(university.userCount) users • \(university.postCount) posts")
+                Text("\(university.userCount) users")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -327,11 +327,11 @@ struct AnalyticsCard: View {
                     activeUsers: 450,
                     newUsersToday: 12,
                     postsToday: 35,
-                    averageMessagesPerDay: 125.5,
+                    messagesPerDay: 125,
                     topUniversities: [
-                        AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150, postCount: 450),
-                        AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120, postCount: 380),
-                        AnalyticsData.UniversityStats(name: "Stanford", userCount: 100, postCount: 320)
+                        AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150),
+                        AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120),
+                        AnalyticsData.UniversityStats(name: "Stanford", userCount: 100)
                     ],
                     contentTrends: [],
                     reportsByReason: [
@@ -345,9 +345,9 @@ struct AnalyticsCard: View {
             
             UniversityStatsView(
                 universities: [
-                    AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150, postCount: 450),
-                    AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120, postCount: 380),
-                    AnalyticsData.UniversityStats(name: "Stanford", userCount: 100, postCount: 320)
+                    AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150),
+                    AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120),
+                    AnalyticsData.UniversityStats(name: "Stanford", userCount: 100)
                 ]
             )
         }

@@ -178,7 +178,7 @@ struct AnalyticsData: Codable {
     let activeUsers: Int
     let newUsersToday: Int
     let postsToday: Int
-    let averageMessagesPerDay: Double
+    let messagesPerDay: Int
     let topUniversities: [UniversityStats]
     let contentTrends: [ContentTrend]
     let reportsByReason: [ReasonStats]
@@ -188,10 +188,9 @@ struct AnalyticsData: Codable {
         let id = UUID()
         let name: String
         let userCount: Int
-        let postCount: Int
         
         private enum CodingKeys: String, CodingKey {
-            case name, userCount, postCount
+            case name, userCount
         }
     }
     
@@ -219,11 +218,10 @@ struct AnalyticsData: Codable {
     struct GrowthData: Codable, Identifiable {
         let id = UUID()
         let date: String
-        let newUsers: Int
-        let totalUsers: Int
+        let users: Int
         
         private enum CodingKeys: String, CodingKey {
-            case date, newUsers, totalUsers
+            case date, users
         }
     }
 }
