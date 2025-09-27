@@ -92,7 +92,13 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
         messages: [...state.messages, newMessage],
         conversations: state.conversations.map(conv => 
           conv.id === conversationId 
-            ? { ...conv, lastMessage: newMessage, lastMessageAt: newMessage.createdAt }
+            ? { 
+                ...conv, 
+                lastMessage: newMessage.content, // POST-CENTRIC: lastMessage is now a string
+                lastMessageAt: newMessage.createdAt,
+                lastMessageSenderId: newMessage.senderId,
+                lastMessageTime: newMessage.createdAt
+              }
             : conv
         ),
       }));
@@ -103,8 +109,10 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
         set({
           currentConversation: {
             ...currentConversation,
-            lastMessage: newMessage,
+            lastMessage: newMessage.content, // POST-CENTRIC: lastMessage is now a string
             lastMessageAt: newMessage.createdAt,
+            lastMessageSenderId: newMessage.senderId,
+            lastMessageTime: newMessage.createdAt,
           },
         });
       }
@@ -114,21 +122,20 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
     }
   },
 
-  createConversation: async (otherUserId: string, initialMessage?: string) => {
+  startConversation: async (request: StartConversationRequest) => {
     set({ isLoading: true, error: null });
 
     try {
-      const newConversation = await apiService.createConversation(otherUserId, initialMessage);
+      const response = await apiService.startConversation(request);
       
-      set((state) => ({
-        conversations: [newConversation, ...state.conversations],
-        currentConversation: newConversation,
-        messages: [],
-        isLoading: false,
-      }));
+      // POST-CENTRIC: The response structure is different, so we'll refresh conversations
+      // instead of trying to manually add the new conversation
+      await get().fetchConversations();
+      
+      set({ isLoading: false });
     } catch (error: any) {
       set({ 
-        error: error.message || 'Failed to create conversation', 
+        error: error.message || 'Failed to start conversation', 
         isLoading: false 
       });
       throw error;
