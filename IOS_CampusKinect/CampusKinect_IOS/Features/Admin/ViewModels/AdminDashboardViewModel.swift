@@ -25,6 +25,8 @@ class AdminDashboardViewModel: ObservableObject {
     
     // MARK: - Initialization
     init() {
+        print("🏗️ AdminDashboardViewModel: Initializing...")
+        print("🔍 AdminDashboardViewModel: Initial state - reports: \(reports.count), isLoading: \(isLoading)")
         loadInitialData()
     }
     
@@ -86,6 +88,8 @@ class AdminDashboardViewModel: ObservableObject {
     
     // MARK: - Data Loading Methods
     func loadInitialData() {
+        print("🚀 AdminDashboard: loadInitialData() called")
+        print("🔍 AdminDashboard: Setting isLoading = true")
         isLoading = true
         errorMessage = nil
         

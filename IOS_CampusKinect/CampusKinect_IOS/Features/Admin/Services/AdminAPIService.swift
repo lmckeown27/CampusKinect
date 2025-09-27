@@ -22,11 +22,14 @@ class AdminAPIService: ObservableObject {
     private func addAuthToken(to request: URLRequest) -> AnyPublisher<URLRequest, Error> {
         return Future { promise in
             Task {
+                print("🔐 AdminAPI: Getting access token from keychain...")
                 if let token = await KeychainManager.shared.getAccessToken() {
+                    print("✅ AdminAPI: Got access token (length: \(token.count))")
                     var authenticatedRequest = request
                     authenticatedRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
                     promise(.success(authenticatedRequest))
                 } else {
+                    print("❌ AdminAPI: No access token found in keychain")
                     promise(.failure(URLError(.userAuthenticationRequired)))
                 }
             }
@@ -52,6 +55,8 @@ class AdminAPIService: ObservableObject {
         return addAuthToken(to: request)
             .flatMap { authenticatedRequest in
                 print("🔍 AdminAPI: Making authenticated request for pending reports")
+                print("🔍 AdminAPI: Request URL: \(authenticatedRequest.url?.absoluteString ?? "nil")")
+                print("🔍 AdminAPI: Request headers: \(authenticatedRequest.allHTTPHeaderFields ?? [:])")
                 return self.session.dataTaskPublisher(for: authenticatedRequest)
                     .handleEvents(
                         receiveOutput: { data, response in

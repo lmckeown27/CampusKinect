@@ -259,8 +259,14 @@ struct ReportsTabView: View {
             viewModel.refreshData()
         }
         .onAppear {
+            print("🔍 ReportsTabView: onAppear triggered")
+            print("🔍 ReportsTabView: reports.isEmpty = \(viewModel.reports.isEmpty)")
+            print("🔍 ReportsTabView: isLoading = \(viewModel.isLoading)")
             if viewModel.reports.isEmpty && !viewModel.isLoading {
+                print("🚀 ReportsTabView: Calling loadInitialData()")
                 viewModel.loadInitialData()
+            } else {
+                print("⏭️ ReportsTabView: Skipping loadInitialData - already have data or loading")
             }
         }
     }
