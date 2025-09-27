@@ -5,6 +5,11 @@ import SwiftUI
 class AdminDashboardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var reports: [ContentReport] = []
+    
+    // MARK: - Test Method
+    func testMethod() {
+        print("Test method called successfully")
+    }
     @Published var stats: ModerationStats?
     @Published var analytics: AnalyticsData?
     @Published var bannedUsers: [BannedUser] = []

@@ -293,11 +293,14 @@ struct ReportDetailView: View {
         // Test if we can call ANY method on the viewModel
         print("Testing method access...")
         
-        // Try calling selectReport first (we know this exists)
-        viewModel.selectReport(report)
+        // Try calling a simple test method first
+        viewModel.testMethod()
         
-        // Then try our target method
-        viewModel.handleReportModeration(report, action: action, notes: notes)
+        // Try accessing a property
+        let reportsCount = viewModel.reports.count
+        print("Reports count: \(reportsCount)")
+        
+        // Skip the problematic methods for now
         
         // Close the detail view
         dismiss()
