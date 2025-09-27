@@ -289,11 +289,20 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Try with explicit parameter labels
+        // Test if we can access ANY members of AdminDashboardViewModel
         Task { @MainActor in
             let vm = _viewModel.wrappedValue
             
-            // Call with new method name to test if naming was the issue
+            // Test accessing published properties first
+            print("Testing property access:")
+            print("Reports count: \(vm.reports.count)")
+            print("Is loading: \(vm.isLoading)")
+            
+            // Test accessing simple methods
+            print("Testing method access:")
+            vm.selectReport(report)
+            
+            // Finally try our method
             vm.handleReportModeration(report, action: action, notes: notes)
         }
     }
