@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Message, Conversation, MessageRequest } from '../types';
+import { Message, Conversation, MessageRequest, StartConversationRequest } from '../types';
 import apiService from '../services/api';
 
 interface MessagesState {
@@ -17,7 +17,7 @@ interface MessagesActions {
   fetchConversations: () => Promise<void>;
   fetchMessages: (conversationId: string, page?: number) => Promise<void>;
   sendMessage: (conversationId: string, content: string) => Promise<void>;
-  createConversation: (otherUserId: string, initialMessage?: string) => Promise<void>;
+  startConversation: (request: StartConversationRequest) => Promise<void>;
   deleteConversation: (conversationId: string) => Promise<void>;
   createMessageRequest: (toUserId: string, content: string, postId?: string) => Promise<void>;
   fetchMessageRequests: () => Promise<void>;

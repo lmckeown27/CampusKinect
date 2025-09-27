@@ -288,33 +288,29 @@ const MessagesTab: React.FC = () => {
   };
 
   const handleConversationSelect = (conversation: Conversation) => {
-    console.log('🖱️ CONVERSATION CLICKED');
+    console.log('🖱️ POST-CENTRIC CONVERSATION CLICKED');
     console.log('Active tab:', activeTab);
     console.log('Conversation:', conversation);
     console.log('Current user:', currentUser);
-    console.log('Participants:', conversation.participants);
+    console.log('Post context:', conversation.post);
+    console.log('Other user:', conversation.otherUser);
     
-    // For both Primary and Unread tabs, navigate to chat page
+    // For both Primary and Unread tabs, navigate to POST-CENTRIC chat page
     if (activeTab === 'primary' || activeTab === 'unread') {
-      console.log('💬 CONVERSATION CLICKED - NAVIGATING TO CHAT');
+      console.log('💬 POST-CENTRIC CONVERSATION CLICKED - NAVIGATING TO CHAT');
       
-      // Find other user, or use the same user for self-conversations
-      let targetUser = conversation.participants?.find(p => p.id !== currentUser?.id);
-      
-      // If no other user found (self-conversation), use the current user
-      if (!targetUser && conversation.participants && conversation.participants.length > 0) {
-        targetUser = conversation.participants[0];
-        console.log('🔄 Self-conversation detected, using same user');
-      }
+      // Use the other user from the post-centric structure
+      const targetUser = conversation.otherUser;
       
       console.log('Target user for navigation:', targetUser);
       
       if (targetUser) {
-        const chatUrl = `/chat/${targetUser.id}`;
-        console.log('✅ Navigating to:', chatUrl);
+        // POST-CENTRIC: Include post context in navigation
+        const chatUrl = `/chat/${targetUser.id}?postId=${conversation.post.id}&postTitle=${encodeURIComponent(conversation.post.title)}`;
+        console.log('✅ Navigating to POST-CENTRIC chat:', chatUrl);
         router.push(chatUrl);
       } else {
-        console.error('❌ No user found in conversation participants');
+        console.error('❌ No other user found in conversation');
         console.error('Conversation structure:', JSON.stringify(conversation, null, 2));
       }
     } else {
@@ -340,33 +336,37 @@ const MessagesTab: React.FC = () => {
   };
 
   const filteredConversations = conversations.filter(conv => {
-    const matchesSearch = conv.participants?.some(user => 
-      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // POST-CENTRIC SEARCH: Search post title, description, and user name
+    const matchesSearch = searchQuery === '' || 
+      conv.post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.otherUser.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.otherUser.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.otherUser.lastName.toLowerCase().includes(searchQuery.toLowerCase());
     
     if (activeTab === 'unread') {
       // Unread: Show conversations where the last message was sent TO the current user (incoming)
-      const isIncomingMessage = conv.lastMessage && conv.lastMessage.senderId !== currentUser?.id.toString();
+      const isIncomingMessage = conv.lastMessage && conv.lastMessageSenderId !== currentUser?.id.toString();
       const result = matchesSearch && isIncomingMessage;
-      console.log(`🔍 UNREAD FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessage?.senderId}, currentUserId: ${currentUser?.id}, isIncoming: ${isIncomingMessage}, result: ${result}`);
+      console.log(`🔍 UNREAD FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessageSenderId}, currentUserId: ${currentUser?.id}, isIncoming: ${isIncomingMessage}, result: ${result}`);
       return result;
     } else if (activeTab === 'primary') {
       // Primary: Show conversations where the last message was sent BY the current user (outgoing)
-      const isOutgoingMessage = conv.lastMessage && conv.lastMessage.senderId === currentUser?.id.toString();
+      const isOutgoingMessage = conv.lastMessage && conv.lastMessageSenderId === currentUser?.id.toString();
       const result = matchesSearch && isOutgoingMessage;
-      console.log(`🔍 PRIMARY FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessage?.senderId}, currentUserId: ${currentUser?.id}, isOutgoing: ${isOutgoingMessage}, result: ${result}`);
+      console.log(`🔍 PRIMARY FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessageSenderId}, currentUserId: ${currentUser?.id}, isOutgoing: ${isOutgoingMessage}, result: ${result}`);
       return result;
     }
     return matchesSearch;
   });
 
-  // Debug: Log all conversations and their unread counts
-  console.log('📊 ALL CONVERSATIONS:', conversations.map(c => ({
+  // Debug: Log all POST-CENTRIC conversations and their unread counts
+  console.log('📊 ALL POST-CENTRIC CONVERSATIONS:', conversations.map(c => ({
     id: c.id,
     unreadCount: c.unreadCount,
     lastMessage: c.lastMessage,
-    participants: c.participants?.map(p => `${p.firstName} ${p.lastName}`)
+    postTitle: c.post.title,
+    otherUser: c.otherUser.displayName
   })));
   
   console.log('📊 FILTERED CONVERSATIONS FOR', activeTab, 'TAB:', filteredConversations.length);
@@ -709,32 +709,24 @@ const MessagesTab: React.FC = () => {
               <div className="p-4 border-b border-[#708d81]" style={{ backgroundColor: '#737373' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    {/* Profile Picture */}
+                    {/* POST ICON (PRIMARY) */}
                     <div className="w-10 h-10 flex-shrink-0">
-                      {currentConversation.participants && currentConversation.participants[0]?.profilePicture ? (
-                        <img
-                          src={currentConversation.participants[0].profilePicture}
-                          alt={`${currentConversation.participants[0].firstName} ${currentConversation.participants[0].lastName}`}
-                          className="w-10 h-10 rounded-full object-cover"
-                          style={{ border: '2px solid #708d81' }}
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                          <span className="text-white text-xs font-bold">
-                            {currentConversation.participants && currentConversation.participants[0] 
-                              ? `${currentConversation.participants[0].firstName?.charAt(0) || '?'}${currentConversation.participants[0].lastName?.charAt(0) || '?'}`
-                              : <User size={20} className="text-white" />
-                            }
-                          </span>
-                        </div>
-                      )}
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
+                        {currentConversation.post.type === 'goods' && <Package size={16} className="text-blue-600" />}
+                        {currentConversation.post.type === 'services' && <Wrench size={16} className="text-green-600" />}
+                        {currentConversation.post.type === 'housing' && <Home size={16} className="text-orange-600" />}
+                        {currentConversation.post.type === 'events' && <Calendar size={16} className="text-purple-600" />}
+                        {!['goods', 'services', 'housing', 'events'].includes(currentConversation.post.type) && <FileText size={16} className="text-gray-600" />}
+                      </div>
                     </div>
                     <div>
+                      {/* POST TITLE (PRIMARY) */}
                       <h3 className="font-medium text-[#708d81]">
-                        {currentConversation.participants && currentConversation.participants[0] ? `${currentConversation.participants[0].firstName} ${currentConversation.participants[0].lastName}` : 'Unknown User'}
+                        {currentConversation.post.title}
                       </h3>
+                      {/* USER INFO (SECONDARY) */}
                       <p className="text-sm text-[#708d81] opacity-70">
-                        Online
+                        with {currentConversation.otherUser.displayName}
                       </p>
                     </div>
                   </div>
