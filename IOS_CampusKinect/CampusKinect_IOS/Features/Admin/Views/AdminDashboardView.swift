@@ -337,12 +337,16 @@ struct AnalyticsTabView: View {
     let viewModel: AdminDashboardViewModel
     
     var body: some View {
-        Group {
+        print("🔍 AnalyticsTabView: body render - isLoadingAnalytics=\(viewModel.isLoadingAnalytics), analytics=\(viewModel.analytics != nil)")
+        
+        return Group {
             if viewModel.isLoadingAnalytics {
-                ProgressView("Loading analytics...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                print("🔄 AnalyticsTabView: Showing loading spinner")
+                return AnyView(ProgressView("Loading analytics...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity))
             } else if let analytics = viewModel.analytics {
-                ScrollView {
+                print("✅ AnalyticsTabView: Showing analytics content")
+                return AnyView(ScrollView {
                     LazyVStack(spacing: 20) {
                         // Platform Overview
                         PlatformOverviewView(analytics: analytics)
@@ -361,9 +365,10 @@ struct AnalyticsTabView: View {
                             .padding(.horizontal)
                     }
                     .padding(.vertical)
-                }
+                })
             } else {
-                VStack(spacing: 16) {
+                print("❌ AnalyticsTabView: Showing no data state")
+                return AnyView(VStack(spacing: 16) {
                     Image(systemName: "chart.bar.xaxis")
                         .font(.system(size: 50))
                         .foregroundColor(.gray)
@@ -381,20 +386,20 @@ struct AnalyticsTabView: View {
                     }
                     .buttonStyle(.borderedProminent)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity))
             }
         }
-                    .navigationTitle("Analytics")
-            .refreshable {
+        .navigationTitle("Analytics")
+        .refreshable {
+            viewModel.loadAnalyticsData()
+        }
+        .onAppear {
+            print("🔍 AnalyticsTabView: onAppear - analytics=\(viewModel.analytics != nil), isLoadingAnalytics=\(viewModel.isLoadingAnalytics)")
+            if viewModel.analytics == nil && !viewModel.isLoadingAnalytics {
+                print("🚀 AnalyticsTabView: Loading analytics data from onAppear")
                 viewModel.loadAnalyticsData()
             }
-            .onAppear {
-                print("🔍 AnalyticsTabView: onAppear - analytics=\(viewModel.analytics != nil), isLoadingAnalytics=\(viewModel.isLoadingAnalytics)")
-                if viewModel.analytics == nil && !viewModel.isLoadingAnalytics {
-                    print("🚀 AnalyticsTabView: Loading analytics data from onAppear")
-                    viewModel.loadAnalyticsData()
-                }
-            }
+        }
     }
 }
 
