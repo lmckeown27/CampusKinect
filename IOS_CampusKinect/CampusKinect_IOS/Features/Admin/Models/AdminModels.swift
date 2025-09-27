@@ -139,20 +139,31 @@ struct ModerationAction: Codable {
     let moderatorNotes: String?
     
     enum ActionType: String, Codable {
-        case approve = "approve"
         case dismiss = "dismiss"
+        case removePost = "remove_post"
+        case banUser = "ban_user"
         
         var displayName: String {
             switch self {
-            case .approve: return "Remove Content & Ban User"
             case .dismiss: return "Dismiss Report"
+            case .removePost: return "Remove Post"
+            case .banUser: return "Ban User"
+            }
+        }
+        
+        var description: String {
+            switch self {
+            case .dismiss: return "Mark report as reviewed with no action"
+            case .removePost: return "Remove the reported post from platform"
+            case .banUser: return "Ban user indefinitely from platform"
             }
         }
         
         var color: String {
             switch self {
-            case .approve: return "red"
-            case .dismiss: return "green"
+            case .dismiss: return "gray"
+            case .removePost: return "orange"
+            case .banUser: return "red"
             }
         }
     }

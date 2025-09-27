@@ -87,10 +87,12 @@ class AdminDashboardViewModel: ObservableObject {
     
     private func showSuccessMessage(for action: ModerationAction.ActionType) {
         switch action {
-        case .approve:
-            errorMessage = "Content removed and user banned successfully"
         case .dismiss:
             errorMessage = "Report dismissed successfully"
+        case .removePost:
+            errorMessage = "Post removed successfully"
+        case .banUser:
+            errorMessage = "User banned successfully"
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -291,7 +293,7 @@ class AdminDashboardViewModel: ObservableObject {
                         } else {
                             // Success - refresh data
                             self?.refreshData()
-                            self?.showSuccessMessage(for: .approve)
+                            self?.showSuccessMessage(for: .banUser)
                         }
                     }
                 },

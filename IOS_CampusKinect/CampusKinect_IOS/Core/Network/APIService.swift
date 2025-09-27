@@ -305,6 +305,17 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    // MARK: - Report Post
+    func submitPostReport(_ report: CreateReportRequest) async throws {
+        let body = try encoder.encode(report)
+        let _: EmptyResponse = try await performRequest(
+            endpoint: "/reports/posts",
+            method: .POST,
+            body: body,
+            requiresAuth: true
+        )
+    }
+    
     func uploadImages(_ images: [Data]) async throws -> [String] {
         guard let url = URL(string: "\(APIConstants.fullBaseURL)/upload/images") else {
             throw APIError.invalidURL

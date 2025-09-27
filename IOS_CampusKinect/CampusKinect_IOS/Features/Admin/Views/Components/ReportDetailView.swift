@@ -50,13 +50,18 @@ struct ReportDetailView: View {
                 isPresented: $showingActionSheet,
                 titleVisibility: .visible
             ) {
-                Button("Remove Content & Ban User", role: .destructive) {
-                    selectedAction = .approve
+                Button("Dismiss Report") {
+                    selectedAction = .dismiss
                     handleModerationAction()
                 }
                 
-                Button("Dismiss Report") {
-                    selectedAction = .dismiss
+                Button("Remove Post", role: .destructive) {
+                    selectedAction = .removePost
+                    handleModerationAction()
+                }
+                
+                Button("Ban User", role: .destructive) {
+                    selectedAction = .banUser
                     handleModerationAction()
                 }
                 
@@ -235,24 +240,6 @@ struct ReportDetailView: View {
     // MARK: - Action Buttons
     private var actionButtons: some View {
         VStack(spacing: 12) {
-            // Remove Content & Ban User
-            Button(action: {
-                selectedAction = .approve
-                showingActionSheet = true
-            }) {
-                HStack {
-                    Image(systemName: "trash.fill")
-                    Text("Remove Content & Ban User")
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.red)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            .disabled(viewModel.isLoadingAction)
-            
             // Dismiss Report
             Button(action: {
                 selectedAction = .dismiss
@@ -265,7 +252,43 @@ struct ReportDetailView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.green)
+                .background(Color.gray)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .disabled(viewModel.isLoadingAction)
+            
+            // Remove Post
+            Button(action: {
+                selectedAction = .removePost
+                showingActionSheet = true
+            }) {
+                HStack {
+                    Image(systemName: "doc.text.fill")
+                    Text("Remove Post")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.orange)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .disabled(viewModel.isLoadingAction)
+            
+            // Ban User
+            Button(action: {
+                selectedAction = .banUser
+                showingActionSheet = true
+            }) {
+                HStack {
+                    Image(systemName: "person.fill.xmark")
+                    Text("Ban User")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.red)
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }

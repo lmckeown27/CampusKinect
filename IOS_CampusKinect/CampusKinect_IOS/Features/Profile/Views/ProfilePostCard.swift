@@ -145,7 +145,8 @@ struct ProfilePostCard: View {
             // Actions (message only for profile posts)
             PostActions(
                 post: post,
-                onMessage: { /* Handle message */ }
+                onMessage: { /* Handle message */ },
+                onReport: { /* Handle report */ }
             )
         }
         .padding(16)

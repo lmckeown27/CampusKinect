@@ -12,6 +12,7 @@ struct PostCardView: View {
     @State private var showingImageViewer = false
     @State private var selectedImageIndex = 0
     @State private var showingMessageConfirmation = false
+    @State private var showingReportView = false
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
@@ -48,7 +49,10 @@ struct PostCardView: View {
             // Actions
             PostActions(
                 post: post,
-                onMessage: handleMessage
+                onMessage: handleMessage,
+                onReport: {
+                    showingReportView = true
+                }
             )
         }
         .padding()
@@ -71,6 +75,10 @@ struct PostCardView: View {
             }
         } message: {
             Text("Do you want to start a conversation with \(post.poster.displayName)?")
+        }
+        .sheet(isPresented: $showingReportView) {
+            ReportPostView(post: post, isPresented: $showingReportView)
+                .environmentObject(authManager)
         }
     }
     
@@ -300,9 +308,21 @@ struct PostLocation: View {
 struct PostActions: View {
     let post: Post
     let onMessage: () -> Void
+    let onReport: () -> Void
     
     var body: some View {
         HStack(spacing: 20) {
+            // Report Button (bottom left)
+            ActionButton(
+                systemImage: "flag",
+                count: nil,
+                isActive: false,
+                activeColor: .red,
+                action: onReport
+            )
+            
+            Spacer()
+            
             // Direct Message
             ActionButton(
                 systemImage: "paperplane",
