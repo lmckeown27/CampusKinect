@@ -147,12 +147,13 @@ struct AdminDashboardView: View {
                 Divider()
                 
                 // Tab Selection
-                List(AdminTab.allCases, id: \.self, selection: Binding(
-                    get: { _viewModel.wrappedValue.selectedTab },
-                    set: { _viewModel.wrappedValue.selectedTab = $0 }
-                )) { tab in
-                    Label(tab.displayName, systemImage: tab.iconName)
-                        .tag(tab)
+                List(AdminTab.allCases, id: \.self) { tab in
+                    Button(action: {
+                        _viewModel.wrappedValue.selectedTab = tab
+                    }) {
+                        Label(tab.displayName, systemImage: tab.iconName)
+                            .foregroundColor(_viewModel.wrappedValue.selectedTab == tab ? .primary : .secondary)
+                    }
                 }
                 .listStyle(SidebarListStyle())
             }
@@ -177,10 +178,7 @@ struct AdminDashboardView: View {
     
     // MARK: - iPhone Layout
     private var iPhoneLayout: some View {
-        TabView(selection: Binding(
-            get: { _viewModel.wrappedValue.selectedTab },
-            set: { _viewModel.wrappedValue.selectedTab = $0 }
-        )) {
+        TabView {
             // Overview Tab
             NavigationView {
                 OverviewTabView(viewModel: _viewModel.wrappedValue)
