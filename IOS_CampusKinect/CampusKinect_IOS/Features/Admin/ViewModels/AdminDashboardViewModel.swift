@@ -90,15 +90,21 @@ class AdminDashboardViewModel: ObservableObject {
         errorMessage = nil
         
         print("🔍 AdminDashboard: Loading initial data...")
+        print("🔍 AdminDashboard: Current user authorization check...")
         
-        apiService.getPendingReports()
+        // Load both reports and stats
+        let reportsPublisher = apiService.getPendingReports()
+        let statsPublisher = apiService.getModerationStats()
+        
+        // Load reports
+        reportsPublisher
             .sink(
                 receiveCompletion: { [weak self] completion in
                     DispatchQueue.main.async {
-                        self?.isLoading = false
                         if case .failure(let error) = completion {
                             print("❌ AdminDashboard: Failed to load reports - \(error)")
                             self?.errorMessage = self?.formatError(error)
+                            self?.isLoading = false
                         }
                     }
                 },
@@ -106,7 +112,36 @@ class AdminDashboardViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         print("✅ AdminDashboard: Loaded \(response.data.count) reports")
                         self?.reports = response.data
-                        self?.refreshStats()
+                        
+                        // If this is the first successful load, also load analytics
+                        if self?.analytics == nil {
+                            self?.loadAnalyticsData()
+                        }
+                    }
+                }
+            )
+            .store(in: &cancellables)
+        
+        // Load stats
+        statsPublisher
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    DispatchQueue.main.async {
+                        self?.isLoading = false
+                        if case .failure(let error) = completion {
+                            print("❌ AdminDashboard: Failed to load stats - \(error)")
+                            // Don't overwrite reports error if it exists
+                            if self?.errorMessage == nil {
+                                self?.errorMessage = self?.formatError(error)
+                            }
+                        }
+                    }
+                },
+                receiveValue: { [weak self] stats in
+                    DispatchQueue.main.async {
+                        print("✅ AdminDashboard: Loaded moderation stats")
+                        self?.stats = stats
+                        self?.isLoading = false
                     }
                 }
             )
@@ -135,13 +170,20 @@ class AdminDashboardViewModel: ObservableObject {
                         self?.isLoadingAnalytics = false
                         if case .failure(let error) = completion {
                             print("❌ AdminDashboard: Failed to load analytics - \(error)")
-                            self?.errorMessage = self?.formatError(error)
+                            // For new platforms with no data, this is expected
+                            if error.localizedDescription.contains("404") || error.localizedDescription.contains("not found") {
+                                print("ℹ️ AdminDashboard: Analytics endpoint not found - this is normal for new platforms")
+                                // Don't set error message for 404s on analytics
+                            } else {
+                                self?.errorMessage = self?.formatError(error)
+                            }
                         }
                     }
                 },
                 receiveValue: { [weak self] analyticsData in
                     DispatchQueue.main.async {
                         print("✅ AdminDashboard: Analytics data loaded successfully")
+                        print("📊 Analytics: \(analyticsData.totalPosts) posts, \(analyticsData.totalMessages) messages, \(analyticsData.activeUsers) active users")
                         self?.analytics = analyticsData
                     }
                 }

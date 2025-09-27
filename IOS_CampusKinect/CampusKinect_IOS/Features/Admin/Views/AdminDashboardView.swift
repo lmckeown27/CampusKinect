@@ -49,12 +49,13 @@ struct AdminDashboardView: View {
                 }
             }
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Refresh") {
-                    _viewModel.wrappedValue.refreshData()
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Refresh") {
+                        print("🔄 AdminDashboard: Force refresh requested")
+                        _viewModel.wrappedValue.refreshData()
+                    }
+                    .disabled(_viewModel.wrappedValue.isLoading)
                 }
-                .disabled(_viewModel.wrappedValue.isLoading)
-            }
         }
     }
     
@@ -315,7 +316,7 @@ struct OverviewTabView: View {
                     .padding(.horizontal)
                 }
                 
-                // Recent Reports Section
+                // Recent Reports Section - Always show, handles empty state internally
                 let sortedReports = viewModel.reports.sorted { $0.createdAt > $1.createdAt }
                 RecentReportsSection(
                     reports: Array(sortedReports.prefix(5)),
@@ -327,6 +328,37 @@ struct OverviewTabView: View {
                 if let analytics = viewModel.analytics {
                     QuickAnalyticsView(analytics: analytics)
                         .padding(.horizontal)
+                }
+                
+                // Empty State - Show when no data is loaded and not loading
+                if !viewModel.isLoading && 
+                   viewModel.errorMessage == nil && 
+                   viewModel.stats == nil && 
+                   viewModel.analytics == nil && 
+                   viewModel.reports.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "chart.bar.doc.horizontal")
+                            .font(.system(size: 50))
+                            .foregroundColor(.gray)
+                        
+                        Text("Welcome to Admin Dashboard")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        Text("No data available yet. This is normal for a new platform with no reports or user activity.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Button("Load Data") {
+                            viewModel.refreshData()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    .padding()
+                    .background(Color(.systemGroupedBackground))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
                 }
             }
             .padding(.vertical)

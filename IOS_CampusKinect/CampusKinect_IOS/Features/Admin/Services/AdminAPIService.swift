@@ -2,9 +2,14 @@ import Foundation
 import Combine
 
 class AdminAPIService: ObservableObject {
-    private let baseURL = "https://api.campuskinect.net/api/v1/admin" // Update with your actual API URL
+    private let baseURL = "\(APIConstants.fullBaseURL)/admin" // Use same base URL as main API service
     private let session = URLSession.shared
     private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        print("🔍 AdminAPI: Initialized with base URL: \(baseURL)")
+        print("🔍 AdminAPI: Cache policy set to reloadIgnoringLocalAndRemoteCacheData for all requests")
+    }
     
     // MARK: - Authentication
     private func getAuthHeaders() -> [String: String] {
@@ -32,21 +37,45 @@ class AdminAPIService: ObservableObject {
     // MARK: - Get Pending Reports
     func getPendingReports(page: Int = 1, limit: Int = 20) -> AnyPublisher<PaginatedResponse<ContentReport>, Error> {
         guard let url = URL(string: "\(baseURL)/reports/pending?page=\(page)&limit=\(limit)") else {
+            print("❌ AdminAPI: Invalid URL for pending reports")
             return Fail(error: URLError(.badURL))
                 .eraseToAnyPublisher()
         }
         
+        print("🔍 AdminAPI: Requesting pending reports from: \(url)")
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData // Disable caching for admin data
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         return addAuthToken(to: request)
             .flatMap { authenticatedRequest in
+                print("🔍 AdminAPI: Making authenticated request for pending reports")
                 return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .handleEvents(
+                        receiveOutput: { data, response in
+                            if let httpResponse = response as? HTTPURLResponse {
+                                print("🔍 AdminAPI: Pending reports response status: \(httpResponse.statusCode)")
+                                if httpResponse.statusCode == 304 {
+                                    print("⚠️ AdminAPI: Received 304 Not Modified - cache issue detected!")
+                                }
+                                if let dataString = String(data: data, encoding: .utf8) {
+                                    print("🔍 AdminAPI: Pending reports response data: \(dataString)")
+                                }
+                            }
+                        },
+                        receiveCompletion: { completion in
+                            if case .failure(let error) = completion {
+                                print("❌ AdminAPI: Pending reports request failed: \(error)")
+                            }
+                        }
+                    )
                     .map(\.data)
                     .decode(type: PaginatedResponse<ContentReport>.self, decoder: JSONDecoder())
                     .compactMap { response in
-                        response.success ? response : nil
+                        print("✅ AdminAPI: Decoded pending reports response, success: \(response.success)")
+                        return response.success ? response : nil
                     }
             }
             .receive(on: DispatchQueue.main)
@@ -62,6 +91,7 @@ class AdminAPIService: ObservableObject {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData // Disable caching for admin data
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         return addAuthToken(to: request)
@@ -144,21 +174,45 @@ class AdminAPIService: ObservableObject {
     // MARK: - Get Analytics Data
     func getAnalyticsData() -> AnyPublisher<AnalyticsData, Error> {
         guard let url = URL(string: "\(baseURL)/analytics") else {
+            print("❌ AdminAPI: Invalid URL for analytics")
             return Fail(error: URLError(.badURL))
                 .eraseToAnyPublisher()
         }
         
+        print("🔍 AdminAPI: Requesting analytics from: \(url)")
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData // Disable caching for admin data
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         return addAuthToken(to: request)
             .flatMap { authenticatedRequest in
+                print("🔍 AdminAPI: Making authenticated request for analytics")
                 return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .handleEvents(
+                        receiveOutput: { data, response in
+                            if let httpResponse = response as? HTTPURLResponse {
+                                print("🔍 AdminAPI: Analytics response status: \(httpResponse.statusCode)")
+                                if httpResponse.statusCode == 304 {
+                                    print("⚠️ AdminAPI: Received 304 Not Modified - cache issue detected!")
+                                }
+                                if let dataString = String(data: data, encoding: .utf8) {
+                                    print("🔍 AdminAPI: Analytics response data: \(dataString)")
+                                }
+                            }
+                        },
+                        receiveCompletion: { completion in
+                            if case .failure(let error) = completion {
+                                print("❌ AdminAPI: Analytics request failed: \(error)")
+                            }
+                        }
+                    )
                     .map(\.data)
                     .decode(type: APIResponse<AnalyticsData>.self, decoder: JSONDecoder())
                     .compactMap { response in
-                        response.success ? response.data : nil
+                        print("✅ AdminAPI: Decoded analytics response, success: \(response.success)")
+                        return response.success ? response.data : nil
                     }
             }
             .receive(on: DispatchQueue.main)
@@ -174,6 +228,7 @@ class AdminAPIService: ObservableObject {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData // Disable caching for admin data
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         return addAuthToken(to: request)
