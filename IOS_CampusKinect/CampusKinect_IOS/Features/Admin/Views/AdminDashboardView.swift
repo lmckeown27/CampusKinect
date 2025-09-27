@@ -118,18 +118,20 @@ struct AdminDashboardView: View {
         }
     }
     
-    // MARK: - Admin Content
-    private var adminContent: some View {
-        Group {
-            if horizontalSizeClass == .regular {
-                // iPad Layout - Split View with Sidebar
-                iPadLayout
-            } else {
-                // iPhone Layout - Tab View
-                iPhoneLayout
+            // MARK: - Admin Content
+        private var adminContent: some View {
+            Group {
+                if horizontalSizeClass == .regular {
+                    // iPad Layout - Split View with Sidebar
+                    print("🔍 AdminDashboard: Using iPad layout")
+                    return AnyView(iPadLayout)
+                } else {
+                    // iPhone Layout - Tab View
+                    print("🔍 AdminDashboard: Using iPhone layout")
+                    return AnyView(iPhoneLayout)
+                }
             }
         }
-    }
     
     // MARK: - iPad Layout
     private var iPadLayout: some View {
@@ -190,6 +192,13 @@ struct AdminDashboardView: View {
                     Text(AdminTab.reports.displayName)
                 }
                 .tag(AdminTab.reports)
+                .onAppear {
+                    print("🔍 AdminDashboard: Reports NavigationView appeared")
+                    if _viewModel.wrappedValue.reports.isEmpty && !_viewModel.wrappedValue.isLoading {
+                        print("🚀 AdminDashboard: Loading reports from NavigationView onAppear")
+                        _viewModel.wrappedValue.loadInitialData()
+                    }
+                }
                 
                 // Users Tab
                 NavigationView {

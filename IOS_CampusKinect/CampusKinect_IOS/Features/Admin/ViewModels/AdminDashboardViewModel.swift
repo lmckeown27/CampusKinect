@@ -9,7 +9,11 @@ class AdminDashboardViewModel: ObservableObject {
     @Published var analytics: AnalyticsData?
     @Published var bannedUsers: [BannedUser] = []
     @Published var selectedReport: ContentReport?
-    @Published var selectedTab: AdminTab = .reports
+    @Published var selectedTab: AdminTab = .reports {
+        didSet {
+            print("🔍 AdminDashboard: selectedTab changed to: \(selectedTab)")
+        }
+    }
     @Published var isLoading = false
     @Published var isLoadingAction = false
     @Published var isLoadingAnalytics = false
