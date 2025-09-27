@@ -19,7 +19,6 @@ struct SettingsView: View {
     @State private var showingNotificationSettings = false
     @State private var showingBlockedUsers = false
     @State private var showingAdminDashboard = false
-    @State private var shouldShowTermsResetButton = true
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -28,24 +27,7 @@ struct SettingsView: View {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
     
-    // Update Terms reset button visibility based on user's choice
-    private func updateTermsResetButtonVisibility() {
-        guard let user = authManager.currentUser else { 
-            shouldShowTermsResetButton = false
-            return 
-        }
-        
-        let status = TermsOfServiceManager.shared.getTermsStatus(for: String(user.id))
-        
-        // Show reset button only if:
-        // 1. User hasn't accepted terms yet, OR
-        // 2. User chose "Show every time" (shouldRemember = false)
-        // Hide if user chose "Don't show again" (shouldRemember = true)
-        shouldShowTermsResetButton = !status.hasAccepted || !status.shouldRemember
-        
-        print("📋 Terms status - hasAccepted: \(status.hasAccepted), shouldRemember: \(status.shouldRemember)")
-        print("📋 Reset button visible: \(shouldShowTermsResetButton)")
-    }
+
     
     var body: some View {
         NavigationStack {
@@ -124,16 +106,7 @@ struct SettingsView: View {
                         showingTerms = true
                     }
                     
-                    // Only show reset button if user hasn't disabled Terms popup
-                    if shouldShowTermsResetButton {
-                        SettingsRow(
-                            icon: "arrow.clockwise.circle",
-                            title: "Reset Terms Acceptance",
-                            subtitle: "Show Terms popup again (for Apple review)"
-                        ) {
-                            TermsOfServiceManager.shared.resetAllTermsAcceptance()
-                        }
-                    }
+                    // Reset Terms button removed - hidden for all users
                     
                     SettingsRow(
                         icon: "info.circle",
@@ -200,9 +173,6 @@ struct SettingsView: View {
                 Task {
                     await authManager.refreshCurrentUser()
                 }
-                
-                // Update Terms reset button visibility
-                updateTermsResetButtonVisibility()
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

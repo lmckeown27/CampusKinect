@@ -101,10 +101,8 @@ struct TermsOfServiceView: View {
                         
                         // Accept Button
                         Button("Accept") {
-                            // Add small delay to prevent state conflicts
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                showingRememberChoicePopup = true
-                            }
+                            // Immediate response - no delays
+                            showingRememberChoicePopup = true
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -126,18 +124,14 @@ struct TermsOfServiceView: View {
         .alert("Terms of Service Accepted", isPresented: $showingRememberChoicePopup) {
             Button("Show every time") {
                 // User wants to see terms popup every login
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    onAccept(false) // shouldRememberChoice = false
-                    isPresented = false
-                }
+                onAccept(false) // shouldRememberChoice = false
+                isPresented = false
             }
             
             Button("Don't show again") {
                 // User wants to disable future popups
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    onAccept(true) // shouldRememberChoice = true
-                    isPresented = false
-                }
+                onAccept(true) // shouldRememberChoice = true
+                isPresented = false
             }
         } message: {
             Text("Would you like to disable the Terms of Service popup for future logins?\n\nNote: You can always review the terms in Settings.")
