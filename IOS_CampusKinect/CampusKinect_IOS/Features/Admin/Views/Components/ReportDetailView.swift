@@ -289,22 +289,20 @@ struct ReportDetailView: View {
         
         let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
         
-        // Test if we can access ANY members of AdminDashboardViewModel
-        Task { @MainActor in
-            let vm = _viewModel.wrappedValue
-            
-            // Test accessing published properties first
-            print("Testing property access:")
-            print("Reports count: \(vm.reports.count)")
-            print("Is loading: \(vm.isLoading)")
-            
-            // Test accessing simple methods
-            print("Testing method access:")
-            vm.selectReport(report)
-            
-            // Finally try our method
-            vm.handleReportModeration(report, action: action, notes: notes)
-        }
+        // Test without @MainActor - direct access
+        let vm = _viewModel.wrappedValue
+        
+        // Test accessing published properties first
+        print("Testing property access:")
+        print("Reports count: \(vm.reports.count)")
+        print("Is loading: \(vm.isLoading)")
+        
+        // Test accessing simple methods
+        print("Testing method access:")
+        vm.selectReport(report)
+        
+        // Finally try our method
+        vm.handleReportModeration(report, action: action, notes: notes)
     }
     
     private func formatFullDate(_ dateString: String) -> String {

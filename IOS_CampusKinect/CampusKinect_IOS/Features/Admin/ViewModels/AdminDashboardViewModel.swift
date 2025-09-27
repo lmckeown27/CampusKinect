@@ -2,7 +2,6 @@ import Foundation
 import Combine
 import SwiftUI
 
-@MainActor
 class AdminDashboardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var reports: [ContentReport] = []
