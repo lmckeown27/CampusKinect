@@ -66,19 +66,21 @@ router.get('/conversations/:id', [
 });
 
 // @route   POST /api/v1/messages/conversations
-// @desc    Start a new conversation
+// @desc    Start a new POST-CENTRIC conversation
 // @access  Private
 router.post('/conversations', [
   auth,
   requireVerification,
   body('otherUserId').isInt().withMessage('Other user ID must be an integer'),
+  body('postId').isInt().withMessage('Post ID is required for all conversations'),
   body('initialMessage').optional().isString().withMessage('Initial message must be a string'),
-  body('postId').optional().isInt().withMessage('Post ID must be an integer'),
   validate
 ], async (req, res) => {
   try {
-    const { otherUserId, initialMessage, postId } = req.body;
+    const { otherUserId, postId, initialMessage } = req.body;
     const userId = req.user.id;
+
+    console.log('🚀 Starting POST-CENTRIC conversation:', { userId, otherUserId, postId });
 
     const result = await messageService.startConversation(userId, otherUserId, postId);
     

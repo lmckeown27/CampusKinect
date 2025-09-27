@@ -19,25 +19,44 @@ class MessageService {
 
       const offset = (page - 1) * limit;
 
-      // Get conversations with last message and other user info
+      // Get conversations with POST-CENTRIC emphasis and user info
       const result = await dbQuery(`
         SELECT 
           c.id as conversation_id,
           c.post_id,
           c.created_at as conversation_created,
           c.last_message_at,
+          
+          -- POST CONTEXT (PRIMARY EMPHASIS)
+          COALESCE(c.post_title, p.title) as post_title,
+          COALESCE(c.post_description, p.description) as post_description,
+          COALESCE(c.post_type, p.post_type) as post_type,
+          COALESCE(c.post_author_id, p.user_id) as post_author_id,
+          p.created_at as post_created_at,
+          p.location as post_location,
+          p.expires_at as post_expires_at,
+          p.is_fulfilled as post_is_fulfilled,
+          
+          -- POST AUTHOR INFO
+          pa.username as post_author_username,
+          pa.first_name as post_author_first_name,
+          pa.last_name as post_author_last_name,
+          pa.display_name as post_author_display_name,
+          pa.profile_picture as post_author_profile_picture,
+          
+          -- OTHER USER INFO (SECONDARY)
           CASE 
             WHEN c.user1_id = $1 THEN c.user2_id
             ELSE c.user1_id
           END as other_user_id,
-          u.username,
-          u.first_name,
-          u.last_name,
-          u.display_name,
-          u.profile_picture,
+          u.username as other_user_username,
+          u.first_name as other_user_first_name,
+          u.last_name as other_user_last_name,
+          u.display_name as other_user_display_name,
+          u.profile_picture as other_user_profile_picture,
           un.name as university_name,
-          p.title as post_title,
-          p.post_type as post_type,
+          
+          -- MESSAGE INFO
           (
             SELECT m.content 
             FROM messages m 
@@ -75,6 +94,7 @@ class MessageService {
         )
         JOIN universities un ON u.university_id = un.id
         LEFT JOIN posts p ON c.post_id = p.id
+        LEFT JOIN users pa ON COALESCE(c.post_author_id, p.user_id) = pa.id
         WHERE c.user1_id = $1 OR c.user2_id = $1
         ORDER BY c.last_message_at DESC NULLS LAST
         LIMIT $2 OFFSET $3
@@ -283,23 +303,47 @@ class MessageService {
   }
 
   /**
-   * Start a new conversation
+   * Start a new POST-CENTRIC conversation
    */
-  async startConversation(userId, otherUserId, postId = null) {
+  async startConversation(userId, otherUserId, postId) {
     try {
+      if (!postId) {
+        throw new Error('Post ID is required for all conversations');
+      }
+
       if (otherUserId === userId) {
         throw new Error('Cannot start conversation with yourself');
       }
 
-      // Check if conversation already exists
+      // Get post information first (POST-CENTRIC approach)
+      const postResult = await dbQuery(`
+        SELECT 
+          p.id, p.title, p.description, p.post_type, p.user_id as author_id,
+          p.created_at, p.location, p.expires_at, p.is_fulfilled,
+          u.username as author_username, u.first_name as author_first_name,
+          u.last_name as author_last_name, u.display_name as author_display_name,
+          u.profile_picture as author_profile_picture
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        WHERE p.id = $1 AND p.is_active = true
+      `, [postId]);
+
+      if (postResult.rows.length === 0) {
+        throw new Error('Post not found or inactive');
+      }
+
+      const post = postResult.rows[0];
+
+      // Check if conversation already exists for this specific post
       const existingConv = await dbQuery(`
         SELECT id FROM conversations 
-        WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)
-        ${postId ? 'AND post_id = $3' : ''}
-      `, postId ? [userId, otherUserId, postId] : [userId, otherUserId]);
+        WHERE post_id = $1 
+        AND ((user1_id = $2 AND user2_id = $3) OR (user1_id = $3 AND user2_id = $2))
+      `, [postId, userId, otherUserId]);
 
       if (existingConv.rows.length > 0) {
-        throw new Error('Conversation already exists');
+        // Return existing conversation with full context
+        return await this.getConversationById(existingConv.rows[0].id, userId);
       }
 
       // Check if other user exists and is active
@@ -313,12 +357,18 @@ class MessageService {
         throw new Error('User not found');
       }
 
-      // Create conversation
+      // Create POST-CENTRIC conversation with cached post data
       const result = await dbQuery(`
-        INSERT INTO conversations (user1_id, user2_id, post_id)
-        VALUES ($1, $2, $3)
+        INSERT INTO conversations (
+          user1_id, user2_id, post_id, 
+          post_title, post_description, post_type, post_author_id
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, created_at
-      `, [userId, otherUserId, postId]);
+      `, [
+        userId, otherUserId, postId,
+        post.title, post.description, post.post_type, post.author_id
+      ]);
 
       const conversation = result.rows[0];
 
@@ -328,11 +378,31 @@ class MessageService {
 
       return {
         success: true,
-        message: 'Conversation started successfully',
+        message: 'Post conversation started successfully',
         data: {
           conversation: {
             id: conversation.id,
             createdAt: conversation.created_at,
+            // POST CONTEXT (PRIMARY)
+            post: {
+              id: post.id,
+              title: post.title,
+              description: post.description,
+              type: post.post_type,
+              location: post.location,
+              expiresAt: post.expires_at,
+              isFulfilled: post.is_fulfilled,
+              createdAt: post.created_at,
+              author: {
+                id: post.author_id,
+                username: post.author_username,
+                firstName: post.author_first_name,
+                lastName: post.author_last_name,
+                displayName: post.author_display_name,
+                profilePicture: post.author_profile_picture
+              }
+            },
+            // OTHER USER (SECONDARY)
             otherUser: {
               id: otherUser.rows[0].id,
               username: otherUser.rows[0].username,
@@ -346,7 +416,108 @@ class MessageService {
       };
 
     } catch (error) {
-      console.error('Start conversation error:', error);
+      console.error('Start post conversation error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get conversation by ID with full post context
+   */
+  async getConversationById(conversationId, userId) {
+    try {
+      const result = await dbQuery(`
+        SELECT 
+          c.id as conversation_id,
+          c.post_id,
+          c.created_at as conversation_created,
+          
+          -- POST CONTEXT (PRIMARY)
+          COALESCE(c.post_title, p.title) as post_title,
+          COALESCE(c.post_description, p.description) as post_description,
+          COALESCE(c.post_type, p.post_type) as post_type,
+          COALESCE(c.post_author_id, p.user_id) as post_author_id,
+          p.created_at as post_created_at,
+          p.location as post_location,
+          p.expires_at as post_expires_at,
+          p.is_fulfilled as post_is_fulfilled,
+          
+          -- POST AUTHOR INFO
+          pa.username as post_author_username,
+          pa.first_name as post_author_first_name,
+          pa.last_name as post_author_last_name,
+          pa.display_name as post_author_display_name,
+          pa.profile_picture as post_author_profile_picture,
+          
+          -- OTHER USER INFO
+          CASE 
+            WHEN c.user1_id = $2 THEN c.user2_id
+            ELSE c.user1_id
+          END as other_user_id,
+          u.username as other_user_username,
+          u.first_name as other_user_first_name,
+          u.last_name as other_user_last_name,
+          u.display_name as other_user_display_name,
+          u.profile_picture as other_user_profile_picture
+        FROM conversations c
+        LEFT JOIN posts p ON c.post_id = p.id
+        LEFT JOIN users pa ON COALESCE(c.post_author_id, p.user_id) = pa.id
+        JOIN users u ON (
+          CASE 
+            WHEN c.user1_id = $2 THEN c.user2_id
+            ELSE c.user1_id
+          END = u.id
+        )
+        WHERE c.id = $1 AND (c.user1_id = $2 OR c.user2_id = $2)
+      `, [conversationId, userId]);
+
+      if (result.rows.length === 0) {
+        throw new Error('Conversation not found or access denied');
+      }
+
+      const conv = result.rows[0];
+
+      return {
+        success: true,
+        message: 'Conversation found',
+        data: {
+          conversation: {
+            id: conv.conversation_id,
+            createdAt: conv.conversation_created,
+            // POST CONTEXT (PRIMARY)
+            post: {
+              id: conv.post_id,
+              title: conv.post_title,
+              description: conv.post_description,
+              type: conv.post_type,
+              location: conv.post_location,
+              expiresAt: conv.post_expires_at,
+              isFulfilled: conv.post_is_fulfilled,
+              createdAt: conv.post_created_at,
+              author: {
+                id: conv.post_author_id,
+                username: conv.post_author_username,
+                firstName: conv.post_author_first_name,
+                lastName: conv.post_author_last_name,
+                displayName: conv.post_author_display_name,
+                profilePicture: conv.post_author_profile_picture
+              }
+            },
+            // OTHER USER (SECONDARY)
+            otherUser: {
+              id: conv.other_user_id,
+              username: conv.other_user_username,
+              firstName: conv.other_user_first_name,
+              lastName: conv.other_user_last_name,
+              displayName: conv.other_user_display_name,
+              profilePicture: conv.other_user_profile_picture
+            }
+          }
+        }
+      };
+
+    } catch (error) {
+      console.error('Get conversation by ID error:', error);
       throw error;
     }
   }
