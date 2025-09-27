@@ -68,13 +68,13 @@ struct PostCardView: View {
                 selectedIndex: selectedImageIndex
             )
         }
-        .alert("Start Conversation", isPresented: $showingMessageConfirmation) {
+        .alert("Message About Post", isPresented: $showingMessageConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Yes, Message") {
                 confirmCreateConversation()
             }
         } message: {
-            Text("Do you want to start a conversation with \(post.poster.displayName)?")
+            Text("Do you want to message \(post.poster.displayName) about their post '\(post.title)'?")
         }
         .sheet(isPresented: $showingReportView) {
             ReportPostView(post: post, isPresented: $showingReportView)
@@ -86,38 +86,44 @@ struct PostCardView: View {
     
     private func handleMessage() {
         guard let currentUser = authManager.currentUser else {
-            print("❌ No current user - cannot message")
+            print("❌ No current user - cannot message about post")
             return
         }
         
-        // Don't allow messaging yourself - use poster.id for reliable comparison
+        // Don't allow messaging yourself about your own post
         guard currentUser.id != post.poster.id else {
-            print("❌ Cannot message yourself")
+            print("❌ Cannot message yourself about your own post")
             return
         }
         
-        print("📱 PostCardView: handleMessage called (post tap) for user: \(post.poster.displayName) (ID: \(post.poster.id))")
+        print("📱 PostCardView: handleMessage called for POST: '\(post.title)' (ID: \(post.id)) by user: \(post.poster.displayName)")
         
         // Show confirmation dialog
         showingMessageConfirmation = true
     }
     
     private func confirmCreateConversation() {
-        print("📱 PostCardView: User confirmed - creating conversation with \(post.poster.displayName)")
+        print("📱 PostCardView: User confirmed - creating POST-CENTRIC conversation about '\(post.title)' with \(post.poster.displayName)")
         
         Task {
             do {
-                // Create the conversation immediately using the API service
-                _ = try await apiService.createConversation(
-                    receiverId: post.poster.id,
-                    initialMessage: "" // Backend ignores this parameter anyway
+                // Create POST-CENTRIC conversation with post context
+                let request = StartConversationRequest(
+                    otherUserId: post.poster.id,
+                    postId: post.id, // POST-CENTRIC: Always include post context
+                    initialMessage: nil
                 )
                 
-                print("✅ Conversation created successfully with \(post.poster.displayName)")
+                let response = try await apiService.startConversation(request)
                 
-                // Store the conversation info for navigation
+                print("✅ Post conversation created successfully: \(response.data.conversation.id)")
+                print("📋 Post context: '\(response.data.conversation.post.title)'")
+                
+                // Store the POST-CENTRIC conversation info for navigation
                 UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
                 UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
+                UserDefaults.standard.set(post.id, forKey: "pendingChatPostId")
+                UserDefaults.standard.set(post.title, forKey: "pendingChatPostTitle")
                 
                 // Navigate to chat with the post author
                 await MainActor.run {

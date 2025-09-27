@@ -69,20 +69,17 @@ class MessagesViewModel: ObservableObject {
         if let index = conversations.firstIndex(where: { $0.id == conversationId }) {
             let updatedConversation = conversations[index]
             
-            // Create new last message
-            let newLastMessage = Conversation.LastMessage(content: lastMessage, senderId: senderId)
-            
-            // Update conversation with new message info
+            // Update conversation with new message info (POST-CENTRIC structure)
             let updatedConversationData = Conversation(
                 id: updatedConversation.id,
-                postId: updatedConversation.postId,
-                postTitle: updatedConversation.postTitle,
-                postType: updatedConversation.postType,
+                createdAt: updatedConversation.createdAt,
+                lastMessageAt: Date(),
+                post: updatedConversation.post, // Keep post context
                 otherUser: updatedConversation.otherUser,
-                lastMessage: newLastMessage,
+                lastMessage: lastMessage, // Now a simple string
+                lastMessageSenderId: senderId,
                 lastMessageTime: Date(),
-                unreadCount: updatedConversation.unreadCount,
-                createdAt: updatedConversation.createdAt
+                unreadCount: updatedConversation.unreadCount + 1 // Increment unread count
             )
             
             // Remove from current position and add to top

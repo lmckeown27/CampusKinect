@@ -108,17 +108,22 @@ class ChatViewModel: ObservableObject {
                     ]
                 )
             } else {
-                // Create new conversation with initial message
+                // TODO: POST-CENTRIC MESSAGING - This flow needs to be updated
+                // All conversations must now be created with post context
+                print("❌ Cannot create conversation without post context - use PostCardView instead")
+                self.error = .unknown(400)
+                return
+                
+                // LEGACY CODE - DISABLED FOR POST-CENTRIC MESSAGING
+                /*
                 let response = try await apiService.createConversation(
                     receiverId: otherUser.id,
                     initialMessage: messageContent
                 )
                 
-                // Convert the minimal conversation to a full conversation object
                 self.conversation = response.data.conversation.toConversation()
                 startPolling()
                 
-                // Notify MessagesViewModel about the new conversation and message
                 if let newConversation = self.conversation {
                     NotificationCenter.default.post(
                         name: .messageSent,
@@ -130,6 +135,7 @@ class ChatViewModel: ObservableObject {
                         ]
                     )
                 }
+                */
             }
             
             // Don't immediately reload - let polling handle it

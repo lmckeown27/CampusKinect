@@ -316,6 +316,17 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    // MARK: - POST-CENTRIC Messaging
+    func startConversation(_ request: StartConversationRequest) async throws -> StartConversationResponse {
+        let body = try encoder.encode(request)
+        return try await performRequest(
+            endpoint: "/messages/conversations",
+            method: .POST,
+            body: body,
+            requiresAuth: true
+        )
+    }
+    
     func uploadImages(_ images: [Data]) async throws -> [String] {
         guard let url = URL(string: "\(APIConstants.fullBaseURL)/upload/images") else {
             throw APIError.invalidURL
@@ -462,20 +473,7 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
-    func createConversation(receiverId: Int, initialMessage: String) async throws -> CreateConversationResponse {
-        let request = CreateConversationRequest(
-            otherUserId: receiverId,
-            initialMessage: initialMessage
-        )
-        let body = try encoder.encode(request)
-        
-        return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.messages)/conversations",
-            method: .POST,
-            body: body,
-            requiresAuth: true
-        )
-    }
+
     
     func deleteConversation(conversationId: Int) async throws {
         let _: EmptyResponse = try await performRequest(

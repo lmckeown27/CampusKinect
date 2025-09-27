@@ -140,10 +140,10 @@ struct MessagesView: View {
                 )
             } else {
                 List {
-                    ForEach(filteredConversations) { conversation in
+                    ForEach(filteredConversations, id: \.id) { conversation in
                         ConversationRow(conversation: conversation) {
-                            print("📱 ConversationRow tapped for user: \(conversation.otherUser.displayName)")
-                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
+                            print("📱 ConversationRow tapped for POST: '\(conversation.post.title)' with user: \(conversation.otherUser.displayName)")
+                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: nil, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
                             shouldNavigateToChat = true
                             print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), shouldNavigateToChat=\(shouldNavigateToChat)")
                         }
@@ -180,7 +180,7 @@ struct MessagesView: View {
         // Filter by search text first
         let searchFiltered = searchText.isEmpty ? allConversations : allConversations.filter { conversation in
             conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
-            conversation.lastMessage?.content.localizedCaseInsensitiveContains(searchText) ?? false
+            conversation.lastMessage?.localizedCaseInsensitiveContains(searchText) ?? false
         }
         
         // Then filter by incoming/sent based on activeTab
@@ -247,7 +247,7 @@ struct ConversationRow: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
 
-                    Text(conversation.lastMessage?.content ?? "No messages yet")
+                    Text(conversation.lastMessage ?? "No messages yet")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
