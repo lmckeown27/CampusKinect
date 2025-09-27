@@ -67,9 +67,9 @@ struct ContentView: View {
                 OfflineBannerView()
             }
         }
-        .onChange(of: authManager.isAuthenticated) { isAuth in
+        .onChange(of: authManager.isAuthenticated) { oldValue, newValue in
             // Reset terms check when authentication state changes
-            if !isAuth {
+            if !newValue {
                 isTermsCheckComplete = false
             }
         }
