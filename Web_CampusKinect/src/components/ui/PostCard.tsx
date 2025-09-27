@@ -82,8 +82,11 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleMessage = () => {
-    // Navigate to messages or open message modal
-    console.log("Message user:", post.userId);
+    // POST-CENTRIC MESSAGING: Navigate with post context
+    console.log("Message about POST:", post.title, "with user:", post.userId);
+    
+    // Navigate to post-centric chat
+    router.push(`/chat/${post.userId}?postId=${post.id}&postTitle=${encodeURIComponent(post.title)}`);
   };
 
   const handleShare = () => {

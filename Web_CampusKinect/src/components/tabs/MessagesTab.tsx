@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Send, User, MoreHorizontal, Plus, X, Trash2 } from 'lucide-react';
+import { Send, User, MoreHorizontal, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -27,7 +27,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   index
 }) => {
   const handleDelete = async () => {
-    if (confirm(`Are you sure you want to delete this conversation with ${conversation.participants?.[0]?.firstName} ${conversation.participants?.[0]?.lastName}?`)) {
+    if (confirm(`Are you sure you want to delete this conversation about "${conversation.post.title}" with ${conversation.otherUser.displayName}?`)) {
       await onDelete(conversation.id.toString());
     }
   };
@@ -67,30 +67,21 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 flex-1">
-            {/* Profile Picture */}
+            {/* POST ICON (PRIMARY) */}
             <div className="w-12 h-12 flex-shrink-0">
-              {conversation.participants && conversation.participants[0]?.profilePicture ? (
-                <img
-                  src={conversation.participants[0].profilePicture}
-                  alt={`${conversation.participants[0].firstName} ${conversation.participants[0].lastName}`}
-                  className="w-12 h-12 rounded-full object-cover"
-                  style={{ border: '2px solid #708d81' }}
-                />
-              ) : (
-                <div className="w-12 h-12 bg-[#5a7268] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                  <span className="text-white text-sm font-bold">
-                    {conversation.participants && conversation.participants[0] 
-                      ? `${conversation.participants[0].firstName?.charAt(0) || '?'}${conversation.participants[0].lastName?.charAt(0) || '?'}`
-                      : <User size={24} className="text-white" />
-                    }
-                  </span>
-                </div>
-              )}
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
+                {conversation.post.type === 'goods' && <Package size={20} className="text-blue-600" />}
+                {conversation.post.type === 'services' && <Wrench size={20} className="text-green-600" />}
+                {conversation.post.type === 'housing' && <Home size={20} className="text-orange-600" />}
+                {conversation.post.type === 'events' && <Calendar size={20} className="text-purple-600" />}
+                {!['goods', 'services', 'housing', 'events'].includes(conversation.post.type) && <FileText size={20} className="text-gray-600" />}
+              </div>
             </div>
             <div className="flex-1 min-w-0">
+              {/* POST TITLE (PRIMARY) */}
               <div className="flex items-center justify-between">
                 <p className="text-lg font-semibold text-black truncate">
-                  {conversation.participants && conversation.participants[0] ? `${conversation.participants[0].firstName} ${conversation.participants[0].lastName}` : 'Unknown User'}
+                  {conversation.post.title}
                 </p>
                 {conversation.unreadCount > 0 && (
                   <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -99,6 +90,12 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                 )}
               </div>
               {/* Message preview */}
+              {/* USER INFO (SECONDARY) */}
+              <p className="text-sm text-gray-600 truncate">
+                with {conversation.otherUser.displayName}
+              </p>
+              
+              {/* LAST MESSAGE (TERTIARY) */}
               {conversation.lastMessage && (
                 <p 
                   className="text-base mt-1 truncate" 
@@ -107,8 +104,8 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                   }}
                 >
                   {activeTab === 'primary' 
-                    ? `You: ${truncateMessage(conversation.lastMessage.content, 8)}`
-                    : truncateMessage(conversation.lastMessage.content, 10)
+                    ? `You: ${truncateMessage(conversation.lastMessage, 8)}`
+                    : truncateMessage(conversation.lastMessage, 10)
                   }
                 </p>
               )}

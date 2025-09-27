@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { Send, ArrowLeft, User, Trash2 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Send, ArrowLeft, User, Trash2, Package, Wrench, Home, Calendar, FileText } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useMessagesStore } from '../../stores/messagesStore';
 import apiService from '../../services/api';
-import { User as UserType, Message, Conversation } from '../../types';
+import { User as UserType, Message, Conversation, StartConversationRequest } from '../../types';
 
 interface ChatPageProps {
   userId: string;
@@ -14,6 +14,7 @@ interface ChatPageProps {
 
 const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user: currentUser } = useAuthStore();
   const { messages, isLoading, sendMessage } = useMessagesStore();
   
@@ -23,6 +24,10 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // POST-CENTRIC: Extract post context from URL
+  const postId = searchParams.get('postId');
+  const postTitle = searchParams.get('postTitle');
 
   // Ensure component is mounted before running client-side code
   useEffect(() => {
@@ -81,14 +86,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
         console.log('📋 Number of conversations:', conversations.length);
         
         const existingConversation = conversations.find(conv => {
-          console.log('🔍 Checking conversation:', conv);
-          console.log('🔍 Conversation participants:', conv.participants);
+          console.log('🔍 Checking POST-CENTRIC conversation:', conv);
+          console.log('🔍 Conversation other user:', conv.otherUser);
+          console.log('🔍 Conversation post:', conv.post);
           
-          const hasTargetUser = conv.participants?.some(p => {
-            console.log('🔍 Comparing participant ID:', p.id, 'with chat user ID:', chatUser.id);
-            return p.id === chatUser.id;
-          });
-          return hasTargetUser;
+          // POST-CENTRIC: Match by other user AND post (if specified)
+          const hasTargetUser = conv.otherUser.id === chatUser.id;
+          const hasTargetPost = postId ? conv.post.id === postId : true;
+          return hasTargetUser && hasTargetPost;
         });
         console.log('🎯 Found existing conversation:', existingConversation);
         
@@ -176,18 +181,27 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           msg.id === optimisticMessage.id ? sentMessage : msg
         ));
       } else {
-        // No existing conversation - create conversation with initial message (iOS style)
+        // No existing conversation - create POST-CENTRIC conversation with initial message
         try {
-          const newConversation = await apiService.createConversation(chatUser.id, newMessage.trim());
-          setConversation(newConversation);
+          if (!postId) {
+            alert('Post context is required for messaging. Please navigate from a specific post.');
+            return;
+          }
           
-          // Load messages for the new conversation to show the initial message
-          const messagesData = await apiService.getMessages(newConversation.id);
-          setChatMessages(messagesData.data || []);
+          const request: StartConversationRequest = {
+            otherUserId: chatUser.id,
+            postId: postId,
+            initialMessage: newMessage.trim()
+          };
+          
+          const response = await apiService.startConversation(request);
+          console.log('🚀 POST-CENTRIC conversation started:', response);
+          
+          // TODO: Handle the new conversation response structure
+          // For now, refresh the page to load the new conversation
           setNewMessage('');
-          
-          // Show success message
           alert('Conversation started! Your message has been sent.');
+          window.location.reload();
         } catch (createError: any) {
           // Handle conversation creation errors
           const errorMessage = createError.response?.data?.error?.message || 

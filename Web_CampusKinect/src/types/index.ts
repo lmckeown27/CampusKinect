@@ -108,14 +108,45 @@ export interface Message {
   sender?: User;
 }
 
+// POST-CENTRIC Conversation Interface
 export interface Conversation {
   id: string;
-  participantIds: string[];
-  lastMessageAt: string;
   createdAt: string;
-  participants?: User[];
-  lastMessage?: Message;
+  lastMessageAt?: string;
+  
+  // POST CONTEXT (PRIMARY EMPHASIS)
+  post: ConversationPost;
+  
+  // OTHER USER INFO (SECONDARY)
+  otherUser: ConversationUser;
+  
+  // MESSAGE INFO
+  lastMessage?: string;
+  lastMessageSenderId?: string;
+  lastMessageTime?: string;
   unreadCount: number;
+}
+
+// POST-CENTRIC Supporting Interfaces
+export interface ConversationPost {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  location?: string;
+  expiresAt?: string;
+  isFulfilled: boolean;
+  createdAt: string;
+  author: ConversationUser;
+}
+
+export interface ConversationUser {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  profilePicture?: string;
 }
 
 export interface MessageRequest {
@@ -130,6 +161,13 @@ export interface MessageRequest {
     title: string;
     postType: string;
   };
+}
+
+// POST-CENTRIC Start Conversation Request
+export interface StartConversationRequest {
+  otherUserId: string;
+  postId: string; // Now required!
+  initialMessage?: string;
 }
 
 export interface AuthTokens {

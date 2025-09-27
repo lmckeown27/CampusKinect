@@ -12,7 +12,8 @@ import {
   AuthTokens,
   ContentReport,
   CreateReportForm,
-  BlockedUser
+  BlockedUser,
+  StartConversationRequest
 } from '../types';
 
 class ApiService {
@@ -494,6 +495,7 @@ class ApiService {
   }
 
   // Messages
+  // POST-CENTRIC Conversations
   public async getConversations(): Promise<Conversation[]> {
     // Add cache busting to ensure fresh data
     const cacheBuster = `?_t=${Date.now()}`;
@@ -501,36 +503,74 @@ class ApiService {
       await this.api.get(`/messages/conversations${cacheBuster}`);
     
     if (response.data.success && response.data.data?.conversations) {
-            console.log('🔄 Frontend API: Raw backend response:', response.data.data);
+      console.log('🔄 Frontend API: Raw POST-CENTRIC backend response:', response.data.data);
       
-      // Transform backend format to frontend format
+      // Transform backend format to POST-CENTRIC frontend format
       const transformed = response.data.data.conversations.map((conv: any) => {
-        console.log('🔄 Frontend API: Transforming conversation:', conv);
-        const frontendConv = {
-          id: conv.id.toString(),
-          participantIds: [conv.otherUser.id],
-          lastMessageAt: conv.lastMessageTime || conv.createdAt,
-          createdAt: conv.createdAt,
-          participants: [conv.otherUser],
-          lastMessage: conv.lastMessage ? {
-            id: 'unknown',
-            content: typeof conv.lastMessage === 'string' ? conv.lastMessage : conv.lastMessage.content,
-            senderId: typeof conv.lastMessage === 'string' ? 'unknown' : conv.lastMessage.senderId?.toString() || 'unknown',
-            conversationId: conv.id.toString(),
-            isRead: true,
-            createdAt: conv.lastMessageTime || conv.createdAt
-          } : undefined,
-          unreadCount: conv.unreadCount || 0
+        console.log('🔄 Frontend API: Transforming POST-CENTRIC conversation:', conv);
+        const frontendConv: Conversation = {
+          id: conv.conversation_id.toString(),
+          createdAt: conv.conversation_created,
+          lastMessageAt: conv.last_message_time,
+          
+          // POST CONTEXT (PRIMARY)
+          post: {
+            id: conv.post_id.toString(),
+            title: conv.post_title,
+            description: conv.post_description,
+            type: conv.post_type,
+            location: conv.post_location,
+            expiresAt: conv.post_expires_at,
+            isFulfilled: conv.post_is_fulfilled || false,
+            createdAt: conv.post_created_at,
+            author: {
+              id: conv.post_author_id.toString(),
+              username: conv.post_author_username,
+              firstName: conv.post_author_first_name,
+              lastName: conv.post_author_last_name,
+              displayName: conv.post_author_display_name,
+              profilePicture: conv.post_author_profile_picture
+            }
+          },
+          
+          // OTHER USER (SECONDARY)
+          otherUser: {
+            id: conv.other_user_id.toString(),
+            username: conv.other_user_username,
+            firstName: conv.other_user_first_name,
+            lastName: conv.other_user_last_name,
+            displayName: conv.other_user_display_name,
+            profilePicture: conv.other_user_profile_picture
+          },
+          
+          // MESSAGE INFO
+          lastMessage: conv.last_message,
+          lastMessageSenderId: conv.last_message_sender_id?.toString(),
+          lastMessageTime: conv.last_message_time,
+          unreadCount: conv.unread_count || 0
         };
-        console.log('🔄 Frontend API: Transformed to:', frontendConv);
+        console.log('🔄 Frontend API: Transformed to POST-CENTRIC:', frontendConv);
         return frontendConv;
       });
       
-      console.log('🔄 Frontend API: Final transformed conversations:', transformed);
+      console.log('🔄 Frontend API: Final POST-CENTRIC conversations:', transformed);
       return transformed;
     }
     
     throw new Error(response.data.message || 'Failed to fetch conversations');
+  }
+
+  // POST-CENTRIC Start Conversation
+  public async startConversation(request: StartConversationRequest): Promise<any> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post('/messages/conversations', request);
+    
+    if (response.data.success) {
+      console.log('🔄 Frontend API: POST-CENTRIC conversation started:', response.data);
+      return response.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to start conversation');
   }
 
   public async getMessages(conversationId: string, page: number = 1, limit: number = 50): Promise<PaginatedResponse<Message>> {
@@ -603,28 +643,7 @@ class ApiService {
     throw new Error(response.data.message || 'Failed to send message');
   }
 
-  public async createConversation(otherUserId: string, initialMessage: string = ''): Promise<Conversation> {
-    const response: AxiosResponse<ApiResponse<any>> = 
-      await this.api.post('/messages/conversations', { 
-        otherUserId: parseInt(otherUserId), 
-        initialMessage 
-      });
-    
-    if (response.data.success && response.data.data?.conversation) {
-      // Convert the backend response to match frontend Conversation type
-      const backendConv = response.data.data.conversation;
-      return {
-        id: backendConv.id.toString(),
-        participantIds: [otherUserId], // We know the other participant
-        lastMessageAt: backendConv.createdAt,
-        createdAt: backendConv.createdAt,
-        participants: [backendConv.otherUser],
-        unreadCount: 0
-      };
-    }
-    
-    throw new Error(response.data.message || 'Failed to create conversation');
-  }
+  // REMOVED: Old createConversation method - replaced with POST-CENTRIC startConversation
 
   public async deleteConversation(conversationId: string): Promise<void> {
     const response: AxiosResponse<ApiResponse<any>> = 
