@@ -8,7 +8,10 @@ struct ReportsListView: View {
     let hasMore: Bool
     
     var body: some View {
-        List {
+        print("🔍 ReportsListView: reports.count = \(reports.count), isLoading = \(isLoading)")
+        print("🔍 ReportsListView: Will show EmptyReportsView = \(reports.isEmpty && !isLoading)")
+        
+        return List {
             if reports.isEmpty && !isLoading {
                 EmptyReportsView()
                     .listRowSeparator(.hidden)
