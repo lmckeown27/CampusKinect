@@ -710,23 +710,23 @@ const ProfileTab: React.FC = () => {
                     */}
                   </div>
                   
-                  <p className="text-gray-600 mb-1">@{user?.username || 'username'}</p>
-                  <p className="text-gray-600 mb-1">{user?.email}</p>
+                  <p className="text-white mb-1">@{user?.username || 'username'}</p>
+                  <p className="text-white mb-1">{user?.email}</p>
                   
                   {user?.major && (
-                    <p className="text-gray-600 mb-1">
+                    <p className="text-white mb-1">
                       <strong>Major:</strong> {user?.major}
                     </p>
                   )}
                   
                   {user?.year && (
-                    <p className="text-gray-600 mb-1">
+                    <p className="text-white mb-1">
                       <strong>Year:</strong> {getYearLabel(user.year)}
                     </p>
                   )}
                   
                   {user?.hometown && (
-                    <p className="text-gray-600 mb-1">
+                    <p className="text-white mb-1">
                       <strong>Hometown:</strong> {user?.hometown}
                     </p>
                   )}
