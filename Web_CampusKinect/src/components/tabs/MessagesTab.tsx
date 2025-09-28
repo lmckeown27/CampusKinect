@@ -658,7 +658,7 @@ const MessagesTab: React.FC = () => {
                 </p>
                 <p className="text-sm mt-2">
                   {activeTab === 'unread' 
-                    ? 'You&apos;re all caught up with your messages!' 
+                    ? "You're all caught up with your messages!" 
                     : 'Start a conversation to connect with other students'
                   }
                 </p>
