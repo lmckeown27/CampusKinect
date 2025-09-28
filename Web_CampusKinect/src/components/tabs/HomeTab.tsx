@@ -921,7 +921,7 @@ const HomeTab: React.FC = () => {
                     }
                   }}
                 >
-                  Categories ({selectedSubtagsCount})
+{tag.label} ({selectedSubtagsCount})
                 </button>
               );
             })}
@@ -1061,7 +1061,6 @@ const HomeTab: React.FC = () => {
             </div>
           </div>
         )}
-      )}
 
         {/* Main Content */}
         <div className="flex mt-4">
