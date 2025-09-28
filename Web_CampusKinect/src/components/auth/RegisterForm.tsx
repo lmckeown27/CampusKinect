@@ -223,7 +223,7 @@ const RegisterForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4" style={{ marginBottom: '1.5rem' }}>
+            <div className="space-y-6" style={{ marginBottom: '1.5rem' }}>
                           <div className="space-y-3" style={{ marginBottom: '1.5rem' }}>
               <div className="relative" style={{ width: '320px', margin: '0 auto', display: 'block' }}>
                 <label htmlFor="firstName" className="absolute -top-2 left-3 text-base font-medium text-neutral-700 z-10 bg-white px-1">
