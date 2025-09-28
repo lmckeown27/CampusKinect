@@ -716,7 +716,7 @@ const MessagesTab: React.FC = () => {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-8">
+              <div className="flex-1 overflow-y-auto p-4 space-y-8" style={{ backgroundColor: '#737373' }}>
                 {messages.map((message) => (
                   <div
                     key={message.id}
