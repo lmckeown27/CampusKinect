@@ -33,8 +33,14 @@ const Profilebar: React.FC<ProfilebarProps> = ({
   return (
     <div className="relative z-50" ref={profileRef}>
       <div className="w-full flex flex-col pb-6 transition-all duration-300 ease-in-out transform" style={{ backgroundColor: '#708d81' }}>
+        
+        {/* Profile Header */}
+        <div className="px-6 mb-8">
+          {/* Header spacing to match navigation */}
+        </div>
+        
         {/* User Info Section */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="px-4 mb-4 border-b border-gray-200 pb-4">
           <div className="flex items-center space-x-3">
             {/* Profile Image */}
             <div className="flex-shrink-0">
@@ -64,7 +70,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
         </div>
 
         {/* Action Buttons Section */}
-        <div className="p-2 space-y-3">
+        <div className="flex-1 px-4">
           <button
             onClick={() => {
               setShowProfileDropdown(false);
@@ -150,6 +156,13 @@ const Profilebar: React.FC<ProfilebarProps> = ({
             <LogOut size={16} />
             <span>&nbsp;Sign out</span>
           </button>
+        </div>
+        
+        {/* Bottom Section - Additional Options */}
+        <div className="px-4 mt-8">
+          <div className="border-t border-[#f0f2f0] pt-4">
+            {/* Additional options can be added here */}
+          </div>
         </div>
       </div>
     </div>
