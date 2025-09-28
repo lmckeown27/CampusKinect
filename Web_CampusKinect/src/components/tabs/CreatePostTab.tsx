@@ -814,36 +814,33 @@ const CreatePostTab: React.FC = () => {
                         ))}
                       </div>
 
-                      {/* Footer with actions for this post type */}
-                      <div className="p-3 border-t border-gray-200 bg-grey-medium">
-                        <div className="flex justify-center space-x-2">
-                          {formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length > 0 && (
-                            <>
-
-                              <button
-                                onClick={() => {
-                                  // Clear tags for this specific post type only
-                                  const tagsToRemove = getSubTagsForPostType(formData.postType);
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    tags: prev.tags.filter(tag => !tagsToRemove.includes(tag))
-                                  }));
-                                }}
-                                className="px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer"
-                                style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#e8ebe8';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#f0f2f0';
-                                }}
-                              >
-                                Clear All ({formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length})
-                              </button>
-                            </>
-                          )}
+                      {/* Footer with actions for this post type - only show when there are tags */}
+                      {formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length > 0 && (
+                        <div className="p-3 border-t border-gray-200 bg-grey-medium">
+                          <div className="flex justify-center space-x-2">
+                            <button
+                              onClick={() => {
+                                // Clear tags for this specific post type only
+                                const tagsToRemove = getSubTagsForPostType(formData.postType);
+                                setFormData(prev => ({
+                                  ...prev,
+                                  tags: prev.tags.filter(tag => !tagsToRemove.includes(tag))
+                                }));
+                              }}
+                              className="px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer"
+                              style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#e8ebe8';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f0f2f0';
+                              }}
+                            >
+                              Clear All ({formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length})
+                            </button>
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   )}
                   
