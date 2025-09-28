@@ -74,7 +74,7 @@ const Header: React.FC = () => {
             className="w-8 h-8 rounded-md shadow-lg object-contain"
           />
           <h1 
-            className="text-xl font-bold text-neutral-900"
+            className="text-xl font-bold text-white"
             style={{ marginLeft: '16px' }}
           >
             CampusKinect
