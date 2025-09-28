@@ -32,10 +32,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     }
   };
 
-  const truncateMessage = (message: string, wordLimit: number) => {
-    const words = message.split(' ');
-    if (words.length <= wordLimit) return message;
-    return words.slice(0, wordLimit).join(' ') + '...';
+  const truncateMessage = (message: string, charLimit: number) => {
+    if (message.length <= charLimit) return message;
+    return message.slice(0, charLimit).trim() + '...';
   };
 
   return (
@@ -77,7 +76,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                 {!['goods', 'services', 'housing', 'events'].includes(conversation.post.type) && <FileText size={20} className="text-gray-600" />}
               </div>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
               {/* POST TITLE (PRIMARY) */}
               <div className="flex items-center justify-between">
                 <p className="text-lg font-semibold text-black truncate">
@@ -98,14 +97,17 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
               {/* LAST MESSAGE (TERTIARY) */}
               {conversation.lastMessage && (
                 <p 
-                  className="text-base mt-1 truncate" 
+                  className="text-base mt-1 truncate max-w-full" 
                   style={{ 
-                    color: activeTab === 'primary' ? '#4b5563' : 'white'
+                    color: activeTab === 'primary' ? '#4b5563' : 'white',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   {activeTab === 'primary' 
-                    ? `You: ${truncateMessage(conversation.lastMessage, 8)}`
-                    : truncateMessage(conversation.lastMessage, 10)
+                    ? `You: ${truncateMessage(conversation.lastMessage, 25)}`
+                    : truncateMessage(conversation.lastMessage, 35)
                   }
                 </p>
               )}
