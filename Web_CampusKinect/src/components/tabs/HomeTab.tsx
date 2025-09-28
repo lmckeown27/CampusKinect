@@ -938,14 +938,24 @@ const HomeTab: React.FC = () => {
             <div 
               className="absolute inset-0 p-8 pt-20 overflow-y-auto"
               style={{ 
-                paddingBottom: `${bottomSheetHeight + 32}px` // Add padding to avoid overlap with bottom sheet
+                paddingBottom: `${bottomSheetHeight + 32}px`, // Add padding to avoid overlap with bottom sheet
+                minHeight: '100vh', // Ensure full viewport height
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div 
+                className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 flex-1"
+                style={{
+                  minHeight: 'fit-content',
+                  width: '100%',
+                  gridAutoRows: 'min-content'
+                }}
+              >
                 {(() => {
                   const currentSubTags = subTags[currentCategory as keyof typeof subTags] || [];
                   console.log(`HomeTab: Rendering ${currentSubTags.length} subtags for category "${currentCategory}":`, currentSubTags);
-                  return currentSubTags.map((subTag) => (
+                  return currentSubTags.map((subTag, index) => (
                     <button
                       key={subTag}
                       onClick={(e) => {
@@ -961,10 +971,24 @@ const HomeTab: React.FC = () => {
                         backgroundColor: selectedTags.includes(subTag) ? '#708d81' : 'rgba(240, 242, 240, 0.95)',
                         color: selectedTags.includes(subTag) ? 'white' : '#708d81',
                         cursor: 'pointer',
-                        backdropFilter: 'blur(10px)'
+                        backdropFilter: 'blur(10px)',
+                        minHeight: '48px',
+                        border: '1px solid rgba(112, 141, 129, 0.2)', // Debug border to see all buttons
+                        position: 'relative',
+                        zIndex: 1
                       }}
                     >
                       {subTag}
+                      {/* Debug indicator */}
+                      <span style={{ 
+                        position: 'absolute', 
+                        top: '2px', 
+                        right: '2px', 
+                        fontSize: '8px', 
+                        opacity: 0.5 
+                      }}>
+                        {index + 1}
+                      </span>
                     </button>
                   ));
                 })()}
