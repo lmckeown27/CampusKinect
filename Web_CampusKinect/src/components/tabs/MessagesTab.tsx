@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Send, User, MoreHorizontal, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle } from 'lucide-react';
+import { Send, User, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -14,7 +14,6 @@ interface ConversationItemProps {
   isSelected: boolean;
   activeTab: string;
   onSelect: (conversation: Conversation) => void;
-  onDelete: (conversationId: string) => void;
   index: number;
 }
 
@@ -23,14 +22,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   isSelected,
   activeTab,
   onSelect,
-  onDelete,
   index
 }) => {
-  const handleDelete = async () => {
-    if (confirm(`Are you sure you want to delete this conversation about "${conversation.post.title}" with ${conversation.otherUser.displayName}?`)) {
-      await onDelete(conversation.id.toString());
-    }
-  };
+
 
   const truncateMessage = (message: string, charLimit: number) => {
     if (message.length <= charLimit) return message;
@@ -113,28 +107,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
               )}
             </div>
           </div>
-          
-          {/* Delete Button - Only visible on hover */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDelete();
-            }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-500 ml-2 cursor-pointer"
-            style={{ color: '#ef4444', cursor: 'pointer' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ef4444';
-              e.currentTarget.style.color = 'white';
-              e.currentTarget.style.cursor = 'pointer';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#ef4444';
-              e.currentTarget.style.cursor = 'pointer';
-            }}
-          >
-            <Trash2 size={16} />
-          </button>
+
         </div>
       </div>
     </div>
@@ -670,7 +643,6 @@ const MessagesTab: React.FC = () => {
                     isSelected={currentConversation?.id === conversation.id}
                     activeTab={activeTab}
                     onSelect={handleConversationSelect}
-                    onDelete={handleDeleteConversation}
                     index={index}
                   />
                 ))}
@@ -708,8 +680,17 @@ const MessagesTab: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <button className="p-2 text-[#708d81] hover:text-[#5a7268] hover:bg-[#525252] rounded-lg transition-colors cursor-pointer">
-                    <MoreHorizontal size={20} />
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Are you sure you want to delete this conversation about "${currentConversation.post.title}" with ${currentConversation.otherUser.displayName}?`)) {
+                        handleDeleteConversation(currentConversation.id.toString());
+                      }
+                    }}
+                    className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                    title="Delete Conversation"
+                  >
+                    <Trash2 size={20} />
                   </button>
                 </div>
               </div>
