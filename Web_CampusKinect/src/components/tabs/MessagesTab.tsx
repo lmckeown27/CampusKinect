@@ -358,7 +358,7 @@ const MessagesTab: React.FC = () => {
           {/* Header */}
           <div className="p-4 border-b border-[#708d81] rounded-t-lg">
             {/* Search and Plus Button */}
-            <div className="mt-4 flex justify-center">
+            <div className="mt-4 px-2">
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
@@ -369,8 +369,7 @@ const MessagesTab: React.FC = () => {
                   }
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="px-4 py-2 text-sm border border-[#708d81] rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-                  style={{ width: '768px' }}
+                  className="flex-1 px-4 py-2 text-sm border border-[#708d81] rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
                 />
                 <button
                   onClick={() => setShowNewMessageModal(true)}
@@ -681,7 +680,7 @@ const MessagesTab: React.FC = () => {
         </div>
 
         {/* Right Side - Chat */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col" style={{ backgroundColor: '#737373' }}>
           {currentConversation ? (
             <>
               {/* Chat Header */}
