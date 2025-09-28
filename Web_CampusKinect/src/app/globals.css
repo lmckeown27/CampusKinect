@@ -1325,3 +1325,28 @@ select.border-olive-green:focus {
     max-height: 220px;
   }
 }
+
+/* Post Type Badge Styles */
+.badge-goods {
+  color: #708d81 !important;
+}
+
+.badge-services {
+  color: #708d81 !important;
+}
+
+.badge-event {
+  color: #708d81 !important;
+}
+
+.badge-housing {
+  color: #708d81 !important;
+}
+
+.badge-tutoring {
+  color: #708d81 !important;
+}
+
+.badge {
+  color: #708d81 !important;
+}
