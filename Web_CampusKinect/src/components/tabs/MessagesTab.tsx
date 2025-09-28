@@ -288,36 +288,13 @@ const MessagesTab: React.FC = () => {
   };
 
   const handleConversationSelect = (conversation: Conversation) => {
-    console.log('🖱️ POST-CENTRIC CONVERSATION CLICKED');
-    console.log('Active tab:', activeTab);
+    console.log('🖱️ POST-CENTRIC CONVERSATION CLICKED - OPENING INLINE CHAT');
     console.log('Conversation:', conversation);
-    console.log('Current user:', currentUser);
     console.log('Post context:', conversation.post);
     console.log('Other user:', conversation.otherUser);
     
-    // For both Primary and Unread tabs, navigate to POST-CENTRIC chat page
-    if (activeTab === 'primary' || activeTab === 'unread') {
-      console.log('💬 POST-CENTRIC CONVERSATION CLICKED - NAVIGATING TO CHAT');
-      
-      // Use the other user from the post-centric structure
-      const targetUser = conversation.otherUser;
-      
-      console.log('Target user for navigation:', targetUser);
-      
-      if (targetUser) {
-        // POST-CENTRIC: Include post context in navigation
-        const chatUrl = `/chat/${targetUser.id}?postId=${conversation.post.id}&postTitle=${encodeURIComponent(conversation.post.title)}`;
-        console.log('✅ Navigating to POST-CENTRIC chat:', chatUrl);
-        router.push(chatUrl);
-      } else {
-        console.error('❌ No other user found in conversation');
-        console.error('Conversation structure:', JSON.stringify(conversation, null, 2));
-      }
-    } else {
-      // For other tabs, just select the conversation
-      console.log('📩 CONVERSATION CLICKED - SELECTING CONVERSATION');
-      setCurrentConversation(conversation);
-    }
+    // FIXED: Always open chat inline instead of navigating to separate page
+    setCurrentConversation(conversation);
   };
 
   const handleDeleteConversation = async (conversationId: string) => {
