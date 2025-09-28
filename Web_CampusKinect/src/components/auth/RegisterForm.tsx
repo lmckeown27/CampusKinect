@@ -242,7 +242,7 @@ const RegisterForm: React.FC = () => {
                   data-form-type="other"
                   data-lpignore="true"
                   data-1p-ignore="true"
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                  className="w-full pt-6 pb-3 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder="First Name"
                 />
                 {validationErrors.firstName && (
@@ -268,7 +268,7 @@ const RegisterForm: React.FC = () => {
                   data-form-type="other"
                   data-lpignore="true"
                   data-1p-ignore="true"
-                  className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                  className="w-full pt-6 pb-3 px-4 border-2 rounded-md focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                   placeholder="Last Name"
                 />
                 {validationErrors.lastName && (
@@ -295,7 +295,7 @@ const RegisterForm: React.FC = () => {
                     autoCorrect="off"
                     autoComplete="email"
                     spellCheck="false"
-                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                    className="w-full pt-6 pb-3 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder="yourname@yourcollege.edu"
                   />
                   {formData.email && !isEducationalEmail(formData.email) && (
@@ -327,7 +327,7 @@ const RegisterForm: React.FC = () => {
                     autoCorrect="off"
                     autoComplete="new-password"
                     spellCheck="false"
-                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                    className="w-full pt-6 pb-3 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
                 <button
@@ -390,7 +390,7 @@ const RegisterForm: React.FC = () => {
                     autoCorrect="off"
                     autoComplete="new-password"
                     spellCheck="false"
-                    className="w-full pt-10 pb-6 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
+                    className="w-full pt-6 pb-3 px-4 border-2 rounded-md focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 text-neutral-900 placeholder-neutral-400 text-lg border-olive-green"
                     placeholder=""
                   />
                   <button
