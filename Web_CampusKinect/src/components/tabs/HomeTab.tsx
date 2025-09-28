@@ -935,30 +935,39 @@ const HomeTab: React.FC = () => {
         {showBottomSheet && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowBottomSheet(false)}>
             {/* Category buttons spread across the dark overlay */}
-            <div className="absolute inset-0 p-8 pt-20">
+            <div 
+              className="absolute inset-0 p-8 pt-20 overflow-y-auto"
+              style={{ 
+                paddingBottom: `${bottomSheetHeight + 32}px` // Add padding to avoid overlap with bottom sheet
+              }}
+            >
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {subTags[currentCategory as keyof typeof subTags]?.map((subTag) => (
-                  <button
-                    key={subTag}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleTagSelect(subTag);
-                    }}
-                    className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer text-center shadow-lg ${
-                      selectedTags.includes(subTag)
-                        ? 'text-white shadow-xl scale-105'
-                        : 'text-[#708d81] hover:text-[#5a7268] hover:scale-105'
-                    }`}
-                    style={{
-                      backgroundColor: selectedTags.includes(subTag) ? '#708d81' : 'rgba(240, 242, 240, 0.95)',
-                      color: selectedTags.includes(subTag) ? 'white' : '#708d81',
-                      cursor: 'pointer',
-                      backdropFilter: 'blur(10px)'
-                    }}
-                  >
-                    {subTag}
-                  </button>
-                ))}
+                {(() => {
+                  const currentSubTags = subTags[currentCategory as keyof typeof subTags] || [];
+                  console.log(`HomeTab: Rendering ${currentSubTags.length} subtags for category "${currentCategory}":`, currentSubTags);
+                  return currentSubTags.map((subTag) => (
+                    <button
+                      key={subTag}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTagSelect(subTag);
+                      }}
+                      className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer text-center shadow-lg ${
+                        selectedTags.includes(subTag)
+                          ? 'text-white shadow-xl scale-105'
+                          : 'text-[#708d81] hover:text-[#5a7268] hover:scale-105'
+                      }`}
+                      style={{
+                        backgroundColor: selectedTags.includes(subTag) ? '#708d81' : 'rgba(240, 242, 240, 0.95)',
+                        color: selectedTags.includes(subTag) ? 'white' : '#708d81',
+                        cursor: 'pointer',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      {subTag}
+                    </button>
+                  ));
+                })()}
               </div>
             </div>
 
