@@ -38,7 +38,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   };
 
   return (
-    <div className="relative" style={{ width: '95%', margin: index === 0 ? '0 auto' : '16px auto 0 auto' }}>
+    <div className="relative" style={{ width: '100%', margin: index === 0 ? '0 auto' : '16px auto 0 auto' }}>
       <div
         className={`p-4 transition-all duration-200 rounded-lg group ${
           isSelected ? 'bg-[#e8f5e8]' : 'hover:bg-[#525252]'
@@ -354,7 +354,7 @@ const MessagesTab: React.FC = () => {
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
       <div className="flex min-h-screen">
         {/* Left Sidebar - Conversations */}
-        <div className="w-full sm:w-80 lg:w-96 xl:w-1/3 border-r border-[#708d81] flex flex-col rounded-lg overflow-hidden" style={{ backgroundColor: '#737373' }}>
+        <div className="w-full sm:w-80 lg:w-96 xl:w-1/3 border-r border-[#708d81] flex flex-col rounded-lg overflow-y-hidden" style={{ backgroundColor: '#737373' }}>
           {/* Header */}
           <div className="p-4 border-b border-[#708d81] rounded-t-lg">
             {/* Search and Plus Button */}
@@ -643,7 +643,7 @@ const MessagesTab: React.FC = () => {
           )}
 
           {/* Conversations List */}
-          <div className="flex-1 overflow-y-auto" style={{ backgroundColor: '#525252' }}>
+          <div className="flex-1 overflow-y-auto overflow-x-visible" style={{ backgroundColor: '#525252' }}>
             {isLoading ? (
               <div className="p-4 text-center">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
@@ -663,7 +663,7 @@ const MessagesTab: React.FC = () => {
               </div>
             ) : (
               // Show conversations
-              <div className="px-2">
+              <div className="px-2 pr-4">
                 {filteredConversations.map((conversation, index) => (
                   <ConversationItem
                     key={conversation.id}
