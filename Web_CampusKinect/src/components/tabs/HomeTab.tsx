@@ -936,19 +936,18 @@ const HomeTab: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowBottomSheet(false)}>
             {/* Category buttons spread across the dark overlay */}
             <div 
-              className="absolute inset-0 p-8 pt-20 overflow-y-auto"
+              className="absolute inset-0 p-8 overflow-y-auto flex items-center justify-center"
               style={{ 
                 paddingBottom: `${bottomSheetHeight + 32}px`, // Add padding to avoid overlap with bottom sheet
-                minHeight: '100vh', // Ensure full viewport height
-                display: 'flex',
-                flexDirection: 'column'
+                minHeight: '100vh' // Ensure full viewport height
               }}
             >
               <div 
-                className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 flex-1"
+                className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
                 style={{
                   minHeight: 'fit-content',
                   width: '100%',
+                  maxWidth: '800px', // Limit max width for better layout
                   gridAutoRows: 'min-content'
                 }}
               >
