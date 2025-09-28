@@ -49,7 +49,7 @@ const Header: React.FC = () => {
               userSelect: 'none'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#991b1b';
+              e.currentTarget.style.backgroundColor = '#5a7268';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '#708d81';
@@ -102,13 +102,13 @@ const Header: React.FC = () => {
                 userSelect: 'none'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#991b1b';
+                e.currentTarget.style.backgroundColor = '#5a7268';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = '#708d81';
               }}
             >
-              <div className={`transition-all duration-300 ease-in-out transform ${showProfileDropdown ? 'rotate-12 scale-110' : 'rotate-0 scale-100'}`}>
+              <div className={`transition-all duration-300 ease-in-out transform ${showProfileDropdown ? 'scale-110' : 'scale-100'}`}>
                 {user?.profilePicture ? (
                   <img
                     src={user.profilePicture}

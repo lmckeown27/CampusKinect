@@ -47,7 +47,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
       <div className="flex pt-16">
         {/* Left Sidebar - Navigation */}
         {showNavigation && (
-          <div className="w-80 flex-shrink-0 bg-gray-100 border-r-4 border-primary h-screen overflow-y-auto pt-4" style={{ backgroundColor: '#f3f4f6', borderRight: '4px solid #708d81' }}>
+          <div className="w-80 flex-shrink-0 bg-grey-medium border-r-4 border-primary h-screen overflow-y-auto pt-4" style={{ borderRight: '4px solid #708d81' }}>
             <div className="p-6">
               <Navigationbar />
             </div>
