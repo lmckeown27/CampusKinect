@@ -786,10 +786,10 @@ const MessagesTab: React.FC = () => {
                 <div className="w-16 h-16 mx-auto mb-4 bg-[#708d81] rounded-full flex items-center justify-center">
                   <MessageCircle size={32} className="text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-[#708d81] mb-2">
+                <h3 className="text-xl font-semibold text-white mb-2">
                   Select a Post Conversation
                 </h3>
-                <p className="text-[#708d81] opacity-70 max-w-sm">
+                <p className="text-white opacity-70 max-w-sm">
                   Choose a conversation from the left to start messaging about a specific post
                 </p>
               </div>
