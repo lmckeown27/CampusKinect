@@ -745,59 +745,40 @@ const ProfileTab: React.FC = () => {
         {/* Navigation Buttons */}
                   <div className="rounded-lg shadow-sm" style={{ backgroundColor: '#737373' }}>
           <div className="p-6">
-            <nav className="flex justify-center space-x-4" key="nav-buttons">
-              {['posts', 'reposts', 'bookmarks'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab as any)}
-                  className="py-3 px-6 font-semibold text-lg rounded-lg transition-all duration-200"
-                  style={
-                    activeTab === tab
-                      ? {
-                          backgroundColor: '#737373',
-                          color: '#708d81',
-                          border: '2px solid #708d81',
-                          cursor: 'pointer'
+            <nav className="flex justify-center" key="nav-buttons">
+              <div className="relative bg-[#708d81] rounded-lg p-1" style={{ backgroundColor: '#708d81' }}>
+                <div className="flex relative w-full gap-1">
+                  {['posts', 'reposts', 'bookmarks'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab as any)}
+                      className="relative z-10 px-6 py-3 text-lg font-semibold transition-all duration-200 rounded-md cursor-pointer shadow-md hover:shadow-lg"
+                      style={{
+                        backgroundColor: activeTab === tab ? '#f0f2f0' : '#708d81',
+                        color: activeTab === tab ? '#708d81' : 'white',
+                        cursor: 'pointer',
+                        border: activeTab === tab ? '2px solid #708d81' : '2px solid transparent'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (activeTab !== tab) {
+                          e.currentTarget.style.backgroundColor = '#5a7268';
+                        } else {
+                          e.currentTarget.style.backgroundColor = '#e8ebe8';
                         }
-                      : {
-                          backgroundColor: '#708d81',
-                          color: 'white',
-                          border: '2px solid #708d81',
-                          cursor: 'pointer'
+                      }}
+                      onMouseLeave={(e) => {
+                        if (activeTab !== tab) {
+                          e.currentTarget.style.backgroundColor = '#708d81';
+                        } else {
+                          e.currentTarget.style.backgroundColor = '#f0f2f0';
                         }
-                  }
-                  onMouseEnter={(e) => {
-                    if (activeTab === tab) {
-                      // Selected button: turn complete white on hover
-                      e.currentTarget.style.backgroundColor = '#737373';
-                      e.currentTarget.style.color = '#708d81';
-                      e.currentTarget.style.border = '2px solid #708d81';
-                    } else {
-                      // Unselected button: turn light green on hover
-                      e.currentTarget.style.backgroundColor = '#a8c4a2'; // Light green
-                      e.currentTarget.style.color = 'white';
-                      e.currentTarget.style.border = '2px solid #a8c4a2';
-                    }
-                    e.currentTarget.style.cursor = 'pointer';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeTab === tab) {
-                      // Selected button: return to white background
-                      e.currentTarget.style.backgroundColor = '#737373';
-                      e.currentTarget.style.color = '#708d81';
-                      e.currentTarget.style.border = '2px solid #708d81';
-                    } else {
-                      // Unselected button: return to olive green
-                      e.currentTarget.style.backgroundColor = '#708d81';
-                      e.currentTarget.style.color = 'white';
-                      e.currentTarget.style.border = '2px solid #708d81';
-                    }
-                    e.currentTarget.style.cursor = 'pointer';
-                  }}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
+                      }}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </nav>
           </div>
 
