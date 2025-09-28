@@ -7,19 +7,57 @@ import Navigationbar from '../layout/Navigationbar';
 import Profilebar from '../layout/Profilebar';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
+import { useTermsOfService } from '../../hooks/useTermsOfService';
+import TermsOfServiceModal from '../ui/TermsOfServiceModal';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
-  const { isAuthenticated, checkAuth, isLoading, user } = useAuthStore();
+  const { isAuthenticated, checkAuth, isLoading, user, logout } = useAuthStore();
   const { showNavigation, setShowNavigation, showProfileDropdown, setShowProfileDropdown } = useNavigation();
+  const { 
+    shouldShowTerms, 
+    isTermsCheckComplete, 
+    checkTermsForUser, 
+    acceptTerms, 
+    declineTerms, 
+    resetTermsCheck 
+  } = useTermsOfService();
   const router = useRouter();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  // Check terms when user becomes authenticated
+  useEffect(() => {
+    if (isAuthenticated && user && !isTermsCheckComplete) {
+      console.log(`📋 CRITICAL: Checking terms for user ${user.id}`);
+      checkTermsForUser(user.id.toString());
+    }
+  }, [isAuthenticated, user, isTermsCheckComplete, checkTermsForUser]);
+
+  // Reset terms check when authentication state changes
+  useEffect(() => {
+    if (!isAuthenticated) {
+      resetTermsCheck();
+    }
+  }, [isAuthenticated, resetTermsCheck]);
+
+  const handleAcceptTerms = (shouldRememberChoice: boolean) => {
+    if (user) {
+      acceptTerms(user.id.toString(), shouldRememberChoice);
+    }
+  };
+
+  const handleDeclineTerms = () => {
+    console.log('📋 Terms declined - logging out user');
+    declineTerms();
+    logout();
+    router.push('/auth/login');
+  };
 
   if (isLoading) {
     return (
@@ -36,6 +74,18 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
         {children}
+      </div>
+    );
+  }
+
+  // Show loading while terms check is in progress
+  if (isAuthenticated && !isTermsCheckComplete && !shouldShowTerms) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#525252' }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#708d81] mx-auto mb-4"></div>
+          <p className="text-[#708d81]">Checking Terms of Service...</p>
+        </div>
       </div>
     );
   }
@@ -70,6 +120,13 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
           </div>
         )}
       </div>
+
+      {/* Terms of Service Modal */}
+      <TermsOfServiceModal
+        isOpen={shouldShowTerms}
+        onAccept={handleAcceptTerms}
+        onDecline={handleDeclineTerms}
+      />
     </div>
   );
 };
