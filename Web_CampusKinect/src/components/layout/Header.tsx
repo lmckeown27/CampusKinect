@@ -116,7 +116,7 @@ const Header: React.FC = () => {
                     className="w-5 h-5 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                  <div className="w-5 h-5 bg-[#708d81] rounded-full flex items-center justify-center">
                     <User size={20} className="text-white" />
                   </div>
                 )}

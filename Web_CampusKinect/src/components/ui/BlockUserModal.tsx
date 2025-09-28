@@ -105,7 +105,7 @@ const BlockUserModal: React.FC<BlockUserModalProps> = ({
                     className="w-12 h-12 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center">
                     <User size={24} className="text-white" />
           </div>
                 )}

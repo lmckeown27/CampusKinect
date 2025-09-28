@@ -414,7 +414,7 @@ const PostCard: React.FC<PostCardProps> = ({
               />
             ) : (
               <div 
-                className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
+                className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
                 style={{ border: "2px solid #708d81", cursor: "pointer" }}
               >
                 <User size={20} className="text-white" />

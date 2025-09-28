@@ -208,7 +208,7 @@ const UserProfileTab: React.FC<UserProfileTabProps> = ({ userId }) => {
               />
             ) : (
               <div 
-                className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center"
+                className="w-24 h-24 bg-[#708d81] rounded-full flex items-center justify-center"
                 style={{ border: '3px solid #708d81' }}
               >
                 <span className="text-white text-2xl font-bold">
