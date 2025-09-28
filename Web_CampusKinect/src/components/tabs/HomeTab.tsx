@@ -938,7 +938,8 @@ const HomeTab: React.FC = () => {
                   className="bg-grey-light rounded-lg shadow-2xl flex flex-col overflow-hidden mx-4" 
                   style={{ 
                     width: '200px', 
-                    height: '400px',
+                    maxHeight: '500px',
+                    minHeight: '300px',
                     zIndex: 1000
                   }}
                 >
@@ -984,12 +985,12 @@ const HomeTab: React.FC = () => {
                 </div>
 
                 {/* Scrollable category buttons for this category */}
-                <div className="category-buttons-container p-4">
+                <div className="category-buttons-container p-4 flex-1 overflow-y-auto">
                   {subTags[category as keyof typeof subTags]?.map((subTag) => (
                     <button
                       key={subTag}
                       onClick={() => handleTagSelect(subTag)}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-left ${
+                      className={`py-2 px-3 mb-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-left block w-full ${
                         selectedTags.includes(subTag)
                           ? 'text-white shadow-sm'
                           : 'text-[#708d81] hover:text-[#5a7268]'
@@ -1100,7 +1101,7 @@ const HomeTab: React.FC = () => {
       )}
 
         {/* Main Content */}
-        <div className="flex mt-16">
+        <div className="flex mt-4">
           {/* Left Panel - Filters */}
           {showLeftPanel && (
             <div className="w-60 bg-grey-light border-r border-[#708d81] p-4 mr-4">
@@ -1170,7 +1171,7 @@ const HomeTab: React.FC = () => {
             ) : (
               <div className="space-y-4">
                 {getFilteredPostsBySubtags().map((post, index) => (
-                  <div key={post.id} className={index === 0 ? 'mt-20' : ''}>
+                  <div key={post.id} className={index === 0 ? 'mt-4' : ''}>
                     <PostCard post={post} />
                   </div>
                 ))}
