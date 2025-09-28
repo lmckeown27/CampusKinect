@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Filter, MapPin, Calendar, Tag, X, Plus } from 'lucide-react';
+import { Search, Filter, MapPin, Calendar, Tag, X, Plus, ChevronUp, ChevronDown } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
 import { PostCard, TagSelector } from '../ui';
 
@@ -58,6 +58,12 @@ const HomeTab: React.FC = () => {
   const [showNewPostModal, setShowNewPostModal] = useState(false);
   const [forceRefresh, setForceRefresh] = useState(0);
   const [isClearing, setIsClearing] = useState(false);
+  
+  // Bottom sheet state for iOS-style category selection
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState<string>('');
+  const [bottomSheetHeight, setBottomSheetHeight] = useState(300); // Default collapsed height
+  const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
   
   // Separate state for Offer/Request tags to ensure complete isolation
   // Each category has its own Offer/Request state
@@ -886,13 +892,11 @@ const HomeTab: React.FC = () => {
                 <button
                   key={tag.id}
                   onClick={() => {
-                    if (openCategoryBoxes.includes(tag.id)) {
-                      // If category box is already open, close it (same effect as X button)
-                      setOpenCategoryBoxes(prev => prev.filter(cat => cat !== tag.id));
-                    } else {
-                      // If category box is not open, open it
-                      setOpenCategoryBoxes(prev => [...prev, tag.id]);
-                    }
+                    // Open bottom sheet for this category
+                    setCurrentCategory(tag.id);
+                    setShowBottomSheet(true);
+                    setIsBottomSheetExpanded(false);
+                    setBottomSheetHeight(300);
                   }}
                   className={`py-1 px-3 rounded-lg text-xs font-medium transition-colors cursor-pointer shadow-sm ${
                     isCategoryBoxOpen 
@@ -927,177 +931,136 @@ const HomeTab: React.FC = () => {
           {/* This button is now moved above the Search bar */}
         </div>
 
-        {/* Individual Sub-Tag Popups for each selected tag - Horizontal Layout */}
-        {openCategoryBoxes.length > 0 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-            {/* Container for horizontal layout */}
-            <div className="flex justify-center items-start pt-88 px-4" style={{ marginTop: '50px' }}>
-              {openCategoryBoxes.map((category) => (
-                <div 
-                  key={category} 
-                  className="bg-grey-light rounded-lg shadow-2xl flex flex-col overflow-hidden mx-4" 
-                  style={{ 
-                    width: '200px', 
-                    maxHeight: '500px',
-                    minHeight: '300px',
-                    zIndex: 1000
-                  }}
-                >
-                {/* Header */}
-                <div className="flex items-center justify-between p-3 border-b border-gray-200 relative">
-                  <div className="flex-1"></div> {/* Left spacer */}
-                  <h3 className="text-base font-semibold text-[#708d81] absolute left-1/2 transform -translate-x-1/2">
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </h3>
-                  <div className="flex-1 flex justify-end"> {/* Right side for X button */}
-                                        <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        // X button only closes the category box
-                        // Unconfirmed tags will be automatically unselected when the box closes
-                        const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
-                        setOpenCategoryBoxes(newOpenBoxes);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          // X button only closes the category box
-                          // Unconfirmed tags will be automatically unselected when the box closes
-                          const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
-                          setOpenCategoryBoxes(newOpenBoxes);
-                        }
-                      }}
-                      className="p-1 text-[#708d81] opacity-60 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer border border-gray-300 bg-grey-light"
-                      style={{ 
-                        minWidth: '32px', 
-                        minHeight: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1000,
-                        userSelect: 'none',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <X size={18} />
-                    </div>
-                  </div>
-                </div>
+        {/* iOS-Style Bottom Sheet for Category Selection */}
+        {showBottomSheet && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowBottomSheet(false)}>
+            {/* Category buttons spread across the dark overlay */}
+            <div className="absolute inset-0 p-8 pt-20">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {subTags[currentCategory as keyof typeof subTags]?.map((subTag) => (
+                  <button
+                    key={subTag}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTagSelect(subTag);
+                    }}
+                    className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer text-center shadow-lg ${
+                      selectedTags.includes(subTag)
+                        ? 'text-white shadow-xl scale-105'
+                        : 'text-[#708d81] hover:text-[#5a7268] hover:scale-105'
+                    }`}
+                    style={{
+                      backgroundColor: selectedTags.includes(subTag) ? '#708d81' : 'rgba(240, 242, 240, 0.95)',
+                      color: selectedTags.includes(subTag) ? 'white' : '#708d81',
+                      cursor: 'pointer',
+                      backdropFilter: 'blur(10px)'
+                    }}
+                  >
+                    {subTag}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-                {/* Grid layout category buttons for this category */}
-<div className="category-buttons-container p-4 flex-1 grid grid-cols-2 gap-2 content-start">
-                  {subTags[category as keyof typeof subTags]?.map((subTag) => (
-                    <button
-                      key={subTag}
-                      onClick={() => handleTagSelect(subTag)}
-                      className={`py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer text-center ${
-                        selectedTags.includes(subTag)
-                          ? 'text-white shadow-sm'
-                          : 'text-[#708d81] hover:text-[#5a7268]'
-                      }`}
-                      style={{
-                        backgroundColor: selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0',
-                        color: selectedTags.includes(subTag) ? 'white' : '#708d81',
-                        cursor: 'pointer'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!selectedTags.includes(subTag)) {
-                          e.currentTarget.style.backgroundColor = '#e8ebe8';
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!selectedTags.includes(subTag)) {
-                          e.currentTarget.style.backgroundColor = selectedTags.includes(subTag) ? '#708d81' : '#f0f2f0';
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }
-                      }}
+            {/* Bottom Sheet */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 bg-grey-light rounded-t-3xl shadow-2xl transition-all duration-300 ease-out"
+              style={{ 
+                height: `${bottomSheetHeight}px`,
+                transform: isBottomSheetExpanded ? 'translateY(0)' : 'translateY(0)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Handle bar */}
+              <div className="flex justify-center pt-4 pb-2">
+                <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+              </div>
+
+              {/* Header with expand/collapse button */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-[#708d81]">
+                  {currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1)} Tags
+                </h3>
+                <button
+                  onClick={() => {
+                    setIsBottomSheetExpanded(!isBottomSheetExpanded);
+                    setBottomSheetHeight(isBottomSheetExpanded ? 300 : 600);
+                  }}
+                  className="p-2 rounded-full bg-[#708d81] text-white hover:bg-[#5a7268] transition-colors"
+                >
+                  {isBottomSheetExpanded ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
+                </button>
+              </div>
+
+              {/* Selected tags display */}
+              <div className="px-6 py-4">
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {selectedTags.filter(tag => subTags[currentCategory as keyof typeof subTags]?.includes(tag)).map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 bg-[#708d81] text-white text-sm rounded-full flex items-center gap-2"
                     >
-                      {subTag}
-                    </button>
+                      {tag}
+                      <button
+                        onClick={() => handleTagSelect(tag)}
+                        className="hover:bg-[#5a7268] rounded-full p-1"
+                      >
+                        <X size={12} />
+                      </button>
+                    </span>
                   ))}
                 </div>
 
-                {/* Footer with actions for this category */}
-                <div className="p-3 border-t border-gray-200 bg-grey-medium">
-                  <div className="flex justify-center space-x-2">
-                    {selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length > 0 && (
-                      <>
-                        <button
-                          onClick={() => {
-                            // Confirm button: confirm the selected tags and close the box
-                            const categorySubtags = subTags[category as keyof typeof subTags] || [];
-                            const tagsToConfirm = selectedTags.filter(tag => categorySubtags.includes(tag));
-                            
-                            // Add these tags to confirmed tags
-                            setConfirmedTags(prev => [...new Set([...prev, ...tagsToConfirm])]);
-                            
-                            // Find all main categories that need to be selected based on the confirmed tags
-                            const mainCategoriesToSelect = new Set<string>();
-                            tagsToConfirm.forEach(tag => {
-                              const mainCategory = findMainCategoryForTag(tag);
-                              if (mainCategory) {
-                                mainCategoriesToSelect.add(mainCategory);
-                              }
-                            });
-                            
-                            // Add main categories to active filter and remove 'all' if present
-                            const newActiveFilter = activeFilter.filter(f => f !== 'all');
-                            mainCategoriesToSelect.forEach(mainCategory => {
-                              if (!newActiveFilter.includes(mainCategory)) {
-                                newActiveFilter.push(mainCategory);
-                              }
-                            });
-                            
-                            // Update active filter
-                            if (newActiveFilter.length > 0) {
-                              handleCategoryChange(newActiveFilter);
-                            }
-                            
-                            // Close the category box
-                            const newOpenBoxes = openCategoryBoxes.filter(cat => cat !== category);
-                            setOpenCategoryBoxes(newOpenBoxes);
-                          }}
-                          className="px-3 py-2 text-sm text-white rounded-lg transition-colors cursor-pointer"
-                          style={{ backgroundColor: '#708d81', cursor: 'pointer' }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#5a7268';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#708d81';
-                          }}
-                        >
-                          Confirm
-                        </button>
-                        <button
-                          onClick={() => {
-                            // Clear tags for this specific category only
-                            const tagsToRemove = subTags[category as keyof typeof subTags] || [];
-                            setSelectedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
-                            // Also remove from confirmed tags
-                            setConfirmedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
-                          }}
-                          className="px-3 py-2 text-sm text-[#708d81] rounded-lg transition-colors cursor-pointer"
-                          style={{ backgroundColor: '#f0f2f0', cursor: 'pointer' }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#e8ebe8';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#f0f2f0';
-                          }}
-                        >
-                          Clear All ({selectedTags.filter(tag => subTags[category as keyof typeof subTags]?.includes(tag)).length})
-                        </button>
-                      </>
-                    )}
-                  </div>
+                {/* Action buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      // Confirm selected tags
+                      const categorySubtags = subTags[currentCategory as keyof typeof subTags] || [];
+                      const tagsToConfirm = selectedTags.filter(tag => categorySubtags.includes(tag));
+                      
+                      setConfirmedTags(prev => [...new Set([...prev, ...tagsToConfirm])]);
+                      
+                      const mainCategoriesToSelect = new Set<string>();
+                      tagsToConfirm.forEach(tag => {
+                        const mainCategory = findMainCategoryForTag(tag);
+                        if (mainCategory) {
+                          mainCategoriesToSelect.add(mainCategory);
+                        }
+                      });
+                      
+                      const newActiveFilter = activeFilter.filter(f => f !== 'all');
+                      mainCategoriesToSelect.forEach(mainCategory => {
+                        if (!newActiveFilter.includes(mainCategory)) {
+                          newActiveFilter.push(mainCategory);
+                        }
+                      });
+                      
+                      if (newActiveFilter.length > 0) {
+                        handleCategoryChange(newActiveFilter);
+                      }
+                      
+                      setShowBottomSheet(false);
+                    }}
+                    className="flex-1 py-3 bg-[#708d81] text-white rounded-xl font-medium hover:bg-[#5a7268] transition-colors"
+                  >
+                    Apply Filters ({selectedTags.filter(tag => subTags[currentCategory as keyof typeof subTags]?.includes(tag)).length})
+                  </button>
+                  <button
+                    onClick={() => {
+                      const tagsToRemove = subTags[currentCategory as keyof typeof subTags] || [];
+                      setSelectedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
+                      setConfirmedTags(prev => prev.filter(tag => !tagsToRemove.includes(tag)));
+                    }}
+                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+                  >
+                    Clear All
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
+        )}
       )}
 
         {/* Main Content */}
