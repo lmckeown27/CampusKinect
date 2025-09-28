@@ -38,7 +38,7 @@ const Header: React.FC = () => {
             onClick={toggleNavigation}
             className="p-3 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-12 h-12 flex items-center justify-center transform hover:scale-105 hover:shadow-md border-2"
             style={{ 
-              backgroundColor: showNavigation ? '#708d81' : '#dc2626',
+              backgroundColor: '#708d81',
               borderColor: '#ffffff',
               transition: 'background-color 300ms ease-in-out',
               cursor: 'pointer',
@@ -52,7 +52,7 @@ const Header: React.FC = () => {
               e.currentTarget.style.backgroundColor = '#991b1b';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = showNavigation ? '#708d81' : '#dc2626';
+              e.currentTarget.style.backgroundColor = '#708d81';
             }}
             title={showNavigation ? "Hide Navigation" : "Show Navigation"}
           >
@@ -91,7 +91,7 @@ const Header: React.FC = () => {
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
               className="p-3 rounded-lg transition-all duration-300 ease-in-out cursor-pointer text-white w-12 h-12 flex items-center justify-center transform hover:scale-105 hover:shadow-md border-2"
               style={{ 
-                backgroundColor: showProfileDropdown ? '#708d81' : '#dc2626',
+                backgroundColor: '#708d81',
                 borderColor: '#ffffff',
                 transition: 'background-color 300ms ease-in-out',
                 cursor: 'pointer',
@@ -105,7 +105,7 @@ const Header: React.FC = () => {
                 e.currentTarget.style.backgroundColor = '#991b1b';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = showProfileDropdown ? '#708d81' : '#dc2626';
+                e.currentTarget.style.backgroundColor = '#708d81';
               }}
             >
               <div className={`transition-all duration-300 ease-in-out transform ${showProfileDropdown ? 'rotate-12 scale-110' : 'rotate-0 scale-100'}`}>
