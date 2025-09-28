@@ -48,9 +48,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
         {/* Left Sidebar - Navigation */}
         {showNavigation && (
           <div className="w-80 flex-shrink-0 bg-grey-medium border-r-4 border-primary h-screen overflow-y-auto pt-4" style={{ borderRight: '4px solid #708d81' }}>
-            <div className="p-6">
-              <Navigationbar />
-            </div>
+            <Navigationbar />
           </div>
         )}
 
@@ -63,14 +61,12 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
 
         {/* Right Sidebar - Profile Dropdown (when open) */}
         {showProfileDropdown && (
-          <div className="w-80 flex-shrink-0 bg-grey-medium border-l border-gray-200 h-screen overflow-y-auto pt-4">
-            <div className="p-6">
-              <Profilebar 
-                showProfileDropdown={showProfileDropdown} 
-                setShowProfileDropdown={setShowProfileDropdown} 
-                user={user} 
-              />
-            </div>
+          <div className="w-80 flex-shrink-0 bg-grey-medium border-l-4 border-primary h-screen overflow-y-auto pt-4" style={{ borderLeft: '4px solid #708d81' }}>
+            <Profilebar 
+              showProfileDropdown={showProfileDropdown} 
+              setShowProfileDropdown={setShowProfileDropdown} 
+              user={user} 
+            />
           </div>
         )}
       </div>

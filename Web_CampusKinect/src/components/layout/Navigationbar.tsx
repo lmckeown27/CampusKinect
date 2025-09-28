@@ -32,7 +32,7 @@ const Navigationbar: React.FC = () => {
   ];
 
     return (
-    <nav className="w-64 lg:w-72 xl:w-80 border-r border-[#708d81] flex flex-col py-6 transition-all duration-300 ease-in-out transform rounded-lg" style={{ backgroundColor: '#708d81' }}>
+    <nav className="w-full flex flex-col py-6 transition-all duration-300 ease-in-out transform" style={{ backgroundColor: '#708d81' }}>
 
       
       {/* Navigation Header */}
