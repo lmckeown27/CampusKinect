@@ -984,13 +984,13 @@ const HomeTab: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Scrollable category buttons for this category */}
-                <div className="category-buttons-container p-4 flex-1 overflow-y-auto">
+                {/* Grid layout category buttons for this category */}
+<div className="category-buttons-container p-4 flex-1 grid grid-cols-2 gap-2 content-start">
                   {subTags[category as keyof typeof subTags]?.map((subTag) => (
                     <button
                       key={subTag}
                       onClick={() => handleTagSelect(subTag)}
-                      className={`py-2 px-3 mb-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-left block w-full ${
+                      className={`py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer text-center ${
                         selectedTags.includes(subTag)
                           ? 'text-white shadow-sm'
                           : 'text-[#708d81] hover:text-[#5a7268]'

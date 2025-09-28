@@ -32,7 +32,7 @@ const Profilebar: React.FC<ProfilebarProps> = ({
 
   return (
     <div className="relative z-50" ref={profileRef}>
-      <div className="w-full flex flex-col py-6 transition-all duration-300 ease-in-out transform" style={{ backgroundColor: '#708d81' }}>
+      <div className="w-full flex flex-col pb-6 transition-all duration-300 ease-in-out transform" style={{ backgroundColor: '#708d81' }}>
         {/* User Info Section */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
