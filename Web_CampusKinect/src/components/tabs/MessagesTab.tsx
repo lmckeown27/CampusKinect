@@ -366,15 +366,30 @@ const MessagesTab: React.FC = () => {
 
             {/* Tab Navigation */}
             <div className="flex justify-center" style={{ marginTop: '32px' }}>
-              <div className="relative bg-[#708d81] rounded-lg p-0 w-80" style={{ backgroundColor: '#708d81' }}>
-                <div className="flex relative w-full">
+              <div className="relative bg-[#708d81] rounded-lg p-1 w-80" style={{ backgroundColor: '#708d81' }}>
+                <div className="flex relative w-full gap-1">
                   <button
                     onClick={() => setActiveTab('unread')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-md cursor-pointer shadow-md hover:shadow-lg`}
                     style={{
-                      backgroundColor: activeTab === 'unread' ? '#737373' : '#708d81',
+                      backgroundColor: activeTab === 'unread' ? '#f0f2f0' : '#708d81',
                       color: activeTab === 'unread' ? '#708d81' : 'white',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      border: activeTab === 'unread' ? '2px solid #708d81' : '2px solid transparent'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (activeTab !== 'unread') {
+                        e.currentTarget.style.backgroundColor = '#5a7268';
+                      } else {
+                        e.currentTarget.style.backgroundColor = '#e8ebe8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (activeTab !== 'unread') {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                      } else {
+                        e.currentTarget.style.backgroundColor = '#f0f2f0';
+                      }
                     }}
                   >
                     Incoming
@@ -382,11 +397,26 @@ const MessagesTab: React.FC = () => {
                   
                   <button
                     onClick={() => setActiveTab('primary')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-md cursor-pointer`}
+                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-md cursor-pointer shadow-md hover:shadow-lg`}
                     style={{
-                      backgroundColor: activeTab === 'primary' ? '#737373' : '#708d81',
+                      backgroundColor: activeTab === 'primary' ? '#f0f2f0' : '#708d81',
                       color: activeTab === 'primary' ? '#708d81' : 'white',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      border: activeTab === 'primary' ? '2px solid #708d81' : '2px solid transparent'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (activeTab !== 'primary') {
+                        e.currentTarget.style.backgroundColor = '#5a7268';
+                      } else {
+                        e.currentTarget.style.backgroundColor = '#e8ebe8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (activeTab !== 'primary') {
+                        e.currentTarget.style.backgroundColor = '#708d81';
+                      } else {
+                        e.currentTarget.style.backgroundColor = '#f0f2f0';
+                      }
                     }}
                   >
                     Sent
