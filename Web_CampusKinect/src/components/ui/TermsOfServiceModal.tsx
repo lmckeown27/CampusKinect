@@ -21,7 +21,17 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
     if (isOpen) {
       setHasScrolledToBottom(false);
       console.log('📋 Terms modal opened - Accept button starts disabled');
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore body scroll when modal is closed
+      document.body.style.overflow = 'unset';
     }
+
+    // Cleanup function to restore scroll on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -42,8 +52,9 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
   };
 
   const handleRememberChoice = (shouldRemember: boolean) => {
-    onAccept(shouldRemember);
+    console.log(`📋 Modal: User chose shouldRemember: ${shouldRemember}`);
     setShowRememberChoiceDialog(false);
+    onAccept(shouldRemember);
   };
 
   if (!isOpen) return null;
@@ -84,61 +95,112 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
 
             <section>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">3. Acceptable Use</h3>
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              
+              {/* Zero Tolerance Policy Banner */}
+              <div className="bg-red-600 border-2 border-red-700 rounded-lg p-4 mb-4">
                 <div className="flex items-start space-x-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="w-6 h-6 text-white mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-red-800 font-semibold text-sm">Zero Tolerance Policy</p>
-                    <p className="text-red-700 text-sm mt-1">
-                      CampusKinect has ZERO TOLERANCE for objectionable content or abusive behavior. All content is monitored and violations result in immediate account termination.
+                    <p className="text-white font-bold text-lg mb-2">ZERO TOLERANCE POLICY</p>
+                    <p className="text-white font-semibold mb-3">
+                      CampusKinect maintains ABSOLUTE ZERO TOLERANCE for objectionable content or abusive behavior of any kind.
+                    </p>
+                    <ul className="text-white text-sm space-y-1">
+                      <li>• All content is actively monitored and filtered</li>
+                      <li>• Reports are reviewed and acted upon within 24 hours</li>
+                      <li>• Violating users are immediately ejected from the platform</li>
+                      <li>• Content removal is swift and permanent</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-gray-700 font-semibold mb-3">
+                You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. You agree not to:
+              </p>
+              
+              <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mb-4">
+                <li>Post false, misleading, or fraudulent information</li>
+                <li>Harass, bully, or discriminate against other users</li>
+                <li>Share inappropriate, offensive, or illegal content</li>
+                <li>Post content that is hateful, threatening, or promotes violence</li>
+                <li>Share sexually explicit or suggestive content</li>
+                <li>Post spam, scams, or fraudulent offers</li>
+                <li>Attempt to gain unauthorized access to other accounts</li>
+                <li>Use the platform for commercial purposes without permission</li>
+                <li>Violate any applicable laws or regulations</li>
+                <li>Engage in any form of abusive behavior toward other users</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">4. User Content</h3>
+              <p className="text-gray-700 mb-3">
+                You retain ownership of content you post on CampusKinect. However, by posting content, you grant us a license to use, display, and distribute that content on our platform.
+              </p>
+              
+              <p className="text-gray-700 font-medium mb-3">
+                <strong>Third-Party Content Disclaimer:</strong> The contents requested or offered on this website is sole property of the third party individual and not in any way affiliated with the platform. CampusKinect does not endorse, guarantee, or assume responsibility for any user-generated content, including but not limited to goods, services, housing, events, or any other listings.
+              </p>
+              
+              <p className="text-gray-700 font-medium mb-4">
+                <strong>Content Moderation:</strong> We actively monitor all user-generated content and will act on objectionable content reports within 24 hours by removing the content and ejecting users who provide offending content. We maintain the authority to review, edit, or remove any content that we deem inappropriate, harmful, or in violation of these terms. Users who violate our content policies will be immediately suspended or permanently banned from the platform.
+              </p>
+
+              {/* Content Responsibility Warning */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-orange-800 font-semibold text-sm">Content Responsibility</p>
+                    <p className="text-orange-700 text-sm mt-1">
+                      You are responsible for all content you post and its accuracy. We reserve the right to remove content that violates our terms or community guidelines.
                     </p>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-700">
-                You agree to use CampusKinect only for lawful purposes and in accordance with these Terms. You may not use our platform to post, share, or distribute content that is illegal, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, or otherwise objectionable.
-              </p>
-            </section>
-
-            <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">4. Content Guidelines</h3>
-              <p className="text-gray-700 mb-3">All content must be appropriate for a university community. Prohibited content includes:</p>
-              <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
-                <li>Hate speech, discrimination, or harassment</li>
-                <li>Sexually explicit or suggestive content</li>
-                <li>Violence, threats, or intimidation</li>
-                <li>Illegal activities or substances</li>
-                <li>Spam, scams, or fraudulent content</li>
-                <li>Personal information of others without consent</li>
-              </ul>
             </section>
 
             <section>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">5. Privacy and Data</h3>
               <p className="text-gray-700">
-                Your privacy is important to us. Please review our Privacy Policy to understand how we collect, use, and protect your information. By using CampusKinect, you consent to our data practices as described in our Privacy Policy.
+                Your privacy is important to us. We collect and process your personal information in accordance with our Privacy Policy. By using CampusKinect, you consent to our data practices as described in our Privacy Policy.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">6. Account Responsibility</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">6. Safety and Security</h3>
+              <p className="text-gray-700 mb-3">
+                We are committed to maintaining a safe and secure platform for all users. We implement various security measures and content moderation policies to protect our community.
+              </p>
+              
+              <p className="text-gray-700 font-medium mb-3">
+                <strong>Reporting and Blocking:</strong> Users can report inappropriate content or behavior through our reporting system. You can also block users who engage in abusive behavior. All reports are reviewed promptly, and appropriate action is taken within 24 hours.
+              </p>
+              
               <p className="text-gray-700">
-                You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account.
+                We reserve the right to suspend or terminate your account if you violate these Terms of Service or engage in behavior that is harmful to our community.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">7. Termination</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">7. Changes to Terms</h3>
               <p className="text-gray-700">
-                We reserve the right to terminate or suspend your account at any time for violations of these Terms or for any other reason at our sole discretion. Upon termination, your right to use CampusKinect will cease immediately.
+                We may update these Terms of Service from time to time. We will notify you of any material changes via email or through our platform. Your continued use of CampusKinect after such changes constitutes acceptance of the new terms.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">8. Changes to Terms</h3>
-              <p className="text-gray-700">
-                We may update these Terms from time to time. We will notify you of any material changes by posting the new Terms on our platform. Your continued use of CampusKinect after such changes constitutes acceptance of the new Terms.
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">8. Contact Us</h3>
+              <p className="text-gray-700 mb-3">
+                If you have any questions about these Terms of Service, please contact us at:
               </p>
+              
+              <div className="text-gray-700 space-y-1">
+                <p className="font-medium">Email: support@campuskinect.com</p>
+                <p>Address: CampusKinect, Inc.</p>
+                <p className="text-sm text-gray-500 mt-2">Last updated: September 2024</p>
+              </div>
             </section>
 
             {/* Bottom marker */}

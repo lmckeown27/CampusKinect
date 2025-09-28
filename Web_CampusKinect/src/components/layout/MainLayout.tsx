@@ -46,9 +46,16 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
     }
   }, [isAuthenticated, resetTermsCheck]);
 
+  // Debug terms state changes
+  useEffect(() => {
+    console.log(`📋 MainLayout: Terms state changed - shouldShowTerms: ${shouldShowTerms}, isTermsCheckComplete: ${isTermsCheckComplete}`);
+  }, [shouldShowTerms, isTermsCheckComplete]);
+
   const handleAcceptTerms = (shouldRememberChoice: boolean) => {
     if (user) {
+      console.log(`📋 MainLayout: Accepting terms for user ${user.id}, shouldRemember: ${shouldRememberChoice}`);
       acceptTerms(user.id.toString(), shouldRememberChoice);
+      console.log(`📋 MainLayout: Terms accepted, shouldShowTerms: ${shouldShowTerms}, isTermsCheckComplete: ${isTermsCheckComplete}`);
     }
   };
 
