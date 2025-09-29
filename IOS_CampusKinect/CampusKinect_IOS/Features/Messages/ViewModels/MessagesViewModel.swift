@@ -73,6 +73,7 @@ class MessagesViewModel: ObservableObject {
             let updatedConversationData = Conversation(
                 id: updatedConversation.id,
                 createdAt: updatedConversation.createdAt,
+                lastMessageAt: Date(),
                 postId: updatedConversation.postId,
                 postTitle: updatedConversation.postTitle,
                 postType: updatedConversation.postType,
