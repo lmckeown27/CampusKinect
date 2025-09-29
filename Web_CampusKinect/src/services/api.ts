@@ -511,27 +511,27 @@ class ApiService {
         
         // Handle NEW post-centric format (only format supported)
         const frontendConv: Conversation = {
-          id: conv.conversation_id.toString(),
-          createdAt: conv.conversation_created,
-          lastMessageAt: conv.last_message_time,
+          id: conv.id.toString(),
+          createdAt: conv.createdAt,
+          lastMessageAt: conv.lastMessageTime,
           
           // POST CONTEXT (PRIMARY) - FLATTENED
-          postId: conv.post_id.toString(),
-          postTitle: conv.post_title,
-          postType: conv.post_type,
+          postId: conv.postId.toString(),
+          postTitle: conv.postTitle,
+          postType: conv.postType,
           
           // OTHER USER (SECONDARY) - SIMPLIFIED
           otherUser: {
-            id: conv.other_user_id.toString(),
-            university: conv.university_name || "Unknown University",
-            displayName: conv.other_user_display_name || `User ${conv.other_user_id}`
+            id: conv.otherUser.id.toString(),
+            university: conv.otherUser.university || "Unknown University",
+            displayName: conv.otherUser.displayName || `User ${conv.otherUser.id}`
           },
           
           // MESSAGE INFO
-          lastMessage: conv.last_message,
-          lastMessageSenderId: conv.last_message_sender_id?.toString(),
-          lastMessageTime: conv.last_message_time,
-          unreadCount: conv.unread_count || 0
+          lastMessage: typeof conv.lastMessage === 'string' ? conv.lastMessage : conv.lastMessage?.content,
+          lastMessageSenderId: conv.lastMessageSenderId?.toString() || conv.lastMessage?.senderId?.toString(),
+          lastMessageTime: conv.lastMessageTime,
+          unreadCount: conv.unreadCount || 0
         };
         console.log('✅ Transformed to POST-CENTRIC:', frontendConv);
         return frontendConv;
