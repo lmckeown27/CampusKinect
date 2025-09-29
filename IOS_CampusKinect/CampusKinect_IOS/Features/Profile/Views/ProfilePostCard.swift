@@ -143,7 +143,7 @@ struct ProfilePostCard: View {
             }
             
             // Actions (message only for profile posts)
-            PostActions(
+            ProfilePostActions(
                 post: post,
                 onMessage: { /* Handle message */ },
                 onReport: { /* Handle report */ }
@@ -193,4 +193,65 @@ struct ProfilePostCard: View {
 }
 
 // MARK: - Supporting Views (reusing from PostCardView)
+
+// MARK: - Profile Post Actions
+struct ProfilePostActions: View {
+    let post: Post
+    let onMessage: () -> Void
+    let onReport: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 20) {
+            // Report Button (bottom left)
+            ProfileActionButton(
+                systemImage: "flag",
+                isActive: false,
+                activeColor: .red,
+                action: onReport
+            )
+            
+            Spacer()
+            
+            // Direct Message
+            ProfileActionButton(
+                systemImage: "paperplane",
+                isActive: false,
+                activeColor: .blue,
+                action: onMessage
+            )
+        }
+    }
+}
+
+// MARK: - Profile Action Button
+struct ProfileActionButton: View {
+    let systemImage: String
+    let isActive: Bool
+    let activeColor: Color
+    let action: () -> Void
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(isActive ? activeColor : .secondary)
+                .frame(width: 32, height: 32)
+                .background(
+                    Circle()
+                        .fill(isPressed ? Color.gray.opacity(0.2) : Color.clear)
+                )
+                .scaleEffect(isPressed ? 0.9 : 1.0)
+                .animation(.easeInOut(duration: 0.1), value: isPressed)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
+            }
+        }, perform: {})
+        .contentShape(Circle())
+    }
+}
 
