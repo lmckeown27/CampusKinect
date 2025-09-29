@@ -301,7 +301,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 >
                   <button 
                     onClick={handleReportPost}
-                    className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-red-50"
+                    className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
                     style={{
                       backgroundColor: "#dc2626",
                       color: "white",
@@ -345,7 +345,7 @@ const PostCard: React.FC<PostCardProps> = ({
                     </button>
                   )}
 
-                  <div className="w-44 h-px bg-gray-200 my-1" />
+                  <div className="w-44 h-px bg-gray-600 my-1" />
 
                   <button 
                     onClick={handleShare}
@@ -578,7 +578,7 @@ const PostCard: React.FC<PostCardProps> = ({
       </div>
 
       {/* Post Actions */}
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
+      <div className="px-4 py-3 bg-gray-800 border-t border-gray-600">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button

@@ -264,13 +264,13 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
 
             {/* Bottom marker */}
             <div className="text-center py-4 border-t border-gray-600">
-              <p className="text-gray-500 text-sm">End of Terms</p>
+                              <p className="text-gray-400 text-sm">End of Terms</p>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-600 bg-gray-50">
+        <div className="p-6 border-t border-gray-600 bg-gray-800">
           {/* Scroll indicator */}
           {!hasScrolledToBottom && (
             <div className="flex items-center justify-center mb-4 text-orange-600">
@@ -283,7 +283,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
           <div className="flex space-x-4">
             <button
               onClick={onDecline}
-              className="flex-1 px-6 py-3 bg-gray-200 text-gray-200 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-500 transition-colors"
             >
               Decline
             </button>
@@ -293,7 +293,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
               className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                 hasScrolledToBottom
                   ? 'bg-[#708d81] text-white hover:bg-[#5a7268]'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-700 text-gray-400 cursor-not-allowed'
               }`}
             >
               Accept
@@ -315,7 +315,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
             <div className="flex space-x-4">
               <button
                 onClick={() => handleRememberChoice(false)}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-200 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+                                  className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-500 transition-colors"
               >
                 Show every login
               </button>
