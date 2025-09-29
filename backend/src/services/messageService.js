@@ -137,6 +137,7 @@ class MessageService {
             content: conv.last_message,
             senderId: conv.last_message_sender_id
           } : null,
+          lastMessageSenderId: conv.last_message_sender_id,
           lastMessageTime: conv.last_message_time,
           unreadCount: conv.unread_count || 0,
           createdAt: conv.conversation_created
