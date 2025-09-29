@@ -225,6 +225,10 @@ extension HomeViewModel {
         showingCategorySection.toggle()
     }
     
+    func toggleSubcategoryVisibility() {
+        isCategoryExpanded.toggle()
+    }
+    
     // MARK: - Post Type Toggle Methods
     func togglePostType() {
         showingOffers.toggle()

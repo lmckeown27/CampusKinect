@@ -443,16 +443,16 @@ struct CategoryButton: View {
                     .font(.caption)
                     .fontWeight(.medium)
             }
-            .foregroundColor(isSelected ? .white : Color(hex: category.color))
+            .foregroundColor(isSelected ? .white : Color.campusPrimary)
             .frame(width: 80, height: 70)
             .background(
-                isSelected ? Color(hex: category.color) : Color(hex: category.color)?.opacity(0.1)
+                isSelected ? Color.campusPrimary : Color.campusOlive100
             )
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(
-                        isSelected ? Color.clear : Color(hex: category.color)?.opacity(0.3) ?? Color.clear,
+                        isSelected ? Color.clear : Color.campusPrimary.opacity(0.3),
                         lineWidth: 1
                     )
             )
@@ -475,7 +475,7 @@ struct SubcategoryButton: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
-                    isSelected ? Color("BrandPrimary") : Color(.systemGray6)
+                    isSelected ? Color.campusPrimary : Color.campusBackgroundSecondary
                 )
                 .foregroundColor(
                     isSelected ? .white : .primary

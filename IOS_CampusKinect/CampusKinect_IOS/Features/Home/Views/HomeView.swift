@@ -24,12 +24,19 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 // Category Button Section with collapse/expand arrow
                 VStack(spacing: 0) {
-                    if viewModel.showingCategorySection {
-                        CategoryButtonSection()
+                    // Main Category Buttons (always visible)
+                    MainCategoryButtons()
+                        .environmentObject(viewModel)
+                    
+                    // Subcategory Tags (shown when category is selected and expanded)
+                    if let selectedCategoryId = viewModel.selectedCategory,
+                       viewModel.isCategoryExpanded,
+                       let category = PostCategory.allCategories.first(where: { $0.id == selectedCategoryId }) {
+                        SubcategoryTagsSection(category: category)
                             .environmentObject(viewModel)
                     }
                     
-                    // Collapse/Expand Arrow
+                    // Collapse/Expand Arrow (only shows when main category is selected)
                     CategoryToggleArrow()
                         .environmentObject(viewModel)
                 }
@@ -88,8 +95,8 @@ struct HomeView: View {
 }
 
 
-// MARK: - Category Button Section
-struct CategoryButtonSection: View {
+// MARK: - Main Category Buttons (Always Visible)
+struct MainCategoryButtons: View {
     @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
@@ -107,55 +114,62 @@ struct CategoryButtonSection: View {
                 }
             }
             .padding(.horizontal)
-            
-            // Subcategory Tags (shown when category is selected and expanded)
-            if let selectedCategoryId = viewModel.selectedCategory,
-               viewModel.isCategoryExpanded,
-               let category = PostCategory.allCategories.first(where: { $0.id == selectedCategoryId }) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("\(category.displayName) Tags")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Spacer()
-                        
-                        Button("Clear All") {
-                            viewModel.clearCategory()
-                        }
-                        .font(.caption2)
-                        .foregroundColor(.red)
-                    }
-                    .padding(.horizontal)
-                    
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
-                        ForEach(category.subcategories) { subcategory in
-                            Button(action: {
-                                viewModel.toggleTag(subcategory.name)
-                            }) {
-                                Text(subcategory.name)
-                                    .font(.caption)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        viewModel.selectedTags.contains(subcategory.name) ?
-                                        Color("BrandPrimary").opacity(0.2) : Color(.systemGray6)
-                                    )
-                                    .foregroundColor(
-                                        viewModel.selectedTags.contains(subcategory.name) ?
-                                        Color("BrandPrimary") : .secondary
-                                    )
-                                    .cornerRadius(12)
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategory)
         .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Subcategory Tags Section
+struct SubcategoryTagsSection: View {
+    @EnvironmentObject var viewModel: HomeViewModel
+    let category: PostCategory
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("\(category.displayName) Tags")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Button("Clear All") {
+                    viewModel.clearCategory()
+                }
+                .font(.caption2)
+                .foregroundColor(.campusError)
+            }
+            .padding(.horizontal)
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
+                ForEach(category.subcategories) { subcategory in
+                    Button(action: {
+                        viewModel.toggleTag(subcategory.name)
+                    }) {
+                        Text(subcategory.name)
+                            .font(.caption)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                viewModel.selectedTags.contains(subcategory.name) ?
+                                Color.campusPrimary.opacity(0.2) : Color.campusBackgroundSecondary
+                            )
+                            .foregroundColor(
+                                viewModel.selectedTags.contains(subcategory.name) ?
+                                Color.campusPrimary : .secondary
+                            )
+                            .cornerRadius(12)
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.vertical, 8)
+        .background(Color.campusOlive50)
+        .cornerRadius(12)
+        .padding(.horizontal)
+        .transition(.opacity.combined(with: .move(edge: .top)))
+        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategory)
     }
 }
 
@@ -358,24 +372,27 @@ struct CategoryToggleArrow: View {
     @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
-        Button(action: {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                viewModel.toggleCategorySectionVisibility()
+        // Only show arrow when a main category is selected
+        if viewModel.selectedCategory != nil {
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    viewModel.toggleSubcategoryVisibility()
+                }
+            }) {
+                HStack {
+                    Spacer()
+                    
+                    Image(systemName: viewModel.isCategoryExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                }
+                .padding(.vertical, 8)
+                .background(Color.campusBackgroundSecondary.opacity(0.5))
             }
-        }) {
-            HStack {
-                Spacer()
-                
-                Image(systemName: viewModel.showingCategorySection ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-            }
-            .padding(.vertical, 8)
-            .background(Color(.systemGray6).opacity(0.5))
+            .buttonStyle(PlainButtonStyle())
         }
-        .buttonStyle(PlainButtonStyle())
     }
 }
 
