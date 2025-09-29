@@ -107,8 +107,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           try {
             console.log('📬 Loading messages for conversation ID:', existingConversation.id);
             const messagesData = await apiService.getMessages(existingConversation.id);
+            console.log('🔍 Raw messages response:', messagesData);
+            console.log('🔍 Messages data:', messagesData.data);
+            console.log('🔍 Messages array length:', messagesData.data?.length);
             setChatMessages(messagesData.data || []);
-            console.log('✅ Loaded messages:', messagesData.data?.length || 0);
+            console.log('✅ Set chatMessages state to:', messagesData.data || []);
           } catch (error) {
             console.error('❌ Failed to load messages:', error);
             setChatMessages([]);
@@ -470,6 +473,10 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
+        {(() => {
+          console.log('🎨 Rendering messages area. chatMessages:', chatMessages, 'length:', chatMessages.length);
+          return null;
+        })()}
         {chatMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="w-20 h-20 bg-[#708d81] rounded-full flex items-center justify-center mb-6">
