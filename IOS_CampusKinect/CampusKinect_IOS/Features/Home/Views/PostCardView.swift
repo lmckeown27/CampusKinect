@@ -105,10 +105,7 @@ struct PostCardView: View {
         .fullScreenCover(isPresented: $showingImageViewer) {
             ImageViewer(
                 images: post.images,
-                selectedIndex: selectedImageIndex,
-                onDismiss: {
-                    showingImageViewer = false
-                }
+                selectedIndex: selectedImageIndex
             )
         }
         .sheet(isPresented: $showingReportView) {
@@ -146,9 +143,10 @@ struct PostCardView: View {
     private func handleRepost() {
         Task {
             do {
-                let response = try await apiService.toggleRepost(post.id)
+                _ = try await apiService.toggleRepost(post.id)
+                // Toggle the local state since API doesn't return the new state
                 await MainActor.run {
-                    isReposted = response.isReposted
+                    isReposted.toggle()
                 }
             } catch {
                 print("Error handling repost: \(error)")
@@ -159,9 +157,10 @@ struct PostCardView: View {
     private func handleBookmark() {
         Task {
             do {
-                let response = try await apiService.toggleBookmark(post.id)
+                _ = try await apiService.toggleBookmark(post.id)
+                // Toggle the local state since API doesn't return the new state
                 await MainActor.run {
-                    isBookmarked = response.isBookmarked
+                    isBookmarked.toggle()
                 }
             } catch {
                 print("Error handling bookmark: \(error)")
