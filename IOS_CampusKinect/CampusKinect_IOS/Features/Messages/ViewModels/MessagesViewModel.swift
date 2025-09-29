@@ -73,8 +73,9 @@ class MessagesViewModel: ObservableObject {
             let updatedConversationData = Conversation(
                 id: updatedConversation.id,
                 createdAt: updatedConversation.createdAt,
-                lastMessageAt: Date(),
-                post: updatedConversation.post, // Keep post context
+                postId: updatedConversation.postId,
+                postTitle: updatedConversation.postTitle,
+                postType: updatedConversation.postType,
                 otherUser: updatedConversation.otherUser,
                 lastMessage: lastMessage, // Now a simple string
                 lastMessageSenderId: senderId,
