@@ -125,7 +125,7 @@ struct SubcategoryTagsSection: View {
     let category: PostCategory
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("\(category.displayName) Tags")
                     .font(.caption)
@@ -148,26 +148,32 @@ struct SubcategoryTagsSection: View {
                     }) {
                         Text(subcategory.name)
                             .font(.caption)
+                            .fontWeight(.medium)
                             .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
+                            .padding(.vertical, 8)
                             .background(
                                 viewModel.selectedTags.contains(subcategory.name) ?
-                                Color.campusPrimary.opacity(0.2) : Color.campusBackgroundSecondary
+                                Color.campusPrimary : Color.campusOlive100
                             )
                             .foregroundColor(
                                 viewModel.selectedTags.contains(subcategory.name) ?
-                                Color.campusPrimary : .secondary
+                                .white : Color.campusPrimary
                             )
                             .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(
+                                        viewModel.selectedTags.contains(subcategory.name) ?
+                                        Color.clear : Color.campusPrimary.opacity(0.3),
+                                        lineWidth: 1
+                                    )
+                            )
                     }
                 }
             }
             .padding(.horizontal)
         }
-        .padding(.vertical, 8)
-        .background(Color.campusOlive50)
-        .cornerRadius(12)
-        .padding(.horizontal)
+        .padding(.vertical, 12)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .animation(.easeInOut(duration: 0.2), value: viewModel.selectedCategory)
     }
