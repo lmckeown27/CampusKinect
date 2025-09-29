@@ -18,7 +18,7 @@ class ChatViewModel: ObservableObject {
     @Published var newMessageText = ""
     
     private let apiService = APIService.shared
-    private var currentUserId: Int?
+    var currentUserId: Int?
     private var pollTimer: Timer?
     
     init(currentUserId: Int? = nil) {
