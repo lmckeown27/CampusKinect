@@ -59,7 +59,7 @@ struct Conversation: Codable, Identifiable, Equatable {
     }
     
     var displayTitle: String {
-        return post.title
+        return postTitle
     }
     
     var displaySubtitle: String {
