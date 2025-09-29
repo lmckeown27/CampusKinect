@@ -18,6 +18,22 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
   const [isCheckingTerms, setIsCheckingTerms] = useState(false);
   const [hasAcceptedInCurrentSession, setHasAcceptedInCurrentSession] = useState(false);
 
+  // Initialize terms check state from sessionStorage to persist across tab navigation
+  useEffect(() => {
+    const sessionTermsComplete = sessionStorage.getItem('campusConnect_termsCheckComplete');
+    const sessionTermsAccepted = sessionStorage.getItem('campusConnect_termsAcceptedInSession');
+    
+    if (sessionTermsComplete === 'true') {
+      setIsTermsCheckComplete(true);
+      console.log('📋 Hook: Restored terms check complete state from session');
+    }
+    
+    if (sessionTermsAccepted === 'true') {
+      setHasAcceptedInCurrentSession(true);
+      console.log('📋 Hook: Restored terms accepted in session state');
+    }
+  }, []);
+
   const checkTermsForUser = useCallback((userId: string) => {
     // Prevent multiple simultaneous checks
     if (isCheckingTerms) {
@@ -32,22 +48,23 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
       return;
     }
 
+    // Quick check: if user doesn't need terms popup, set complete immediately
+    const needsTerms = termsOfServiceManager.shouldShowTermsPopup(userId);
+    if (!needsTerms) {
+      console.log(`📋 CRITICAL: Terms popup NOT NEEDED for user ${userId} - setting complete immediately`);
+      setIsTermsCheckComplete(true);
+      setShouldShowTerms(false);
+      return;
+    }
+
     setIsCheckingTerms(true);
     
-    // Small delay to ensure UI is stable before checking terms
+    // Small delay to ensure UI is stable before showing terms popup
     setTimeout(() => {
-      const needsTerms = termsOfServiceManager.shouldShowTermsPopup(userId);
-      
-      setShouldShowTerms(needsTerms);
+      setShouldShowTerms(true);
       setIsCheckingTerms(false);
-      
-      if (needsTerms) {
-        console.log(`📋 CRITICAL: Terms popup WILL BE SHOWN for user ${userId}`);
-        setIsTermsCheckComplete(false);
-      } else {
-        console.log(`📋 CRITICAL: Terms popup NOT NEEDED for user ${userId}`);
-        setIsTermsCheckComplete(true);
-      }
+      setIsTermsCheckComplete(false);
+      console.log(`📋 CRITICAL: Terms popup WILL BE SHOWN for user ${userId}`);
     }, 100);
   }, [isCheckingTerms, hasAcceptedInCurrentSession]);
 
@@ -59,6 +76,10 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
     setShouldShowTerms(false);
     setIsTermsCheckComplete(true);
     setHasAcceptedInCurrentSession(true); // Mark as accepted in current session
+    
+    // Persist session state to prevent re-showing terms when switching tabs
+    sessionStorage.setItem('campusConnect_termsCheckComplete', 'true');
+    sessionStorage.setItem('campusConnect_termsAcceptedInSession', 'true');
     
     console.log(`📋 Hook: After state updates called - Terms accepted for user ${userId}, remember choice: ${shouldRememberChoice}`);
     
@@ -79,6 +100,12 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
     setIsTermsCheckComplete(false);
     setIsCheckingTerms(false);
     setHasAcceptedInCurrentSession(false); // Reset session flag on logout
+    
+    // Clear session storage when resetting (e.g., on logout)
+    sessionStorage.removeItem('campusConnect_termsCheckComplete');
+    sessionStorage.removeItem('campusConnect_termsAcceptedInSession');
+    
+    console.log('📋 Hook: Terms check reset and session storage cleared');
   };
 
   return {
