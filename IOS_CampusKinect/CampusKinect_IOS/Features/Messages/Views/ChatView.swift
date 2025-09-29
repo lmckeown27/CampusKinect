@@ -73,7 +73,7 @@ struct ChatView: View {
         }
         .onAppear {
             Task {
-                await viewModel.loadPostChat(postId: postId, otherUserId: otherUserId)
+                await viewModel.loadChat(with: otherUserId)
             }
         }
         .alert("Error", isPresented: Binding<Bool>(
@@ -296,7 +296,7 @@ struct CommentStyleMessageView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
                     
-                    Text(message.timestamp.formatted(.relative(presentation: .named)))
+                    Text(message.createdAt.formatted(.relative(presentation: .named)))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
