@@ -80,15 +80,15 @@ struct ConversationPost: Codable, Equatable {
     let author: ConversationUser
     
     enum CodingKeys: String, CodingKey {
-        case id = "post_id"
-        case title = "post_title"
-        case description = "post_description"
-        case type = "post_type"
-        case location = "post_location"
-        case expiresAt = "post_expires_at"
-        case isFulfilled = "post_is_fulfilled"
-        case createdAt = "post_created_at"
-        case author = "post_author"
+        case id
+        case title
+        case description
+        case type
+        case location
+        case expiresAt
+        case isFulfilled
+        case createdAt
+        case author
     }
     
     var typeDisplayName: String {
