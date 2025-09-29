@@ -568,7 +568,7 @@ const CreatePostTab: React.FC = () => {
               id="title"
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
-                    className="w-full px-4 py-3 text-xl font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-white"
+                    className="w-full px-4 py-3 text-xl font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-gray-900"
                     placeholder="Give your post a clear title"
             />
             {validationErrors.title && (
@@ -655,7 +655,7 @@ const CreatePostTab: React.FC = () => {
                     id="location"
                     value={formData.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    className="px-6 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-sm text-white"
+                    className="px-6 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-sm text-gray-900"
                     placeholder="Location (optional)"
                   />
                   
@@ -709,7 +709,7 @@ const CreatePostTab: React.FC = () => {
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
                             rows={8}
-                            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none text-white"
+                            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none text-gray-900"
                             placeholder="Describe what you're offering or looking for..."
             />
             

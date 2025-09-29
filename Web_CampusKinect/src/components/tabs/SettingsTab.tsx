@@ -92,7 +92,7 @@ const SettingsTab: React.FC = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter your username"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-gray-900"
                   />
                   <div className="mt-2">
                     <p className="text-sm text-white">
