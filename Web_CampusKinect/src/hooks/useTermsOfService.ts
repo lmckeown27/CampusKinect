@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { termsOfServiceManager } from '../services/termsOfServiceManager';
 
 interface UseTermsOfServiceReturn {
@@ -16,11 +16,19 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
   const [shouldShowTerms, setShouldShowTerms] = useState(false);
   const [isTermsCheckComplete, setIsTermsCheckComplete] = useState(false);
   const [isCheckingTerms, setIsCheckingTerms] = useState(false);
+  const [hasAcceptedInCurrentSession, setHasAcceptedInCurrentSession] = useState(false);
 
-  const checkTermsForUser = (userId: string) => {
+  const checkTermsForUser = useCallback((userId: string) => {
     // Prevent multiple simultaneous checks
     if (isCheckingTerms) {
       console.log('📋 CRITICAL: Terms check already in progress - ignoring duplicate request');
+      return;
+    }
+
+    // If user has already accepted terms in this session, don't check again
+    if (hasAcceptedInCurrentSession) {
+      console.log('📋 CRITICAL: Terms already accepted in current session - skipping check');
+      setIsTermsCheckComplete(true);
       return;
     }
 
@@ -41,7 +49,7 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
         setIsTermsCheckComplete(true);
       }
     }, 100);
-  };
+  }, [isCheckingTerms, hasAcceptedInCurrentSession]);
 
   const acceptTerms = (userId: string, shouldRememberChoice: boolean) => {
     console.log(`📋 Hook: acceptTerms called - userId: ${userId}, shouldRemember: ${shouldRememberChoice}`);
@@ -50,6 +58,7 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
     termsOfServiceManager.acceptTerms(userId, shouldRememberChoice);
     setShouldShowTerms(false);
     setIsTermsCheckComplete(true);
+    setHasAcceptedInCurrentSession(true); // Mark as accepted in current session
     
     console.log(`📋 Hook: After state updates called - Terms accepted for user ${userId}, remember choice: ${shouldRememberChoice}`);
     
@@ -69,6 +78,7 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
     setShouldShowTerms(false);
     setIsTermsCheckComplete(false);
     setIsCheckingTerms(false);
+    setHasAcceptedInCurrentSession(false); // Reset session flag on logout
   };
 
   return {

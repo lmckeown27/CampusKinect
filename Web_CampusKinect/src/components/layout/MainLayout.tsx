@@ -37,7 +37,7 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
       console.log(`📋 CRITICAL: Checking terms for user ${user.id}`);
       checkTermsForUser(user.id.toString());
     }
-  }, [isAuthenticated, user, isTermsCheckComplete, checkTermsForUser]);
+  }, [isAuthenticated, user, isTermsCheckComplete]);
 
   // Reset terms check when authentication state changes
   useEffect(() => {
