@@ -14,6 +14,7 @@ struct PostCardView: View {
     @State private var showingMessageConfirmation = false
     @State private var showingReportView = false
     @State private var showingBlockUserConfirmation = false
+    @State private var showingThreeDotsMenu = false
     @State private var isBookmarked = false
     @State private var isReposted = false
     @EnvironmentObject var authManager: AuthenticationManager
@@ -22,8 +23,13 @@ struct PostCardView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Header
-            PostHeader(post: post)
+            // Header with 3-dot menu
+            PostHeaderWithMenu(
+                post: post,
+                onThreeDotsMenu: {
+                    showingThreeDotsMenu = true
+                }
+            )
             
             // Content
             PostContent(post: post)
@@ -49,13 +55,15 @@ struct PostCardView: View {
                 PostLocation(location: location)
             }
             
-            // Actions
-            PostActions(
+            // Bottom Action Bar
+            PostActionBar(
                 post: post,
+                isBookmarked: isBookmarked,
+                isReposted: isReposted,
                 onMessage: handleMessage,
-                onReport: {
-                    showingReportView = true
-                }
+                onRepost: handleRepost,
+                onBookmark: handleBookmark,
+                onShare: handleShare
             )
         }
         .padding()
@@ -113,6 +121,21 @@ struct PostCardView: View {
                 contentId: post.id,
                 contentType: .post,
                 contentAuthor: post.poster.displayName
+            )
+        }
+        .actionSheet(isPresented: $showingThreeDotsMenu) {
+            ActionSheet(
+                title: Text("Post Options"),
+                buttons: [
+                    .default(Text("Report Post")) {
+                        showingReportView = true
+                    },
+                    post.poster.id != authManager.currentUser?.id ? 
+                        .destructive(Text("Block User")) {
+                            showingBlockUserConfirmation = true
+                        } : nil,
+                    .cancel()
+                ].compactMap { $0 }
             )
         }
         .alert("Block User", isPresented: $showingBlockUserConfirmation) {
@@ -210,9 +233,10 @@ struct PostCardView: View {
     }
 }
 
-// MARK: - Post Header
-struct PostHeader: View {
+// MARK: - Post Header with Menu
+struct PostHeaderWithMenu: View {
     let post: Post
+    let onThreeDotsMenu: () -> Void
     
     var body: some View {
         HStack {
@@ -223,7 +247,7 @@ struct PostHeader: View {
                     .aspectRatio(contentMode: .fill)
             } placeholder: {
                 Circle()
-                    .fill(Color("BrandPrimary"))
+                    .fill(Color.campusPrimary)
                     .overlay(
                         Text(post.user.initials)
                             .font(.caption)
@@ -255,6 +279,17 @@ struct PostHeader: View {
             
             // Category Badge
             CategoryBadge(category: post.categoryDisplayName)
+            
+            // 3-Dot Menu Button
+            Button(action: onThreeDotsMenu) {
+                Image(systemName: "ellipsis")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.secondary)
+                    .frame(width: 32, height: 32)
+                    .background(Color.clear)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
 }
@@ -375,71 +410,89 @@ struct PostLocation: View {
     }
 }
 
-// MARK: - Post Actions
-struct PostActions: View {
+// MARK: - Post Action Bar
+struct PostActionBar: View {
     let post: Post
+    let isBookmarked: Bool
+    let isReposted: Bool
     let onMessage: () -> Void
-    let onReport: () -> Void
+    let onRepost: () -> Void
+    let onBookmark: () -> Void
+    let onShare: () -> Void
     
     var body: some View {
-        HStack(spacing: 20) {
-            // Report Button (bottom left)
-            ActionButton(
-                systemImage: "flag",
-                count: nil,
+        HStack(spacing: 0) {
+            // Message Button
+            PostActionButton(
+                systemImage: "paperplane",
                 isActive: false,
-                activeColor: .red,
-                action: onReport
+                activeColor: .blue,
+                action: onMessage
             )
             
             Spacer()
             
-            // Direct Message
-            ActionButton(
-                systemImage: "paperplane",
-                count: nil,
+            // Repost Button
+            PostActionButton(
+                systemImage: isReposted ? "arrow.2.squarepath.fill" : "arrow.2.squarepath",
+                isActive: isReposted,
+                activeColor: .green,
+                action: onRepost
+            )
+            
+            Spacer()
+            
+            // Bookmark Button
+            PostActionButton(
+                systemImage: isBookmarked ? "bookmark.fill" : "bookmark",
+                isActive: isBookmarked,
+                activeColor: .orange,
+                action: onBookmark
+            )
+            
+            Spacer()
+            
+            // Share Button
+            PostActionButton(
+                systemImage: "square.and.arrow.up",
                 isActive: false,
-                action: onMessage
+                activeColor: .blue,
+                action: onShare
             )
         }
+        .padding(.top, 8)
     }
 }
 
-// MARK: - Action Button
-struct ActionButton: View {
+// MARK: - Post Action Button
+struct PostActionButton: View {
     let systemImage: String
-    let count: Int?
     let isActive: Bool
     let activeColor: Color
     let action: () -> Void
     
-    init(
-        systemImage: String,
-        count: Int? = nil,
-        isActive: Bool,
-        activeColor: Color = .blue,
-        action: @escaping () -> Void
-    ) {
-        self.systemImage = systemImage
-        self.count = count
-        self.isActive = isActive
-        self.activeColor = activeColor
-        self.action = action
-    }
+    @State private var isPressed = false
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: systemImage)
-                    .font(.caption)
-                
-                if let count = count, count > 0 {
-                    Text("\(count)")
-                        .font(.caption)
-                }
-            }
-            .foregroundColor(isActive ? activeColor : .secondary)
+            Image(systemName: systemImage)
+                .font(.system(size: 20, weight: .medium))
+                .foregroundColor(isActive ? activeColor : .secondary)
+                .frame(width: 44, height: 44)
+                .background(
+                    Circle()
+                        .fill(isPressed ? Color.gray.opacity(0.2) : Color.clear)
+                )
+                .scaleEffect(isPressed ? 0.9 : 1.0)
+                .animation(.easeInOut(duration: 0.1), value: isPressed)
         }
+        .buttonStyle(PlainButtonStyle())
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
+            }
+        }, perform: {})
+        .contentShape(Circle())
     }
 }
 
@@ -453,8 +506,8 @@ struct CategoryBadge: View {
             .fontWeight(.medium)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(Color("BrandPrimary").opacity(0.1))
-            .foregroundColor(Color("BrandPrimary"))
+            .background(Color.campusPrimary.opacity(0.1))
+            .foregroundColor(Color.campusPrimary)
             .cornerRadius(12)
     }
 }
