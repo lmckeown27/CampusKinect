@@ -429,7 +429,7 @@ const PostCard: React.FC<PostCardProps> = ({
             {/* Display Name - Large and Bold */}
             <div className="flex items-center space-x-2 mb-0">
               <p 
-                                    className="font-bold text-white truncate cursor-pointer"
+                                    className="font-bold text-gray-900 truncate cursor-pointer"
                   style={{
                     fontSize: "18px",
                     lineHeight: "20px",
@@ -447,7 +447,7 @@ const PostCard: React.FC<PostCardProps> = ({
             {/* Username - Small and Separate */}
             {post.poster?.username && post.poster?.firstName && (
               <p 
-                className="text-gray-400 truncate cursor-pointer"
+                className="text-gray-600 truncate cursor-pointer"
                   style={{
                     fontSize: "10px",
                     lineHeight: "12px",
@@ -461,7 +461,7 @@ const PostCard: React.FC<PostCardProps> = ({
             
             {/* Major and Year */}
             {post.poster?.major && (
-              <p className="text-xs text-gray-300 truncate">
+              <p className="text-xs text-gray-500 truncate">
                   {post.poster?.major} •{" "}
                   {post.poster?.year
                     ? getYearLabel(post.poster.year)
