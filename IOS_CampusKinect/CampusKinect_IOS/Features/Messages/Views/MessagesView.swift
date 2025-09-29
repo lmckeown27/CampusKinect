@@ -142,8 +142,8 @@ struct MessagesView: View {
                 List {
                     ForEach(filteredConversations, id: \.id) { conversation in
                         ConversationRow(conversation: conversation) {
-                            print("📱 ConversationRow tapped for POST: '\(conversation.post.title)' with user: \(conversation.otherUser.displayName)")
-                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: nil, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
+                            print("📱 ConversationRow tapped for POST: '\(conversation.postTitle)' with user: \(conversation.otherUser.displayName)")
+                            selectedUser = User(id: conversation.otherUser.id, username: "user\(conversation.otherUser.id)", email: nil, firstName: "User", lastName: "\(conversation.otherUser.id)", displayName: conversation.otherUser.displayName, profilePicture: nil, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
                             shouldNavigateToChat = true
                             print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), shouldNavigateToChat=\(shouldNavigateToChat)")
                         }
@@ -180,8 +180,7 @@ struct MessagesView: View {
         // Filter by search text first
         let searchFiltered = searchText.isEmpty ? allConversations : allConversations.filter { conversation in
             // POST-CENTRIC SEARCH: Search post title first, then user, then message
-            conversation.post.title.localizedCaseInsensitiveContains(searchText) ||
-            conversation.post.description.localizedCaseInsensitiveContains(searchText) ||
+            conversation.postTitle.localizedCaseInsensitiveContains(searchText) ||
             conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
             conversation.lastMessage?.localizedCaseInsensitiveContains(searchText) ?? false
         }
@@ -252,20 +251,20 @@ struct ConversationRow: View {
                         .background(postColor.opacity(0.1))
                         .cornerRadius(8)
                     
-                    // Post status indicator
-                    Text(conversation.post.statusText)
+                    // Post type indicator
+                    Text(conversation.postType.capitalized)
                         .font(.caption2)
                         .fontWeight(.medium)
-                        .foregroundColor(Color(conversation.post.statusColor))
+                        .foregroundColor(postColor)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Color(conversation.post.statusColor).opacity(0.1))
+                        .background(postColor.opacity(0.1))
                         .cornerRadius(4)
                 }
                 
                 VStack(alignment: .leading, spacing: 6) {
                     // POST TITLE (PRIMARY EMPHASIS)
-                    Text(conversation.post.title)
+                    Text(conversation.postTitle)
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
@@ -329,7 +328,7 @@ struct ConversationRow: View {
     
     // MARK: - Post Visual Helpers
     private var postIcon: String {
-        switch conversation.post.type.lowercased() {
+        switch conversation.postType.lowercased() {
         case "goods": return "cube.box"
         case "services": return "wrench.and.screwdriver"
         case "housing": return "house"
@@ -339,7 +338,7 @@ struct ConversationRow: View {
     }
     
     private var postColor: Color {
-        switch conversation.post.type.lowercased() {
+        switch conversation.postType.lowercased() {
         case "goods": return .blue
         case "services": return .green
         case "housing": return .orange
