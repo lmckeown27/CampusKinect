@@ -227,6 +227,8 @@ const MessagesTab: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
+  const [conversationMessages, setConversationMessages] = useState<any[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [activeTab, setActiveTab] = useState<'unread' | 'primary'>('primary');
   
   // New Message Modal state
@@ -280,6 +282,34 @@ const MessagesTab: React.FC = () => {
     console.log('🚀 MessagesTab mounted - fetching initial data');
     fetchConversations();
   }, [fetchConversations]);
+
+  // Load messages when currentConversation changes
+  useEffect(() => {
+    const loadConversationMessages = async () => {
+      if (!currentConversation) {
+        setConversationMessages([]);
+        return;
+      }
+
+      setLoadingMessages(true);
+      try {
+        console.log('📬 Loading messages for conversation ID:', currentConversation.id);
+        const messagesData = await apiService.getMessages(currentConversation.id);
+        console.log('🔍 Raw messages response:', messagesData);
+        console.log('🔍 Messages data:', messagesData.data);
+        console.log('🔍 Messages array length:', messagesData.data?.length);
+        setConversationMessages(messagesData.data || []);
+        console.log('✅ Set conversationMessages state to:', messagesData.data || []);
+      } catch (error) {
+        console.error('❌ Failed to load messages:', error);
+        setConversationMessages([]);
+      } finally {
+        setLoadingMessages(false);
+      }
+    };
+
+    loadConversationMessages();
+  }, [currentConversation]);
 
   // Search users with debouncing
   useEffect(() => {
@@ -354,6 +384,10 @@ const MessagesTab: React.FC = () => {
     try {
       await sendMessage(currentConversation.id, newMessage.trim());
       setNewMessage('');
+      
+      // Reload messages for the current conversation
+      const messagesData = await apiService.getMessages(currentConversation.id);
+      setConversationMessages(messagesData.data || []);
     } catch (error) {
       console.error('Failed to send message:', error);
     }
@@ -861,32 +895,59 @@ const MessagesTab: React.FC = () => {
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-8" style={{ backgroundColor: '#737373' }}>
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.senderId === 'current-user' ? 'justify-end' : 'justify-start'} mb-4`}
-                  >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                        message.senderId === 'current-user' 
-                          ? 'bg-[#708d81] text-white'
-                          : 'bg-[#f0f2f0] text-[#708d81]'
-                      }`}
-                    >
-                      <p className="text-sm">{message.content}</p>
-                      <p className={`text-xs mt-1 ${
-                        message.senderId === 'current-user' ? 'text-white opacity-80' : 'text-[#708d81] opacity-50'
-                      }`}>
-                        {new Date(message.createdAt).toLocaleTimeString([], { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </p>
+                {(() => {
+                  console.log('🎨 Rendering messages area. conversationMessages:', conversationMessages, 'length:', conversationMessages.length);
+                  return null;
+                })()}
+                {conversationMessages.length === 0 && !loadingMessages ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <div className="w-20 h-20 bg-[#708d81] rounded-full flex items-center justify-center mb-6">
+                      <User size={40} className="text-white" />
                     </div>
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      Start the conversation
+                    </h3>
+                    <p className="text-white opacity-70 max-w-md mb-4">
+                      Send the first message to start chatting about "{currentConversation?.postTitle}"
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  conversationMessages.map((message) => {
+                    const isCurrentUser = message.senderId === currentUser?.id?.toString();
+                    return (
+                      <div
+                        key={message.id}
+                        className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'} mb-4`}
+                      >
+                        <div
+                          className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
+                            isCurrentUser 
+                              ? 'bg-[#708d81] text-white'
+                              : 'bg-[#f0f2f0] text-[#708d81]'
+                          }`}
+                        >
+                          {/* Display sender name for non-current users */}
+                          {!isCurrentUser && (
+                            <p className="text-xs font-semibold mb-1 text-[#708d81] opacity-70">
+                              {message.sender?.displayName || currentConversation?.otherUser.displayName}
+                            </p>
+                          )}
+                          <p className="text-sm">{message.content}</p>
+                          <p className={`text-xs mt-1 ${
+                            isCurrentUser ? 'text-white opacity-80' : 'text-[#708d81] opacity-50'
+                          }`}>
+                            {new Date(message.createdAt).toLocaleTimeString([], { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
                 
-                {isLoading && (
+                {loadingMessages && (
                   <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
                   </div>
