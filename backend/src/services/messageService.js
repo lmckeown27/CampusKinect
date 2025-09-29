@@ -359,10 +359,21 @@ class MessageService {
           return await this.getConversationById(conv.id, userId);
         }
         
-        // If conversation exists but is inactive, DO NOT reactivate it
-        // Instead, let it create a new conversation below
-        // This ensures users get a fresh start when they recreate conversations
-        console.log('🗑️ Found inactive conversation:', conv.id, '- will create new conversation for fresh start');
+        // If conversation exists but is inactive, permanently delete it and its messages
+        // This ensures users get a truly fresh start when they recreate conversations
+        console.log('🗑️ Found inactive conversation:', conv.id, '- permanently deleting for fresh start');
+        
+        // Delete all messages in the inactive conversation
+        await dbQuery(`
+          DELETE FROM messages WHERE conversation_id = $1
+        `, [conv.id]);
+        
+        // Delete the inactive conversation
+        await dbQuery(`
+          DELETE FROM conversations WHERE id = $1
+        `, [conv.id]);
+        
+        console.log('✅ Permanently deleted inactive conversation and its messages');
       }
 
       // Check if other user exists and is active

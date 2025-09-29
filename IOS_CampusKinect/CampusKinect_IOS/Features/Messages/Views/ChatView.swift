@@ -288,7 +288,8 @@ struct ChatView: View {
                         CommentStyleMessageView(
                             message: message,
                             isCurrentUser: message.senderId == authManager.currentUser?.id,
-                            otherUserName: otherUserName
+                            otherUserName: otherUserName,
+                            currentUserName: authManager.currentUser?.displayName ?? "You"
                         )
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(
@@ -540,6 +541,7 @@ struct CommentStyleMessageView: View {
     let message: Message
     let isCurrentUser: Bool
     let otherUserName: String
+    let currentUserName: String
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -548,7 +550,7 @@ struct CommentStyleMessageView: View {
                 .fill(isCurrentUser ? Color.campusPrimary : Color.campusGrey400)
                 .frame(width: 32, height: 32)
                 .overlay(
-                    Text(isCurrentUser ? "You" : String(otherUserName.prefix(1)))
+                    Text(isCurrentUser ? String(currentUserName.prefix(1)) : String(otherUserName.prefix(1)))
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -557,7 +559,7 @@ struct CommentStyleMessageView: View {
             VStack(alignment: .leading, spacing: 4) {
                 // Username and timestamp (like comment header)
                 HStack(spacing: 8) {
-                    Text(isCurrentUser ? "You" : otherUserName)
+                    Text(isCurrentUser ? currentUserName : otherUserName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
