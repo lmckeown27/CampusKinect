@@ -571,17 +571,19 @@ class ApiService {
       const messages = response.data.data.messages?.map((msg: any) => ({
         id: msg.id.toString(),
         content: msg.content,
-        senderId: msg.senderId.toString(), // Use direct senderId from backend instead of msg.sender.id
+        senderId: msg.sender_id.toString(), // Backend sends sender_id (snake_case)
         conversationId: conversationId,
-        isRead: msg.isRead,
-        createdAt: msg.createdAt,
+        isRead: msg.is_read, // Backend sends is_read (snake_case)
+        createdAt: msg.created_at, // Backend sends created_at (snake_case)
+        messageType: msg.message_type || 'text', // Backend sends message_type
+        mediaUrl: msg.media_url, // Backend sends media_url for images
         sender: {
-          id: msg.sender.id.toString(),
-          username: msg.sender.username,
-          firstName: msg.sender.firstName,
-          lastName: msg.sender.lastName,
-          displayName: msg.sender.displayName,
-          profilePicture: msg.sender.profilePicture
+          id: msg.sender_id.toString(),
+          username: msg.username, // Backend sends flat username field
+          firstName: msg.first_name, // Backend sends first_name (snake_case)
+          lastName: msg.last_name, // Backend sends last_name (snake_case)
+          displayName: msg.display_name, // Backend sends display_name (snake_case)
+          profilePicture: msg.profile_picture // Backend sends profile_picture (snake_case)
         }
       })) || [];
 
