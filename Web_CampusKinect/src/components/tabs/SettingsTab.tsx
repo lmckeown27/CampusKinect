@@ -68,23 +68,23 @@ const SettingsTab: React.FC = () => {
                 <div className="flex items-center">
                   <User size={20} className="text-[#708d81]" />
                   <div className="w-3"></div>
-                  <h2 className="text-lg font-semibold text-gray-900">Account</h2>
+                  <h2 className="text-lg font-semibold text-white">Account</h2>
                 </div>
               </div>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Display Name
                   </label>
                   <input
                     type="text"
                     value={user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'Loading...'}
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-grey-medium text-gray-600"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-grey-medium text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Username
                   </label>
                   <input
@@ -92,13 +92,13 @@ const SettingsTab: React.FC = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter your username"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-white"
                   />
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-white">
                       <span className="font-medium">Email:</span> {user?.email || 'Loading...'}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed for security reasons</p>
+                    <p className="text-xs text-gray-300 mt-1">Email cannot be changed for security reasons</p>
                   </div>
                 </div>
               </div>
@@ -110,7 +110,7 @@ const SettingsTab: React.FC = () => {
                 <div className="flex items-center">
                   <FileText size={20} className="text-[#708d81]" />
                   <div className="w-3"></div>
-                  <h2 className="text-lg font-semibold text-gray-900">Legal & Documents</h2>
+                  <h2 className="text-lg font-semibold text-white">Legal & Documents</h2>
                 </div>
               </div>
               <div className="p-6 space-y-4">
@@ -224,7 +224,7 @@ const SettingsTab: React.FC = () => {
                 <div className="flex items-center">
                   <ShieldCheck size={20} className="text-[#708d81]" />
                   <div className="w-3"></div>
-                  <h2 className="text-lg font-semibold text-gray-900">Privacy & Safety</h2>
+                  <h2 className="text-lg font-semibold text-white">Privacy & Safety</h2>
                 </div>
               </div>
               <div className="p-6 space-y-4">
@@ -263,7 +263,7 @@ const SettingsTab: React.FC = () => {
                 <div className="flex items-center">
                   <HelpCircle size={20} className="text-[#708d81]" />
                   <div className="w-3"></div>
-                  <h2 className="text-lg font-semibold text-gray-900">Support & Help</h2>
+                  <h2 className="text-lg font-semibold text-white">Support & Help</h2>
                 </div>
               </div>
               <div className="p-6 space-y-4">
