@@ -70,9 +70,6 @@ struct PostCardView: View {
         .background(Color.campusBackground)
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-        .onTapGesture {
-            handleMessage()
-        }
         .contextMenu {
             // Message
             Button(action: handleMessage) {
@@ -82,7 +79,7 @@ struct PostCardView: View {
             // Repost
             Button(action: handleRepost) {
                 Label(isReposted ? "Remove Repost" : "Repost", 
-                      systemImage: isReposted ? "arrow.2.squarepath.fill" : "arrow.2.squarepath")
+                      systemImage: "arrow.2.squarepath")
             }
             
             // Bookmark
@@ -146,10 +143,10 @@ struct PostCardView: View {
         } message: {
             Text("Are you sure you want to block \(post.poster.displayName)? You won't see their posts anymore.")
         }
-        .alert("Message Sent", isPresented: $showingMessageConfirmation) {
+        .alert("Message Error", isPresented: $showingMessageConfirmation) {
             Button("OK") { }
         } message: {
-            Text("Your message request has been sent to \(post.poster.displayName)")
+            Text("Unable to start conversation. Please try again.")
         }
         .onAppear {
             loadPostInteractionState()
@@ -159,8 +156,59 @@ struct PostCardView: View {
     // MARK: - Action Handlers
     
     private func handleMessage() {
-        // Implement message functionality
-        showingMessageConfirmation = true
+        guard let currentUser = authManager.currentUser else {
+            print("❌ No current user - cannot message about post")
+            return
+        }
+        
+        // Don't allow messaging yourself about your own post
+        guard currentUser.id != post.poster.id else {
+            print("❌ Cannot message yourself about your own post")
+            return
+        }
+        
+        print("📱 PostCardView: handleMessage called for POST: '\(post.title)' (ID: \(post.id)) by user: \(post.poster.displayName)")
+        
+        Task {
+            do {
+                // Create POST-CENTRIC conversation with post context
+                let request = StartConversationRequest(
+                    otherUserId: post.poster.id,
+                    postId: post.id, // POST-CENTRIC: Always include post context
+                    initialMessage: nil
+                )
+                
+                let response = try await apiService.startConversation(request)
+                
+                print("✅ Post conversation created successfully: \(response.data.conversation.id)")
+                print("📋 Post context: '\(response.data.conversation.post.title)'")
+                
+                // Store the POST-CENTRIC conversation info for navigation
+                UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
+                UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
+                UserDefaults.standard.set(post.id, forKey: "pendingChatPostId")
+                UserDefaults.standard.set(post.title, forKey: "pendingChatPostTitle")
+                
+                // Navigate to chat with the post author
+                await MainActor.run {
+                    NotificationCenter.default.post(
+                        name: .navigateToChat,
+                        object: nil,
+                        userInfo: [
+                            "userId": post.poster.id,
+                            "userName": post.poster.displayName
+                        ]
+                    )
+                }
+                
+            } catch {
+                print("❌ Failed to create conversation: \(error)")
+                // Show error alert
+                await MainActor.run {
+                    showingMessageConfirmation = true
+                }
+            }
+        }
     }
     
     private func handleRepost() {
@@ -192,12 +240,38 @@ struct PostCardView: View {
     }
     
     private func handleShare() {
-        // Create share content
-        let shareText = "\(post.title)\n\n\(post.content)\n\nShared from CampusKinect"
+        // Create comprehensive share content
+        var shareText = post.title
+        if !post.content.isEmpty {
+            shareText += "\n\n\(post.content)"
+        }
+        if let location = post.location {
+            shareText += "\n📍 \(location)"
+        }
+        shareText += "\n\nShared from CampusKinect"
+        
+        // Create activity items
+        var activityItems: [Any] = [shareText]
+        
+        // Add post images if available
+        if post.hasImages && !post.images.isEmpty {
+            // For now, just add the first image URL as text
+            // In a full implementation, you'd download and add actual images
+            let imageURL = "\(APIConstants.baseURL)\(post.images[0])"
+            activityItems.append(imageURL)
+        }
+        
         let activityViewController = UIActivityViewController(
-            activityItems: [shareText],
+            activityItems: activityItems,
             applicationActivities: nil
         )
+        
+        // Configure for iPad
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = UIApplication.shared.windows.first
+            popover.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
         
         // Present share sheet
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -434,7 +508,7 @@ struct PostActionBar: View {
             
             // Repost Button
             PostActionButton(
-                systemImage: isReposted ? "arrow.2.squarepath.fill" : "arrow.2.squarepath",
+                systemImage: "arrow.2.squarepath",
                 isActive: isReposted,
                 activeColor: .green,
                 action: onRepost
