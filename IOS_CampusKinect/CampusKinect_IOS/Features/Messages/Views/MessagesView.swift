@@ -7,6 +7,9 @@ struct MessagesView: View {
     @State private var activeTab: MessageTab = .sent
     @State private var searchText = ""
     @State private var selectedUser: User?
+    @State private var selectedPostId: Int?
+    @State private var selectedPostTitle: String?
+    @State private var selectedPostType: String?
     @State private var shouldNavigateToChat = false
     @State private var isViewReady = false // Track when view is fully initialized
     @State private var pendingNotification: [AnyHashable: Any]? // Queue notification if received before ready
@@ -38,17 +41,30 @@ struct MessagesView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)
             .navigationDestination(isPresented: $shouldNavigateToChat) {
-                if let user = selectedUser {
-                    ChatView(userId: user.id, userName: user.username ?? user.fullName)
-                        .onAppear {
-                            print("📱 ChatView appeared successfully")
-                        }
-                        .onDisappear {
-                            print("📱 ChatView disappeared, resetting navigation state")
-                            // Reset navigation state when user navigates back
-                            shouldNavigateToChat = false
-                            selectedUser = nil
-                        }                }
+                if let user = selectedUser,
+                   let postId = selectedPostId,
+                   let postTitle = selectedPostTitle,
+                   let postType = selectedPostType {
+                    ChatView(
+                        postId: postId,
+                        postTitle: postTitle,
+                        postType: postType,
+                        otherUserId: user.id,
+                        otherUserName: user.displayName
+                    )
+                    .onAppear {
+                        print("📱 ChatView appeared successfully for post: '\(postTitle)'")
+                    }
+                    .onDisappear {
+                        print("📱 ChatView disappeared, resetting navigation state")
+                        // Reset navigation state when user navigates back
+                        shouldNavigateToChat = false
+                        selectedUser = nil
+                        selectedPostId = nil
+                        selectedPostTitle = nil
+                        selectedPostType = nil
+                    }
+                }
             }        }
         .navigationTitle("Messages")
         .navigationBarTitleDisplayMode(.large)
@@ -143,9 +159,17 @@ struct MessagesView: View {
                     ForEach(filteredConversations, id: \.id) { conversation in
                         ConversationRow(conversation: conversation, currentUserId: authManager.user?.id ?? 0) {
                             print("📱 ConversationRow tapped for POST: '\(conversation.postTitle)' with user: \(conversation.otherUser.displayName)")
+                            
+                            // Store user information
                             selectedUser = User(id: conversation.otherUser.id, username: "user\(conversation.otherUser.id)", email: nil, firstName: "User", lastName: "\(conversation.otherUser.id)", displayName: conversation.otherUser.displayName, profilePicture: nil, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
+                            
+                            // Store post information for post-centric chat
+                            selectedPostId = conversation.postId
+                            selectedPostTitle = conversation.postTitle
+                            selectedPostType = conversation.postType
+                            
                             shouldNavigateToChat = true
-                            print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), shouldNavigateToChat=\(shouldNavigateToChat)")
+                            print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), post='\(conversation.postTitle)', shouldNavigateToChat=\(shouldNavigateToChat)")
                         }
                     }
                     
