@@ -17,6 +17,18 @@ struct PostCardView: View {
     @State private var showingThreeDotsMenu = false
     @State private var isBookmarked = false
     @State private var isReposted = false
+    
+    // Loading states for better UX
+    @State private var isRepostLoading = false
+    @State private var isBookmarkLoading = false
+    @State private var isShareLoading = false
+    
+    // Success/Error feedback states
+    @State private var showingSuccessMessage = false
+    @State private var successMessage = ""
+    @State private var showingErrorAlert = false
+    @State private var errorMessage = ""
+    
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
@@ -60,6 +72,9 @@ struct PostCardView: View {
                 post: post,
                 isBookmarked: isBookmarked,
                 isReposted: isReposted,
+                isRepostLoading: isRepostLoading,
+                isBookmarkLoading: isBookmarkLoading,
+                isShareLoading: isShareLoading,
                 onMessage: handleMessage,
                 onRepost: handleRepost,
                 onBookmark: handleBookmark,
@@ -148,6 +163,39 @@ struct PostCardView: View {
         } message: {
             Text("Unable to start conversation. Please try again.")
         }
+        .alert("Error", isPresented: $showingErrorAlert) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage)
+        }
+        .overlay(
+            // Success message overlay
+            VStack {
+                if showingSuccessMessage {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text(successMessage)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    )
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .top).combined(with: .opacity)
+                    ))
+                }
+                Spacer()
+            }
+            .padding(.top, 8)
+            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: showingSuccessMessage)
+        )
         .onAppear {
             loadPostInteractionState()
         }
@@ -212,74 +260,192 @@ struct PostCardView: View {
     }
     
     private func handleRepost() {
+        // Prevent multiple simultaneous requests
+        guard !isRepostLoading else { return }
+        
         Task {
+            await MainActor.run {
+                isRepostLoading = true
+                // Haptic feedback for button press
+                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedback.impactOccurred()
+            }
+            
             do {
                 _ = try await apiService.toggleRepost(post.id)
-                // Toggle the local state since API doesn't return the new state
+                
                 await MainActor.run {
+                    // Toggle the local state since API doesn't return the new state
                     isReposted.toggle()
+                    isRepostLoading = false
+                    
+                    // Success feedback
+                    let successFeedback = UINotificationFeedbackGenerator()
+                    successFeedback.notificationOccurred(.success)
+                    
+                    // Show success message
+                    successMessage = isReposted ? "Post reposted!" : "Repost removed"
+                    showingSuccessMessage = true
+                    
+                    // Auto-hide success message
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        showingSuccessMessage = false
+                    }
                 }
             } catch {
+                await MainActor.run {
+                    isRepostLoading = false
+                    
+                    // Error feedback
+                    let errorFeedback = UINotificationFeedbackGenerator()
+                    errorFeedback.notificationOccurred(.error)
+                    
+                    // Show error alert
+                    errorMessage = "Failed to update repost. Please try again."
+                    showingErrorAlert = true
+                }
                 print("Error handling repost: \(error)")
             }
         }
     }
     
     private func handleBookmark() {
+        // Prevent multiple simultaneous requests
+        guard !isBookmarkLoading else { return }
+        
         Task {
+            await MainActor.run {
+                isBookmarkLoading = true
+                // Haptic feedback for button press
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+            }
+            
             do {
                 _ = try await apiService.toggleBookmark(post.id)
-                // Toggle the local state since API doesn't return the new state
+                
                 await MainActor.run {
+                    // Toggle the local state since API doesn't return the new state
                     isBookmarked.toggle()
+                    isBookmarkLoading = false
+                    
+                    // Success feedback
+                    let successFeedback = UINotificationFeedbackGenerator()
+                    successFeedback.notificationOccurred(.success)
+                    
+                    // Show success message
+                    successMessage = isBookmarked ? "Post bookmarked!" : "Bookmark removed"
+                    showingSuccessMessage = true
+                    
+                    // Auto-hide success message
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        showingSuccessMessage = false
+                    }
                 }
             } catch {
+                await MainActor.run {
+                    isBookmarkLoading = false
+                    
+                    // Error feedback
+                    let errorFeedback = UINotificationFeedbackGenerator()
+                    errorFeedback.notificationOccurred(.error)
+                    
+                    // Show error alert
+                    errorMessage = "Failed to update bookmark. Please try again."
+                    showingErrorAlert = true
+                }
                 print("Error handling bookmark: \(error)")
             }
         }
     }
     
     private func handleShare() {
-        // Create comprehensive share content
-        var shareText = post.title
-        if !post.content.isEmpty {
-            shareText += "\n\n\(post.content)"
-        }
-        if let location = post.location {
-            shareText += "\n📍 \(location)"
-        }
-        shareText += "\n\nShared from CampusKinect"
+        // Prevent multiple simultaneous requests
+        guard !isShareLoading else { return }
         
-        // Create activity items
-        var activityItems: [Any] = [shareText]
-        
-        // Add post images if available
-        if post.hasImages && !post.images.isEmpty {
-            // For now, just add the first image URL as text
-            // In a full implementation, you'd download and add actual images
-            let imageURL = "\(APIConstants.baseURL)\(post.images[0])"
-            activityItems.append(imageURL)
-        }
-        
-        let activityViewController = UIActivityViewController(
-            activityItems: activityItems,
-            applicationActivities: nil
-        )
-        
-        // Configure for iPad
-        if let popover = activityViewController.popoverPresentationController {
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first {
-                popover.sourceView = window
+        Task {
+            await MainActor.run {
+                isShareLoading = true
+                // Haptic feedback for button press
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
             }
-            popover.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
-            popover.permittedArrowDirections = []
-        }
-        
-        // Present share sheet
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            window.rootViewController?.present(activityViewController, animated: true)
+            
+            // Create comprehensive share content
+            var shareText = post.title
+            if !post.content.isEmpty {
+                shareText += "\n\n\(post.content)"
+            }
+            if let location = post.location {
+                shareText += "\n📍 \(location)"
+            }
+            shareText += "\n\nShared from CampusKinect"
+            
+            // Create activity items
+            var activityItems: [Any] = [shareText]
+            
+            // Add post images if available
+            if post.hasImages && !post.images.isEmpty {
+                // For now, just add the first image URL as text
+                // In a full implementation, you'd download and add actual images
+                let imageURL = "\(APIConstants.baseURL)\(post.images[0])"
+                activityItems.append(imageURL)
+            }
+            
+            await MainActor.run {
+                let activityViewController = UIActivityViewController(
+                    activityItems: activityItems,
+                    applicationActivities: nil
+                )
+                
+                // Configure for iPad
+                if let popover = activityViewController.popoverPresentationController {
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        popover.sourceView = window
+                    }
+                    popover.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
+                    popover.permittedArrowDirections = []
+                }
+                
+                // Completion handler for better UX
+                activityViewController.completionWithItemsHandler = { activityType, completed, returnedItems, error in
+                    Task { @MainActor in
+                        isShareLoading = false
+                        
+                        if completed {
+                            // Success feedback
+                            let successFeedback = UINotificationFeedbackGenerator()
+                            successFeedback.notificationOccurred(.success)
+                            
+                            // Show success message
+                            successMessage = "Post shared successfully!"
+                            showingSuccessMessage = true
+                            
+                            // Auto-hide success message
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                showingSuccessMessage = false
+                            }
+                        } else if error != nil {
+                            // Error feedback
+                            let errorFeedback = UINotificationFeedbackGenerator()
+                            errorFeedback.notificationOccurred(.error)
+                            
+                            // Show error alert
+                            errorMessage = "Failed to share post. Please try again."
+                            showingErrorAlert = true
+                        } else {
+                            // User cancelled - no feedback needed
+                        }
+                    }
+                }
+                
+                // Present share sheet
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first {
+                    window.rootViewController?.present(activityViewController, animated: true)
+                }
+            }
         }
     }
     
@@ -492,6 +658,9 @@ struct PostActionBar: View {
     let post: Post
     let isBookmarked: Bool
     let isReposted: Bool
+    let isRepostLoading: Bool
+    let isBookmarkLoading: Bool
+    let isShareLoading: Bool
     let onMessage: () -> Void
     let onRepost: () -> Void
     let onBookmark: () -> Void
@@ -513,6 +682,7 @@ struct PostActionBar: View {
             PostActionButton(
                 systemImage: "arrow.2.squarepath",
                 isActive: isReposted,
+                isLoading: isRepostLoading,
                 activeColor: .green,
                 action: onRepost
             )
@@ -523,6 +693,7 @@ struct PostActionBar: View {
             PostActionButton(
                 systemImage: isBookmarked ? "bookmark.fill" : "bookmark",
                 isActive: isBookmarked,
+                isLoading: isBookmarkLoading,
                 activeColor: .orange,
                 action: onBookmark
             )
@@ -533,6 +704,7 @@ struct PostActionBar: View {
             PostActionButton(
                 systemImage: "square.and.arrow.up",
                 isActive: false,
+                isLoading: isShareLoading,
                 activeColor: .blue,
                 action: onShare
             )
@@ -545,28 +717,55 @@ struct PostActionBar: View {
 struct PostActionButton: View {
     let systemImage: String
     let isActive: Bool
+    let isLoading: Bool
     let activeColor: Color
     let action: () -> Void
     
     @State private var isPressed = false
     
+    init(
+        systemImage: String,
+        isActive: Bool,
+        isLoading: Bool = false,
+        activeColor: Color = .blue,
+        action: @escaping () -> Void
+    ) {
+        self.systemImage = systemImage
+        self.isActive = isActive
+        self.isLoading = isLoading
+        self.activeColor = activeColor
+        self.action = action
+    }
+    
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 20, weight: .medium))
-                .foregroundColor(isActive ? activeColor : .secondary)
-                .frame(width: 44, height: 44)
-                .background(
-                    Circle()
-                        .fill(isPressed ? Color.gray.opacity(0.2) : Color.clear)
-                )
-                .scaleEffect(isPressed ? 0.9 : 1.0)
-                .animation(.easeInOut(duration: 0.1), value: isPressed)
+            ZStack {
+                if isLoading {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .foregroundColor(isActive ? activeColor : .secondary)
+                } else {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isActive ? activeColor : .secondary)
+                }
+            }
+            .frame(width: 44, height: 44)
+            .background(
+                Circle()
+                    .fill(isPressed ? Color.gray.opacity(0.2) : Color.clear)
+            )
+            .scaleEffect(isPressed ? 0.9 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
+            .opacity(isLoading ? 0.6 : 1.0)
         }
+        .disabled(isLoading)
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(.easeInOut(duration: 0.1)) {
-                isPressed = pressing
+            if !isLoading {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = pressing
+                }
             }
         }, perform: {})
         .contentShape(Circle())
