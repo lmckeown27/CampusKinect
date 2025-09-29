@@ -272,7 +272,7 @@ struct ConversationRow: View {
                     
                     // USER INFO (SECONDARY)
                     HStack(spacing: 4) {
-                        ProfileImageView(imageUrl: conversation.otherUser.profilePicture, size: .small)
+                        ProfileImageView(imageUrl: nil, size: .small)
                         Text("with \(conversation.otherUser.displayName)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
