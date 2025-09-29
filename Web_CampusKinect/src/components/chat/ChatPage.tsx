@@ -634,7 +634,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={conversation ? `Add a message...` : `Send the first message...`}
-            className="flex-1 px-4 py-3 border border-[#708d81] rounded-2xl focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none max-h-32 text-base"
+            className="flex-1 px-4 py-3 border border-[#708d81] rounded-2xl focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none max-h-32 text-base text-black"
             rows={1}
             style={{
               minHeight: '52px',

@@ -19,6 +19,13 @@ struct Message: Codable, Identifiable, Equatable {
     let createdAt: Date
     let updatedAt: Date?
     
+    // Sender information
+    let senderUsername: String?
+    let senderFirstName: String?
+    let senderLastName: String?
+    let senderDisplayName: String?
+    let senderProfilePicture: String?
+    
     // Optional metadata
     let metadata: MessageMetadata?
     
@@ -32,11 +39,16 @@ struct Message: Codable, Identifiable, Equatable {
         case isRead
         case createdAt
         case updatedAt
+        case senderUsername = "username"
+        case senderFirstName = "first_name"
+        case senderLastName = "last_name"
+        case senderDisplayName = "display_name"
+        case senderProfilePicture = "profile_picture"
         case metadata
     }
     
     // Regular initializer for creating messages in code
-    init(id: Int, conversationId: Int, senderId: Int, receiverId: Int? = nil, content: String, messageType: MessageType, isRead: Bool, createdAt: Date, updatedAt: Date? = nil, metadata: MessageMetadata? = nil) {
+    init(id: Int, conversationId: Int, senderId: Int, receiverId: Int? = nil, content: String, messageType: MessageType, isRead: Bool, createdAt: Date, updatedAt: Date? = nil, senderUsername: String? = nil, senderFirstName: String? = nil, senderLastName: String? = nil, senderDisplayName: String? = nil, senderProfilePicture: String? = nil, metadata: MessageMetadata? = nil) {
         self.id = id
         self.conversationId = conversationId
         self.senderId = senderId
@@ -46,6 +58,11 @@ struct Message: Codable, Identifiable, Equatable {
         self.isRead = isRead
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.senderUsername = senderUsername
+        self.senderFirstName = senderFirstName
+        self.senderLastName = senderLastName
+        self.senderDisplayName = senderDisplayName
+        self.senderProfilePicture = senderProfilePicture
         self.metadata = metadata
     }
     
@@ -60,6 +77,14 @@ struct Message: Codable, Identifiable, Equatable {
         isRead = try container.decode(Bool.self, forKey: .isRead)
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        
+        // Decode sender information
+        senderUsername = try container.decodeIfPresent(String.self, forKey: .senderUsername)
+        senderFirstName = try container.decodeIfPresent(String.self, forKey: .senderFirstName)
+        senderLastName = try container.decodeIfPresent(String.self, forKey: .senderLastName)
+        senderDisplayName = try container.decodeIfPresent(String.self, forKey: .senderDisplayName)
+        senderProfilePicture = try container.decodeIfPresent(String.self, forKey: .senderProfilePicture)
+        
         metadata = try container.decodeIfPresent(MessageMetadata.self, forKey: .metadata)
         
         // Handle conversationId as either String or Int
@@ -82,6 +107,14 @@ struct Message: Codable, Identifiable, Equatable {
         try container.encode(isRead, forKey: .isRead)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
+        
+        // Encode sender information
+        try container.encodeIfPresent(senderUsername, forKey: .senderUsername)
+        try container.encodeIfPresent(senderFirstName, forKey: .senderFirstName)
+        try container.encodeIfPresent(senderLastName, forKey: .senderLastName)
+        try container.encodeIfPresent(senderDisplayName, forKey: .senderDisplayName)
+        try container.encodeIfPresent(senderProfilePicture, forKey: .senderProfilePicture)
+        
         try container.encodeIfPresent(metadata, forKey: .metadata)
     }
     

@@ -543,6 +543,19 @@ struct CommentStyleMessageView: View {
     let otherUserName: String
     let currentUserName: String
     
+    // Computed property to get the display name for the message sender
+    private var senderDisplayName: String {
+        if isCurrentUser {
+            return currentUserName
+        } else {
+            // Use sender information from the message if available, otherwise fall back to otherUserName
+            return message.senderDisplayName ?? 
+                   "\(message.senderFirstName ?? "") \(message.senderLastName ?? "")".trimmingCharacters(in: .whitespaces).isEmpty ? 
+                   otherUserName : 
+                   "\(message.senderFirstName ?? "") \(message.senderLastName ?? "")".trimmingCharacters(in: .whitespaces)
+        }
+    }
+    
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // User avatar (small, like comment avatar)
@@ -550,7 +563,7 @@ struct CommentStyleMessageView: View {
                 .fill(isCurrentUser ? Color.campusPrimary : Color.campusGrey400)
                 .frame(width: 32, height: 32)
                 .overlay(
-                    Text(isCurrentUser ? String(currentUserName.prefix(1)) : String(otherUserName.prefix(1)))
+                    Text(String(senderDisplayName.prefix(1)))
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -559,7 +572,7 @@ struct CommentStyleMessageView: View {
             VStack(alignment: .leading, spacing: 4) {
                 // Username and timestamp (like comment header)
                 HStack(spacing: 8) {
-                    Text(isCurrentUser ? currentUserName : otherUserName)
+                    Text(senderDisplayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
