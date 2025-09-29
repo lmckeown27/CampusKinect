@@ -44,7 +44,7 @@ struct LoginView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .background(Color(.systemBackground))
+            .background(Color.campusBackground)
         }
         .navigationBarHidden(true)
         .alert("Login Failed", isPresented: $showingAlert) {
@@ -159,7 +159,7 @@ struct LoginView: View {
             .frame(maxWidth: .infinity)
             .padding()
             .background(
-                isFormValid ? Color("BrandPrimary") : Color.gray
+                isFormValid ? Color.campusPrimary : Color.campusGrey400
             )
             .cornerRadius(12)
         }

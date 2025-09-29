@@ -51,7 +51,7 @@ struct CreatePostView: View {
                 .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 700) : .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemBackground))
+            .background(Color.campusBackground)
         }
         .navigationTitle("Create Post")
             .navigationBarTitleDisplayMode(.large)
@@ -136,7 +136,7 @@ struct CreatePostView: View {
             TextEditor(text: $content)
                 .frame(minHeight: 120)
                 .padding(12)
-                .background(Color(.systemGray6))
+                .background(Color.campusBackgroundSecondary)
                 .cornerRadius(12)
                 .onTapGesture {
                     // Helps with focus management

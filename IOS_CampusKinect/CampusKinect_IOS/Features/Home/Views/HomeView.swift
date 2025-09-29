@@ -58,7 +58,7 @@ struct HomeView: View {
             .clipped()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
+                        .background(Color.campusBackground)
         .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -181,7 +181,7 @@ struct ActiveFilterBar: View {
                         }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Color("BrandPrimary").opacity(0.1))
+                        .background(Color.campusOlive100)
                         .cornerRadius(12)
                     }
                 }
@@ -302,7 +302,7 @@ struct OfferRequestToggle: View {
                     )
             }
         }
-        .background(Color(.systemGray6))
+                        .background(Color.campusBackgroundSecondary)
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)

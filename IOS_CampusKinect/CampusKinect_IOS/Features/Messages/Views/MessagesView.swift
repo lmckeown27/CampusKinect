@@ -36,7 +36,7 @@ struct MessagesView: View {
                 .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemBackground))
+            .background(Color.campusBackground)
             .navigationDestination(isPresented: $shouldNavigateToChat) {
                 if let user = selectedUser {
                     ChatView(userId: user.id, userName: user.username ?? user.fullName)

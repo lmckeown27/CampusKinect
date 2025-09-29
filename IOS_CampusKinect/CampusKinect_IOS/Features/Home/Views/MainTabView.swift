@@ -67,9 +67,9 @@ struct MainTabView: View {
                 .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemBackground))
+            .background(Color.campusBackground)
         }
-        .accentColor(Color("AccentColor"))
+        .accentColor(Color.campusPrimary)
         .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { _ in
             // Switch to Messages tab when navigateToChat notification is received
             print("📱 MainTabView: Received navigateToChat notification - switching to Messages tab")
