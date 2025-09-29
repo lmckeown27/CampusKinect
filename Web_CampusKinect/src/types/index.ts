@@ -108,23 +108,32 @@ export interface Message {
   sender?: User;
 }
 
-// POST-CENTRIC Conversation Interface
+// POST-CENTRIC Conversation Interface (Updated to match iOS)
 export interface Conversation {
   id: string;
   createdAt: string;
   lastMessageAt?: string;
   
-  // POST CONTEXT (PRIMARY EMPHASIS)
-  post: ConversationPost;
+  // POST CONTEXT (PRIMARY EMPHASIS) - Flattened fields
+  postId: string;
+  postTitle: string;
+  postType: string;
   
-  // OTHER USER INFO (SECONDARY)
-  otherUser: ConversationUser;
+  // OTHER USER INFO (SECONDARY) - Simplified
+  otherUser: ConversationListUser;
   
   // MESSAGE INFO
   lastMessage?: string;
   lastMessageSenderId?: string;
   lastMessageTime?: string;
   unreadCount: number;
+}
+
+// Simplified user for conversation lists (matches iOS ConversationListUser)
+export interface ConversationListUser {
+  id: string;
+  university: string;
+  displayName: string; // Computed property fallback
 }
 
 // POST-CENTRIC Supporting Interfaces

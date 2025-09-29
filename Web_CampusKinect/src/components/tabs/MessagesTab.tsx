@@ -13,6 +13,7 @@ interface ConversationItemProps {
   conversation: Conversation;
   isSelected: boolean;
   activeTab: string;
+  currentUserId: string;
   onSelect: (conversation: Conversation) => void;
   index: number;
 }
@@ -21,9 +22,29 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   conversation,
   isSelected,
   activeTab,
+  currentUserId,
   onSelect,
   index
 }) => {
+
+  // Determine message direction for post-centric display
+  const getMessageDirection = () => {
+    if (!conversation.lastMessageSenderId) {
+      return "Tap to start conversation";
+    }
+    return conversation.lastMessageSenderId === currentUserId ? "Sent" : "Incoming";
+  };
+
+  // Get post type icon and color
+  const getPostTypeIcon = () => {
+    switch (conversation.postType.toLowerCase()) {
+      case 'goods': return <Package size={20} className="text-blue-600" />;
+      case 'services': return <Wrench size={20} className="text-green-600" />;
+      case 'housing': return <Home size={20} className="text-orange-600" />;
+      case 'events': return <Calendar size={20} className="text-purple-600" />;
+      default: return <FileText size={20} className="text-gray-600" />;
+    }
+  };
 
 
   const truncateMessage = (message: string, charLimit: number) => {
@@ -63,18 +84,14 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
             {/* POST ICON (PRIMARY) */}
             <div className="w-12 h-12 flex-shrink-0">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                {conversation.post.type === 'goods' && <Package size={20} className="text-blue-600" />}
-                {conversation.post.type === 'services' && <Wrench size={20} className="text-green-600" />}
-                {conversation.post.type === 'housing' && <Home size={20} className="text-orange-600" />}
-                {conversation.post.type === 'events' && <Calendar size={20} className="text-purple-600" />}
-                {!['goods', 'services', 'housing', 'events'].includes(conversation.post.type) && <FileText size={20} className="text-gray-600" />}
+                {getPostTypeIcon()}
               </div>
             </div>
             <div className="flex-1 min-w-0 overflow-hidden">
               {/* POST TITLE (PRIMARY) */}
               <div className="flex items-center justify-between">
                 <p className="text-lg font-semibold text-black truncate">
-                  {conversation.post.title}
+                  {conversation.postTitle}
                 </p>
                 {conversation.unreadCount > 0 && (
                   <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -82,10 +99,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                   </span>
                 )}
               </div>
-              {/* Message preview */}
-              {/* USER INFO (SECONDARY) */}
-              <p className="text-sm text-gray-600 truncate">
-                with {conversation.otherUser.displayName}
+              {/* MESSAGE DIRECTION (SECONDARY) */}
+              <p className="text-sm text-gray-600 truncate font-medium">
+                {getMessageDirection()}
               </p>
               
               {/* LAST MESSAGE (TERTIARY) */}
