@@ -141,7 +141,7 @@ struct MessagesView: View {
             } else {
                 List {
                     ForEach(filteredConversations, id: \.id) { conversation in
-                        ConversationRow(conversation: conversation) {
+                        ConversationRow(conversation: conversation, currentUserId: authManager.user?.id ?? 0) {
                             print("📱 ConversationRow tapped for POST: '\(conversation.postTitle)' with user: \(conversation.otherUser.displayName)")
                             selectedUser = User(id: conversation.otherUser.id, username: "user\(conversation.otherUser.id)", email: nil, firstName: "User", lastName: "\(conversation.otherUser.id)", displayName: conversation.otherUser.displayName, profilePicture: nil, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
                             shouldNavigateToChat = true
@@ -237,6 +237,7 @@ struct MessagesView: View {
 // MARK: - POST-CENTRIC Conversation Row
 struct ConversationRow: View {
     let conversation: Conversation
+    let currentUserId: Int
     let onTap: () -> Void
     
     var body: some View {
@@ -270,13 +271,11 @@ struct ConversationRow: View {
                         .foregroundColor(.primary)
                         .lineLimit(1)
                     
-                    // USER INFO (SECONDARY)
-                    HStack(spacing: 4) {
-                        ProfileImageView(imageUrl: nil, size: .small)
-                        Text("with \(conversation.otherUser.displayName)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
+                    // MESSAGE DIRECTION (SECONDARY)
+                    Text(messageDirectionText)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .fontWeight(.medium)
                     
                     // LAST MESSAGE (TERTIARY)
                     if let lastMessage = conversation.lastMessage {
@@ -344,6 +343,18 @@ struct ConversationRow: View {
         case "housing": return .orange
         case "events": return .purple
         default: return .gray
+        }
+    }
+    
+    private var messageDirectionText: String {
+        // Determine if this is an incoming or sent conversation based on last message
+        if let lastMessageSenderId = conversation.lastMessageSenderId {
+            // If the last message was sent by the current user, it's "Sent"
+            // If the last message was sent by the other user, it's "Incoming"
+            return lastMessageSenderId == currentUserId ? "Sent" : "Incoming"
+        } else {
+            // No messages yet
+            return "Tap to start conversation"
         }
     }
 }
