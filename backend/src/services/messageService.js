@@ -126,11 +126,11 @@ class MessageService {
           postType: conv.post_type,
           otherUser: {
             id: conv.other_user_id,
-            username: conv.username,
-            firstName: conv.first_name,
-            lastName: conv.last_name,
-            displayName: conv.display_name,
-            profilePicture: conv.profile_picture,
+            username: conv.other_user_username,
+            firstName: conv.other_user_first_name,
+            lastName: conv.other_user_last_name,
+            displayName: conv.other_user_display_name,
+            profilePicture: conv.other_user_profile_picture,
             university: conv.university_name
           },
           lastMessage: conv.last_message ? {
