@@ -556,7 +556,7 @@ class APIService: NSObject, ObservableObject {
         request.httpMethod = "POST"
         
         // Add auth header
-        if let token = KeychainManager.shared.getAccessToken() {
+        if let token = await KeychainManager.shared.getAccessToken() {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         
@@ -594,7 +594,7 @@ class APIService: NSObject, ObservableObject {
                 createdAt: Date(),
                 metadata: MessageMetadata(
                     imageUrl: apiResponse.data?.images.first?.url,
-                    thumbnailUrl: apiResponse.data?.images.first?.thumbnailUrl,
+                    thumbnailUrl: nil, // UploadedImage doesn't have thumbnailUrl
                     systemMessageType: nil
                 )
             )
