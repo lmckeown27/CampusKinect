@@ -64,6 +64,33 @@ struct Conversation: Codable, Identifiable, Equatable {
         }
     }
     
+    // MARK: - Regular Initializer
+    init(
+        id: Int,
+        createdAt: Date,
+        lastMessageAt: Date?,
+        postId: Int,
+        postTitle: String,
+        postType: String,
+        otherUser: ConversationListUser,
+        lastMessage: String?,
+        lastMessageSenderId: Int?,
+        lastMessageTime: Date?,
+        unreadCount: Int
+    ) {
+        self.id = id
+        self.createdAt = createdAt
+        self.lastMessageAt = lastMessageAt
+        self.postId = postId
+        self.postTitle = postTitle
+        self.postType = postType
+        self.otherUser = otherUser
+        self.lastMessage = lastMessage
+        self.lastMessageSenderId = lastMessageSenderId
+        self.lastMessageTime = lastMessageTime
+        self.unreadCount = unreadCount
+    }
+    
     // MARK: - Computed Properties
     var timeAgo: String {
         guard let lastMessageTime = lastMessageTime else {
