@@ -14,10 +14,12 @@ struct Conversation: Codable, Identifiable, Equatable {
     let lastMessageAt: Date?
     
     // POST CONTEXT (PRIMARY EMPHASIS)
-    let post: ConversationPost
+    let postId: Int
+    let postTitle: String
+    let postType: String
     
     // OTHER USER INFO (SECONDARY)
-    let otherUser: ConversationUser
+    let otherUser: ConversationListUser
     
     // MESSAGE INFO
     let lastMessage: String?
@@ -26,15 +28,17 @@ struct Conversation: Codable, Identifiable, Equatable {
     let unreadCount: Int
     
     enum CodingKeys: String, CodingKey {
-        case id = "conversation_id"
-        case createdAt = "conversation_created"
-        case lastMessageAt = "last_message_at"
-        case post
-        case otherUser = "other_user"
-        case lastMessage = "last_message"
-        case lastMessageSenderId = "last_message_sender_id"
-        case lastMessageTime = "last_message_time"
-        case unreadCount = "unread_count"
+        case id
+        case createdAt
+        case lastMessageAt
+        case postId
+        case postTitle
+        case postType
+        case otherUser
+        case lastMessage
+        case lastMessageSenderId
+        case lastMessageTime
+        case unreadCount
     }
     
     // MARK: - Computed Properties
@@ -205,6 +209,25 @@ struct ConversationDetail: Codable, Identifiable {
         case createdAt
         case post
         case otherUser
+    }
+}
+
+// MARK: - Conversation List User (Simplified)
+struct ConversationListUser: Codable, Equatable {
+    let id: Int
+    let university: String
+    
+    // Computed properties for compatibility
+    var displayName: String {
+        return "User \(id)" // Fallback display name
+    }
+    
+    var initials: String {
+        return "U\(id)" // Fallback initials
+    }
+    
+    var profileImageURL: URL? {
+        return nil // No profile image in list view
     }
 }
 
