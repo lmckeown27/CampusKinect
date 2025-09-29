@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct ChatView: View {
-    let userId: Int
-    let userName: String
+    let postId: Int
+    let postTitle: String
+    let postType: String
+    let otherUserId: Int
+    let otherUserName: String
     
     @EnvironmentObject var authManager: AuthenticationManager
     @StateObject private var viewModel: ChatViewModel
@@ -24,9 +27,12 @@ struct ChatView: View {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
     
-    init(userId: Int, userName: String) {
-        self.userId = userId
-        self.userName = userName
+    init(postId: Int, postTitle: String, postType: String, otherUserId: Int, otherUserName: String) {
+        self.postId = postId
+        self.postTitle = postTitle
+        self.postType = postType
+        self.otherUserId = otherUserId
+        self.otherUserName = otherUserName
         self._viewModel = StateObject(wrappedValue: ChatViewModel())
     }
     
@@ -34,7 +40,17 @@ struct ChatView: View {
         NavigationStack {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
+                    // POST HEADER (Like Instagram/X post)
+                    postHeaderSection
+                    
+                    Divider()
+                    
+                    // MESSAGES/COMMENTS SECTION
                     messagesList
+                    
+                    Divider()
+                    
+                    // MESSAGE INPUT (Like comment input)
                     messageInputSection
                 }
                 .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
@@ -42,22 +58,22 @@ struct ChatView: View {
                 .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemBackground))
+            .background(Color.campusBackground)
         }
-        .navigationTitle(userName)
+        .navigationTitle("Post Conversation")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    // Handle user profile or options
+                    // Handle post options
                 }) {
-                    Image(systemName: "person.circle")
+                    Image(systemName: "ellipsis")
                 }
             }
         }
         .onAppear {
             Task {
-                await viewModel.loadChat(with: userId)
+                await viewModel.loadPostChat(postId: postId, otherUserId: otherUserId)
             }
         }
         .alert("Error", isPresented: Binding<Bool>(
@@ -74,21 +90,87 @@ struct ChatView: View {
     
     // MARK: - Components
     
+    private var postHeaderSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Post type and title (like a social media post header)
+            HStack(spacing: 12) {
+                // Post type icon
+                Image(systemName: postTypeIcon)
+                    .font(.title2)
+                    .foregroundColor(postTypeColor)
+                    .frame(width: 40, height: 40)
+                    .background(postTypeColor.opacity(0.1))
+                    .cornerRadius(8)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    // Post title (main focus)
+                    Text(postTitle)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                        .lineLimit(2)
+                    
+                    // Post type and conversation context
+                    HStack(spacing: 8) {
+                        Text(postType.capitalized)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(postTypeColor)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(postTypeColor.opacity(0.1))
+                            .cornerRadius(6)
+                        
+                        Text("• Conversation with \(otherUserName)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color.campusBackgroundSecondary)
+    }
+    
     private var messagesList: some View {
         ScrollViewReader { proxy in
             List {
+                // Header for comments section
+                if !viewModel.messages.isEmpty {
+                    HStack {
+                        Text("Conversation")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Spacer()
+                        
+                        Text("\(viewModel.messages.count) messages")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                }
+                
                 ForEach(viewModel.messages) { message in
-                    MessageBubbleView(
+                    CommentStyleMessageView(
                         message: message,
-                        isCurrentUser: message.senderId == authManager.currentUser?.id
+                        isCurrentUser: message.senderId == authManager.currentUser?.id,
+                        otherUserName: otherUserName
                     )
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(
-                        top: 4,
-                        leading: isIPad ? 40 : 16,
-                        bottom: 4,
-                        trailing: isIPad ? 40 : 16
+                        top: 6,
+                        leading: 16,
+                        bottom: 6,
+                        trailing: 16
                     ))
+                    .listRowBackground(Color.clear)
                     .id(message.id)
                 }
                 
@@ -100,6 +182,7 @@ struct ChatView: View {
                         Spacer()
                     }
                     .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
                 }
             }
             .listStyle(PlainListStyle())
@@ -116,31 +199,44 @@ struct ChatView: View {
     
     private var messageInputSection: some View {
         VStack(spacing: 0) {
-            Divider()
-            
             HStack(spacing: 12) {
-                TextField("Type a message...", text: $viewModel.newMessageText, axis: .vertical)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(20)
-                    .focused($isTextFieldFocused)
-                    .lineLimit(1...4)
+                // User avatar (like comment input)
+                Circle()
+                    .fill(Color.campusPrimary)
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Text("You")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    )
                 
-                Button(action: {
-                    sendMessage()
-                }) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : Color("BrandPrimary"))
+                // Comment input field
+                HStack(spacing: 8) {
+                    TextField("Add a message about this post...", text: $viewModel.newMessageText, axis: .vertical)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.campusBackgroundSecondary)
+                        .cornerRadius(16)
+                        .focused($isTextFieldFocused)
+                        .lineLimit(1...3)
+                    
+                    // Send button (like comment post button)
+                    Button(action: {
+                        sendMessage()
+                    }) {
+                        Image(systemName: "paperplane.fill")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : Color.campusPrimary)
+                    }
+                    .disabled(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
                 }
-                .disabled(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
             }
-            .padding(.horizontal, isIPad ? 40 : 16)
+            .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .background(Color(.systemBackground))
+        .background(Color.campusBackground)
     }
     
     // MARK: - Methods
@@ -150,12 +246,80 @@ struct ChatView: View {
             await viewModel.sendMessage()
         }
     }
+    
+    // MARK: - Post Visual Helpers
+    private var postTypeIcon: String {
+        switch postType.lowercased() {
+        case "goods": return "cube.box"
+        case "services": return "wrench.and.screwdriver"
+        case "housing": return "house"
+        case "events": return "calendar"
+        default: return "doc.text"
+        }
+    }
+    
+    private var postTypeColor: Color {
+        switch postType.lowercased() {
+        case "goods": return .blue
+        case "services": return .green
+        case "housing": return .orange
+        case "events": return .purple
+        default: return .gray
+        }
+    }
+}
+
+// MARK: - Comment Style Message View
+struct CommentStyleMessageView: View {
+    let message: Message
+    let isCurrentUser: Bool
+    let otherUserName: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            // User avatar (small, like comment avatar)
+            Circle()
+                .fill(isCurrentUser ? Color.campusPrimary : Color.campusGrey400)
+                .frame(width: 32, height: 32)
+                .overlay(
+                    Text(isCurrentUser ? "You" : String(otherUserName.prefix(1)))
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                )
+            
+            VStack(alignment: .leading, spacing: 4) {
+                // Username and timestamp (like comment header)
+                HStack(spacing: 8) {
+                    Text(isCurrentUser ? "You" : otherUserName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Text(message.timestamp.formatted(.relative(presentation: .named)))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                }
+                
+                // Message content (like comment text)
+                Text(message.content)
+                    .font(.body)
+                    .foregroundColor(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 4)
+    }
 }
 
 
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {
-        ChatView(userId: 1, userName: "John Doe")
+        ChatView(postId: 1, postTitle: "Test Post", postType: "housing", otherUserId: 2, otherUserName: "John Doe")
             .environmentObject(AuthenticationManager())
     }
 }
