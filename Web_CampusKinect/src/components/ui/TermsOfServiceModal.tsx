@@ -308,7 +308,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Terms of Service Accepted</h3>
             <p className="text-gray-600 mb-6">
-              Would you like to disable the Terms of Service popup for future logins?
+              How would you like to handle the Terms of Service popup for future logins?
               <br /><br />
               Note: You can always review the terms in Settings.
             </p>
@@ -317,7 +317,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
                 onClick={() => handleRememberChoice(false)}
                 className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
               >
-                Show every time
+                Show every login
               </button>
               <button
                 onClick={() => handleRememberChoice(true)}

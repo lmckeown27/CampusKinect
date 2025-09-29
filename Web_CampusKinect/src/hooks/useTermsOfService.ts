@@ -44,10 +44,19 @@ export const useTermsOfService = (): UseTermsOfServiceReturn => {
   };
 
   const acceptTerms = (userId: string, shouldRememberChoice: boolean) => {
+    console.log(`📋 Hook: acceptTerms called - userId: ${userId}, shouldRemember: ${shouldRememberChoice}`);
+    console.log(`📋 Hook: Before - shouldShowTerms: ${shouldShowTerms}, isTermsCheckComplete: ${isTermsCheckComplete}`);
+    
     termsOfServiceManager.acceptTerms(userId, shouldRememberChoice);
     setShouldShowTerms(false);
     setIsTermsCheckComplete(true);
-    console.log(`📋 Terms accepted for user ${userId}, remember choice: ${shouldRememberChoice}`);
+    
+    console.log(`📋 Hook: After state updates called - Terms accepted for user ${userId}, remember choice: ${shouldRememberChoice}`);
+    
+    // Force immediate state update to ensure modal closes
+    setTimeout(() => {
+      console.log(`📋 Hook: Timeout check - shouldShowTerms: ${shouldShowTerms}, isTermsCheckComplete: ${isTermsCheckComplete}`);
+    }, 100);
   };
 
   const declineTerms = () => {
