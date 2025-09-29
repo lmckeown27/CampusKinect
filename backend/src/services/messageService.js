@@ -353,18 +353,16 @@ class MessageService {
       if (existingConv.rows.length > 0) {
         const conv = existingConv.rows[0];
         
-        // If conversation exists but is inactive, reactivate it
-        if (!conv.is_active) {
-          console.log('🔄 Reactivating inactive conversation:', conv.id);
-          await dbQuery(`
-            UPDATE conversations 
-            SET is_active = true, last_message_at = CURRENT_TIMESTAMP
-            WHERE id = $1
-          `, [conv.id]);
+        // If conversation exists and is active, return it
+        if (conv.is_active) {
+          console.log('✅ Found active conversation:', conv.id);
+          return await this.getConversationById(conv.id, userId);
         }
         
-        // Return existing conversation with full context
-        return await this.getConversationById(conv.id, userId);
+        // If conversation exists but is inactive, DO NOT reactivate it
+        // Instead, let it create a new conversation below
+        // This ensures users get a fresh start when they recreate conversations
+        console.log('🗑️ Found inactive conversation:', conv.id, '- will create new conversation for fresh start');
       }
 
       // Check if other user exists and is active
