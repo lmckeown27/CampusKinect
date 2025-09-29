@@ -26,6 +26,46 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   onSelect,
   index
 }) => {
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+
+  const handleRightClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+    setShowContextMenu(true);
+  };
+
+  const handleContextMenuAction = (action: string) => {
+    setShowContextMenu(false);
+    
+    switch (action) {
+      case 'delete':
+        if (confirm(`Delete conversation about "${conversation.postTitle}"?`)) {
+          // TODO: Implement delete from parent component
+          console.log('Delete conversation:', conversation.id);
+        }
+        break;
+      case 'report':
+        if (confirm(`Report ${conversation.otherUser.displayName}?`)) {
+          alert('Report functionality will be implemented soon.');
+        }
+        break;
+      case 'block':
+        if (confirm(`Block ${conversation.otherUser.displayName}?`)) {
+          alert('Block functionality will be implemented soon.');
+        }
+        break;
+    }
+  };
+
+  // Close context menu when clicking elsewhere
+  React.useEffect(() => {
+    const handleClickOutside = () => setShowContextMenu(false);
+    if (showContextMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showContextMenu]);
 
   // Determine message direction for post-centric display
   const getMessageDirection = () => {
@@ -78,7 +118,48 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           }
         }}
         onClick={() => onSelect(conversation)}
+        onContextMenu={handleRightClick}
       >
+        {/* Context Menu */}
+        {showContextMenu && (
+          <div 
+            className="fixed bg-white border border-gray-300 rounded-lg shadow-lg py-2 z-50"
+            style={{ 
+              left: contextMenuPosition.x, 
+              top: contextMenuPosition.y,
+              minWidth: '150px'
+            }}
+          >
+            <button
+              onClick={() => handleContextMenuAction('delete')}
+              className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <Trash2 size={16} className="inline mr-2" />
+              Delete
+            </button>
+            <button
+              onClick={() => handleContextMenuAction('report')}
+              className="w-full px-4 py-2 text-left text-orange-600 hover:bg-orange-50 transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline mr-2">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                <line x1="4" y1="22" x2="4" y2="15"/>
+              </svg>
+              Report
+            </button>
+            <button
+              onClick={() => handleContextMenuAction('block')}
+              className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline mr-2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m4.9 4.9 14.2 14.2"/>
+              </svg>
+              Block User
+            </button>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 flex-1">
             {/* POST ICON (PRIMARY) */}
@@ -724,18 +805,57 @@ const MessagesTab: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (confirm(`Are you sure you want to delete this conversation about "${currentConversation.postTitle}" with ${currentConversation.otherUser.displayName}?`)) {
-                        handleDeleteConversation(currentConversation.id.toString());
-                      }
-                    }}
-                    className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                    title="Delete Conversation"
-                  >
-                    <Trash2 size={20} />
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    {/* Report User Button */}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Report ${currentConversation.otherUser.displayName} for inappropriate behavior?`)) {
+                          // TODO: Implement report user functionality
+                          alert('Report functionality will be implemented soon.');
+                        }
+                      }}
+                      className="p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors cursor-pointer"
+                      title="Report User"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                        <line x1="4" y1="22" x2="4" y2="15"/>
+                      </svg>
+                    </button>
+                    
+                    {/* Block User Button */}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Block ${currentConversation.otherUser.displayName}? This will prevent them from messaging you.`)) {
+                          // TODO: Implement block user functionality
+                          alert('Block functionality will be implemented soon.');
+                        }
+                      }}
+                      className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      title="Block User"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="m4.9 4.9 14.2 14.2"/>
+                      </svg>
+                    </button>
+                    
+                    {/* Delete Conversation Button */}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Are you sure you want to delete this conversation about "${currentConversation.postTitle}" with ${currentConversation.otherUser.displayName}?`)) {
+                          handleDeleteConversation(currentConversation.id.toString());
+                        }
+                      }}
+                      className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      title="Delete Conversation"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
                 </div>
               </div>
 

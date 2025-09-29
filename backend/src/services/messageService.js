@@ -95,7 +95,7 @@ class MessageService {
         JOIN universities un ON u.university_id = un.id
         LEFT JOIN posts p ON c.post_id = p.id
         LEFT JOIN users pa ON COALESCE(c.post_author_id, p.user_id) = pa.id
-        WHERE c.user1_id = $1 OR c.user2_id = $1
+        WHERE (c.user1_id = $1 OR c.user2_id = $1) AND c.is_active = true
         ORDER BY c.last_message_at DESC NULLS LAST
         LIMIT $2 OFFSET $3
       `, [userId, limit, offset]);
@@ -339,6 +339,7 @@ class MessageService {
         SELECT id FROM conversations 
         WHERE post_id = $1 
         AND ((user1_id = $2 AND user2_id = $3) OR (user1_id = $3 AND user2_id = $2))
+        AND is_active = true
       `, [postId, userId, otherUserId]);
 
       if (existingConv.rows.length > 0) {
@@ -910,9 +911,10 @@ class MessageService {
 
       const { user1_id, user2_id } = usersResult.rows[0];
 
-      // Delete conversation (cascades to messages)
+      // Mark conversation as inactive instead of deleting (allows recreation)
       await dbQuery(`
-        DELETE FROM conversations 
+        UPDATE conversations 
+        SET is_active = false, updated_at = CURRENT_TIMESTAMP
         WHERE id = $1
       `, [conversationId]);
 

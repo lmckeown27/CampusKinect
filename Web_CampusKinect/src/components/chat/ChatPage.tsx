@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Send, ArrowLeft, User, Trash2, Package, Wrench, Home, Calendar, FileText } from 'lucide-react';
+import { Send, ArrowLeft, User, Trash2, Package, Wrench, Home, Calendar, FileText, Image as ImageIcon } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useMessagesStore } from '../../stores/messagesStore';
 import apiService from '../../services/api';
@@ -23,7 +23,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // POST-CENTRIC: Extract post context from URL
   const postId = searchParams.get('postId');
@@ -64,7 +66,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     }
   }, [userId, router, isMounted]);
 
-  // Load existing conversation if it exists
+  // Load existing conversation if it exists (lazy loading - don't create until first message)
   useEffect(() => {
     if (!isMounted) return;
 
@@ -88,11 +90,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
         const existingConversation = conversations.find(conv => {
           console.log('🔍 Checking POST-CENTRIC conversation:', conv);
           console.log('🔍 Conversation other user:', conv.otherUser);
-          console.log('🔍 Conversation post:', conv.post);
+          console.log('🔍 Conversation post:', { postId: conv.postId, postTitle: conv.postTitle });
           
           // POST-CENTRIC: Match by other user AND post (if specified)
           const hasTargetUser = conv.otherUser.id === chatUser.id;
-          const hasTargetPost = postId ? conv.post.id === postId : true;
+          const hasTargetPost = postId ? conv.postId === postId : true;
           return hasTargetUser && hasTargetPost;
         });
         console.log('🎯 Found existing conversation:', existingConversation);
@@ -112,9 +114,10 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
             setChatMessages([]);
           }
         } else {
-          // No existing conversation - this will be a new message request
+          // No existing conversation - will be created when user sends first message
           setConversation(null);
           setChatMessages([]);
+          console.log('💭 No existing conversation found - will create when first message is sent');
         }
         
       } catch (error) {
@@ -234,6 +237,71 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
     }
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !currentUser || !chatUser) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image size must be less than 10MB');
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      let activeConversation = conversation;
+
+      // If no conversation exists, create one first (LAZY CREATION)
+      if (!activeConversation && postId) {
+        console.log('🔄 Creating new conversation for post:', postId);
+        
+        const request: StartConversationRequest = {
+          otherUserId: chatUser.id,
+          postId: postId,
+          initialMessage: 'Image' // Placeholder for image message
+        };
+
+        const response = await apiService.startConversation(request);
+        activeConversation = response.data.conversation;
+        setConversation(activeConversation);
+        
+        console.log('✅ New conversation created:', activeConversation?.id);
+      }
+
+      if (!activeConversation) {
+        console.error('❌ No conversation available to send image');
+        alert('Unable to send image. Please try sending a text message first.');
+        return;
+      }
+
+      // Upload image to conversation
+      const imageMessage = await apiService.uploadImageToConversation(
+        (activeConversation as Conversation).id.toString(),
+        file
+      );
+
+      // Add image message to local state
+      setChatMessages(prev => [...prev, imageMessage]);
+      
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploadingImage(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   const handleBackClick = () => {
     if (typeof window !== 'undefined') {
       router.push('/messages');
@@ -310,46 +378,69 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
           <ArrowLeft size={20} />
         </button>
         
-        {/* Centered Profile Section - Clickable */}
-        <div 
-          className="flex flex-col items-center space-y-3 p-3 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-50"
-          onClick={() => router.push(`/user/${chatUser?.id}`)}
-          style={{ 
-            border: '2px solid transparent',
-            minWidth: '150px'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#525252';
-            e.currentTarget.style.border = '2px solid #708d81';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.border = '2px solid transparent';
-            e.currentTarget.style.transform = 'translateY(0px)';
-          }}
-        >
-          <div className="w-16 h-16 flex-shrink-0">
-            {chatUser?.profilePicture ? (
-              <img
-                src={chatUser.profilePicture}
-                alt={`${chatUser.firstName} ${chatUser.lastName}`}
-                className="w-16 h-16 rounded-full object-cover"
-                style={{ border: '3px solid #708d81' }}
-              />
-            ) : (
-              <div className="w-16 h-16 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '3px solid #708d81' }}>
-                <span className="text-white text-lg font-bold">
-                  {chatUser ? `${chatUser.firstName?.charAt(0) || '?'}${chatUser.lastName?.charAt(0) || '?'}` : '?'}
-                </span>
-              </div>
-            )}
-          </div>
+        {/* Post-Centric Header Section */}
+        <div className="flex flex-col items-center space-y-3 p-3 rounded-lg">
+          {/* Post Title (Primary) */}
           <div className="text-center">
-            <h1 className="font-semibold text-[#708d81] text-lg">
-              {chatUser?.displayName || `${chatUser?.firstName} ${chatUser?.lastName}`}
+            <h1 className="font-bold text-[#708d81] text-xl mb-1">
+              {postTitle || conversation?.postTitle || 'Post Conversation'}
             </h1>
-            <p className="text-sm text-gray-500">@{chatUser?.username}</p>
+            <div className="flex items-center justify-center space-x-2">
+              {/* Post Type Icon */}
+              <div className="w-6 h-6 flex items-center justify-center">
+                {conversation?.postType === 'goods' && <Package size={16} className="text-blue-600" />}
+                {conversation?.postType === 'services' && <Wrench size={16} className="text-green-600" />}
+                {conversation?.postType === 'housing' && <Home size={16} className="text-orange-600" />}
+                {conversation?.postType === 'events' && <Calendar size={16} className="text-purple-600" />}
+                {!conversation?.postType && <FileText size={16} className="text-gray-600" />}
+              </div>
+              <span className="text-sm text-gray-600 capitalize">
+                {conversation?.postType || 'Post'} • Conversation with {chatUser?.firstName}
+              </span>
+            </div>
+          </div>
+          
+          {/* User Profile (Secondary) */}
+          <div 
+            className="flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-50"
+            onClick={() => router.push(`/user/${chatUser?.id}`)}
+            style={{ 
+              border: '2px solid transparent',
+              minWidth: '200px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#525252';
+              e.currentTarget.style.border = '2px solid #708d81';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.border = '2px solid transparent';
+              e.currentTarget.style.transform = 'translateY(0px)';
+            }}
+          >
+            <div className="w-12 h-12 flex-shrink-0">
+              {chatUser?.profilePicture ? (
+                <img
+                  src={chatUser.profilePicture}
+                  alt={`${chatUser.firstName} ${chatUser.lastName}`}
+                  className="w-12 h-12 rounded-full object-cover"
+                  style={{ border: '2px solid #708d81' }}
+                />
+              ) : (
+                <div className="w-12 h-12 bg-[#708d81] rounded-full flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
+                  <span className="text-white text-sm font-bold">
+                    {chatUser ? `${chatUser.firstName?.charAt(0) || '?'}${chatUser.lastName?.charAt(0) || '?'}` : '?'}
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="text-left">
+              <p className="font-medium text-[#708d81] text-sm">
+                {chatUser?.displayName || `${chatUser?.firstName} ${chatUser?.lastName}`}
+              </p>
+              <p className="text-xs text-gray-500">@{chatUser?.username}</p>
+            </div>
           </div>
         </div>
 
@@ -381,21 +472,37 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       <div className="flex-1 overflow-y-auto px-4 py-6">
         {chatMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="w-16 h-16 bg-[#708d81] rounded-full flex items-center justify-center mb-4">
-              <User size={32} className="text-white" />
+            <div className="w-20 h-20 bg-[#708d81] rounded-full flex items-center justify-center mb-6">
+              {conversation ? (
+                <User size={40} className="text-white" />
+              ) : (
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+              )}
             </div>
-            <h3 className="text-lg font-medium text-[#708d81] mb-2">
+            <h3 className="text-xl font-bold text-[#708d81] mb-2">
               {conversation ? 
-                `Continue your conversation with ${chatUser.firstName}` :
-                `Start a conversation with ${chatUser.firstName}`
+                `Continue your conversation` :
+                `Start the conversation`
               }
             </h3>
-            <p className="text-gray-500 max-w-md">
+            <p className="text-gray-600 max-w-md mb-4">
               {conversation ? 
-                'Send a message to continue your conversation. Be respectful and follow community guidelines.' :
-                'Your message will start a new conversation. Be respectful and follow community guidelines.'
+                `Send a message to continue chatting about "${conversation.postTitle}"` :
+                `Send the first message to start chatting about "${postTitle || 'this post'}"`
               }
             </p>
+            {!conversation && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>Tip:</strong> Your conversation will be created when you send your first message. 
+                  If you leave without sending a message, no conversation will be saved.
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
@@ -443,9 +550,24 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
                           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
                         }}
                       >
-                        <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
-                          {message.content}
-                        </p>
+                        {message.messageType === 'image' && message.mediaUrl ? (
+                          <div className="relative">
+                            <img
+                              src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${message.mediaUrl}`}
+                              alt="Shared image"
+                              className="rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                              style={{ maxWidth: '200px', maxHeight: '200px' }}
+                              onClick={() => {
+                                // Open image in new tab for full view
+                                window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${message.mediaUrl}`, '_blank');
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
+                            {message.content}
+                          </p>
+                        )}
                       </div>
                       {/* Individual message timestamp (shown on hover or for latest message) */}
                       <div className={`text-xs text-gray-400 mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
@@ -471,11 +593,40 @@ const ChatPage: React.FC<ChatPageProps> = ({ userId }) => {
       {/* Message Input - Centered and Reduced Width */}
               <div className="bg-grey-medium border-t border-[#708d81] p-4">
         <div className="max-w-sm mx-auto flex items-end space-x-3">
+          {/* Image Upload Button */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploadingImage}
+            className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0"
+            style={{ 
+              backgroundColor: isUploadingImage ? '#d1d5db' : '#708d81',
+              color: 'white',
+              border: isUploadingImage ? '2px solid #d1d5db' : '2px solid #708d81',
+              cursor: isUploadingImage ? 'not-allowed' : 'pointer'
+            }}
+            title="Upload Image"
+          >
+            {isUploadingImage ? (
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            ) : (
+              <ImageIcon size={20} />
+            )}
+          </button>
+          
+          {/* Hidden File Input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          
           <textarea
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={conversation ? `Message ${chatUser.firstName}...` : `Start a conversation with ${chatUser.firstName}...`}
+            placeholder={conversation ? `Add a message...` : `Send the first message...`}
             className="flex-1 px-4 py-3 border border-[#708d81] rounded-2xl focus:ring-2 focus:ring-[#708d81] focus:border-transparent resize-none max-h-32 text-base"
             rows={1}
             style={{

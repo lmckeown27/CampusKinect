@@ -1139,6 +1139,26 @@ class ApiService {
       throw new Error(response.data.message || 'Failed to unban user');
     }
   }
+
+  // Upload image to conversation
+  public async uploadImageToConversation(conversationId: string, imageFile: File): Promise<Message> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    // Use axios for consistency with other API calls
+    const response: AxiosResponse<ApiResponse<{ image: any; message: Message }>> = 
+      await this.api.post(`/messages/conversations/${conversationId}/image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+    if (response.data.success && response.data.data) {
+      return response.data.data.message;
+    }
+
+    throw new Error(response.data.message || 'Failed to upload image');
+  }
 }
 
 export const apiService = new ApiService();

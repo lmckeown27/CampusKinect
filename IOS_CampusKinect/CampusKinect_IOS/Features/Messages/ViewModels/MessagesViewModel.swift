@@ -22,6 +22,8 @@ class MessagesViewModel: ObservableObject {
     
     private let apiService = APIService.shared
     private var cancellables = Set<AnyCancellable>()
+    private var pollTimer: Timer?
+    private var currentUserId: Int = 0
     
     init() {
         // Listen for message sent notifications
@@ -39,6 +41,14 @@ class MessagesViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+        
+        // Start polling for new conversations/messages
+        startPolling()
+    }
+    
+    deinit {
+        pollTimer?.invalidate()
+        pollTimer = nil
     }
     
     // MARK: - Public Methods
@@ -91,6 +101,11 @@ class MessagesViewModel: ObservableObject {
             // Remove from current position and add to top
             conversations.remove(at: index)
             conversations.insert(updatedConversationData, at: 0)
+        } else {
+            // Conversation not found locally, refresh to get it
+            Task {
+                await refreshConversations()
+            }
         }
     }
     
@@ -138,10 +153,12 @@ class MessagesViewModel: ObservableObject {
         await loadSentMessageRequests()
     }
     
+    func setCurrentUserId(_ userId: Int) {
+        self.currentUserId = userId
+    }
+    
     private func getCurrentUserId() -> Int {
-        // Get current user ID from AuthenticationManager or other source
-        // For now, return 0 as fallback - this should be properly implemented
-        return 0 // TODO: Get actual current user ID
+        return currentUserId
     }
     
     func deleteConversation(conversationId: Int) async {
@@ -155,6 +172,42 @@ class MessagesViewModel: ObservableObject {
             await MainActor.run {
                 self.error = error as? APIError
             }
+        }
+    }
+    
+    // MARK: - Polling Methods
+    
+    private func startPolling() {
+        stopPolling() // Stop any existing polling
+        
+        pollTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                await self?.pollForNewConversations()
+            }
+        }
+    }
+    
+    private func stopPolling() {
+        pollTimer?.invalidate()
+        pollTimer = nil
+    }
+    
+    private func pollForNewConversations() async {
+        // Only poll if we're not already loading and have been initialized
+        guard !isLoading && !conversations.isEmpty else { return }
+        
+        do {
+            let response = try await apiService.fetchConversations()
+            let newConversations = response.data.conversations
+            
+            // Check if there are new conversations or updates
+            if newConversations.count != conversations.count || 
+               newConversations.first?.lastMessageTime != conversations.first?.lastMessageTime {
+                conversations = newConversations
+            }
+        } catch {
+            // Silently fail polling to avoid spamming errors
+            print("⚠️ Conversation polling failed: \(error)")
         }
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 // MARK: - API Service
 class APIService: NSObject, ObservableObject {
@@ -540,6 +541,82 @@ class APIService: NSObject, ObservableObject {
             requiresAuth: true
         )
     }
+    
+    // MARK: - Image Upload for Conversations
+    
+    func uploadImageToConversation(conversationId: Int, image: UIImage) async throws -> Message {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw APIError.unknown(400)
+        }
+        
+        let endpoint = "/messages/conversations/\(conversationId)/image"
+        let url = URL(string: APIConstants.fullBaseURL + endpoint)!
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        // Add auth header
+        if let token = KeychainManager.shared.getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        // Create multipart form data
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var body = Data()
+        
+        // Add image data
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData)
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        request.httpBody = body
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.unknown(0)
+        }
+        
+        if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
+            let apiResponse = try decoder.decode(ImageUploadResponse.self, from: data)
+            // Create a Message object from the response
+            let message = Message(
+                id: Int.random(in: 1000...9999), // Temporary ID
+                conversationId: conversationId,
+                senderId: 0, // Will be set by backend
+                content: "Image",
+                messageType: .image,
+                isRead: false,
+                createdAt: Date(),
+                metadata: MessageMetadata(
+                    imageUrl: apiResponse.data?.images.first?.url,
+                    thumbnailUrl: apiResponse.data?.images.first?.thumbnailUrl,
+                    systemMessageType: nil
+                )
+            )
+            return message
+        } else {
+            throw APIError.unknown(httpResponse.statusCode)
+        }
+    }
+    
+    // MARK: - User Moderation Methods
+    
+    func reportUser(userId: Int, reason: String, details: String?) async throws {
+        let request = ReportUserRequest(userId: userId, reason: reason, details: details)
+        let body = try encoder.encode(request)
+        
+        let _: EmptyResponse = try await performRequest(
+            endpoint: "/users/report",
+            method: .POST,
+            body: body,
+            requiresAuth: true
+        )
+    }
 
 }
 
@@ -711,6 +788,14 @@ struct ReportContentRequest: Codable {
 struct BlockUserRequest: Codable {
     let userId: Int
 }
+
+struct ReportUserRequest: Codable {
+    let userId: Int
+    let reason: String
+    let details: String?
+}
+
+// Use existing ImageUploadResponse from CreatePost models
 
 struct BlockedUsersResponse: Codable {
     let success: Bool

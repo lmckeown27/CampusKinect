@@ -86,6 +86,8 @@ struct MessagesView: View {
         .onAppear {
             print("📱 MessagesView appeared. isViewReady = true")
             isViewReady = true
+            // Set current user ID in view model
+            viewModel.setCurrentUserId(authManager.currentUser?.id ?? 0)
             Task {
                 await viewModel.loadConversations()
             }
@@ -172,6 +174,7 @@ struct MessagesView: View {
                             print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), post='\(conversation.postTitle)', shouldNavigateToChat=\(shouldNavigateToChat)")
                         }
                     }
+                    .onDelete(perform: deleteConversations)
                     
                     if viewModel.isLoading && !viewModel.conversations.isEmpty {
                         HStack {
@@ -220,6 +223,16 @@ struct MessagesView: View {
         }
     }    
     // MARK: - Methods
+    
+    private func deleteConversations(at offsets: IndexSet) {
+        let conversationsToDelete = offsets.map { filteredConversations[$0] }
+        
+        for conversation in conversationsToDelete {
+            Task {
+                await viewModel.deleteConversation(conversationId: conversation.id)
+            }
+        }
+    }
     
     private func handlePushNotification(_ userInfo: [AnyHashable: Any]) {
         print("📱 Handling push notification in MessagesView: \(userInfo)")

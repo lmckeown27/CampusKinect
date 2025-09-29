@@ -40,19 +40,22 @@ class ChatViewModel: ObservableObject {
         isLoading = true
         error = nil
         
+        // Set current user ID - will be set when view model is initialized with user context
+        
         do {
             // Load the other user's information
             let user = try await apiService.getUserById(userId: userId)
             otherUser = user
             
-            // Try to find existing conversation
+            // Try to find existing conversation - but don't create one yet
             await loadExistingConversation(with: userId)
             
-            // If conversation exists, load messages
+            // If conversation exists, load messages and start polling
             if let conversation = conversation {
                 await loadMessages(for: conversation.id)
                 startPolling()
             }
+            // If no conversation exists, that's fine - we'll create it when user sends first message
             
         } catch {
             self.error = error as? APIError ?? .unknown(0)
@@ -107,6 +110,9 @@ class ChatViewModel: ObservableObject {
                         "senderId": currentUserId ?? 0
                     ]
                 )
+                
+                // Also refresh messages to ensure they appear
+                await loadMessages(for: conversation.id)
             } else {
                 // Create new POST-CENTRIC conversation with first message
                 guard let postId = UserDefaults.standard.object(forKey: "pendingChatPostId") as? Int else {
@@ -124,8 +130,8 @@ class ChatViewModel: ObservableObject {
                 let response = try await apiService.startConversation(request)
                 print("✅ Post conversation created with first message: \(response.data.conversation.id)")
                 
-                // Update the conversation reference
-                self.conversation = response.data.conversation
+                // Update the conversation reference - convert ConversationDetail to Conversation
+                self.conversation = response.data.conversation.toConversation()
                 
                 // Clear the pending post data since conversation is now created
                 UserDefaults.standard.removeObject(forKey: "pendingChatPostId")
@@ -143,6 +149,9 @@ class ChatViewModel: ObservableObject {
                         "senderId": currentUserId ?? 0
                     ]
                 )
+                
+                // Load messages for the new conversation
+                await loadMessages(for: response.data.conversation.id)
             }
             
             // Don't immediately reload - let polling handle it

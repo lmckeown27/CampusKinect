@@ -269,6 +269,28 @@ struct ConversationDetail: Codable, Identifiable {
         case post
         case otherUser
     }
+    
+    // MARK: - Conversion to Conversation
+    func toConversation() -> Conversation {
+        let conversationListUser = ConversationListUser(
+            id: otherUser.id,
+            university: "Unknown University" // ConversationDetail doesn't include university info
+        )
+        
+        return Conversation(
+            id: id,
+            createdAt: createdAt,
+            lastMessageAt: nil, // New conversation, no messages yet
+            postId: post.id,
+            postTitle: post.title,
+            postType: post.type,
+            otherUser: conversationListUser,
+            lastMessage: nil, // New conversation, no messages yet
+            lastMessageSenderId: nil,
+            lastMessageTime: nil,
+            unreadCount: 0 // New conversation, no unread messages
+        )
+    }
 }
 
 // MARK: - Conversation List User (Simplified)

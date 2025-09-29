@@ -3,6 +3,7 @@ const { body, query, param } = require('express-validator');
 const { validate, commonValidations } = require('../middleware/validation');
 const { auth, requireVerification } = require('../middleware/auth');
 const messageService = require('../services/messageService');
+const { uploadSingleImage, processAndSaveImage } = require('../services/imageService');
 
 const router = express.Router();
 
@@ -265,6 +266,111 @@ router.post('/conversations/:id/messages', [
       success: false,
       error: {
         message: error.message || 'Failed to send message. Please try again.'
+      }
+    });
+  }
+});
+
+// @route   POST /api/v1/messages/conversations/:id/image
+// @desc    Upload an image to a conversation
+// @access  Private
+router.post('/conversations/:id/image', [
+  auth,
+  requireVerification,
+  uploadSingleImage,
+  param('id').isInt().withMessage('Conversation ID must be an integer')
+], async (req, res) => {
+  try {
+    const { id: conversationId } = req.params;
+    const userId = req.user.id;
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'No image file provided'
+        }
+      });
+    }
+
+    // Verify user has access to this conversation
+    const { query: dbQuery } = require('../config/database');
+    const convCheck = await dbQuery(`
+      SELECT id FROM conversations 
+      WHERE id = $1 AND (user1_id = $2 OR user2_id = $2) AND is_active = true
+    `, [conversationId, userId]);
+
+    if (convCheck.rows.length === 0) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          message: 'Access denied to this conversation'
+        }
+      });
+    }
+
+    // Process and save image optimized for messages
+    const imageData = await processAndSaveImage(req.file.buffer, req.file.originalname, {
+      width: 800,
+      height: 600,
+      quality: 85,
+      format: 'jpeg'
+    });
+
+    const imageUrl = `/uploads/${imageData.original}`;
+    const thumbnailUrl = `/uploads/${imageData.thumbnail}`;
+
+    // Send image message
+    const result = await messageService.sendMessage(
+      conversationId, 
+      userId, 
+      'Image', // Default content for image messages
+      'image', 
+      imageUrl
+    );
+
+    // Emit real-time message via Socket.io
+    const io = req.app.get('io');
+    if (io) {
+      const otherUserResult = await dbQuery(`
+        SELECT 
+          CASE 
+            WHEN user1_id = $1 THEN user2_id
+            ELSE user1_id
+          END as other_user_id
+        FROM conversations 
+        WHERE id = $2
+      `, [userId, conversationId]);
+
+      if (otherUserResult.rows.length > 0) {
+        const otherUserId = otherUserResult.rows[0].other_user_id;
+        
+        // Emit to the other user's personal room
+        io.to(`user-${otherUserId}`).emit('new-message', {
+          conversationId,
+          message: result.data.message
+        });
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Image uploaded and sent successfully',
+      data: {
+        image: {
+          url: imageUrl,
+          thumbnailUrl: thumbnailUrl
+        },
+        message: result.data.message
+      }
+    });
+
+  } catch (error) {
+    console.error('Conversation image upload error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to upload image. Please try again.'
       }
     });
   }

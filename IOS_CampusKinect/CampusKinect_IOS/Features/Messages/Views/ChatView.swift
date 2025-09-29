@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ChatView: View {
     let postId: Int
@@ -18,6 +19,17 @@ struct ChatView: View {
     @StateObject private var viewModel: ChatViewModel
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isTextFieldFocused: Bool
+    @State private var showingOptionsMenu = false
+    @State private var showingDeleteAlert = false
+    @State private var showingReportSheet = false
+    @State private var showingBanAlert = false
+    
+    // Image sharing states
+    @State private var showingImagePicker = false
+    @State private var showingCamera = false
+    @State private var showingImageActionSheet = false
+    @State private var photosPickerItems: [PhotosPickerItem] = []
+    @State private var isUploadingImage = false
 
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -60,18 +72,37 @@ struct ChatView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)
         }
-        .navigationTitle("Post Conversation")
+        .navigationTitle(postTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    // Handle post options
-                }) {
+                Menu {
+                    Button(action: {
+                        showingDeleteAlert = true
+                    }) {
+                        Label("Delete Conversation", systemImage: "trash")
+                    }
+                    
+                    Button(action: {
+                        showingReportSheet = true
+                    }) {
+                        Label("Report User", systemImage: "flag")
+                    }
+                    
+                    Button(role: .destructive, action: {
+                        showingBanAlert = true
+                    }) {
+                        Label("Block User", systemImage: "person.slash")
+                    }
+                } label: {
                     Image(systemName: "ellipsis")
+                        .foregroundColor(.primary)
                 }
             }
         }
         .onAppear {
+            // Set current user ID from auth manager
+            viewModel.setCurrentUserId(authManager.currentUser?.id ?? 0)
             Task {
                 await viewModel.loadChat(with: otherUserId)
             }
@@ -85,6 +116,63 @@ struct ChatView: View {
             }
         } message: {
             Text(viewModel.error?.localizedDescription ?? "An error occurred.")
+        }
+        .alert("Delete Conversation", isPresented: $showingDeleteAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                deleteConversation()
+            }
+        } message: {
+            Text("Are you sure you want to delete this conversation? This action cannot be undone.")
+        }
+        .alert("Block User", isPresented: $showingBanAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Block", role: .destructive) {
+                blockUser()
+            }
+        } message: {
+            Text("Are you sure you want to block \(otherUserName)? You won't receive messages from them anymore.")
+        }
+        .sheet(isPresented: $showingReportSheet) {
+            ReportUserView(userId: otherUserId, userName: otherUserName)
+        }
+        .confirmationDialog("Add Photo", isPresented: $showingImageActionSheet) {
+            Button("Take Photo") {
+                showingCamera = true
+            }
+            
+            Button("Choose from Library") {
+                showingImagePicker = true
+            }
+            
+            Button("Cancel", role: .cancel) { }
+        }
+        .photosPicker(
+            isPresented: $showingImagePicker,
+            selection: $photosPickerItems,
+            maxSelectionCount: 1,
+            matching: .images
+        )
+        .fullScreenCover(isPresented: $showingCamera) {
+            CameraView(
+                onImageCaptured: { image in
+                    handleImageSelected(image)
+                },
+                flashMode: .off,
+                cameraDevice: .rear,
+                allowsEditing: true
+            )
+        }
+        .onChange(of: photosPickerItems) { oldValue, newValue in
+            Task {
+                if let item = newValue.first {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        handleImageSelected(image)
+                    }
+                }
+                photosPickerItems = []
+            }
         }
     }
     
@@ -157,21 +245,61 @@ struct ChatView: View {
                     .listRowBackground(Color.clear)
                 }
                 
-                ForEach(viewModel.messages) { message in
-                    CommentStyleMessageView(
-                        message: message,
-                        isCurrentUser: message.senderId == authManager.currentUser?.id,
-                        otherUserName: otherUserName
-                    )
+                // Show placeholder when no conversation exists yet
+                if viewModel.messages.isEmpty && !viewModel.isLoading && viewModel.conversation == nil {
+                    VStack(spacing: 12) {
+                        Image(systemName: "bubble.left.and.bubble.right")
+                            .font(.system(size: 48))
+                            .foregroundColor(.secondary.opacity(0.6))
+                        
+                        Text("Start the conversation")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        Text("Send the first message to start chatting about this post")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 60)
                     .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(
-                        top: 6,
-                        leading: 16,
-                        bottom: 6,
-                        trailing: 16
-                    ))
                     .listRowBackground(Color.clear)
-                    .id(message.id)
+                }
+                
+                ForEach(viewModel.messages) { message in
+                    if message.messageType == .image {
+                        ImageMessageView(
+                            message: message,
+                            isCurrentUser: message.senderId == authManager.currentUser?.id,
+                            otherUserName: otherUserName
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(
+                            top: 6,
+                            leading: 16,
+                            bottom: 6,
+                            trailing: 16
+                        ))
+                        .listRowBackground(Color.clear)
+                        .id(message.id)
+                    } else {
+                        CommentStyleMessageView(
+                            message: message,
+                            isCurrentUser: message.senderId == authManager.currentUser?.id,
+                            otherUserName: otherUserName
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(
+                            top: 6,
+                            leading: 16,
+                            bottom: 6,
+                            trailing: 16
+                        ))
+                        .listRowBackground(Color.clear)
+                        .id(message.id)
+                    }
                 }
                 
                 if viewModel.isLoading {
@@ -211,9 +339,29 @@ struct ChatView: View {
                             .foregroundColor(.white)
                     )
                 
-                // Comment input field
+                // Comment input field with media buttons
                 HStack(spacing: 8) {
-                    TextField("Add a message about this post...", text: $viewModel.newMessageText, axis: .vertical)
+                    // Camera button (iOS only)
+                    Button(action: {
+                        showingImageActionSheet = true
+                    }) {
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(Color.campusPrimary)
+                    }
+                    .disabled(isUploadingImage)
+                    
+                    // Image picker button
+                    Button(action: {
+                        showingImagePicker = true
+                    }) {
+                        Image(systemName: "photo.fill")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(Color.campusPrimary)
+                    }
+                    .disabled(isUploadingImage)
+                    
+                    TextField(viewModel.conversation == nil ? "Send the first message..." : "Add a message...", text: $viewModel.newMessageText, axis: .vertical)
                         .textFieldStyle(PlainTextFieldStyle())
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
@@ -226,11 +374,16 @@ struct ChatView: View {
                     Button(action: {
                         sendMessage()
                     }) {
-                        Image(systemName: "paperplane.fill")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : Color.campusPrimary)
+                        if isUploadingImage {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "paperplane.fill")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : Color.campusPrimary)
+                        }
                     }
-                    .disabled(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
+                    .disabled((viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading) && !isUploadingImage)
                 }
             }
             .padding(.horizontal, 16)
@@ -244,6 +397,119 @@ struct ChatView: View {
     private func sendMessage() {
         Task {
             await viewModel.sendMessage()
+        }
+    }
+    
+    private func deleteConversation() {
+        guard let conversation = viewModel.conversation else { return }
+        
+        Task {
+            do {
+                try await APIService.shared.deleteConversation(conversationId: conversation.id)
+                await MainActor.run {
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    viewModel.error = error as? APIError ?? .unknown(500)
+                }
+            }
+        }
+    }
+    
+    private func blockUser() {
+        Task {
+            do {
+                let success = try await APIService.shared.blockUser(userId: otherUserId)
+                await MainActor.run {
+                    if success {
+                        dismiss()
+                    } else {
+                        viewModel.error = .unknown(500)
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    viewModel.error = error as? APIError ?? .unknown(500)
+                }
+            }
+        }
+    }
+    
+    private func handleImageSelected(_ image: UIImage) {
+        Task {
+            await uploadAndSendImage(image)
+        }
+    }
+    
+    private func uploadAndSendImage(_ image: UIImage) async {
+        await MainActor.run {
+            isUploadingImage = true
+        }
+        
+        do {
+            // First ensure we have a conversation
+            if viewModel.conversation == nil {
+                // Create conversation first with a placeholder message
+                guard let postId = UserDefaults.standard.object(forKey: "pendingChatPostId") as? Int else {
+                    await MainActor.run {
+                        viewModel.error = .unknown(400)
+                        isUploadingImage = false
+                    }
+                    return
+                }
+                
+                let request = StartConversationRequest(
+                    otherUserId: otherUserId,
+                    postId: postId,
+                    initialMessage: "Image" // Placeholder for image message
+                )
+                
+                let response = try await APIService.shared.startConversation(request)
+                await MainActor.run {
+                    viewModel.conversation = response.data.conversation.toConversation()
+                    UserDefaults.standard.removeObject(forKey: "pendingChatPostId")
+                    UserDefaults.standard.removeObject(forKey: "pendingChatPostTitle")
+                    UserDefaults.standard.removeObject(forKey: "pendingChatUserId")
+                }
+            }
+            
+            guard let conversation = viewModel.conversation else {
+                await MainActor.run {
+                    viewModel.error = .unknown(400)
+                    isUploadingImage = false
+                }
+                return
+            }
+            
+            // Upload image to conversation
+            let imageMessage = try await APIService.shared.uploadImageToConversation(
+                conversationId: conversation.id,
+                image: image
+            )
+            
+            await MainActor.run {
+                // Add image message to the conversation
+                viewModel.messages.append(imageMessage)
+                isUploadingImage = false
+                
+                // Notify MessagesViewModel about the new message
+                NotificationCenter.default.post(
+                    name: .messageSent,
+                    object: nil,
+                    userInfo: [
+                        "conversationId": conversation.id,
+                        "message": "Image",
+                        "senderId": viewModel.currentUserId ?? 0
+                    ]
+                )
+            }
+            
+        } catch {
+            await MainActor.run {
+                viewModel.error = error as? APIError ?? .unknown(500)
+                isUploadingImage = false
+            }
         }
     }
     

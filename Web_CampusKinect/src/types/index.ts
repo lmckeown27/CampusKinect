@@ -105,6 +105,8 @@ export interface Message {
   conversationId: string;
   isRead: boolean;
   createdAt: string;
+  messageType?: 'text' | 'image' | 'system';
+  mediaUrl?: string;
   sender?: User;
 }
 
