@@ -688,6 +688,7 @@ const MessagesTab: React.FC = () => {
                     conversation={conversation}
                     isSelected={currentConversation?.id === conversation.id}
                     activeTab={activeTab}
+                    currentUserId={currentUser?.id || ''}
                     onSelect={handleConversationSelect}
                     index={index}
                   />
@@ -708,17 +709,17 @@ const MessagesTab: React.FC = () => {
                     {/* POST ICON (PRIMARY) */}
                     <div className="w-10 h-10 flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                        {currentConversation.post.type === 'goods' && <Package size={16} className="text-blue-600" />}
-                        {currentConversation.post.type === 'services' && <Wrench size={16} className="text-green-600" />}
-                        {currentConversation.post.type === 'housing' && <Home size={16} className="text-orange-600" />}
-                        {currentConversation.post.type === 'events' && <Calendar size={16} className="text-purple-600" />}
-                        {!['goods', 'services', 'housing', 'events'].includes(currentConversation.post.type) && <FileText size={16} className="text-gray-600" />}
+                        {currentConversation.postType === 'goods' && <Package size={16} className="text-blue-600" />}
+                        {currentConversation.postType === 'services' && <Wrench size={16} className="text-green-600" />}
+                        {currentConversation.postType === 'housing' && <Home size={16} className="text-orange-600" />}
+                        {currentConversation.postType === 'events' && <Calendar size={16} className="text-purple-600" />}
+                        {!['goods', 'services', 'housing', 'events'].includes(currentConversation.postType) && <FileText size={16} className="text-gray-600" />}
                       </div>
                     </div>
                     <div>
                       {/* POST TITLE (PRIMARY) */}
                       <h3 className="font-medium text-[#708d81]">
-                        {currentConversation.post.title}
+                        {currentConversation.postTitle}
                       </h3>
                       {/* USER INFO (SECONDARY) */}
                       <p className="text-sm text-[#708d81] opacity-70">
