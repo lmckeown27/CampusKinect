@@ -157,7 +157,7 @@ struct MessagesView: View {
             } else {
                 List {
                     ForEach(filteredConversations, id: \.id) { conversation in
-                        ConversationRow(conversation: conversation, currentUserId: authManager.user?.id ?? 0) {
+                        ConversationRow(conversation: conversation, currentUserId: authManager.currentUser?.id ?? 0) {
                             print("📱 ConversationRow tapped for POST: '\(conversation.postTitle)' with user: \(conversation.otherUser.displayName)")
                             
                             // Store user information
