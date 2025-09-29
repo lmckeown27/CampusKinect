@@ -52,8 +52,17 @@ struct Conversation: Codable, Identifiable, Equatable {
         postTitle = try container.decode(String.self, forKey: .postTitle)
         postType = try container.decode(String.self, forKey: .postType)
         otherUser = try container.decode(ConversationListUser.self, forKey: .otherUser)
-        lastMessage = try container.decodeIfPresent(String.self, forKey: .lastMessage)
-        lastMessageSenderId = try container.decodeIfPresent(Int.self, forKey: .lastMessageSenderId)
+        // Handle lastMessage as either String or Object
+        if let lastMessageString = try? container.decode(String.self, forKey: .lastMessage) {
+            lastMessage = lastMessageString
+            lastMessageSenderId = try container.decodeIfPresent(Int.self, forKey: .lastMessageSenderId)
+        } else if let lastMessageObject = try? container.decode(LastMessageObject.self, forKey: .lastMessage) {
+            lastMessage = lastMessageObject.content
+            lastMessageSenderId = lastMessageObject.senderId
+        } else {
+            lastMessage = nil
+            lastMessageSenderId = try container.decodeIfPresent(Int.self, forKey: .lastMessageSenderId)
+        }
         lastMessageTime = try container.decodeIfPresent(Date.self, forKey: .lastMessageTime)
         
         // Handle unreadCount as either String or Int
@@ -279,5 +288,11 @@ struct ConversationListUser: Codable, Equatable {
     var profileImageURL: URL? {
         return nil // No profile image in list view
     }
+}
+
+// MARK: - Helper struct for decoding lastMessage when it comes as an object
+struct LastMessageObject: Codable {
+    let content: String?
+    let senderId: Int?
 }
 
