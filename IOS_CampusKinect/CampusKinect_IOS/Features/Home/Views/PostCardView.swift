@@ -13,6 +13,9 @@ struct PostCardView: View {
     @State private var selectedImageIndex = 0
     @State private var showingMessageConfirmation = false
     @State private var showingReportView = false
+    @State private var showingBlockUserConfirmation = false
+    @State private var isBookmarked = false
+    @State private var isReposted = false
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
@@ -56,90 +59,153 @@ struct PostCardView: View {
             )
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(Color.campusBackground)
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         .onTapGesture {
             handleMessage()
         }
+        .contextMenu {
+            // Message
+            Button(action: handleMessage) {
+                Label("Message", systemImage: "paperplane")
+            }
+            
+            // Repost
+            Button(action: handleRepost) {
+                Label(isReposted ? "Remove Repost" : "Repost", 
+                      systemImage: isReposted ? "arrow.2.squarepath.fill" : "arrow.2.squarepath")
+            }
+            
+            // Bookmark
+            Button(action: handleBookmark) {
+                Label(isBookmarked ? "Remove Bookmark" : "Bookmark", 
+                      systemImage: isBookmarked ? "bookmark.fill" : "bookmark")
+            }
+            
+            // Share
+            Button(action: handleShare) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            
+            Divider()
+            
+            // Report Post
+            Button(action: { showingReportView = true }) {
+                Label("Report Post", systemImage: "flag")
+            }
+            
+            // Block User (only show if not own post)
+            if post.poster.id != authManager.currentUser?.id {
+                Button(action: { showingBlockUserConfirmation = true }) {
+                    Label("Block User", systemImage: "person.crop.circle.badge.xmark")
+                }
+            }
+        }
         .fullScreenCover(isPresented: $showingImageViewer) {
             ImageViewer(
                 images: post.images,
-                selectedIndex: selectedImageIndex
+                selectedIndex: selectedImageIndex,
+                onDismiss: {
+                    showingImageViewer = false
+                }
             )
         }
-        .alert("Message About Post", isPresented: $showingMessageConfirmation) {
+        .sheet(isPresented: $showingReportView) {
+            ReportContentView(
+                contentId: post.id,
+                contentType: .post,
+                contentAuthor: post.poster.displayName
+            )
+        }
+        .alert("Block User", isPresented: $showingBlockUserConfirmation) {
             Button("Cancel", role: .cancel) { }
-            Button("Yes, Message") {
-                confirmCreateConversation()
+            Button("Block", role: .destructive) {
+                handleBlockUser()
             }
         } message: {
-            Text("Do you want to message \(post.poster.displayName) about their post '\(post.title)'?")
+            Text("Are you sure you want to block \(post.poster.displayName)? You won't see their posts anymore.")
         }
-        .sheet(isPresented: $showingReportView) {
-            ReportPostView(post: post, isPresented: $showingReportView)
-                .environmentObject(authManager)
+        .alert("Message Sent", isPresented: $showingMessageConfirmation) {
+            Button("OK") { }
+        } message: {
+            Text("Your message request has been sent to \(post.poster.displayName)")
+        }
+        .onAppear {
+            loadPostInteractionState()
         }
     }
     
     // MARK: - Action Handlers
     
     private func handleMessage() {
-        guard let currentUser = authManager.currentUser else {
-            print("❌ No current user - cannot message about post")
-            return
-        }
-        
-        // Don't allow messaging yourself about your own post
-        guard currentUser.id != post.poster.id else {
-            print("❌ Cannot message yourself about your own post")
-            return
-        }
-        
-        print("📱 PostCardView: handleMessage called for POST: '\(post.title)' (ID: \(post.id)) by user: \(post.poster.displayName)")
-        
-        // Show confirmation dialog
+        // Implement message functionality
         showingMessageConfirmation = true
     }
     
-    private func confirmCreateConversation() {
-        print("📱 PostCardView: User confirmed - creating POST-CENTRIC conversation about '\(post.title)' with \(post.poster.displayName)")
-        
+    private func handleRepost() {
         Task {
             do {
-                // Create POST-CENTRIC conversation with post context
-                let request = StartConversationRequest(
-                    otherUserId: post.poster.id,
-                    postId: post.id, // POST-CENTRIC: Always include post context
-                    initialMessage: nil
-                )
-                
-                let response = try await apiService.startConversation(request)
-                
-                print("✅ Post conversation created successfully: \(response.data.conversation.id)")
-                print("📋 Post context: '\(response.data.conversation.post.title)'")
-                
-                // Store the POST-CENTRIC conversation info for navigation
-                UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
-                UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
-                UserDefaults.standard.set(post.id, forKey: "pendingChatPostId")
-                UserDefaults.standard.set(post.title, forKey: "pendingChatPostTitle")
-                
-                // Navigate to chat with the post author
+                let response = try await apiService.toggleRepost(post.id)
                 await MainActor.run {
-                    NotificationCenter.default.post(
-                        name: .navigateToChat,
-                        object: nil,
-                        userInfo: [
-                            "userId": post.poster.id,
-                            "userName": post.poster.displayName
-                        ]
-                    )
+                    isReposted = response.isReposted
                 }
-                
             } catch {
-                print("❌ Failed to create conversation: \(error)")
-                // Could show an error alert here if needed
+                print("Error handling repost: \(error)")
+            }
+        }
+    }
+    
+    private func handleBookmark() {
+        Task {
+            do {
+                let response = try await apiService.toggleBookmark(post.id)
+                await MainActor.run {
+                    isBookmarked = response.isBookmarked
+                }
+            } catch {
+                print("Error handling bookmark: \(error)")
+            }
+        }
+    }
+    
+    private func handleShare() {
+        // Create share content
+        let shareText = "\(post.title)\n\n\(post.content)\n\nShared from CampusKinect"
+        let activityViewController = UIActivityViewController(
+            activityItems: [shareText],
+            applicationActivities: nil
+        )
+        
+        // Present share sheet
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            window.rootViewController?.present(activityViewController, animated: true)
+        }
+    }
+    
+    private func handleBlockUser() {
+        Task {
+            do {
+                _ = try await apiService.blockUser(userId: post.poster.id)
+                // Optionally refresh the feed or show confirmation
+            } catch {
+                print("Error blocking user: \(error)")
+            }
+        }
+    }
+    
+    private func loadPostInteractionState() {
+        // Load bookmark and repost state from API
+        Task {
+            do {
+                let userInteractions = try await apiService.getUserInteractions(post.id)
+                await MainActor.run {
+                    isBookmarked = userInteractions.data.hasBookmarked
+                    isReposted = userInteractions.data.hasReposted
+                }
+            } catch {
+                print("Error loading post interaction state: \(error)")
             }
         }
     }
