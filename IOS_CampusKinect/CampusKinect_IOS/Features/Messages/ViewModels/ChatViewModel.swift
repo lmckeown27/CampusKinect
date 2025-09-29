@@ -108,34 +108,41 @@ class ChatViewModel: ObservableObject {
                     ]
                 )
             } else {
-                // TODO: POST-CENTRIC MESSAGING - This flow needs to be updated
-                // All conversations must now be created with post context
-                print("❌ Cannot create conversation without post context - use PostCardView instead")
-                self.error = .unknown(400)
-                return
+                // Create new POST-CENTRIC conversation with first message
+                guard let postId = UserDefaults.standard.object(forKey: "pendingChatPostId") as? Int else {
+                    print("❌ Cannot create conversation without post context")
+                    self.error = .unknown(400)
+                    return
+                }
                 
-                // LEGACY CODE - DISABLED FOR POST-CENTRIC MESSAGING
-                /*
-                let response = try await apiService.createConversation(
-                    receiverId: otherUser.id,
+                let request = StartConversationRequest(
+                    otherUserId: otherUser.id,
+                    postId: postId,
                     initialMessage: messageContent
                 )
                 
-                self.conversation = response.data.conversation.toConversation()
-                startPolling()
+                let response = try await apiService.startConversation(request)
+                print("✅ Post conversation created with first message: \(response.data.conversation.id)")
                 
-                if let newConversation = self.conversation {
-                    NotificationCenter.default.post(
-                        name: .messageSent,
-                        object: nil,
-                        userInfo: [
-                            "conversationId": newConversation.id,
-                            "message": messageContent,
-                            "senderId": currentUserId ?? 0
-                        ]
-                    )
-                }
-                */
+                // Update the conversation reference
+                self.conversation = response.data.conversation
+                
+                // Clear the pending post data since conversation is now created
+                UserDefaults.standard.removeObject(forKey: "pendingChatPostId")
+                UserDefaults.standard.removeObject(forKey: "pendingChatPostTitle")
+                UserDefaults.standard.removeObject(forKey: "pendingChatUserId")
+                UserDefaults.standard.removeObject(forKey: "pendingChatUserName")
+                
+                // Notify MessagesViewModel about the new conversation
+                NotificationCenter.default.post(
+                    name: .messageSent,
+                    object: nil,
+                    userInfo: [
+                        "conversationId": response.data.conversation.id,
+                        "message": messageContent,
+                        "senderId": currentUserId ?? 0
+                    ]
+                )
             }
             
             // Don't immediately reload - let polling handle it

@@ -69,6 +69,10 @@ class MessagesViewModel: ObservableObject {
         if let index = conversations.firstIndex(where: { $0.id == conversationId }) {
             let updatedConversation = conversations[index]
             
+            // Don't increment unread count for messages sent by current user
+            let currentUserId = getCurrentUserId()
+            let newUnreadCount = senderId == currentUserId ? updatedConversation.unreadCount : updatedConversation.unreadCount + 1
+            
             // Update conversation with new message info (POST-CENTRIC structure)
             let updatedConversationData = Conversation(
                 id: updatedConversation.id,
@@ -81,7 +85,7 @@ class MessagesViewModel: ObservableObject {
                 lastMessage: lastMessage, // Now a simple string
                 lastMessageSenderId: senderId,
                 lastMessageTime: Date(),
-                unreadCount: updatedConversation.unreadCount + 1 // Increment unread count
+                unreadCount: newUnreadCount
             )
             
             // Remove from current position and add to top
@@ -132,6 +136,12 @@ class MessagesViewModel: ObservableObject {
     
     func refreshSentMessageRequests() async {
         await loadSentMessageRequests()
+    }
+    
+    private func getCurrentUserId() -> Int {
+        // Get current user ID from AuthenticationManager or other source
+        // For now, return 0 as fallback - this should be properly implemented
+        return 0 // TODO: Get actual current user ID
     }
     
     func deleteConversation(conversationId: Int) async {

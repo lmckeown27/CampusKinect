@@ -217,46 +217,23 @@ struct PostCardView: View {
         
         print("📱 PostCardView: handleMessage called for POST: '\(post.title)' (ID: \(post.id)) by user: \(post.poster.displayName)")
         
-        Task {
-            do {
-                // Create POST-CENTRIC conversation with post context
-                let request = StartConversationRequest(
-                    otherUserId: post.poster.id,
-                    postId: post.id, // POST-CENTRIC: Always include post context
-                    initialMessage: nil
-                )
-                
-                let response = try await apiService.startConversation(request)
-                
-                print("✅ Post conversation created successfully: \(response.data.conversation.id)")
-                print("📋 Post context: '\(response.data.conversation.post.title)'")
-                
-                // Store the POST-CENTRIC conversation info for navigation
-                UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
-                UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
-                UserDefaults.standard.set(post.id, forKey: "pendingChatPostId")
-                UserDefaults.standard.set(post.title, forKey: "pendingChatPostTitle")
-                
-                // Navigate to chat with the post author
-                await MainActor.run {
-                    NotificationCenter.default.post(
-                        name: .navigateToChat,
-                        object: nil,
-                        userInfo: [
-                            "userId": post.poster.id,
-                            "userName": post.poster.displayName
-                        ]
-                    )
-                }
-                
-            } catch {
-                print("❌ Failed to create conversation: \(error)")
-                // Show error alert
-                await MainActor.run {
-                    showingMessageConfirmation = true
-                }
-            }
-        }
+        // Store the POST-CENTRIC conversation info for navigation (no conversation created yet)
+        UserDefaults.standard.set(post.poster.id, forKey: "pendingChatUserId")
+        UserDefaults.standard.set(post.poster.displayName, forKey: "pendingChatUserName")
+        UserDefaults.standard.set(post.id, forKey: "pendingChatPostId")
+        UserDefaults.standard.set(post.title, forKey: "pendingChatPostTitle")
+        
+        // Navigate to chat with the post author (conversation will be created when first message is sent)
+        NotificationCenter.default.post(
+            name: .navigateToChat,
+            object: nil,
+            userInfo: [
+                "userId": post.poster.id,
+                "userName": post.poster.displayName,
+                "postId": post.id,
+                "postTitle": post.title
+            ]
+        )
     }
     
     private func handleRepost() {
