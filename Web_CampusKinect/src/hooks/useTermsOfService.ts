@@ -12,29 +12,40 @@ interface UseTermsOfServiceReturn {
   resetTermsCheck: () => void;
 }
 
-export const useTermsOfService = (): UseTermsOfServiceReturn => {
-  const [shouldShowTerms, setShouldShowTerms] = useState(false);
-  const [isTermsCheckComplete, setIsTermsCheckComplete] = useState(false);
-  const [isCheckingTerms, setIsCheckingTerms] = useState(false);
-  const [hasAcceptedInCurrentSession, setHasAcceptedInCurrentSession] = useState(false);
+// Initialize session state synchronously to prevent race conditions
+const getInitialSessionState = () => {
+  if (typeof window === 'undefined') return { isComplete: false, hasAccepted: false };
+  
+  const sessionTermsComplete = sessionStorage.getItem('campusConnect_termsCheckComplete');
+  const sessionTermsAccepted = sessionStorage.getItem('campusConnect_termsAcceptedInSession');
+  
+  return {
+    isComplete: sessionTermsComplete === 'true',
+    hasAccepted: sessionTermsAccepted === 'true'
+  };
+};
 
-  // Initialize terms check state from sessionStorage to persist across tab navigation
+export const useTermsOfService = (): UseTermsOfServiceReturn => {
+  const initialState = getInitialSessionState();
+  
+  const [shouldShowTerms, setShouldShowTerms] = useState(false);
+  const [isTermsCheckComplete, setIsTermsCheckComplete] = useState(initialState.isComplete);
+  const [isCheckingTerms, setIsCheckingTerms] = useState(false);
+  const [hasAcceptedInCurrentSession, setHasAcceptedInCurrentSession] = useState(initialState.hasAccepted);
+
+  // Log restored state for debugging
   useEffect(() => {
-    const sessionTermsComplete = sessionStorage.getItem('campusConnect_termsCheckComplete');
-    const sessionTermsAccepted = sessionStorage.getItem('campusConnect_termsAcceptedInSession');
-    
-    if (sessionTermsComplete === 'true') {
-      setIsTermsCheckComplete(true);
-      console.log('📋 Hook: Restored terms check complete state from session');
+    if (initialState.isComplete) {
+      console.log('📋 Hook: Initialized with terms check complete from session');
     }
-    
-    if (sessionTermsAccepted === 'true') {
-      setHasAcceptedInCurrentSession(true);
-      console.log('📋 Hook: Restored terms accepted in session state');
+    if (initialState.hasAccepted) {
+      console.log('📋 Hook: Initialized with terms accepted in session');
     }
-  }, []);
+  }, [initialState.isComplete, initialState.hasAccepted]);
 
   const checkTermsForUser = useCallback((userId: string) => {
+    console.log(`📋 CRITICAL: checkTermsForUser called for user ${userId} - isCheckingTerms: ${isCheckingTerms}, hasAcceptedInCurrentSession: ${hasAcceptedInCurrentSession}, isTermsCheckComplete: ${isTermsCheckComplete}`);
+    
     // Prevent multiple simultaneous checks
     if (isCheckingTerms) {
       console.log('📋 CRITICAL: Terms check already in progress - ignoring duplicate request');
