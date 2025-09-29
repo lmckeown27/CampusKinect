@@ -139,10 +139,10 @@ struct ConversationUser: Codable, Equatable {
     enum CodingKeys: String, CodingKey {
         case id
         case username
-        case firstName = "first_name"
-        case lastName = "last_name"
-        case displayName = "display_name"
-        case profilePicture = "profile_picture"
+        case firstName
+        case lastName
+        case displayName
+        case profilePicture
     }
     
     var initials: String {
