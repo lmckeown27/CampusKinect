@@ -334,17 +334,36 @@ class MessageService {
 
       const post = postResult.rows[0];
 
-      // Check if conversation already exists for this specific post
+      // Check if conversation already exists for this specific post (including inactive ones)
       const existingConv = await dbQuery(`
-        SELECT id FROM conversations 
+        SELECT id, is_active FROM conversations 
         WHERE post_id = $1 
         AND ((user1_id = $2 AND user2_id = $3) OR (user1_id = $3 AND user2_id = $2))
-        AND is_active = true
       `, [postId, userId, otherUserId]);
 
+      console.log('🔍 Existing conversation check:', {
+        postId,
+        userId,
+        otherUserId,
+        found: existingConv.rows.length,
+        conversations: existingConv.rows
+      });
+
       if (existingConv.rows.length > 0) {
+        const conv = existingConv.rows[0];
+        
+        // If conversation exists but is inactive, reactivate it
+        if (!conv.is_active) {
+          console.log('🔄 Reactivating inactive conversation:', conv.id);
+          await dbQuery(`
+            UPDATE conversations 
+            SET is_active = true, last_message_at = CURRENT_TIMESTAMP
+            WHERE id = $1
+          `, [conv.id]);
+        }
+        
         // Return existing conversation with full context
-        return await this.getConversationById(existingConv.rows[0].id, userId);
+        return await this.getConversationById(conv.id, userId);
       }
 
       // Check if other user exists and is active
@@ -359,17 +378,35 @@ class MessageService {
       }
 
       // Create POST-CENTRIC conversation with cached post data
-      const result = await dbQuery(`
-        INSERT INTO conversations (
-          user1_id, user2_id, post_id, 
-          post_title, post_description, post_type, post_author_id
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING id, created_at
-      `, [
-        userId, otherUserId, postId,
-        post.title, post.description, post.post_type, post.author_id
-      ]);
+      let result;
+      try {
+        result = await dbQuery(`
+          INSERT INTO conversations (
+            user1_id, user2_id, post_id, 
+            post_title, post_description, post_type, post_author_id
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING id, created_at
+        `, [
+          userId, otherUserId, postId,
+          post.title, post.description, post.post_type, post.author_id
+        ]);
+      } catch (insertError) {
+        // Handle race condition - conversation might have been created by another request
+        if (insertError.code === '23505' && insertError.constraint === 'conversations_user1_id_user2_id_post_id_key') {
+          console.log('🔄 Race condition detected, fetching existing conversation');
+          const raceConv = await dbQuery(`
+            SELECT id FROM conversations 
+            WHERE post_id = $1 
+            AND ((user1_id = $2 AND user2_id = $3) OR (user1_id = $3 AND user2_id = $2))
+          `, [postId, userId, otherUserId]);
+          
+          if (raceConv.rows.length > 0) {
+            return await this.getConversationById(raceConv.rows[0].id, userId);
+          }
+        }
+        throw insertError;
+      }
 
       const conversation = result.rows[0];
 
