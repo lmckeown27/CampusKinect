@@ -281,7 +281,7 @@ const MessagesTab: React.FC = () => {
   const handleConversationSelect = (conversation: Conversation) => {
     console.log('🖱️ POST-CENTRIC CONVERSATION CLICKED - OPENING INLINE CHAT');
     console.log('Conversation:', conversation);
-    console.log('Post context:', conversation.post);
+            console.log('Post context:', { postId: conversation.postId, postTitle: conversation.postTitle, postType: conversation.postType });
     console.log('Other user:', conversation.otherUser);
     
     // FIXED: Always open chat inline instead of navigating to separate page
@@ -306,11 +306,8 @@ const MessagesTab: React.FC = () => {
   const filteredConversations = conversations.filter(conv => {
     // POST-CENTRIC SEARCH: Search post title, description, and user name
     const matchesSearch = searchQuery === '' || 
-      conv.post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.otherUser.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.otherUser.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.otherUser.lastName.toLowerCase().includes(searchQuery.toLowerCase());
+      conv.postTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              conv.otherUser.displayName.toLowerCase().includes(searchQuery.toLowerCase());
     
     if (activeTab === 'unread') {
       // Unread: Show conversations where the last message was sent TO the current user (incoming)
@@ -333,7 +330,7 @@ const MessagesTab: React.FC = () => {
     id: c.id,
     unreadCount: c.unreadCount,
     lastMessage: c.lastMessage,
-    postTitle: c.post.title,
+    postTitle: c.postTitle,
     otherUser: c.otherUser.displayName
   })));
   
@@ -730,7 +727,7 @@ const MessagesTab: React.FC = () => {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (confirm(`Are you sure you want to delete this conversation about "${currentConversation.post.title}" with ${currentConversation.otherUser.displayName}?`)) {
+                      if (confirm(`Are you sure you want to delete this conversation about "${currentConversation.postTitle}" with ${currentConversation.otherUser.displayName}?`)) {
                         handleDeleteConversation(currentConversation.id.toString());
                       }
                     }}
