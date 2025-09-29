@@ -41,6 +41,29 @@ struct Conversation: Codable, Identifiable, Equatable {
         case unreadCount
     }
     
+    // MARK: - Custom Decoding
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        id = try container.decode(Int.self, forKey: .id)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        lastMessageAt = try container.decodeIfPresent(Date.self, forKey: .lastMessageAt)
+        postId = try container.decode(Int.self, forKey: .postId)
+        postTitle = try container.decode(String.self, forKey: .postTitle)
+        postType = try container.decode(String.self, forKey: .postType)
+        otherUser = try container.decode(ConversationListUser.self, forKey: .otherUser)
+        lastMessage = try container.decodeIfPresent(String.self, forKey: .lastMessage)
+        lastMessageSenderId = try container.decodeIfPresent(Int.self, forKey: .lastMessageSenderId)
+        lastMessageTime = try container.decodeIfPresent(Date.self, forKey: .lastMessageTime)
+        
+        // Handle unreadCount as either String or Int
+        if let unreadCountString = try? container.decode(String.self, forKey: .unreadCount) {
+            unreadCount = Int(unreadCountString) ?? 0
+        } else {
+            unreadCount = try container.decode(Int.self, forKey: .unreadCount)
+        }
+    }
+    
     // MARK: - Computed Properties
     var timeAgo: String {
         guard let lastMessageTime = lastMessageTime else {
