@@ -549,10 +549,12 @@ struct CommentStyleMessageView: View {
             return currentUserName
         } else {
             // Use sender information from the message if available, otherwise fall back to otherUserName
-            return message.senderDisplayName ?? 
-                   "\(message.senderFirstName ?? "") \(message.senderLastName ?? "")".trimmingCharacters(in: .whitespaces).isEmpty ? 
-                   otherUserName : 
-                   "\(message.senderFirstName ?? "") \(message.senderLastName ?? "")".trimmingCharacters(in: .whitespaces)
+            if let displayName = message.senderDisplayName {
+                return displayName
+            } else {
+                let fullName = "\(message.senderFirstName ?? "") \(message.senderLastName ?? "")".trimmingCharacters(in: .whitespaces)
+                return fullName.isEmpty ? otherUserName : fullName
+            }
         }
     }
     
