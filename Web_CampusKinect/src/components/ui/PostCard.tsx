@@ -178,7 +178,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <div
-      className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8 max-w-2xl mx-auto"
+              className="bg-black rounded-xl shadow-lg border-2 border-gray-600 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8 max-w-2xl mx-auto"
       style={{ marginBottom: "2rem" }}
     >
       {/* Post Header */}
@@ -228,8 +228,8 @@ const PostCard: React.FC<PostCardProps> = ({
             
             {/* Timestamp */}
             <div className="flex items-center space-x-1">
-              <span className="text-xs text-gray-500">•</span>
-              <span className="text-xs text-gray-500">
+                                  <span className="text-xs text-gray-300">•</span>
+                    <span className="text-xs text-gray-300">
                 {formatDate(post.createdAt)}
               </span>
             </div>
@@ -292,7 +292,7 @@ const PostCard: React.FC<PostCardProps> = ({
               {/* Dropdown menu positioned relative to button */}
               {showOptions && (
                 <div 
-                  className="absolute right-0 top-full mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-200 py-2 flex flex-col items-center"
+                  className="absolute right-0 top-full mt-2 w-52 bg-gray-800 rounded-lg shadow-lg border border-gray-600 py-2 flex flex-col items-center"
                   style={{ 
                     zIndex: 50,
                     boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)",
@@ -378,7 +378,7 @@ const PostCard: React.FC<PostCardProps> = ({
         <div className="flex items-start" style={{ gap: "20px" }}>
           {/* User Info with Profile Picture Inside - Reduced Width */}
           <div 
-            className="min-w-0 flex items-start space-x-3 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+                          className="min-w-0 flex items-start space-x-3 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
             onClick={handleProfileClick}
             style={{ 
               border: "2px solid #d1d5db",
@@ -429,7 +429,7 @@ const PostCard: React.FC<PostCardProps> = ({
             {/* Display Name - Large and Bold */}
             <div className="flex items-center space-x-2 mb-0">
               <p 
-                className="font-bold text-gray-900 truncate cursor-pointer"
+                                    className="font-bold text-white truncate cursor-pointer"
                   style={{
                     fontSize: "18px",
                     lineHeight: "20px",
@@ -461,7 +461,7 @@ const PostCard: React.FC<PostCardProps> = ({
             
             {/* Major and Year */}
             {post.poster?.major && (
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-gray-300 truncate">
                   {post.poster?.major} •{" "}
                   {post.poster?.year
                     ? getYearLabel(post.poster.year)
@@ -474,7 +474,7 @@ const PostCard: React.FC<PostCardProps> = ({
           {/* Post Title - To the right of user info */}
           <div className="flex-1 min-w-0">
             <h3 
-              className="text-xl font-bold text-gray-900 line-clamp-2"
+              className="text-xl font-bold text-white line-clamp-2"
               style={{
                 fontSize: "26px",
                 lineHeight: "28px",
@@ -490,8 +490,8 @@ const PostCard: React.FC<PostCardProps> = ({
                 className="flex items-center space-x-1"
                 style={{ marginTop: "4px" }}
               >
-                <MapPin size={16} className="text-gray-500" />
-                <span className="text-sm text-gray-600">{post.location}</span>
+                <MapPin size={16} className="text-gray-300" />
+                <span className="text-sm text-gray-200">{post.location}</span>
               </div>
             )}
           </div>
@@ -537,7 +537,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
       {/* Post Content */}
       <div className="px-4 pb-4 pt-2">
-        <p className="text-gray-700 mb-4 line-clamp-3">{post.description}</p>
+                    <p className="text-gray-200 mb-4 line-clamp-3">{post.description}</p>
 
         {/* Post Images */}
         {post.images && post.images.length > 0 && (
@@ -565,7 +565,7 @@ const PostCard: React.FC<PostCardProps> = ({
             {post.tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                className="px-2 py-1 bg-gray-800 text-gray-200 text-xs rounded-full"
               >
                 #{tag}
               </span>
@@ -574,7 +574,7 @@ const PostCard: React.FC<PostCardProps> = ({
         )}
 
         {/* Post Details */}
-        <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4"></div>
+                  <div className="flex items-center space-x-4 text-sm text-gray-300 mb-4"></div>
       </div>
 
       {/* Post Actions */}
