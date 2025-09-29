@@ -105,6 +105,10 @@ struct MessagesView: View {
                 print("📱 MessagesView not ready, queuing notification.")
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
+            print("📱 MessagesView received navigateToChat notification: \(notification.userInfo ?? [:])")
+            handleNavigateToChat(notification.userInfo ?? [:])
+        }
         .alert("Error", isPresented: Binding<Bool>(
             get: { viewModel.error != nil },
             set: { _ in viewModel.error = nil }
@@ -267,6 +271,49 @@ struct MessagesView: View {
                 await viewModel.refreshConversations()
             }
         }
+    }
+    
+    private func handleNavigateToChat(_ userInfo: [AnyHashable: Any]) {
+        print("📱 Handling navigateToChat in MessagesView: \(userInfo)")
+        
+        guard let userId = userInfo["userId"] as? Int,
+              let userName = userInfo["userName"] as? String,
+              let postId = userInfo["postId"] as? Int,
+              let postTitle = userInfo["postTitle"] as? String else {
+            print("❌ Missing required navigation data in userInfo")
+            return
+        }
+        
+        // Create a User object for navigation
+        let targetUser = User(
+            id: userId,
+            username: userName,
+            email: "",
+            firstName: userName,
+            lastName: "",
+            displayName: userName,
+            profilePicture: nil,
+            year: nil,
+            major: nil,
+            hometown: nil,
+            bio: nil,
+            universityId: nil,
+            universityName: nil,
+            universityDomain: nil,
+            isVerified: nil,
+            isActive: nil,
+            createdAt: Date(),
+            updatedAt: nil
+        )
+        
+        // Set navigation state to trigger ChatView
+        selectedUser = targetUser
+        selectedPostId = postId
+        selectedPostTitle = postTitle
+        selectedPostType = "general" // Default type, could be enhanced later
+        shouldNavigateToChat = true
+        
+        print("📱 Navigation state set - will navigate to chat with user: \(userName) for post: '\(postTitle)'")
     }
 }
 
