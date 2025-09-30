@@ -379,20 +379,53 @@ struct MessagesView: View {
             return
         }
         
-        // Set navigation state to trigger ChatView
-        selectedUser = user
-        selectedPostId = postId
-        selectedPostTitle = postTitle
-        selectedPostType = postType
-        shouldNavigateToChat = true
+        print("📱 Confirmed conversation start - creating conversation with user: \(user.displayName) for post: '\(postTitle)'")
         
-        print("📱 Confirmed conversation start - navigating to chat with user: \(user.displayName) for post: '\(postTitle)'")
-        
-        // Clear pending data
-        pendingConversationUser = nil
-        pendingConversationPostId = nil
-        pendingConversationPostTitle = nil
-        pendingConversationPostType = nil
+        // Create the conversation immediately
+        Task {
+            do {
+                // Create conversation with no initial message (conversation is created instantly)
+                let request = StartConversationRequest(
+                    otherUserId: user.id,
+                    postId: postId,
+                    initialMessage: nil // No message - just create the conversation
+                )
+                
+                let response = try await APIService.shared.startConversation(request)
+                print("✅ Conversation created successfully: \(response.data.conversation.id)")
+                
+                await MainActor.run {
+                    // Set navigation state to trigger ChatView with the created conversation
+                    selectedUser = user
+                    selectedPostId = postId
+                    selectedPostTitle = postTitle
+                    selectedPostType = postType
+                    shouldNavigateToChat = true
+                    
+                    // Refresh conversations to show the new one
+                    Task {
+                        await viewModel.loadConversations()
+                    }
+                    
+                    // Clear pending data
+                    pendingConversationUser = nil
+                    pendingConversationPostId = nil
+                    pendingConversationPostTitle = nil
+                    pendingConversationPostType = nil
+                }
+            } catch {
+                await MainActor.run {
+                    viewModel.error = error as? APIError ?? .unknown(500)
+                    print("❌ Failed to create conversation: \(error)")
+                    
+                    // Clear pending data on error
+                    pendingConversationUser = nil
+                    pendingConversationPostId = nil
+                    pendingConversationPostTitle = nil
+                    pendingConversationPostType = nil
+                }
+            }
+        }
     }
 }
 
