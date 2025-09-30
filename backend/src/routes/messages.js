@@ -323,15 +323,29 @@ router.post('/conversations/:id/image', [
 
     const imageUrl = `/uploads/${imageData.original}`;
     const thumbnailUrl = `/uploads/${imageData.thumbnail}`;
+    
+    // Construct full URLs for iOS compatibility
+    const baseUrl = process.env.BACKEND_URL || 'https://campuskinect.net';
+    const fullImageUrl = `${baseUrl}${imageUrl}`;
+    const fullThumbnailUrl = `${baseUrl}${thumbnailUrl}`;
 
-    // Send image message
+    // Send image message with empty content (not "Image")
     const result = await messageService.sendMessage(
       conversationId, 
       userId, 
-      'Image', // Default content for image messages
+      '', // Empty content - image speaks for itself
       'image', 
       imageUrl
     );
+    
+    // Add full image URLs to the message metadata
+    const messageWithFullUrls = {
+      ...result.data.message,
+      metadata: {
+        imageUrl: fullImageUrl,
+        thumbnailUrl: fullThumbnailUrl
+      }
+    };
 
     // Emit real-time message via Socket.io
     const io = req.app.get('io');
@@ -352,7 +366,7 @@ router.post('/conversations/:id/image', [
         // Emit to the other user's personal room
         io.to(`user-${otherUserId}`).emit('new-message', {
           conversationId,
-          message: result.data.message
+          message: messageWithFullUrls
         });
       }
     }
@@ -365,7 +379,7 @@ router.post('/conversations/:id/image', [
           url: imageUrl,
           thumbnailUrl: thumbnailUrl
         },
-        message: result.data.message
+        message: messageWithFullUrls
       }
     });
 

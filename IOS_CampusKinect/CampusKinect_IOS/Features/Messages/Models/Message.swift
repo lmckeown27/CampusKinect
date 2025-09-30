@@ -163,12 +163,137 @@ struct MessageMetadata: Codable, Equatable {
     
     var fullImageURL: URL? {
         guard let imageUrl = imageUrl else { return nil }
-        return URL(string: "\(APIConstants.baseURL)/\(imageUrl)")
+        
+        // Check if imageUrl is already a full URL
+        if imageUrl.starts(with: "http://") || imageUrl.starts(with: "https://") {
+            return URL(string: imageUrl)
+        }
+        
+        // Otherwise, prepend the base URL
+        let cleanImageUrl = imageUrl.hasPrefix("/") ? imageUrl : "/\(imageUrl)"
+        return URL(string: "\(APIConstants.baseURL)\(cleanImageUrl)")
     }
     
     var thumbnailImageURL: URL? {
         guard let thumbnailUrl = thumbnailUrl else { return fullImageURL }
-        return URL(string: "\(APIConstants.baseURL)/\(thumbnailUrl)")
+        
+        // Check if thumbnailUrl is already a full URL
+        if thumbnailUrl.starts(with: "http://") || thumbnailUrl.starts(with: "https://") {
+            return URL(string: thumbnailUrl)
+        }
+        
+        // Otherwise, prepend the base URL
+        let cleanThumbnailUrl = thumbnailUrl.hasPrefix("/") ? thumbnailUrl : "/\(thumbnailUrl)"
+        return URL(string: "\(APIConstants.baseURL)\(cleanThumbnailUrl)")
+    }
+}
+
+// MARK: - Conversation Image Upload Response
+struct ConversationImageUploadResponse: Codable {
+    let success: Bool
+    let message: String?
+    let data: ConversationImageData?
+}
+
+struct ConversationImageData: Codable {
+    let image: ImageInfo
+    let message: MessageResponse
+}
+
+struct ImageInfo: Codable {
+    let url: String
+    let thumbnailUrl: String?
+}
+
+struct MessageResponse: Codable {
+    let id: Int
+    let conversationId: Int
+    let senderId: Int
+    let receiverId: Int?
+    let content: String
+    let messageType: String
+    let isRead: Bool
+    let createdAt: String
+    let updatedAt: String?
+    let sender: SenderInfo?
+    let metadata: MessageMetadataResponse?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case conversationId = "conversation_id"
+        case senderId = "sender_id"
+        case receiverId = "receiver_id"
+        case content
+        case messageType = "message_type"
+        case isRead = "is_read"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case sender
+        case metadata
+    }
+}
+
+struct SenderInfo: Codable {
+    let id: Int
+    let username: String?
+    let displayName: String?
+    let profilePicture: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case username
+        case displayName = "display_name"
+        case profilePicture = "profile_picture"
+    }
+}
+
+struct MessageMetadataResponse: Codable {
+    let imageUrl: String?
+    let thumbnailUrl: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case imageUrl = "imageUrl"
+        case thumbnailUrl = "thumbnailUrl"
+    }
+}
+
+// Helper to convert MessageResponse to Message
+extension MessageResponse {
+    func toMessage() throws -> Message {
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        
+        guard let createdDate = dateFormatter.date(from: createdAt) else {
+            throw APIError.decodingError
+        }
+        
+        let updatedDate = updatedAt.flatMap { dateFormatter.date(from: $0) }
+        
+        let messageMetadata = metadata.map { meta in
+            MessageMetadata(
+                imageUrl: meta.imageUrl,
+                thumbnailUrl: meta.thumbnailUrl,
+                systemMessageType: nil
+            )
+        }
+        
+        return Message(
+            id: id,
+            conversationId: conversationId,
+            senderId: senderId,
+            receiverId: receiverId,
+            content: content,
+            messageType: MessageType(rawValue: messageType) ?? .text,
+            isRead: isRead,
+            createdAt: createdDate,
+            updatedAt: updatedDate,
+            senderUsername: sender?.username,
+            senderFirstName: nil,
+            senderLastName: nil,
+            senderDisplayName: sender?.displayName,
+            senderProfilePicture: sender?.profilePicture,
+            metadata: messageMetadata
+        )
     }
 }
 

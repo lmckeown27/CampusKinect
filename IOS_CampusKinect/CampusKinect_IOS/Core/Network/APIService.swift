@@ -582,24 +582,20 @@ class APIService: NSObject, ObservableObject {
         }
         
         if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
-            let apiResponse = try decoder.decode(ImageUploadResponse.self, from: data)
-            // Create a Message object from the response
-            let message = Message(
-                id: Int.random(in: 1000...9999), // Temporary ID
-                conversationId: conversationId,
-                senderId: 0, // Will be set by backend
-                content: "Image",
-                messageType: .image,
-                isRead: false,
-                createdAt: Date(),
-                metadata: MessageMetadata(
-                    imageUrl: apiResponse.data?.images.first?.url,
-                    thumbnailUrl: nil, // UploadedImage doesn't have thumbnailUrl
-                    systemMessageType: nil
-                )
-            )
-            return message
+            // Use the new ConversationImageUploadResponse model
+            let apiResponse = try decoder.decode(ConversationImageUploadResponse.self, from: data)
+            
+            // Return the actual message from the backend
+            guard let messageData = apiResponse.data?.message else {
+                throw APIError.decodingError
+            }
+            
+            return try messageData.toMessage()
         } else {
+            // Log error for debugging
+            if let errorString = String(data: data, encoding: .utf8) {
+                print("❌ Image upload failed with status \(httpResponse.statusCode): \(errorString)")
+            }
             throw APIError.unknown(httpResponse.statusCode)
         }
     }
