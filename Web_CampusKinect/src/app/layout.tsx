@@ -4,6 +4,8 @@ import './globals.css';
 // import CookieConsentProvider from '../components/layout/CookieConsentProvider';
 import { NavigationProvider } from '../components/layout/NavigationContext';
 
+
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
