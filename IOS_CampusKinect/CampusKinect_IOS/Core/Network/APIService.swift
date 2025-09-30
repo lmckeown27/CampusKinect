@@ -587,7 +587,7 @@ class APIService: NSObject, ObservableObject {
             
             // Return the actual message from the backend
             guard let messageData = apiResponse.data?.message else {
-                throw APIError.decodingError
+                throw APIError.decodingError("No message data in image upload response")
             }
             
             return try messageData.toMessage()

@@ -197,7 +197,7 @@ struct ConversationImageUploadResponse: Codable {
 
 struct ConversationImageData: Codable {
     let image: ImageInfo
-    let message: MessageResponse
+    let message: ConversationMessageResponse
 }
 
 struct ImageInfo: Codable {
@@ -205,7 +205,7 @@ struct ImageInfo: Codable {
     let thumbnailUrl: String?
 }
 
-struct MessageResponse: Codable {
+struct ConversationMessageResponse: Codable {
     let id: Int
     let conversationId: Int
     let senderId: Int
@@ -215,8 +215,8 @@ struct MessageResponse: Codable {
     let isRead: Bool
     let createdAt: String
     let updatedAt: String?
-    let sender: SenderInfo?
-    let metadata: MessageMetadataResponse?
+    let sender: ConversationSenderInfo?
+    let metadata: ConversationMessageMetadataResponse?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -233,7 +233,7 @@ struct MessageResponse: Codable {
     }
 }
 
-struct SenderInfo: Codable {
+struct ConversationSenderInfo: Codable {
     let id: Int
     let username: String?
     let displayName: String?
@@ -247,7 +247,7 @@ struct SenderInfo: Codable {
     }
 }
 
-struct MessageMetadataResponse: Codable {
+struct ConversationMessageMetadataResponse: Codable {
     let imageUrl: String?
     let thumbnailUrl: String?
     
@@ -257,14 +257,14 @@ struct MessageMetadataResponse: Codable {
     }
 }
 
-// Helper to convert MessageResponse to Message
-extension MessageResponse {
+// Helper to convert ConversationMessageResponse to Message
+extension ConversationMessageResponse {
     func toMessage() throws -> Message {
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         
         guard let createdDate = dateFormatter.date(from: createdAt) else {
-            throw APIError.decodingError
+            throw APIError.decodingError("Invalid date format in message response")
         }
         
         let updatedDate = updatedAt.flatMap { dateFormatter.date(from: $0) }
