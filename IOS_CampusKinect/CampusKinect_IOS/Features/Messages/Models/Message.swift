@@ -217,6 +217,7 @@ struct ConversationMessageResponse: Codable {
     let receiverId: Int?
     let content: String
     let messageType: String
+    let mediaUrl: String?
     let isRead: Bool
     let createdAt: String
     let updatedAt: String?
@@ -230,6 +231,7 @@ struct ConversationMessageResponse: Codable {
         case receiverId = "receiver_id"
         case content
         case messageType = "message_type"
+        case mediaUrl = "media_url"
         case isRead = "is_read"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
@@ -289,6 +291,7 @@ extension ConversationMessageResponse {
             receiverId: receiverId,
             content: content,
             messageType: MessageType(rawValue: messageType) ?? .text,
+            mediaUrl: mediaUrl,
             isRead: isRead,
             createdAt: createdDate,
             updatedAt: updatedDate,

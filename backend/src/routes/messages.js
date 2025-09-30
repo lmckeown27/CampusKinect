@@ -352,23 +352,25 @@ router.post('/conversations/:id/image', [
     
     const receiverId = otherUserResult.rows.length > 0 ? otherUserResult.rows[0].other_user_id : null;
     
-    // Build complete message with same format as getConversationMessages (camelCase)
+    // Build complete message with snake_case for iOS compatibility
     const messageWithFullUrls = {
       id: result.data.message.id,
-      conversationId: parseInt(conversationId),
-      senderId: userId,
+      conversation_id: parseInt(conversationId),
+      sender_id: userId,
+      receiver_id: receiverId,
       content: result.data.message.content,
-      messageType: result.data.message.messageType,
-      mediaUrl: imageUrl, // Use relative path, like regular messages
-      isRead: result.data.message.isRead,
-      createdAt: result.data.message.createdAt,
+      message_type: result.data.message.messageType,
+      media_url: imageUrl, // Use relative path, like regular messages
+      is_read: result.data.message.isRead,
+      created_at: result.data.message.createdAt,
+      updated_at: result.data.message.updatedAt || result.data.message.createdAt,
       sender: {
         id: userId,
         username: result.data.message.sender.username,
-        firstName: result.data.message.sender.firstName,
-        lastName: result.data.message.sender.lastName,
-        displayName: result.data.message.sender.displayName,
-        profilePicture: result.data.message.sender.profilePicture
+        first_name: result.data.message.sender.firstName,
+        last_name: result.data.message.sender.lastName,
+        display_name: result.data.message.sender.displayName,
+        profile_picture: result.data.message.sender.profilePicture
       }
     };
 
