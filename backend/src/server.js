@@ -59,31 +59,39 @@ const allowedOrigins = [
 
 // Socket.io setup
 const io = new Server(server, {
+  path: '/socket.io/',
   cors: {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+    allowedHeaders: ["*"]
+  },
+  allowEIO3: true,
+  transports: ['polling', 'websocket']
 });
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+  console.log('✅ Socket.io: User connected:', socket.id);
   
   // Join user to their university room
   socket.on('join-university', (universityId) => {
     socket.join(`university-${universityId}`);
-    console.log(`User joined university room: ${universityId}`);
+    console.log(`📚 Socket.io: User joined university room: ${universityId}`);
   });
   
   // Join user to their personal room for direct messages
   socket.on('join-personal', (userId) => {
     socket.join(`user-${userId}`);
-    console.log(`User joined personal room: ${userId}`);
+    console.log(`📬 Socket.io: User joined personal room: user-${userId}`);
   });
   
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  socket.on('disconnect', (reason) => {
+    console.log('❌ Socket.io: User disconnected:', socket.id, 'Reason:', reason);
+  });
+
+  socket.on('error', (error) => {
+    console.error('🔴 Socket.io: Socket error:', error);
   });
 });
 

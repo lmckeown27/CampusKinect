@@ -19,12 +19,16 @@ class SocketService {
     console.log('🔌 Initializing socket connection to:', socketURL);
 
     this.socket = io(socketURL, {
-      transports: ['websocket', 'polling'],
+      path: '/socket.io/',
+      transports: ['polling', 'websocket'],  // Try polling first, then upgrade to websocket
       withCredentials: true,
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       reconnectionAttempts: 5,
+      timeout: 20000,
+      forceNew: false,
+      autoConnect: true,
     });
 
     this.setupEventListeners(userId);
