@@ -384,17 +384,54 @@ const MessagesTab: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !currentConversation) return;
+    if (!newMessage.trim() || !currentConversation || !currentUser) return;
+
+    const messageContent = newMessage.trim();
+    const tempMessageId = `temp-${Date.now()}`;
+    
+    // Optimistic update - add message to UI immediately
+    const optimisticMessage = {
+      id: tempMessageId,
+      content: messageContent,
+      senderId: currentUser.id.toString(),
+      conversationId: currentConversation.id,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+      messageType: 'text' as const,
+      sender: {
+        id: currentUser.id.toString(),
+        username: currentUser.username,
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        displayName: currentUser.displayName || `${currentUser.firstName} ${currentUser.lastName}`,
+        profilePicture: currentUser.profilePicture,
+        email: currentUser.email,
+        universityId: currentUser.universityId,
+        createdAt: currentUser.createdAt,
+        updatedAt: currentUser.updatedAt
+      }
+    };
+    
+    setConversationMessages(prev => [...prev, optimisticMessage]);
+    setNewMessage('');
 
     try {
-      await sendMessage(currentConversation.id, newMessage.trim());
-      setNewMessage('');
+      // Send message to backend
+      const sentMessage = await apiService.sendMessage(currentConversation.id, messageContent);
       
-      // Reload messages for the current conversation
-      const messagesData = await apiService.getMessages(currentConversation.id);
-      setConversationMessages(messagesData.data || []);
+      // Replace temporary message with real message from server
+      setConversationMessages(prev => 
+        prev.map(msg => msg.id === tempMessageId ? sentMessage : msg)
+      );
+      
+      console.log('✅ Message sent successfully:', sentMessage);
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error('❌ Failed to send message:', error);
+      // Remove optimistic message on error
+      setConversationMessages(prev => prev.filter(msg => msg.id !== tempMessageId));
+      // Restore message text so user can retry
+      setNewMessage(messageContent);
+      alert('Failed to send message. Please try again.');
     }
   };
 

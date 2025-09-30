@@ -249,11 +249,15 @@ router.post('/conversations/:id/messages', [
       if (otherUserResult.rows.length > 0) {
         const otherUserId = otherUserResult.rows[0].other_user_id;
         
+        console.log(`📤 Emitting new-message to user-${otherUserId} for conversation ${conversationId}`);
+        
         // Emit to the other user's personal room
         io.to(`user-${otherUserId}`).emit('new-message', {
-          conversationId,
+          conversationId: String(conversationId), // Ensure it's a string for frontend consistency
           message: result.data.message
         });
+        
+        console.log(`✅ Message emitted successfully to user-${otherUserId}`);
       }
     }
 

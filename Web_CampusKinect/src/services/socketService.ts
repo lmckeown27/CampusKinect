@@ -55,13 +55,20 @@ class SocketService {
     });
 
     // Listen for new messages
-    this.socket.on('new-message', (data: { conversationId: string; message: Message }) => {
+    this.socket.on('new-message', (data: { conversationId: any; message: Message }) => {
       console.log('📨 New message received:', data);
       
+      // Normalize conversationId to string for consistent matching
+      const conversationId = String(data.conversationId);
+      
       // Notify specific conversation listeners
-      const conversationCallbacks = this.messageCallbacks.get(data.conversationId);
+      const conversationCallbacks = this.messageCallbacks.get(conversationId);
       if (conversationCallbacks) {
+        console.log('✅ Found callbacks for conversation:', conversationId, '- notifying listeners');
         conversationCallbacks.forEach(callback => callback(data.message));
+      } else {
+        console.log('⚠️ No callbacks found for conversation:', conversationId);
+        console.log('📋 Active subscriptions:', Array.from(this.messageCallbacks.keys()));
       }
       
       // Notify conversation list listeners
@@ -77,23 +84,29 @@ class SocketService {
 
   // Subscribe to messages for a specific conversation
   subscribeToMessages(conversationId: string, callback: (message: Message) => void) {
-    if (!this.messageCallbacks.has(conversationId)) {
-      this.messageCallbacks.set(conversationId, new Set());
-    }
-    this.messageCallbacks.get(conversationId)?.add(callback);
+    // Normalize to string for consistent matching
+    const normalizedId = String(conversationId);
     
-    console.log(`📬 Subscribed to messages for conversation: ${conversationId}`);
+    if (!this.messageCallbacks.has(normalizedId)) {
+      this.messageCallbacks.set(normalizedId, new Set());
+    }
+    this.messageCallbacks.get(normalizedId)?.add(callback);
+    
+    console.log(`📬 Subscribed to messages for conversation: ${normalizedId}`);
   }
 
   // Unsubscribe from messages for a specific conversation
   unsubscribeFromMessages(conversationId: string, callback?: (message: Message) => void) {
+    // Normalize to string for consistent matching
+    const normalizedId = String(conversationId);
+    
     if (callback) {
-      this.messageCallbacks.get(conversationId)?.delete(callback);
+      this.messageCallbacks.get(normalizedId)?.delete(callback);
     } else {
-      this.messageCallbacks.delete(conversationId);
+      this.messageCallbacks.delete(normalizedId);
     }
     
-    console.log(`📭 Unsubscribed from messages for conversation: ${conversationId}`);
+    console.log(`📭 Unsubscribed from messages for conversation: ${normalizedId}`);
   }
 
   // Subscribe to conversation list updates
