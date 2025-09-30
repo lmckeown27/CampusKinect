@@ -567,26 +567,46 @@ class ApiService {
       await this.api.get(`/messages/conversations/${conversationId}/messages?${params}`);
     
     if (response.data.success && response.data.data) {
+      console.log('📨 Raw message response from backend:', response.data.data);
+      
       // Transform backend message format to frontend format
-      const messages = response.data.data.messages?.map((msg: any) => ({
-        id: msg.id.toString(),
-        content: msg.content,
-        senderId: msg.sender_id.toString(), // Backend sends sender_id (snake_case)
-        conversationId: conversationId,
-        isRead: msg.is_read, // Backend sends is_read (snake_case)
-        createdAt: msg.created_at, // Backend sends created_at (snake_case)
-        messageType: msg.message_type || 'text', // Backend sends message_type
-        mediaUrl: msg.media_url, // Backend sends media_url for images
-        sender: {
-          id: msg.sender_id.toString(),
-          username: msg.username, // Backend sends flat username field
-          firstName: msg.first_name, // Backend sends first_name (snake_case)
-          lastName: msg.last_name, // Backend sends last_name (snake_case)
-          displayName: msg.display_name, // Backend sends display_name (snake_case)
-          profilePicture: msg.profile_picture // Backend sends profile_picture (snake_case)
+      const messages = response.data.data.messages?.map((msg: any, index: number) => {
+        console.log(`🔍 Message ${index}:`, msg);
+        
+        // Handle both camelCase (new) and snake_case (old) backend responses
+        const senderId = msg.senderId || msg.sender_id;
+        const isRead = msg.isRead !== undefined ? msg.isRead : msg.is_read;
+        const createdAt = msg.createdAt || msg.created_at;
+        const messageType = msg.messageType || msg.message_type || 'text';
+        const mediaUrl = msg.mediaUrl || msg.media_url;
+        
+        if (!senderId) {
+          console.error('❌ Message missing senderId:', msg);
+          throw new Error(`Message at index ${index} is missing senderId field`);
         }
-      })) || [];
+        
+        return {
+          id: msg.id.toString(),
+          content: msg.content,
+          senderId: senderId.toString(),
+          conversationId: conversationId,
+          isRead: isRead,
+          createdAt: createdAt,
+          messageType: messageType,
+          mediaUrl: mediaUrl,
+          sender: {
+            id: senderId.toString(),
+            username: msg.sender?.username || msg.username,
+            firstName: msg.sender?.firstName || msg.first_name,
+            lastName: msg.sender?.lastName || msg.last_name,
+            displayName: msg.sender?.displayName || msg.display_name,
+            profilePicture: msg.sender?.profilePicture || msg.profile_picture
+          }
+        };
+      }) || [];
 
+      console.log('✅ Transformed messages:', messages);
+      
       return {
         data: messages,
         pagination: response.data.data.pagination
