@@ -654,6 +654,48 @@ class ApiService {
     throw new Error(response.data.message || 'Failed to send message');
   }
 
+  public async uploadConversationImage(conversationId: string, formData: FormData): Promise<any> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post(`/messages/conversations/${conversationId}/image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    
+    if (response.data.success && response.data.data) {
+      const msg = response.data.data.message;
+      
+      // Transform to frontend format
+      return {
+        success: true,
+        message: {
+          id: msg.id.toString(),
+          content: msg.content || '',
+          senderId: msg.senderId.toString(),
+          conversationId: msg.conversationId.toString(),
+          messageType: msg.messageType || 'image',
+          mediaUrl: msg.mediaUrl,
+          isRead: msg.isRead,
+          createdAt: msg.createdAt,
+          sender: msg.sender ? {
+            id: msg.sender.id.toString(),
+            username: msg.sender.username,
+            firstName: msg.sender.firstName,
+            lastName: msg.sender.lastName,
+            displayName: msg.sender.displayName,
+            profilePicture: msg.sender.profilePicture,
+            email: '',
+            universityId: '0',
+            createdAt: '',
+            updatedAt: ''
+          } : undefined
+        }
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to upload image');
+  }
+
   // REMOVED: Old createConversation method - replaced with POST-CENTRIC startConversation
 
   public async deleteConversation(conversationId: string): Promise<void> {

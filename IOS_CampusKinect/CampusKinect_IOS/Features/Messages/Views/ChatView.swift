@@ -273,7 +273,8 @@ struct ChatView: View {
                         ImageMessageView(
                             message: message,
                             isCurrentUser: message.senderId == authManager.currentUser?.id,
-                            otherUserName: otherUserName
+                            otherUserName: otherUserName,
+                            currentUserName: authManager.currentUser?.displayName ?? "You"
                         )
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(

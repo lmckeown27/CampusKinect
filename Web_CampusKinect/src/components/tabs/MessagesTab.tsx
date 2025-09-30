@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle } from 'lucide-react';
+import { Send, User, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle, Image as ImageIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -239,6 +239,11 @@ const MessagesTab: React.FC = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
+  // Image upload state
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   // New Message Modal state
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<UserType[]>([]);
@@ -432,6 +437,86 @@ const MessagesTab: React.FC = () => {
       // Restore message text so user can retry
       setNewMessage(messageContent);
       alert('Failed to send message. Please try again.');
+    }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Image must be less than 10MB');
+        return;
+      }
+      
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      setSelectedImage(file);
+      handleUploadImage(file);
+    }
+  };
+
+  const handleUploadImage = async (file: File) => {
+    if (!currentConversation || !currentUser) return;
+
+    setUploadingImage(true);
+
+    const tempMessageId = `temp-img-${Date.now()}`;
+    
+    // Create temporary image message for optimistic update
+    const optimisticMessage = {
+      id: tempMessageId,
+      content: '',
+      senderId: currentUser.id.toString(),
+      conversationId: currentConversation.id,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+      messageType: 'image' as const,
+      mediaUrl: URL.createObjectURL(file), // Temporary local URL
+      sender: {
+        id: currentUser.id.toString(),
+        username: currentUser.username,
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        displayName: currentUser.displayName || `${currentUser.firstName} ${currentUser.lastName}`,
+        profilePicture: currentUser.profilePicture,
+        email: currentUser.email,
+        universityId: currentUser.universityId,
+        createdAt: currentUser.createdAt,
+        updatedAt: currentUser.updatedAt
+      }
+    };
+    
+    setConversationMessages(prev => [...prev, optimisticMessage]);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await apiService.uploadConversationImage(currentConversation.id, formData);
+      
+      // Replace temporary message with real message from server
+      setConversationMessages(prev => 
+        prev.map(msg => msg.id === tempMessageId ? response.message : msg)
+      );
+      
+      console.log('✅ Image uploaded successfully:', response);
+    } catch (error) {
+      console.error('❌ Failed to upload image:', error);
+      // Remove optimistic message on error
+      setConversationMessages(prev => prev.filter(msg => msg.id !== tempMessageId));
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+      setSelectedImage(null);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -894,12 +979,13 @@ const MessagesTab: React.FC = () => {
                           </div>
                           {/* Comment Content */}
                           <div className="comment-content pl-2 border-l-2 border-[#708d81]">
-                            <p className="text-base text-white">{message.content}</p>
+                            {message.content && <p className="text-base text-white">{message.content}</p>}
                             {message.mediaUrl && (
                               <img 
-                                src={message.mediaUrl} 
+                                src={message.mediaUrl.startsWith('http') ? message.mediaUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'https://campuskinect.net'}${message.mediaUrl}`}
                                 alt="Shared media" 
-                                className="mt-2 rounded-lg max-w-xs"
+                                className="mt-2 rounded-lg max-w-xs cursor-pointer hover:opacity-90 transition-opacity"
+                                onClick={() => window.open(message.mediaUrl.startsWith('http') ? message.mediaUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'https://campuskinect.net'}${message.mediaUrl}`, '_blank')}
                               />
                             )}
                           </div>
@@ -921,6 +1007,25 @@ const MessagesTab: React.FC = () => {
               {/* Message Input */}
               <div className="p-4 border-t border-[#708d81]" style={{ backgroundColor: '#737373' }}>
                 <div className="flex items-center space-x-3">
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                  
+                  {/* Image upload button */}
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="p-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    title="Upload image"
+                  >
+                    <ImageIcon size={18} />
+                  </button>
+                  
                   <input
                     type="text"
                     placeholder="Type your message..."

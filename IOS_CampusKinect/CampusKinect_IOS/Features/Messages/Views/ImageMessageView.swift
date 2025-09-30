@@ -11,8 +11,14 @@ struct ImageMessageView: View {
     let message: Message
     let isCurrentUser: Bool
     let otherUserName: String
+    let currentUserName: String
     
     @State private var showingFullImage = false
+    
+    // Helper to get display name
+    private var displayName: String {
+        isCurrentUser ? currentUserName : otherUserName
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -30,12 +36,11 @@ struct ImageMessageView: View {
             }
             
             VStack(alignment: isCurrentUser ? .trailing : .leading, spacing: 4) {
-                if !isCurrentUser {
-                    Text(otherUserName)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
-                }
+                // Show name for both current user and other user
+                Text(isCurrentUser ? "@\(currentUserName)" : otherUserName)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(isCurrentUser ? Color.campusPrimary : .secondary)
                 
                 // Image container
                 VStack(alignment: .leading, spacing: 8) {
@@ -183,7 +188,8 @@ struct FullScreenImageView: View {
     ImageMessageView(
         message: sampleMessage,
         isCurrentUser: false,
-        otherUserName: "John Doe"
+        otherUserName: "John Doe",
+        currentUserName: "You"
     )
     .padding()
 } 
