@@ -309,6 +309,8 @@ struct MessagesView: View {
             return
         }
         
+        let postType = userInfo["postType"] as? String ?? "general"
+        
         // Check if conversation already exists
         if let existingConversation = viewModel.conversations.first(where: { 
             $0.otherUser.id == userId && $0.postId == postId 
@@ -366,7 +368,7 @@ struct MessagesView: View {
         )
         pendingConversationPostId = postId
         pendingConversationPostTitle = postTitle
-        pendingConversationPostType = "general" // Default type
+        pendingConversationPostType = postType // Use actual post type (housing, goods, services, etc.)
         showingConversationConfirmation = true
     }
     
