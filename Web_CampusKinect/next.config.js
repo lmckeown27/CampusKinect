@@ -17,19 +17,6 @@ const nextConfig = {
   // Environment-based asset prefix
   assetPrefix: process.env.NEXT_PUBLIC_CDN_URL || '',
   
-  // Performance optimizations
-  experimental: {
-    scrollRestoration: true,
-  },
-  
-  // Force all pages to be dynamic during production build to prevent hanging
-  ...(process.env.NODE_ENV === 'production' && {
-    // Disable image optimization during build to prevent hanging
-    images: {
-      unoptimized: true,
-    },
-  }),
-  
   // Image optimization settings
   images: {
     domains: [

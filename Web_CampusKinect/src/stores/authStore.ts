@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { User, LoginForm, RegisterApiData } from '../types';
 import apiService from '../services/api';
 
@@ -26,7 +27,9 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 
-export const useAuthStore = create<AuthStore>()((set, get) => ({
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set, get) => ({
       // Initial state
       user: null,
       isAuthenticated: false,
@@ -191,30 +194,53 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         set({ isLoading: true });
         
         try {
-          // Server-side authentication check using HTTP-only cookies
-          const response = await fetch('/api/v1/auth/me', {
-            method: 'GET',
-            credentials: 'include', // Uses HTTP-only cookies
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (response.ok) {
-            const { user } = await response.json();
-            set({ 
-              user, 
-              isAuthenticated: true, 
-              isLoading: false,
-              error: null 
-            });
+          // Check if we have stored auth data
+          const { user, isAuthenticated } = get();
+          
+          if (user && isAuthenticated) {
+            // HYBRID APPROACH: Check for access token in sessionStorage
+            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+            const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+            
+            if (accessToken) {
+              // Access token exists - user is authenticated
+              set({ 
+                user, 
+                isAuthenticated: true, 
+                isLoading: false 
+              });
+            } else if (refreshToken) {
+              // No access token but refresh token exists - try to refresh
+              const refreshSuccess = await get().attemptTokenRefresh();
+              if (refreshSuccess) {
+                // Refresh successful - user is authenticated
+                set({ 
+                  user, 
+                  isAuthenticated: true, 
+                  isLoading: false 
+                });
+              } else {
+                // Refresh failed - clear auth state
+                set({ 
+                  user: null, 
+                  isAuthenticated: false, 
+                  isLoading: false 
+                });
+              }
+            } else {
+              // No tokens at all - user needs to log in
+              set({ 
+                user: null, 
+                isAuthenticated: false, 
+                isLoading: false 
+              });
+            }
           } else {
-            // Not authenticated - clear state
+            // No user or not authenticated - clear auth state
             set({ 
               user: null, 
               isAuthenticated: false, 
-              isLoading: false,
-              error: null 
+              isLoading: false 
             });
           }
         } catch (error) {
@@ -402,4 +428,28 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         
         console.log('🧹 FORCE LOGOUT: All auth data cleared');
       },
-    })); 
+    }),
+    {
+      name: 'auth-storage',
+      storage: {
+        getItem: (key: string) => {
+          if (typeof window === 'undefined') return null;
+          const value = localStorage.getItem(key);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (key: string, value: unknown) => {
+          if (typeof window === 'undefined') return;
+          localStorage.setItem(key, JSON.stringify(value));
+        },
+        removeItem: (key: string) => {
+          if (typeof window === 'undefined') return;
+          localStorage.removeItem(key);
+        },
+      },
+      partialize: (state) => ({ 
+        user: state.user, 
+        isAuthenticated: state.isAuthenticated 
+      }),
+    }
+  )
+); 

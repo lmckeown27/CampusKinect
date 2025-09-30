@@ -4,10 +4,6 @@ import './globals.css';
 // import CookieConsentProvider from '../components/layout/CookieConsentProvider';
 import { NavigationProvider } from '../components/layout/NavigationContext';
 
-// Force all pages to be dynamic - prevents static optimization hanging
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {

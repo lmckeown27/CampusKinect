@@ -20,11 +20,6 @@ class ApiService {
   private api: AxiosInstance;
   private baseURL: string;
 
-  // Check if we're in build mode (SSR without window object)
-  private isBuildMode(): boolean {
-    return typeof window === 'undefined';
-  }
-
   constructor() {
     // Environment-aware configuration
     const isProduction = process.env.NEXT_PUBLIC_ENVIRONMENT === 'production';
@@ -45,17 +40,18 @@ class ApiService {
     this.api = axios.create({
       baseURL: this.baseURL,
       timeout: isProduction ? 30000 : 10000, // Longer timeout for production
-      withCredentials: true, // Enable HTTP-only cookies
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    // Request interceptor - HTTP-only cookies are sent automatically
+    // Request interceptor to add auth token
     this.api.interceptors.request.use(
       (config) => {
-        // HTTP-only cookies are automatically included with withCredentials: true
-        // No need to manually add Authorization headers
+        const token = this.getAccessToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
       },
       (error) => Promise.reject(error)
@@ -88,31 +84,26 @@ class ApiService {
     );
   }
 
-  // Build-safe API wrapper - prevents API calls during SSR/build
-  private async safeFetch<T>(apiCall: () => Promise<T>): Promise<T> {
-    if (this.isBuildMode()) {
-      // During build, return empty/default responses to prevent hanging
-      throw new Error('API calls disabled during build');
-    }
-    return apiCall();
-  }
-
-  // Token management - now server-side only (no localStorage)
+  // Token management
   private getAccessToken(): string | null {
-    // Tokens are now managed server-side via HTTP-only cookies
-    // No client-side token storage
-    return null;
+    if (typeof window === 'undefined') return null;
+    // Access tokens in sessionStorage (cleared on tab close)
+    return sessionStorage.getItem('accessToken');
   }
 
   private getRefreshToken(): string | null {
-    // Tokens are now managed server-side via HTTP-only cookies
-    // No client-side token storage
-    return null;
+    if (typeof window === 'undefined') return null;
+    // Refresh tokens in localStorage (persist across sessions)
+    return localStorage.getItem('refreshToken');
   }
 
   private setTokens(tokens: AuthTokens): void {
-    // Tokens are now managed server-side via HTTP-only cookies
-    // No client-side token storage needed
+    if (typeof window === 'undefined') return;
+    // HYBRID APPROACH:
+    // Short-lived access token in sessionStorage (auto-cleared on tab close)
+    sessionStorage.setItem('accessToken', tokens.accessToken);
+    // Long-lived refresh token in localStorage (persists across sessions)
+    localStorage.setItem('refreshToken', tokens.refreshToken);
   }
 
   private async refreshToken(): Promise<AuthTokens | null> {

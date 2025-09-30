@@ -7,7 +7,6 @@ import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Conversation, User as UserType } from '../../types';
 import apiService from '../../services/api';
-import { useRealTimeMessaging } from '../../hooks/useRealTimeMessaging';
 
 // Simple Conversation Item Component for Web
 interface ConversationItemProps {
@@ -215,7 +214,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
 const MessagesTab: React.FC = () => {
   const router = useRouter();
   const { 
-    messages, 
     isLoading, 
     conversations, 
     sendMessage, 
@@ -224,9 +222,6 @@ const MessagesTab: React.FC = () => {
   } = useMessagesStore();
   const { user: currentUser } = useAuthStore();
   
-  // Initialize real-time messaging with server-side authentication
-  const { subscribeToMessages, unsubscribeFromMessages, subscribeToConversations, unsubscribeFromConversations } = useRealTimeMessaging();
-
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
@@ -281,24 +276,13 @@ const MessagesTab: React.FC = () => {
     fetchConversations();
   }, [activeTab, fetchConversations]);
 
-  // Initial data fetch on component mount and subscribe to conversation updates
+  // Initial data fetch on component mount
   useEffect(() => {
     console.log('🚀 MessagesTab mounted - fetching initial data');
     fetchConversations();
-    
-    // Subscribe to real-time conversation updates
-    subscribeToConversations(() => {
-      console.log('🔄 Real-time conversation update - refreshing list');
-      fetchConversations();
-    });
-    
-    // Cleanup subscription on unmount
-    return () => {
-      unsubscribeFromConversations();
-    };
-  }, [fetchConversations, subscribeToConversations, unsubscribeFromConversations]);
+  }, [fetchConversations]);
 
-  // Load messages when currentConversation changes and subscribe to real-time updates
+  // Load messages when currentConversation changes
   useEffect(() => {
     const loadConversationMessages = async () => {
       if (!currentConversation) {
@@ -316,17 +300,6 @@ const MessagesTab: React.FC = () => {
         setConversationMessages(messagesData.data || []);
         console.log('✅ Set conversationMessages state to:', messagesData.data || []);
         
-        // Subscribe to real-time messages for this conversation
-        subscribeToMessages(currentConversation.id, (newMessage) => {
-          console.log('📨 Real-time message received:', newMessage);
-          setConversationMessages(prev => {
-            // Check if message already exists to prevent duplicates
-            const messageExists = prev.some(msg => msg.id === newMessage.id);
-            if (messageExists) return prev;
-            return [...prev, newMessage];
-          });
-        });
-        
       } catch (error) {
         console.error('❌ Failed to load messages:', error);
         setConversationMessages([]);
@@ -336,14 +309,7 @@ const MessagesTab: React.FC = () => {
     };
 
     loadConversationMessages();
-    
-    // Cleanup: unsubscribe when conversation changes or component unmounts
-    return () => {
-      if (currentConversation) {
-        unsubscribeFromMessages(currentConversation.id);
-      }
-    };
-  }, [currentConversation, subscribeToMessages, unsubscribeFromMessages]);
+  }, [currentConversation]);
 
   // Search users with debouncing
   useEffect(() => {
@@ -820,7 +786,7 @@ const MessagesTab: React.FC = () => {
                 </p>
                 <p className="text-sm mt-2">
                   {activeTab === 'unread' 
-                    ? "You're all caught up with your messages!" 
+                    ? "You&apos;re all caught up with your messages!" 
                     : 'Start a conversation to connect with other students'
                   }
                 </p>
@@ -914,7 +880,7 @@ const MessagesTab: React.FC = () => {
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm(`Are you sure you want to delete this conversation about "${currentConversation.postTitle}" with ${currentConversation.otherUser.displayName}?`)) {
+                        if (confirm(`Are you sure you want to delete this conversation about &quot;${currentConversation.postTitle}&quot; with ${currentConversation.otherUser.displayName}?`)) {
                           handleDeleteConversation(currentConversation.id.toString());
                         }
                       }}
@@ -942,7 +908,7 @@ const MessagesTab: React.FC = () => {
                       Start the conversation
                     </h3>
                     <p className="text-white opacity-70 max-w-md mb-4">
-                      Send the first message to start chatting about "{currentConversation?.postTitle}"
+                      Send the first message to start chatting about &quot;{currentConversation?.postTitle}&quot;
                     </p>
                   </div>
                 ) : (
@@ -997,7 +963,7 @@ const MessagesTab: React.FC = () => {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    className="flex-1 px-4 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-black placeholder-gray-500"
                   />
                   <button
                     onClick={handleSendMessage}

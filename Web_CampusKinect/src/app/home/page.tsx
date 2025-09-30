@@ -1,8 +1,11 @@
-// Force dynamic rendering to prevent build hanging
-export const dynamic = 'force-dynamic';
+import React from 'react';
+import MainLayout from '../../components/layout/MainLayout';
+import HomeTab from '../../components/tabs/HomeTab';
 
-import HomePage from './home-page';
-
-export default function Home() {
-  return <HomePage />;
+export default function HomePage() {
+  return (
+    <MainLayout>
+      <HomeTab />
+    </MainLayout>
+  );
 } 
