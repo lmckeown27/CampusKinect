@@ -493,8 +493,13 @@ struct ConversationRow: View {
         }
         .buttonStyle(PlainButtonStyle())
         .background(Color(.systemBackground))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.campusPrimary, lineWidth: 1.5)
+        )
         .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 4)
     }
     
     // MARK: - Post Visual Helpers

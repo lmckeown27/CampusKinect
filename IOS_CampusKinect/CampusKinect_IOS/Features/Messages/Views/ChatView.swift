@@ -610,14 +610,7 @@ struct CommentStyleMessageView: View {
             
             Spacer(minLength: 0)
         }
-        .padding(12)
-        .background(Color(.systemBackground))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.campusPrimary, lineWidth: 1)
-        )
         .padding(.vertical, 4)
-        .padding(.horizontal, 2)
     }
 }
 
