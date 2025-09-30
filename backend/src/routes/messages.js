@@ -338,9 +338,37 @@ router.post('/conversations/:id/image', [
       imageUrl
     );
     
-    // Add full image URLs to the message metadata
+    // Get receiver_id for iOS compatibility
+    const otherUserResult = await dbQuery(`
+      SELECT 
+        CASE 
+          WHEN user1_id = $1 THEN user2_id
+          ELSE user1_id
+        END as other_user_id
+      FROM conversations 
+      WHERE id = $2
+    `, [userId, conversationId]);
+    
+    const receiverId = otherUserResult.rows.length > 0 ? otherUserResult.rows[0].other_user_id : null;
+    
+    // Build complete message with all fields iOS expects
     const messageWithFullUrls = {
-      ...result.data.message,
+      id: result.data.message.id,
+      conversation_id: parseInt(conversationId),
+      sender_id: userId,
+      receiver_id: receiverId,
+      content: result.data.message.content,
+      message_type: result.data.message.messageType,
+      media_url: result.data.message.mediaUrl,
+      is_read: result.data.message.isRead,
+      created_at: result.data.message.createdAt,
+      updated_at: null,
+      sender: {
+        id: userId,
+        username: result.data.message.sender.username,
+        display_name: result.data.message.sender.displayName,
+        profile_picture: result.data.message.sender.profilePicture
+      },
       metadata: {
         imageUrl: fullImageUrl,
         thumbnailUrl: fullThumbnailUrl
@@ -349,26 +377,12 @@ router.post('/conversations/:id/image', [
 
     // Emit real-time message via Socket.io
     const io = req.app.get('io');
-    if (io) {
-      const otherUserResult = await dbQuery(`
-        SELECT 
-          CASE 
-            WHEN user1_id = $1 THEN user2_id
-            ELSE user1_id
-          END as other_user_id
-        FROM conversations 
-        WHERE id = $2
-      `, [userId, conversationId]);
-
-      if (otherUserResult.rows.length > 0) {
-        const otherUserId = otherUserResult.rows[0].other_user_id;
-        
-        // Emit to the other user's personal room
-        io.to(`user-${otherUserId}`).emit('new-message', {
-          conversationId,
-          message: messageWithFullUrls
-        });
-      }
+    if (io && receiverId) {
+      // Emit to the other user's personal room
+      io.to(`user-${receiverId}`).emit('new-message', {
+        conversationId: String(conversationId),
+        message: messageWithFullUrls
+      });
     }
 
     res.status(201).json({
