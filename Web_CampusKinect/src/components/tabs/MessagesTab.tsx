@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Send, User, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
@@ -9,11 +9,10 @@ import { Conversation, User as UserType } from '../../types';
 import apiService from '../../services/api';
 import { useRealTimeMessages } from '../../hooks/useRealTimeMessages';
 
-// Simple Conversation Item Component for Web
+// Simple Conversation Item Component for Web - Comment Style
 interface ConversationItemProps {
   conversation: Conversation;
   isSelected: boolean;
-  activeTab: string;
   currentUserId: string;
   onSelect: (conversation: Conversation) => void;
   index: number;
@@ -22,7 +21,6 @@ interface ConversationItemProps {
 const ConversationItem: React.FC<ConversationItemProps> = ({
   conversation,
   isSelected,
-  activeTab,
   currentUserId,
   onSelect,
   index
@@ -42,7 +40,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     switch (action) {
       case 'delete':
         if (confirm(`Delete conversation about "${conversation.postTitle}"?`)) {
-          // TODO: Implement delete from parent component
           console.log('Delete conversation:', conversation.id);
         }
         break;
@@ -68,14 +65,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     }
   }, [showContextMenu]);
 
-  // Determine message direction for post-centric display
-  const getMessageDirection = () => {
-    if (!conversation.lastMessageSenderId) {
-      return "Tap to start conversation";
-    }
-    return conversation.lastMessageSenderId === currentUserId ? "Sent" : "Incoming";
-  };
-
   // Get post type icon and color
   const getPostTypeIcon = () => {
     switch (conversation.postType.toLowerCase()) {
@@ -87,10 +76,26 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     }
   };
 
-
   const truncateMessage = (message: string, charLimit: number) => {
     if (message.length <= charLimit) return message;
     return message.slice(0, charLimit).trim() + '...';
+  };
+
+  const formatTimeAgo = (dateString: string | undefined) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    const weeks = Math.floor(days / 7);
+    return `${weeks}w ago`;
   };
 
   return (
@@ -181,9 +186,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                   </span>
                 )}
               </div>
-              {/* MESSAGE DIRECTION (SECONDARY) */}
-              <p className="text-sm text-gray-600 truncate font-medium">
-                {getMessageDirection()}
+              {/* WITH USER (SECONDARY) */}
+              <p className="text-sm text-gray-700 truncate font-medium">
+                with @{conversation.otherUser.displayName}
               </p>
               
               {/* LAST MESSAGE (TERTIARY) */}
@@ -191,16 +196,19 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                 <p 
                   className="text-base mt-1 truncate max-w-full" 
                   style={{ 
-                    color: activeTab === 'primary' ? '#4b5563' : 'white',
+                    color: '#e5e7eb',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  {activeTab === 'primary' 
-                    ? `You: ${truncateMessage(conversation.lastMessage, 25)}`
-                    : truncateMessage(conversation.lastMessage, 35)
-                  }
+                  "{truncateMessage(conversation.lastMessage, 40)}"
+                </p>
+              )}
+              {/* TIME AGO */}
+              {conversation.lastMessageAt && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatTimeAgo(conversation.lastMessageAt)}
                 </p>
               )}
             </div>
@@ -229,7 +237,7 @@ const MessagesTab: React.FC = () => {
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [conversationMessages, setConversationMessages] = useState<any[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [activeTab, setActiveTab] = useState<'unread' | 'primary'>('primary');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // New Message Modal state
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -238,7 +246,16 @@ const MessagesTab: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   // Initialize real-time messaging
-  const { isConnected } = useRealTimeMessages(currentConversation?.id || null);
+  const { isConnected, newMessageReceived, clearNewMessage } = useRealTimeMessages(currentConversation?.id || null);
+  
+  // Append new real-time messages to conversation
+  useEffect(() => {
+    if (newMessageReceived && currentConversation) {
+      console.log('✅ Appending real-time message to conversation:', newMessageReceived);
+      setConversationMessages(prev => [...prev, newMessageReceived]);
+      clearNewMessage();
+    }
+  }, [newMessageReceived, currentConversation, clearNewMessage]);
 
   // Load saved search query from sessionStorage on component mount
   useEffect(() => {
@@ -257,30 +274,7 @@ const MessagesTab: React.FC = () => {
     }
   }, [searchQuery]);
 
-  // Load saved active tab from sessionStorage on component mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedActiveTab = sessionStorage.getItem('campusConnect_messagesActiveTab');
-      if (savedActiveTab && ['unread', 'primary'].includes(savedActiveTab)) {
-        setActiveTab(savedActiveTab as 'unread' | 'primary');
-      }
-    }
-  }, []);
-
-  // Save active tab to sessionStorage whenever it changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('campusConnect_messagesActiveTab', activeTab);
-    }
-  }, [activeTab]);
-
-  // Fetch conversations on component mount and tab change
-  useEffect(() => {
-    console.log('📂 Active tab changed to:', activeTab);
-    fetchConversations();
-  }, [activeTab, fetchConversations]);
-
-  // Initial data fetch on component mount
+  // Fetch conversations on component mount
   useEffect(() => {
     console.log('🚀 MessagesTab mounted - fetching initial data');
     fetchConversations();
@@ -314,6 +308,13 @@ const MessagesTab: React.FC = () => {
 
     loadConversationMessages();
   }, [currentConversation]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current && conversationMessages.length > 0) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [conversationMessages]);
 
   // Search users with debouncing
   useEffect(() => {
@@ -400,7 +401,7 @@ const MessagesTab: React.FC = () => {
   const handleConversationSelect = (conversation: Conversation) => {
     console.log('🖱️ POST-CENTRIC CONVERSATION CLICKED - OPENING INLINE CHAT');
     console.log('Conversation:', conversation);
-            console.log('Post context:', { postId: conversation.postId, postTitle: conversation.postTitle, postType: conversation.postType });
+    console.log('Post context:', { postId: conversation.postId, postTitle: conversation.postTitle, postType: conversation.postType });
     console.log('Other user:', conversation.otherUser);
     
     // FIXED: Always open chat inline instead of navigating to separate page
@@ -422,38 +423,33 @@ const MessagesTab: React.FC = () => {
     }
   };
 
+  // Simple filtering - all active conversations
   const filteredConversations = conversations.filter(conv => {
-    // POST-CENTRIC SEARCH: Search post title, description, and user name
+    // Search post title and user name
     const matchesSearch = searchQuery === '' || 
       conv.postTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              conv.otherUser.displayName.toLowerCase().includes(searchQuery.toLowerCase());
+      conv.otherUser.displayName.toLowerCase().includes(searchQuery.toLowerCase());
     
-    if (activeTab === 'unread') {
-      // Unread: Show conversations where the last message was sent TO the current user (incoming)
-      const isIncomingMessage = conv.lastMessage && conv.lastMessageSenderId !== currentUser?.id.toString();
-      const result = matchesSearch && isIncomingMessage;
-      console.log(`🔍 UNREAD FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessageSenderId}, currentUserId: ${currentUser?.id}, isIncoming: ${isIncomingMessage}, result: ${result}`);
-      return result;
-    } else if (activeTab === 'primary') {
-      // Primary: Show conversations where the last message was sent BY the current user (outgoing)
-      const isOutgoingMessage = conv.lastMessage && conv.lastMessageSenderId === currentUser?.id.toString();
-      const result = matchesSearch && isOutgoingMessage;
-      console.log(`🔍 PRIMARY FILTER: Conv ${conv.id}, lastSenderId: ${conv.lastMessageSenderId}, currentUserId: ${currentUser?.id}, isOutgoing: ${isOutgoingMessage}, result: ${result}`);
-      return result;
-    }
     return matchesSearch;
   });
 
-  // Debug: Log all POST-CENTRIC conversations and their unread counts
-  console.log('📊 ALL POST-CENTRIC CONVERSATIONS:', conversations.map(c => ({
-    id: c.id,
-    unreadCount: c.unreadCount,
-    lastMessage: c.lastMessage,
-    postTitle: c.postTitle,
-    otherUser: c.otherUser.displayName
-  })));
-  
-  console.log('📊 FILTERED CONVERSATIONS FOR', activeTab, 'TAB:', filteredConversations.length);
+  console.log('📊 ALL ACTIVE DISCUSSIONS:', filteredConversations.length);
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    const weeks = Math.floor(days / 7);
+    return `${weeks}w ago`;
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
@@ -462,16 +458,14 @@ const MessagesTab: React.FC = () => {
         <div className="w-full sm:w-80 lg:w-96 xl:w-80 border-r border-[#708d81] flex flex-col rounded-lg overflow-y-hidden" style={{ backgroundColor: '#737373' }}>
           {/* Header */}
           <div className="p-4 border-b border-[#708d81] rounded-t-lg">
+            <h2 className="text-xl font-bold text-[#708d81] mb-4">Active Discussions</h2>
+            
             {/* Search and Plus Button */}
             <div className="mt-4 px-2">
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
-                  placeholder={
-                    activeTab === 'unread' ? 'Search unread messages' :
-                    activeTab === 'primary' ? 'Search primary messages' :
-                    'Search conversations...'
-                  }
+                  placeholder="Search discussions..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="flex-1 px-4 py-2 text-sm border border-[#708d81] rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
@@ -495,70 +489,9 @@ const MessagesTab: React.FC = () => {
                 </button>
               </div>
             </div>
-
-            {/* Tab Navigation */}
-            <div className="flex justify-center" style={{ marginTop: '32px' }}>
-              <div className="relative bg-[#708d81] rounded-lg p-1 w-80" style={{ backgroundColor: '#708d81' }}>
-                <div className="flex relative w-full gap-1">
-                  <button
-                    onClick={() => setActiveTab('unread')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-md cursor-pointer shadow-md hover:shadow-lg`}
-                    style={{
-                      backgroundColor: activeTab === 'unread' ? '#f0f2f0' : '#708d81',
-                      color: activeTab === 'unread' ? '#708d81' : 'white',
-                      cursor: 'pointer',
-                      border: activeTab === 'unread' ? '2px solid #708d81' : '2px solid transparent'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (activeTab !== 'unread') {
-                        e.currentTarget.style.backgroundColor = '#5a7268';
-                      } else {
-                        e.currentTarget.style.backgroundColor = '#e8ebe8';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (activeTab !== 'unread') {
-                        e.currentTarget.style.backgroundColor = '#708d81';
-                      } else {
-                        e.currentTarget.style.backgroundColor = '#f0f2f0';
-                      }
-                    }}
-                  >
-                    Incoming
-                  </button>
-                  
-                  <button
-                    onClick={() => setActiveTab('primary')}
-                    className={`relative z-10 flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-md cursor-pointer shadow-md hover:shadow-lg`}
-                    style={{
-                      backgroundColor: activeTab === 'primary' ? '#f0f2f0' : '#708d81',
-                      color: activeTab === 'primary' ? '#708d81' : 'white',
-                      cursor: 'pointer',
-                      border: activeTab === 'primary' ? '2px solid #708d81' : '2px solid transparent'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (activeTab !== 'primary') {
-                        e.currentTarget.style.backgroundColor = '#5a7268';
-                      } else {
-                        e.currentTarget.style.backgroundColor = '#e8ebe8';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (activeTab !== 'primary') {
-                        e.currentTarget.style.backgroundColor = '#708d81';
-                      } else {
-                        e.currentTarget.style.backgroundColor = '#f0f2f0';
-                      }
-                    }}
-                  >
-                    Sent
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* New Message Modal - positioned right under tabs */}
+          {/* New Message Modal */}
           {showNewMessageModal && (
             <div className="px-4 pb-4 flex justify-center">
               <div className="rounded-lg p-4 border-2 border-[#708d81] shadow-lg w-72" style={{ backgroundColor: '#525252' }}>
@@ -783,27 +716,17 @@ const MessagesTab: React.FC = () => {
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
               </div>
             ) : filteredConversations.length === 0 ? (
-              // No conversations
               <div className="p-4 text-center text-[#708d81]">
-                <p className="text-lg font-medium">
-                  {activeTab === 'unread' ? 'No unread messages' : 'No conversations yet'}
-                </p>
-                <p className="text-sm mt-2">
-                  {activeTab === 'unread' 
-                    ? "You&apos;re all caught up with your messages!" 
-                    : 'Start a conversation to connect with other students'
-                  }
-                </p>
+                <p className="text-lg font-medium">No conversations yet</p>
+                <p className="text-sm mt-2">Start a conversation to connect with other students</p>
               </div>
             ) : (
-              // Show conversations
               <div className="px-2 pr-4">
                 {filteredConversations.map((conversation, index) => (
                   <ConversationItem
                     key={conversation.id}
                     conversation={conversation}
                     isSelected={currentConversation?.id === conversation.id}
-                    activeTab={activeTab}
                     currentUserId={currentUser?.id || ''}
                     onSelect={handleConversationSelect}
                     index={index}
@@ -847,7 +770,7 @@ const MessagesTab: React.FC = () => {
                       </div>
                       {/* USER INFO (SECONDARY) */}
                       <p className="text-sm text-[#708d81] opacity-70">
-                        with {currentConversation.otherUser.displayName}
+                        Discussion with @{currentConversation.otherUser.displayName}
                       </p>
                     </div>
                   </div>
@@ -857,7 +780,6 @@ const MessagesTab: React.FC = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         if (confirm(`Report ${currentConversation.otherUser.displayName} for inappropriate behavior?`)) {
-                          // TODO: Implement report user functionality
                           alert('Report functionality will be implemented soon.');
                         }
                       }}
@@ -875,7 +797,6 @@ const MessagesTab: React.FC = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         if (confirm(`Block ${currentConversation.otherUser.displayName}? This will prevent them from messaging you.`)) {
-                          // TODO: Implement block user functionality
                           alert('Block functionality will be implemented soon.');
                         }
                       }}
@@ -892,7 +813,7 @@ const MessagesTab: React.FC = () => {
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm(`Are you sure you want to delete this conversation about &quot;${currentConversation.postTitle}&quot; with ${currentConversation.otherUser.displayName}?`)) {
+                        if (confirm(`Are you sure you want to delete this conversation about "${currentConversation.postTitle}" with ${currentConversation.otherUser.displayName}?`)) {
                           handleDeleteConversation(currentConversation.id.toString());
                         }
                       }}
@@ -905,12 +826,8 @@ const MessagesTab: React.FC = () => {
                 </div>
               </div>
 
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-8" style={{ backgroundColor: '#737373' }}>
-                {(() => {
-                  console.log('🎨 Rendering messages area. conversationMessages:', conversationMessages, 'length:', conversationMessages.length);
-                  return null;
-                })()}
+              {/* Messages - Comment Style */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-2" style={{ backgroundColor: '#737373' }}>
                 {conversationMessages.length === 0 && !loadingMessages ? (
                   <div className="flex flex-col items-center justify-center h-full text-center">
                     <div className="w-20 h-20 bg-[#708d81] rounded-full flex items-center justify-center mb-6">
@@ -920,43 +837,41 @@ const MessagesTab: React.FC = () => {
                       Start the conversation
                     </h3>
                     <p className="text-white opacity-70 max-w-md mb-4">
-                      Send the first message to start chatting about &quot;{currentConversation?.postTitle}&quot;
+                      Send the first message to start discussing "{currentConversation?.postTitle}"
                     </p>
                   </div>
                 ) : (
-                  conversationMessages.map((message) => {
-                    const isCurrentUser = message.senderId === currentUser?.id?.toString();
-                    return (
-                      <div
-                        key={message.id}
-                        className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'} mb-4`}
-                      >
-                        <div
-                          className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                            isCurrentUser 
-                              ? 'bg-[#708d81] text-white'
-                              : 'bg-[#f0f2f0] text-[#708d81]'
-                          }`}
-                        >
-                          {/* Display sender name for non-current users */}
-                          {!isCurrentUser && (
-                            <p className="text-xs font-semibold mb-1 text-[#708d81] opacity-70">
-                              {message.sender?.displayName || currentConversation?.otherUser.displayName}
-                            </p>
-                          )}
-                          <p className="text-sm">{message.content}</p>
-                          <p className={`text-xs mt-1 ${
-                            isCurrentUser ? 'text-white opacity-80' : 'text-[#708d81] opacity-50'
-                          }`}>
-                            {new Date(message.createdAt).toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
-                          </p>
+                  <>
+                    {conversationMessages.map((message) => {
+                      const isCurrentUser = message.senderId === currentUser?.id?.toString();
+                      return (
+                        <div key={message.id} className="comment-message py-2">
+                          {/* Comment Header */}
+                          <div className="flex items-baseline space-x-2 mb-1">
+                            <span className="font-semibold text-sm" style={{ color: isCurrentUser ? '#a8c4a2' : '#708d81' }}>
+                              @{isCurrentUser ? 'you' : (message.sender?.displayName || currentConversation?.otherUser.displayName)}
+                            </span>
+                            <span className="text-xs opacity-60" style={{ color: '#e5e7eb' }}>
+                              {formatTimeAgo(message.createdAt)}
+                            </span>
+                          </div>
+                          {/* Comment Content */}
+                          <div className="comment-content pl-2 border-l-2 border-[#708d81]">
+                            <p className="text-base text-white">{message.content}</p>
+                            {message.mediaUrl && (
+                              <img 
+                                src={message.mediaUrl} 
+                                alt="Shared media" 
+                                className="mt-2 rounded-lg max-w-xs"
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })
+                      );
+                    })}
+                    {/* Auto-scroll anchor */}
+                    <div ref={messagesEndRef} />
+                  </>
                 )}
                 
                 {loadingMessages && (
@@ -971,7 +886,7 @@ const MessagesTab: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <input
                     type="text"
-                    placeholder="Type a message..."
+                    placeholder="Type your message..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
@@ -994,7 +909,7 @@ const MessagesTab: React.FC = () => {
                   <MessageCircle size={32} className="text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">
-                  Select a Post Conversation
+                  Select a Discussion
                 </h3>
                 <p className="text-white opacity-70 max-w-sm">
                   Choose a conversation from the left to start messaging about a specific post

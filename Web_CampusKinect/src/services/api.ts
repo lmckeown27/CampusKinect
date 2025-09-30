@@ -607,8 +607,13 @@ class ApiService {
 
       console.log('✅ Transformed messages:', messages);
       
+      // Sort chronologically (oldest to newest) for comment-style display
+      const sortedMessages = messages.sort((a: any, b: any) => 
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      
       return {
-        data: messages,
+        data: sortedMessages,
         pagination: response.data.data.pagination
       };
     }

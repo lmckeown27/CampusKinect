@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { useMessagesStore } from '../stores/messagesStore';
 import socketService from '../services/socketService';
@@ -6,8 +6,9 @@ import { Message } from '../types';
 
 export const useRealTimeMessages = (conversationId: string | null) => {
   const { user } = useAuthStore();
-  const { messages, fetchConversations, fetchMessages } = useMessagesStore();
+  const { fetchConversations } = useMessagesStore();
   const isInitializedRef = useRef(false);
+  const [newMessageReceived, setNewMessageReceived] = useState<Message | null>(null);
 
   // Initialize socket connection
   useEffect(() => {
@@ -26,11 +27,11 @@ export const useRealTimeMessages = (conversationId: string | null) => {
   // Handle new messages for specific conversation
   const handleNewMessage = useCallback((message: Message) => {
     console.log('📨 Real-time message received:', message);
-    // Refresh messages for the current conversation
-    if (conversationId) {
-      fetchMessages(conversationId);
-    }
-  }, [conversationId, fetchMessages]);
+    // Emit the new message to parent component via state
+    setNewMessageReceived(message);
+    // Also refresh conversation list to update last message
+    fetchConversations();
+  }, [fetchConversations]);
 
   // Handle conversation updates
   const handleConversationUpdate = useCallback((data: any) => {
@@ -66,6 +67,8 @@ export const useRealTimeMessages = (conversationId: string | null) => {
 
   return {
     isConnected: socketService.isConnected(),
+    newMessageReceived,
+    clearNewMessage: () => setNewMessageReceived(null)
   };
 };
 
