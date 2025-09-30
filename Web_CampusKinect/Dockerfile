@@ -35,8 +35,8 @@ ENV NEXT_PUBLIC_APP_URL https://campuskinect.net
 ENV NODE_OPTIONS="--max-old-space-size=4096 --max-semi-space-size=512"
 ENV NEXT_BUILD_TIMEOUT=600
 
-# Build the application with timeout and verbose output
-RUN timeout 600 npm run build -- --verbose || (echo "Build timed out or failed" && exit 1)
+# Build the application with timeout
+RUN timeout 600 npm run build || (echo "Build timed out or failed" && exit 1)
 
 # Stage 3: Runner
 FROM node:18-alpine AS runner
