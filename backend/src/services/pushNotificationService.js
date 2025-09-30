@@ -34,12 +34,32 @@ class PushNotificationService {
     // Initialize Apple Push Notification service
     if (apn && process.env.APN_KEY_ID && process.env.APN_TEAM_ID && process.env.APN_PRIVATE_KEY) {
       try {
-        // Fix the private key format - convert escaped newlines to actual newlines
-        const fixedPrivateKey = process.env.APN_PRIVATE_KEY.replace(/\\n/g, '\n');
+        const fs = require('fs');
+        const path = require('path');
+        
+        let privateKey;
+        
+        // Check if APN_PRIVATE_KEY is a file path or the actual key content
+        if (process.env.APN_PRIVATE_KEY.includes('BEGIN PRIVATE KEY')) {
+          // It's the actual key content (multiline string)
+          privateKey = process.env.APN_PRIVATE_KEY.replace(/\\n/g, '\n');
+          console.log('📱 Using APN private key from environment variable (content)');
+        } else {
+          // It's a file path
+          const keyPath = path.resolve(process.cwd(), process.env.APN_PRIVATE_KEY);
+          console.log('📱 Reading APN private key from file:', keyPath);
+          
+          if (!fs.existsSync(keyPath)) {
+            throw new Error(`APN private key file not found: ${keyPath}`);
+          }
+          
+          privateKey = fs.readFileSync(keyPath, 'utf8');
+          console.log('✅ APN private key file read successfully');
+        }
         
         const apnOptions = {
           token: {
-            key: fixedPrivateKey,
+            key: privateKey,
             keyId: process.env.APN_KEY_ID,
             teamId: process.env.APN_TEAM_ID
           },
@@ -50,14 +70,15 @@ class PushNotificationService {
           keyId: process.env.APN_KEY_ID,
           teamId: process.env.APN_TEAM_ID,
           production: process.env.NODE_ENV === 'production',
-          keyLength: fixedPrivateKey.length,
-          keyPreview: fixedPrivateKey.substring(0, 50) + '...'
+          keyLength: privateKey.length,
+          keyPreview: privateKey.substring(0, 50) + '...'
         });
 
         this.apnProvider = new apn.Provider(apnOptions);
         console.log('✅ APN Provider initialized successfully');
       } catch (error) {
         console.error('❌ Failed to initialize APN Provider:', error.message);
+        console.error('❌ Error stack:', error.stack);
         console.log('⚠️ Push notifications will be disabled, but server will continue...');
         this.apnProvider = null;
       }
