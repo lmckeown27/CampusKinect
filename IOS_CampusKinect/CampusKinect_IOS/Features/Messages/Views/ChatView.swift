@@ -209,7 +209,7 @@ struct ChatView: View {
                             .background(postTypeColor.opacity(0.1))
                             .cornerRadius(6)
                         
-                        Text("• Conversation with \(otherUserName)")
+                        Text("• \(otherUserName)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
