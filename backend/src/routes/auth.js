@@ -1481,4 +1481,34 @@ router.get('/admin/pending-stats', async (req, res) => {
   }
 });
 
+// @route   GET /api/v1/auth/socket-token
+// @desc    Get Socket.io authentication token for real-time messaging
+// @access  Private
+router.get('/socket-token', auth, async (req, res) => {
+  try {
+    // Generate a short-lived token specifically for Socket.io authentication
+    const socketToken = jwt.sign(
+      { 
+        userId: req.user.id,
+        username: req.user.username,
+        type: 'socket'
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } // Short-lived for security
+    );
+
+    res.json({
+      success: true,
+      token: socketToken,
+      userId: req.user.id
+    });
+  } catch (error) {
+    console.error('Socket token generation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate socket token'
+    });
+  }
+});
+
 module.exports = router; 

@@ -7,6 +7,7 @@ import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Conversation, User as UserType } from '../../types';
 import apiService from '../../services/api';
+import { useRealTimeMessaging } from '../../hooks/useRealTimeMessaging';
 
 // Simple Conversation Item Component for Web
 interface ConversationItemProps {
@@ -222,6 +223,9 @@ const MessagesTab: React.FC = () => {
     deleteConversation
   } = useMessagesStore();
   const { user: currentUser } = useAuthStore();
+  
+  // Initialize real-time messaging with server-side authentication
+  const { subscribeToMessages, unsubscribeFromMessages, subscribeToConversations, unsubscribeFromConversations } = useRealTimeMessaging();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
@@ -277,13 +281,24 @@ const MessagesTab: React.FC = () => {
     fetchConversations();
   }, [activeTab, fetchConversations]);
 
-  // Initial data fetch on component mount
+  // Initial data fetch on component mount and subscribe to conversation updates
   useEffect(() => {
     console.log('🚀 MessagesTab mounted - fetching initial data');
     fetchConversations();
-  }, [fetchConversations]);
+    
+    // Subscribe to real-time conversation updates
+    subscribeToConversations(() => {
+      console.log('🔄 Real-time conversation update - refreshing list');
+      fetchConversations();
+    });
+    
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribeFromConversations();
+    };
+  }, [fetchConversations, subscribeToConversations, unsubscribeFromConversations]);
 
-  // Load messages when currentConversation changes
+  // Load messages when currentConversation changes and subscribe to real-time updates
   useEffect(() => {
     const loadConversationMessages = async () => {
       if (!currentConversation) {
@@ -300,6 +315,18 @@ const MessagesTab: React.FC = () => {
         console.log('🔍 Messages array length:', messagesData.data?.length);
         setConversationMessages(messagesData.data || []);
         console.log('✅ Set conversationMessages state to:', messagesData.data || []);
+        
+        // Subscribe to real-time messages for this conversation
+        subscribeToMessages(currentConversation.id, (newMessage) => {
+          console.log('📨 Real-time message received:', newMessage);
+          setConversationMessages(prev => {
+            // Check if message already exists to prevent duplicates
+            const messageExists = prev.some(msg => msg.id === newMessage.id);
+            if (messageExists) return prev;
+            return [...prev, newMessage];
+          });
+        });
+        
       } catch (error) {
         console.error('❌ Failed to load messages:', error);
         setConversationMessages([]);
@@ -309,7 +336,14 @@ const MessagesTab: React.FC = () => {
     };
 
     loadConversationMessages();
-  }, [currentConversation]);
+    
+    // Cleanup: unsubscribe when conversation changes or component unmounts
+    return () => {
+      if (currentConversation) {
+        unsubscribeFromMessages(currentConversation.id);
+      }
+    };
+  }, [currentConversation, subscribeToMessages, unsubscribeFromMessages]);
 
   // Search users with debouncing
   useEffect(() => {
