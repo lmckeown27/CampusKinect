@@ -307,6 +307,10 @@ struct ChatView: View {
                     }
                 }
             }
+            .onTapGesture {
+                // Dismiss keyboard when tapping outside
+                isTextFieldFocused = false
+            }
         }
     }
     
