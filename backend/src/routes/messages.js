@@ -351,27 +351,23 @@ router.post('/conversations/:id/image', [
     
     const receiverId = otherUserResult.rows.length > 0 ? otherUserResult.rows[0].other_user_id : null;
     
-    // Build complete message with all fields iOS expects
+    // Build complete message with same format as getConversationMessages (camelCase)
     const messageWithFullUrls = {
       id: result.data.message.id,
-      conversation_id: parseInt(conversationId),
-      sender_id: userId,
-      receiver_id: receiverId,
+      conversationId: parseInt(conversationId),
+      senderId: userId,
       content: result.data.message.content,
-      message_type: result.data.message.messageType,
-      media_url: result.data.message.mediaUrl,
-      is_read: result.data.message.isRead,
-      created_at: result.data.message.createdAt,
-      updated_at: null,
+      messageType: result.data.message.messageType,
+      mediaUrl: imageUrl, // Use relative path, like regular messages
+      isRead: result.data.message.isRead,
+      createdAt: result.data.message.createdAt,
       sender: {
         id: userId,
         username: result.data.message.sender.username,
-        display_name: result.data.message.sender.displayName,
-        profile_picture: result.data.message.sender.profilePicture
-      },
-      metadata: {
-        imageUrl: fullImageUrl,
-        thumbnailUrl: fullThumbnailUrl
+        firstName: result.data.message.sender.firstName,
+        lastName: result.data.message.sender.lastName,
+        displayName: result.data.message.sender.displayName,
+        profilePicture: result.data.message.sender.profilePicture
       }
     };
 
