@@ -3,11 +3,13 @@ const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 10, // Reduced from 20 to prevent too many connections
-  min: 2,  // Maintain minimum connections
-  idleTimeoutMillis: 60000, // Increased from 30s to 60s
-  connectionTimeoutMillis: 5000, // Increased from 2s to 5s
-  acquireTimeoutMillis: 60000, // Add acquire timeout
+  max: 8, // Further reduced to prevent connection exhaustion
+  min: 1,  // Reduce minimum connections
+  idleTimeoutMillis: 30000, // Reduce idle timeout to free connections faster
+  connectionTimeoutMillis: 10000, // Increase connection timeout
+  acquireTimeoutMillis: 15000, // Reduce acquire timeout to fail faster
+  statement_timeout: 30000, // Add statement timeout (30 seconds)
+  query_timeout: 30000, // Add query timeout (30 seconds)
 });
 
 // Test initial connection (only log once)

@@ -31,8 +31,12 @@ ENV NEXT_PUBLIC_API_URL https://campuskinect.net/api/v1
 ENV NEXT_PUBLIC_WS_URL ws://campuskinect.net:8080
 ENV NEXT_PUBLIC_APP_URL https://campuskinect.net
 
-# Build the application with embedded environment variables
-RUN npm run build
+# Docker build optimizations to prevent hanging
+ENV NODE_OPTIONS="--max-old-space-size=4096 --max-semi-space-size=512"
+ENV NEXT_BUILD_TIMEOUT=600
+
+# Build the application with timeout and verbose output
+RUN timeout 600 npm run build -- --verbose || (echo "Build timed out or failed" && exit 1)
 
 # Stage 3: Runner
 FROM node:18-alpine AS runner

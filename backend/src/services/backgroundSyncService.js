@@ -9,6 +9,9 @@ class BackgroundSyncService {
     this.maxRetries = 3;
     this.retryDelay = 5000; // 5 seconds
     this.batchSize = 50;
+    this.isHealthy = true;
+    this.consecutiveErrors = 0;
+    this.maxConsecutiveErrors = 5;
     
     this.initializeConflictResolvers();
     this.startSyncProcessor();
@@ -427,22 +430,56 @@ class BackgroundSyncService {
   // Start background sync processor
   startSyncProcessor() {
     setInterval(async () => {
-      try {
-        // Get users with pending sync actions
-        const result = await query(`
-          SELECT DISTINCT user_id 
-          FROM offline_sync_queue 
-          WHERE processed = false 
-          AND (retry_count < $1 OR retry_count IS NULL)
-        `, [this.maxRetries]);
-
-        for (const row of result.rows) {
-          await this.processSyncQueue(row.user_id);
-        }
-      } catch (error) {
-        console.error('Error in sync processor:', error);
+      // Skip processing if service is unhealthy
+      if (!this.isHealthy) {
+        console.log('⚠️ Background sync temporarily disabled due to database issues');
+        return;
       }
-    }, 30000); // Run every 30 seconds
+
+      try {
+        // Get users with pending sync actions with timeout protection
+        const result = await Promise.race([
+          query(`
+            SELECT DISTINCT user_id 
+            FROM offline_sync_queue 
+            WHERE processed = false 
+            AND (retry_count < $1 OR retry_count IS NULL)
+            LIMIT 10
+          `, [this.maxRetries]),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Query timeout')), 10000)
+          )
+        ]);
+
+        if (result && result.rows) {
+          for (const row of result.rows) {
+            try {
+              await this.processSyncQueue(row.user_id);
+            } catch (userError) {
+              console.error(`Error processing sync for user ${row.user_id}:`, userError.message);
+              // Continue with other users instead of failing completely
+            }
+          }
+        }
+
+        // Reset error count on successful run
+        this.consecutiveErrors = 0;
+        if (!this.isHealthy) {
+          console.log('✅ Background sync service recovered');
+          this.isHealthy = true;
+        }
+
+      } catch (error) {
+        console.error('Error in sync processor:', error.message);
+        this.consecutiveErrors++;
+        
+        // Disable service if too many consecutive errors
+        if (this.consecutiveErrors >= this.maxConsecutiveErrors) {
+          console.error(`❌ Background sync disabled after ${this.maxConsecutiveErrors} consecutive errors`);
+          this.isHealthy = false;
+        }
+      }
+    }, 120000); // Run every 2 minutes instead of 30 seconds to reduce database load
   }
 
   // Get sync status for user

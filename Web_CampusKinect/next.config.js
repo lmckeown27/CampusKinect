@@ -17,6 +17,22 @@ const nextConfig = {
   // Environment-based asset prefix
   assetPrefix: process.env.NEXT_PUBLIC_CDN_URL || '',
   
+  // Docker build optimizations to prevent hanging
+  ...(process.env.NODE_ENV === 'production' && {
+    // Disable static optimization for problematic pages during Docker builds
+    experimental: {
+      scrollRestoration: true,
+      // Reduce memory usage during build
+      isrMemoryCacheSize: 0,
+      workerThreads: false,
+    },
+    // Reduce concurrent builds to prevent memory issues
+    onDemandEntries: {
+      maxInactiveAge: 25 * 1000,
+      pagesBufferLength: 2,
+    },
+  }),
+  
   // Image optimization settings
   images: {
     domains: [
