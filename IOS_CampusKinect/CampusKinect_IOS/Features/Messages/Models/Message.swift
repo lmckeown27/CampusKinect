@@ -15,6 +15,7 @@ struct Message: Codable, Identifiable, Equatable {
     let receiverId: Int?
     let content: String
     let messageType: MessageType
+    let mediaUrl: String? // For image/file messages
     let isRead: Bool
     let createdAt: Date
     let updatedAt: Date?
@@ -36,6 +37,7 @@ struct Message: Codable, Identifiable, Equatable {
         case receiverId
         case content
         case messageType
+        case mediaUrl
         case isRead
         case createdAt
         case updatedAt
@@ -48,13 +50,14 @@ struct Message: Codable, Identifiable, Equatable {
     }
     
     // Regular initializer for creating messages in code
-    init(id: Int, conversationId: Int, senderId: Int, receiverId: Int? = nil, content: String, messageType: MessageType, isRead: Bool, createdAt: Date, updatedAt: Date? = nil, senderUsername: String? = nil, senderFirstName: String? = nil, senderLastName: String? = nil, senderDisplayName: String? = nil, senderProfilePicture: String? = nil, metadata: MessageMetadata? = nil) {
+    init(id: Int, conversationId: Int, senderId: Int, receiverId: Int? = nil, content: String, messageType: MessageType, mediaUrl: String? = nil, isRead: Bool, createdAt: Date, updatedAt: Date? = nil, senderUsername: String? = nil, senderFirstName: String? = nil, senderLastName: String? = nil, senderDisplayName: String? = nil, senderProfilePicture: String? = nil, metadata: MessageMetadata? = nil) {
         self.id = id
         self.conversationId = conversationId
         self.senderId = senderId
         self.receiverId = receiverId
         self.content = content
         self.messageType = messageType
+        self.mediaUrl = mediaUrl
         self.isRead = isRead
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -74,6 +77,7 @@ struct Message: Codable, Identifiable, Equatable {
         receiverId = try container.decodeIfPresent(Int.self, forKey: .receiverId)
         content = try container.decode(String.self, forKey: .content)
         messageType = try container.decode(MessageType.self, forKey: .messageType)
+        mediaUrl = try container.decodeIfPresent(String.self, forKey: .mediaUrl)
         isRead = try container.decode(Bool.self, forKey: .isRead)
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
@@ -104,6 +108,7 @@ struct Message: Codable, Identifiable, Equatable {
         try container.encodeIfPresent(receiverId, forKey: .receiverId)
         try container.encode(content, forKey: .content)
         try container.encode(messageType, forKey: .messageType)
+        try container.encodeIfPresent(mediaUrl, forKey: .mediaUrl)
         try container.encode(isRead, forKey: .isRead)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encodeIfPresent(updatedAt, forKey: .updatedAt)

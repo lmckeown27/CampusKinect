@@ -39,9 +39,24 @@ struct ImageMessageView: View {
                 
                 // Image container
                 VStack(alignment: .leading, spacing: 8) {
-                    if let metadata = message.metadata,
-                       let imageUrl = metadata.fullImageURL {
-                        AsyncImage(url: metadata.thumbnailImageURL ?? imageUrl) { image in
+                    // Try metadata first (for old messages), then fall back to mediaUrl (standard)
+                    let imageUrl: URL? = {
+                        if let metadata = message.metadata,
+                           let metadataUrl = metadata.fullImageURL {
+                            return metadataUrl
+                        } else if let mediaUrl = message.mediaUrl {
+                            // Construct full URL from relative path
+                            if mediaUrl.starts(with: "http://") || mediaUrl.starts(with: "https://") {
+                                return URL(string: mediaUrl)
+                            }
+                            let cleanPath = mediaUrl.hasPrefix("/") ? mediaUrl : "/\(mediaUrl)"
+                            return URL(string: "\(APIConstants.baseURL)\(cleanPath)")
+                        }
+                        return nil
+                    }()
+                    
+                    if let imageUrl = imageUrl {
+                        AsyncImage(url: imageUrl) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
@@ -94,8 +109,22 @@ struct ImageMessageView: View {
             }
         }
         .sheet(isPresented: $showingFullImage) {
-            if let metadata = message.metadata,
-               let imageUrl = metadata.fullImageURL {
+            // Try metadata first (for old messages), then fall back to mediaUrl
+            let imageUrl: URL? = {
+                if let metadata = message.metadata,
+                   let metadataUrl = metadata.fullImageURL {
+                    return metadataUrl
+                } else if let mediaUrl = message.mediaUrl {
+                    if mediaUrl.starts(with: "http://") || mediaUrl.starts(with: "https://") {
+                        return URL(string: mediaUrl)
+                    }
+                    let cleanPath = mediaUrl.hasPrefix("/") ? mediaUrl : "/\(mediaUrl)"
+                    return URL(string: "\(APIConstants.baseURL)\(cleanPath)")
+                }
+                return nil
+            }()
+            
+            if let imageUrl = imageUrl {
                 FullScreenImageView(imageUrl: imageUrl)
             }
         }
