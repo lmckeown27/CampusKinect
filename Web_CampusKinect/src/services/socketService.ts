@@ -40,18 +40,30 @@ class SocketService {
 
     this.socket.on('connect', () => {
       console.log('✅ Socket connected:', this.socket?.id);
+      console.log('   Transport:', this.socket?.io.engine.transport.name);
       
       // Join personal room for direct messages
       this.socket?.emit('join-personal', userId);
-      console.log(`📬 Joined personal room: user-${userId}`);
+      console.log(`📬 Emitting join-personal for user: ${userId}`);
+    });
+
+    this.socket.on('joined-personal', (data: { userId: string; socketId: string }) => {
+      console.log('✅ Confirmed joined personal room:', data);
     });
 
     this.socket.on('disconnect', (reason) => {
       console.log('❌ Socket disconnected:', reason);
+      this.isInitialized = false;
     });
 
     this.socket.on('connect_error', (error) => {
       console.error('🔴 Socket connection error:', error);
+      console.error('   Error type:', error.constructor.name);
+      console.error('   Message:', error.message);
+    });
+
+    this.socket.on('error', (error) => {
+      console.error('🔴 Socket error:', error);
     });
 
     // Listen for new messages

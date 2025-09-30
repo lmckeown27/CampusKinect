@@ -61,29 +61,45 @@ const allowedOrigins = [
 const io = new Server(server, {
   path: '/socket.io/',
   cors: {
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.warn('🚫 Socket.io CORS: Blocked origin:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["*"]
   },
   allowEIO3: true,
-  transports: ['polling', 'websocket']
+  transports: ['polling', 'websocket'],
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log('✅ Socket.io: User connected:', socket.id);
+  console.log('   Transport:', socket.conn.transport.name);
+  console.log('   Remote address:', socket.handshake.address);
   
   // Join user to their university room
   socket.on('join-university', (universityId) => {
     socket.join(`university-${universityId}`);
-    console.log(`📚 Socket.io: User joined university room: ${universityId}`);
+    console.log(`📚 Socket.io: User ${socket.id} joined university room: ${universityId}`);
   });
   
   // Join user to their personal room for direct messages
   socket.on('join-personal', (userId) => {
     socket.join(`user-${userId}`);
-    console.log(`📬 Socket.io: User joined personal room: user-${userId}`);
+    console.log(`📬 Socket.io: User ${socket.id} joined personal room: user-${userId}`);
+    // Emit confirmation back to client
+    socket.emit('joined-personal', { userId, socketId: socket.id });
   });
   
   socket.on('disconnect', (reason) => {
@@ -91,9 +107,23 @@ io.on('connection', (socket) => {
   });
 
   socket.on('error', (error) => {
-    console.error('🔴 Socket.io: Socket error:', error);
+    console.error('🔴 Socket.io: Socket error for', socket.id, ':', error);
   });
 });
+
+// Handle Socket.io errors at the server level
+io.on('error', (error) => {
+  console.error('🔴 Socket.io Server Error:', error);
+});
+
+// Log when Socket.io is ready
+console.log('✅ Socket.io server initialized on path: /socket.io/');
+console.log('   Allowed origins:', allowedOrigins);
+console.log('   Transports:', ['polling', 'websocket']);
+
+// Make io available to routes BEFORE routes are loaded
+app.set('io', io);
+console.log('✅ Socket.io instance attached to app for route access');
 
 // Connect to databases
 initializeDatabase();
@@ -202,9 +232,6 @@ if (mobileRoutes) {
 app.use(notFound);
 app.use(errorHandler);
 
-// Make io available to routes
-app.set('io', io);
-
 // Start server with PM2 compatibility
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
@@ -288,3 +315,4 @@ function gracefulShutdown() {
 }
 
 module.exports = { app, server, io }; 
+
