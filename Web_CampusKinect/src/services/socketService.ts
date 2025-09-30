@@ -13,8 +13,10 @@ class SocketService {
       return;
     }
 
-    // Use environment-specific URL
-    const socketURL = baseURL || process.env.NEXT_PUBLIC_API_URL || 'https://campuskinect.net';
+    // Socket.io is on root domain, NOT /api/v1
+    // Remove /api/v1 from URL if present
+    let socketURL = baseURL || process.env.NEXT_PUBLIC_API_URL || 'https://campuskinect.net';
+    socketURL = socketURL.replace(/\/api\/v1\/?$/, ''); // Remove /api/v1 suffix
     
     console.log('🔌 Initializing socket connection to:', socketURL);
 
