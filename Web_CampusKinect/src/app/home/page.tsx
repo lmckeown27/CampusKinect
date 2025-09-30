@@ -1,11 +1,8 @@
-import React from 'react';
-import MainLayout from '../../components/layout/MainLayout';
-import HomeTab from '../../components/tabs/HomeTab';
+// Force dynamic rendering to prevent build hanging
+export const dynamic = 'force-dynamic';
 
-export default function HomePage() {
-  return (
-    <MainLayout>
-      <HomeTab />
-    </MainLayout>
-  );
+import HomePage from './home-page';
+
+export default function Home() {
+  return <HomePage />;
 } 

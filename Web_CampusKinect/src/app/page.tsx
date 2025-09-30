@@ -1,6 +1,9 @@
+// Force dynamic rendering to prevent build hanging
+export const dynamic = 'force-dynamic';
+
 import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  // Immediately redirect to login page
-  redirect('/auth/login');
+  // Redirect to home page
+  redirect('/home');
 }
