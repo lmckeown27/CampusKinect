@@ -195,7 +195,7 @@ struct ChatView: View {
                     Text(postTitle)
                         .font(.headline)
                         .fontWeight(.semibold)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .lineLimit(2)
                     
                     // Post type and conversation context
@@ -313,17 +313,6 @@ struct ChatView: View {
     private var messageInputSection: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                // User avatar (like comment input)
-                Circle()
-                    .fill(Color.campusPrimary)
-                    .frame(width: 32, height: 32)
-                    .overlay(
-                        Text("You")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                    )
-                
                 // Comment input field with media buttons
                 HStack(spacing: 8) {
                     // Camera button (iOS only)
@@ -348,6 +337,7 @@ struct ChatView: View {
                     
                     TextField(viewModel.conversation == nil ? "Send the first message..." : "Add a message...", text: $viewModel.newMessageText, axis: .vertical)
                         .textFieldStyle(PlainTextFieldStyle())
+                        .foregroundColor(.black)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(Color.campusBackgroundSecondary)
@@ -510,13 +500,8 @@ struct ChatView: View {
     }
     
     private var postTypeColor: Color {
-        switch postType.lowercased() {
-        case "goods": return .blue
-        case "services": return .green
-        case "housing": return .orange
-        case "events": return .purple
-        default: return .gray
-        }
+        // Use campus branding colors (olive green/grey) for all post types
+        return Color.campusPrimary
     }
 }
 

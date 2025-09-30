@@ -4,7 +4,6 @@ struct MessagesView: View {
     @StateObject private var viewModel = MessagesViewModel()
     @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingNewMessage = false
-    @State private var activeTab: MessageTab = .sent
     @State private var searchText = ""
     @State private var selectedUser: User?
     @State private var selectedPostId: Int?
@@ -26,17 +25,11 @@ struct MessagesView: View {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
     
-    enum MessageTab: String, CaseIterable {
-        case incoming = "Incoming"
-        case sent = "Sent"
-    }
-    
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
                     searchSection
-                    tabSection
                     conversationsList
                 }
                 .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
@@ -153,7 +146,7 @@ struct MessagesView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.gray)
             
-            TextField(searchPlaceholder, text: $searchText)
+            TextField("Search conversations...", text: $searchText)
                 .textFieldStyle(PlainTextFieldStyle())
         }
         .padding(.horizontal, 12)
@@ -164,26 +157,15 @@ struct MessagesView: View {
         .padding(.top, 8)
     }
     
-    private var tabSection: some View {
-        Picker("Message Tab", selection: $activeTab) {
-            ForEach(MessageTab.allCases, id: \.self) { tab in
-                Text(tab.rawValue).tag(tab)
-            }
-        }
-        .pickerStyle(SegmentedPickerStyle())
-        .padding(.horizontal, isIPad ? 40 : 16)
-        .padding(.vertical, 8)
-    }
-    
     private var conversationsList: some View {
         VStack {
             if viewModel.isLoading && viewModel.conversations.isEmpty {
                 LoadingView()
             } else if viewModel.conversations.isEmpty {
                 EmptyStateView(
-                    title: "No \(activeTab.rawValue) Messages",
-                    message: "You don't have any \(activeTab.rawValue.lowercased()) messages yet.",
-                    systemImage: activeTab == .incoming ? "envelope.badge" : "paperplane"
+                    title: "No Conversations",
+                    message: "You don't have any conversations yet. Start by messaging someone about a post!",
+                    systemImage: "bubble.left.and.bubble.right"
                 )
             } else {
                 List {
@@ -226,29 +208,15 @@ struct MessagesView: View {
     
     // MARK: - Computed Properties
     
-    private var searchPlaceholder: String {
-        activeTab == .incoming ? "Search incoming messages..." : "Search sent messages..."
-    }
-    
     private var filteredConversations: [Conversation] {
         let allConversations = viewModel.conversations
         
-        // Filter by search text first
-        let searchFiltered = searchText.isEmpty ? allConversations : allConversations.filter { conversation in
+        // Filter by search text only - show all conversations (like the webpage)
+        return searchText.isEmpty ? allConversations : allConversations.filter { conversation in
             // POST-CENTRIC SEARCH: Search post title first, then user, then message
             conversation.postTitle.localizedCaseInsensitiveContains(searchText) ||
             conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
             conversation.lastMessage?.localizedCaseInsensitiveContains(searchText) ?? false
-        }
-        
-        // Then filter by incoming/sent based on activeTab
-        return searchFiltered.filter { conversation in
-            guard let currentUserId = authManager.currentUser?.id,
-                  let lastMessageSenderId = conversation.lastMessageSenderId else { return true }
-            
-            return activeTab == .incoming ?
-                lastMessageSenderId != currentUserId :
-                lastMessageSenderId == currentUserId
         }
     }    
     // MARK: - Methods
@@ -476,8 +444,14 @@ struct ConversationRow: View {
                         .fontWeight(.medium)
                     
                     // LAST MESSAGE (TERTIARY)
-                    if let lastMessage = conversation.lastMessage {
+                    if let lastMessage = conversation.lastMessage, !lastMessage.isEmpty {
                         Text(lastMessage)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    } else if conversation.lastMessageSenderId != nil {
+                        // Empty message but has a sender = image message
+                        Text("Image")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .lineLimit(1)
@@ -535,13 +509,8 @@ struct ConversationRow: View {
     }
     
     private var postColor: Color {
-        switch conversation.postType.lowercased() {
-        case "goods": return .blue
-        case "services": return .green
-        case "housing": return .orange
-        case "events": return .purple
-        default: return .gray
-        }
+        // Use campus branding colors (olive green/grey) for all post types
+        return Color.campusPrimary
     }
     
     private var messageDirectionText: String {
