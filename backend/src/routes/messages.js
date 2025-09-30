@@ -282,7 +282,8 @@ router.post('/conversations/:id/image', [
   auth,
   requireVerification,
   uploadSingleImage,
-  param('id').isInt().withMessage('Conversation ID must be an integer')
+  param('id').isInt().withMessage('Conversation ID must be an integer'),
+  validate
 ], async (req, res) => {
   try {
     const { id: conversationId } = req.params;
@@ -394,11 +395,16 @@ router.post('/conversations/:id/image', [
     });
 
   } catch (error) {
-    console.error('Conversation image upload error:', error);
+    console.error('❌ Conversation image upload error:', error);
+    console.error('❌ Error message:', error.message);
+    console.error('❌ Error stack:', error.stack);
+    console.error('❌ Request file:', req.file);
+    console.error('❌ Conversation ID:', req.params.id);
     res.status(500).json({
       success: false,
       error: {
-        message: 'Failed to upload image. Please try again.'
+        message: error.message || 'Failed to upload image. Please try again.',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
       }
     });
   }

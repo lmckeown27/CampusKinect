@@ -269,39 +269,22 @@ struct ChatView: View {
                 }
                 
                 ForEach(viewModel.messages) { message in
-                    if message.messageType == .image {
-                        ImageMessageView(
-                            message: message,
-                            isCurrentUser: message.senderId == authManager.currentUser?.id,
-                            otherUserName: otherUserName,
-                            currentUserName: authManager.currentUser?.displayName ?? "You"
-                        )
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(
-                            top: 6,
-                            leading: 16,
-                            bottom: 6,
-                            trailing: 16
-                        ))
-                        .listRowBackground(Color.clear)
-                        .id(message.id)
-                    } else {
-                        CommentStyleMessageView(
-                            message: message,
-                            isCurrentUser: message.senderId == authManager.currentUser?.id,
-                            otherUserName: otherUserName,
-                            currentUserName: authManager.currentUser?.displayName ?? "You"
-                        )
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(
-                            top: 6,
-                            leading: 16,
-                            bottom: 6,
-                            trailing: 16
-                        ))
-                        .listRowBackground(Color.clear)
-                        .id(message.id)
-                    }
+                    // Use comment-style view for ALL messages (text and images)
+                    CommentStyleMessageView(
+                        message: message,
+                        isCurrentUser: message.senderId == authManager.currentUser?.id,
+                        otherUserName: otherUserName,
+                        currentUserName: authManager.currentUser?.displayName ?? "You"
+                    )
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(
+                        top: 6,
+                        leading: 16,
+                        bottom: 6,
+                        trailing: 16
+                    ))
+                    .listRowBackground(Color.clear)
+                    .id(message.id)
                 }
                 
                 if viewModel.isLoading {
@@ -588,10 +571,49 @@ struct CommentStyleMessageView: View {
                 }
                 
                 // Message content (like comment text)
-                Text(message.content)
-                    .font(.body)
-                    .foregroundColor(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
+                if !message.content.isEmpty {
+                    Text(message.content)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                
+                // Image support (if message has image)
+                if message.messageType == .image {
+                    // Construct image URL from mediaUrl
+                    let imageUrl: URL? = {
+                        if let metadata = message.metadata,
+                           let metadataUrl = metadata.fullImageURL {
+                            return metadataUrl
+                        } else if let mediaUrl = message.mediaUrl {
+                            if mediaUrl.starts(with: "http://") || mediaUrl.starts(with: "https://") {
+                                return URL(string: mediaUrl)
+                            }
+                            let cleanPath = mediaUrl.hasPrefix("/") ? mediaUrl : "/\(mediaUrl)"
+                            return URL(string: "\(APIConstants.baseURL)\(cleanPath)")
+                        }
+                        return nil
+                    }()
+                    
+                    if let imageUrl = imageUrl {
+                        AsyncImage(url: imageUrl) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(maxWidth: 250, maxHeight: 250)
+                                .clipped()
+                                .cornerRadius(12)
+                        } placeholder: {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 250, height: 150)
+                                .overlay(
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                )
+                        }
+                    }
+                }
             }
             
             Spacer(minLength: 0)
