@@ -527,6 +527,8 @@ struct CommentStyleMessageView: View {
     let otherUserName: String
     let currentUserName: String
     
+    @EnvironmentObject var authManager: AuthenticationManager
+    
     // Computed property to get the display name for the message sender
     private var senderDisplayName: String {
         if isCurrentUser {
@@ -542,18 +544,19 @@ struct CommentStyleMessageView: View {
         }
     }
     
+    // Computed property to get the profile picture URL
+    private var profilePictureUrl: String? {
+        if isCurrentUser {
+            return authManager.currentUser?.profilePicture
+        } else {
+            return message.senderProfilePicture
+        }
+    }
+    
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            // User avatar (small, like comment avatar)
-            Circle()
-                .fill(isCurrentUser ? Color.campusPrimary : Color.campusGrey400)
-                .frame(width: 32, height: 32)
-                .overlay(
-                    Text(String(senderDisplayName.prefix(1)))
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                )
+            // User avatar with profile picture support
+            ProfileImageView(imageUrl: profilePictureUrl, size: .small)
             
             VStack(alignment: .leading, spacing: 4) {
                 // Username and timestamp (like comment header)

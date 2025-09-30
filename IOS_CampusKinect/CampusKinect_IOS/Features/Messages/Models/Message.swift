@@ -41,6 +41,7 @@ struct Message: Codable, Identifiable, Equatable {
         case isRead
         case createdAt
         case updatedAt
+        case sender // For nested sender object
         case senderUsername = "username"
         case senderFirstName = "first_name"
         case senderLastName = "last_name"
@@ -82,12 +83,21 @@ struct Message: Codable, Identifiable, Equatable {
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
         
-        // Decode sender information
-        senderUsername = try container.decodeIfPresent(String.self, forKey: .senderUsername)
-        senderFirstName = try container.decodeIfPresent(String.self, forKey: .senderFirstName)
-        senderLastName = try container.decodeIfPresent(String.self, forKey: .senderLastName)
-        senderDisplayName = try container.decodeIfPresent(String.self, forKey: .senderDisplayName)
-        senderProfilePicture = try container.decodeIfPresent(String.self, forKey: .senderProfilePicture)
+        // Try to decode sender information from nested "sender" object first (new API format)
+        if let senderInfo = try? container.decodeIfPresent(SenderInfo.self, forKey: CodingKeys.sender) {
+            senderUsername = senderInfo.username
+            senderFirstName = senderInfo.firstName
+            senderLastName = senderInfo.lastName
+            senderDisplayName = senderInfo.displayName
+            senderProfilePicture = senderInfo.profilePicture
+        } else {
+            // Fallback to root-level fields (old API format)
+            senderUsername = try container.decodeIfPresent(String.self, forKey: .senderUsername)
+            senderFirstName = try container.decodeIfPresent(String.self, forKey: .senderFirstName)
+            senderLastName = try container.decodeIfPresent(String.self, forKey: .senderLastName)
+            senderDisplayName = try container.decodeIfPresent(String.self, forKey: .senderDisplayName)
+            senderProfilePicture = try container.decodeIfPresent(String.self, forKey: .senderProfilePicture)
+        }
         
         metadata = try container.decodeIfPresent(MessageMetadata.self, forKey: .metadata)
         
@@ -96,6 +106,23 @@ struct Message: Codable, Identifiable, Equatable {
             conversationId = Int(conversationIdString) ?? 0
         } else {
             conversationId = try container.decode(Int.self, forKey: .conversationId)
+        }
+    }
+    
+    // Helper struct to decode nested sender object
+    private struct SenderInfo: Codable {
+        let username: String?
+        let firstName: String?
+        let lastName: String?
+        let displayName: String?
+        let profilePicture: String?
+        
+        enum CodingKeys: String, CodingKey {
+            case username
+            case firstName
+            case lastName
+            case displayName
+            case profilePicture
         }
     }
     

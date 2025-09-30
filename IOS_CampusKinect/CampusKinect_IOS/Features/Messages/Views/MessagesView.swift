@@ -13,6 +13,11 @@ struct MessagesView: View {
     @State private var shouldNavigateToChat = false
     @State private var isViewReady = false // Track when view is fully initialized
     @State private var pendingNotification: [AnyHashable: Any]? // Queue notification if received before ready
+    @State private var showingConversationConfirmation = false
+    @State private var pendingConversationUser: User?
+    @State private var pendingConversationPostId: Int?
+    @State private var pendingConversationPostTitle: String?
+    @State private var pendingConversationPostType: String?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -118,6 +123,26 @@ struct MessagesView: View {
             }
         } message: {
             Text(viewModel.error?.localizedDescription ?? "An unknown error occurred.")
+        }
+        .alert("Start Conversation?", isPresented: $showingConversationConfirmation) {
+            Button("Cancel", role: .cancel) {
+                // Clear pending data
+                pendingConversationUser = nil
+                pendingConversationPostId = nil
+                pendingConversationPostTitle = nil
+                pendingConversationPostType = nil
+            }
+            Button("Yes") {
+                // Proceed with navigation
+                confirmConversationStart()
+            }
+        } message: {
+            if let userName = pendingConversationUser?.displayName,
+               let postTitle = pendingConversationPostTitle {
+                Text("Do you want to start a conversation with \(userName) about '\(postTitle)'?")
+            } else {
+                Text("Do you want to start this conversation?")
+            }
         }
     }
     
@@ -284,8 +309,42 @@ struct MessagesView: View {
             return
         }
         
-        // Create a User object for navigation
-        let targetUser = User(
+        // Check if conversation already exists
+        if let existingConversation = viewModel.conversations.first(where: { 
+            $0.otherUser.id == userId && $0.postId == postId 
+        }) {
+            // Conversation exists - navigate directly without confirmation
+            print("📱 Existing conversation found - navigating directly")
+            selectedUser = User(
+                id: userId,
+                username: userName,
+                email: "",
+                firstName: userName,
+                lastName: "",
+                displayName: userName,
+                profilePicture: nil,
+                year: nil,
+                major: nil,
+                hometown: nil,
+                bio: nil,
+                universityId: nil,
+                universityName: nil,
+                universityDomain: nil,
+                isVerified: nil,
+                isActive: nil,
+                createdAt: Date(),
+                updatedAt: nil
+            )
+            selectedPostId = postId
+            selectedPostTitle = postTitle
+            selectedPostType = existingConversation.postType
+            shouldNavigateToChat = true
+            return
+        }
+        
+        // No existing conversation - show confirmation popup
+        print("📱 No existing conversation - showing confirmation popup")
+        pendingConversationUser = User(
             id: userId,
             username: userName,
             email: "",
@@ -305,15 +364,35 @@ struct MessagesView: View {
             createdAt: Date(),
             updatedAt: nil
         )
+        pendingConversationPostId = postId
+        pendingConversationPostTitle = postTitle
+        pendingConversationPostType = "general" // Default type
+        showingConversationConfirmation = true
+    }
+    
+    private func confirmConversationStart() {
+        guard let user = pendingConversationUser,
+              let postId = pendingConversationPostId,
+              let postTitle = pendingConversationPostTitle,
+              let postType = pendingConversationPostType else {
+            print("❌ Missing pending conversation data")
+            return
+        }
         
         // Set navigation state to trigger ChatView
-        selectedUser = targetUser
+        selectedUser = user
         selectedPostId = postId
         selectedPostTitle = postTitle
-        selectedPostType = "general" // Default type, could be enhanced later
+        selectedPostType = postType
         shouldNavigateToChat = true
         
-        print("📱 Navigation state set - will navigate to chat with user: \(userName) for post: '\(postTitle)'")
+        print("📱 Confirmed conversation start - navigating to chat with user: \(user.displayName) for post: '\(postTitle)'")
+        
+        // Clear pending data
+        pendingConversationUser = nil
+        pendingConversationPostId = nil
+        pendingConversationPostTitle = nil
+        pendingConversationPostType = nil
     }
 }
 
