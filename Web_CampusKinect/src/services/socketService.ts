@@ -3,132 +3,123 @@ import { Message, Conversation } from '../types';
 
 class SocketService {
   private socket: Socket | null = null;
-  private messageCallbacks: Map<string, (message: Message) => void> = new Map();
-  private conversationCallbacks: Set<() => void> = new Set();
+  private isInitialized = false;
+  private messageCallbacks: Map<string, Set<(message: Message) => void>> = new Map();
+  private conversationCallbacks: Set<(data: any) => void> = new Set();
 
-  public initialize(userId: string, token: string): void {
-    if (typeof window === 'undefined') {
-      console.log('🔌 Skipping socket initialization during SSR');
+  initialize(userId: string, baseURL?: string) {
+    if (this.isInitialized && this.socket?.connected) {
+      console.log('🔌 Socket already initialized and connected');
       return;
     }
 
-    if (this.socket?.connected) {
-      console.log('🔌 Socket already connected');
-      return;
-    }
+    // Use environment-specific URL
+    const socketURL = baseURL || process.env.NEXT_PUBLIC_API_URL || 'https://campuskinect.net';
+    
+    console.log('🔌 Initializing socket connection to:', socketURL);
 
-    const isProduction = process.env.NODE_ENV === 'production';
-    const socketUrl = isProduction 
-      ? 'https://api.campuskinect.net'
-      : 'http://localhost:3001';
-
-    console.log('🔌 Initializing Socket.io connection to:', socketUrl);
-
-    this.socket = io(socketUrl, {
-      auth: {
-        token: token,
-        userId: userId
-      },
+    this.socket = io(socketURL, {
       transports: ['websocket', 'polling'],
-      timeout: 20000,
+      withCredentials: true,
       reconnection: true,
-      reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
     });
 
-    this.setupEventListeners();
+    this.setupEventListeners(userId);
+    this.isInitialized = true;
   }
 
-  private setupEventListeners(): void {
+  private setupEventListeners(userId: string) {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('🔌 Socket.io connected:', this.socket?.id);
+      console.log('✅ Socket connected:', this.socket?.id);
+      
+      // Join personal room for direct messages
+      this.socket?.emit('join-personal', userId);
+      console.log(`📬 Joined personal room: user-${userId}`);
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('🔌 Socket.io disconnected:', reason);
+      console.log('❌ Socket disconnected:', reason);
     });
 
-    this.socket.on('connect_error', (error: Error) => {
-      console.error('🔌 Socket.io connection error:', error.message);
+    this.socket.on('connect_error', (error) => {
+      console.error('🔴 Socket connection error:', error);
     });
 
-    this.socket.on('new-message', (message: Message) => {
-      console.log('📨 New message received via Socket.io:', message);
+    // Listen for new messages
+    this.socket.on('new-message', (data: { conversationId: string; message: Message }) => {
+      console.log('📨 New message received:', data);
       
-      // Notify all message callbacks for this conversation
-      const callback = this.messageCallbacks.get(message.conversationId);
-      if (callback) {
-        callback(message);
+      // Notify specific conversation listeners
+      const conversationCallbacks = this.messageCallbacks.get(data.conversationId);
+      if (conversationCallbacks) {
+        conversationCallbacks.forEach(callback => callback(data.message));
       }
-    });
-
-    this.socket.on('conversation-updated', () => {
-      console.log('🔄 Conversation updated via Socket.io');
       
-      // Notify all conversation callbacks
-      this.conversationCallbacks.forEach(callback => callback());
+      // Notify conversation list listeners
+      this.conversationCallbacks.forEach(callback => callback(data));
+    });
+
+    // Listen for conversation updates
+    this.socket.on('conversation-updated', (data: any) => {
+      console.log('🔄 Conversation updated:', data);
+      this.conversationCallbacks.forEach(callback => callback(data));
     });
   }
 
-  public subscribeToMessages(conversationId: string, callback: (message: Message) => void): void {
-    if (typeof window === 'undefined') return;
-    
-    console.log('📨 Subscribing to messages for conversation:', conversationId);
-    this.messageCallbacks.set(conversationId, callback);
-    
-    if (this.socket?.connected) {
-      this.socket.emit('join-conversation', conversationId);
+  // Subscribe to messages for a specific conversation
+  subscribeToMessages(conversationId: string, callback: (message: Message) => void) {
+    if (!this.messageCallbacks.has(conversationId)) {
+      this.messageCallbacks.set(conversationId, new Set());
     }
+    this.messageCallbacks.get(conversationId)?.add(callback);
+    
+    console.log(`📬 Subscribed to messages for conversation: ${conversationId}`);
   }
 
-  public unsubscribeFromMessages(conversationId: string): void {
-    if (typeof window === 'undefined') return;
-    
-    console.log('📨 Unsubscribing from messages for conversation:', conversationId);
-    this.messageCallbacks.delete(conversationId);
-    
-    if (this.socket?.connected) {
-      this.socket.emit('leave-conversation', conversationId);
-    }
-  }
-
-  public subscribeToConversations(callback: () => void): void {
-    if (typeof window === 'undefined') return;
-    
-    console.log('🔄 Subscribing to conversation updates');
-    this.conversationCallbacks.add(callback);
-  }
-
-  public unsubscribeFromConversations(callback?: () => void): void {
-    if (typeof window === 'undefined') return;
-    
+  // Unsubscribe from messages for a specific conversation
+  unsubscribeFromMessages(conversationId: string, callback?: (message: Message) => void) {
     if (callback) {
-      console.log('🔄 Unsubscribing specific conversation callback');
-      this.conversationCallbacks.delete(callback);
+      this.messageCallbacks.get(conversationId)?.delete(callback);
     } else {
-      console.log('🔄 Unsubscribing all conversation callbacks');
+      this.messageCallbacks.delete(conversationId);
+    }
+    
+    console.log(`📭 Unsubscribed from messages for conversation: ${conversationId}`);
+  }
+
+  // Subscribe to conversation list updates
+  subscribeToConversations(callback: (data: any) => void) {
+    this.conversationCallbacks.add(callback);
+    console.log('📬 Subscribed to conversation updates');
+  }
+
+  // Unsubscribe from conversation list updates
+  unsubscribeFromConversations(callback: (data: any) => void) {
+    this.conversationCallbacks.delete(callback);
+    console.log('📭 Unsubscribed from conversation updates');
+  }
+
+  disconnect() {
+    if (this.socket) {
+      console.log('🔌 Disconnecting socket...');
+      this.socket.disconnect();
+      this.socket = null;
+      this.isInitialized = false;
+      this.messageCallbacks.clear();
       this.conversationCallbacks.clear();
     }
   }
 
-  public disconnect(): void {
-    if (this.socket) {
-      console.log('🔌 Disconnecting Socket.io');
-      this.socket.disconnect();
-      this.socket = null;
-    }
-    
-    // Clear all callbacks
-    this.messageCallbacks.clear();
-    this.conversationCallbacks.clear();
-  }
-
-  public isConnected(): boolean {
-    return this.socket?.connected || false;
+  isConnected(): boolean {
+    return this.socket?.connected ?? false;
   }
 }
 
-const socketService = new SocketService();
+// Export singleton instance
+export const socketService = new SocketService();
 export default socketService; 

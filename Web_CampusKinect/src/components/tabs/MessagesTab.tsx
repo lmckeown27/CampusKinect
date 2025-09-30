@@ -7,6 +7,7 @@ import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Conversation, User as UserType } from '../../types';
 import apiService from '../../services/api';
+import { useRealTimeMessages } from '../../hooks/useRealTimeMessages';
 
 // Simple Conversation Item Component for Web
 interface ConversationItemProps {
@@ -235,6 +236,9 @@ const MessagesTab: React.FC = () => {
   const [searchResults, setSearchResults] = useState<UserType[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Initialize real-time messaging
+  const { isConnected } = useRealTimeMessages(currentConversation?.id || null);
 
   // Load saved search query from sessionStorage on component mount
   useEffect(() => {
@@ -830,9 +834,17 @@ const MessagesTab: React.FC = () => {
                     </div>
                     <div>
                       {/* POST TITLE (PRIMARY) */}
-                      <h3 className="font-medium text-[#708d81]">
-                        {currentConversation.postTitle}
-                      </h3>
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-medium text-[#708d81]">
+                          {currentConversation.postTitle}
+                        </h3>
+                        {/* Real-time indicator */}
+                        {isConnected && (
+                          <span className="flex items-center space-x-1" title="Real-time messaging active">
+                            <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+                          </span>
+                        )}
+                      </div>
                       {/* USER INFO (SECONDARY) */}
                       <p className="text-sm text-[#708d81] opacity-70">
                         with {currentConversation.otherUser.displayName}
