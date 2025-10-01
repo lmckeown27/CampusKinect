@@ -174,7 +174,7 @@ struct MessagesView: View {
                             print("📱 ConversationRow tapped for POST: '\(conversation.postTitle)' with user: \(conversation.otherUser.displayName ?? "User \(conversation.otherUser.id)")")
                             
                             // Store user information with correct display name
-                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username ?? "user\(conversation.otherUser.id)", email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName ?? "User \(conversation.otherUser.id)", profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
+                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username ?? "user\(conversation.otherUser.id)", email: nil, firstName: conversation.otherUser.firstName ?? "", lastName: conversation.otherUser.lastName ?? "", displayName: conversation.otherUser.displayName ?? "User \(conversation.otherUser.id)", profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
                             
                             // Store post information for post-centric chat
                             selectedPostId = conversation.postId
@@ -215,7 +215,7 @@ struct MessagesView: View {
         return searchText.isEmpty ? allConversations : allConversations.filter { conversation in
             // POST-CENTRIC SEARCH: Search post title first, then user, then message
             conversation.postTitle.localizedCaseInsensitiveContains(searchText) ||
-            conversation.otherUser.displayName.localizedCaseInsensitiveContains(searchText) ||
+            (conversation.otherUser.displayName?.localizedCaseInsensitiveContains(searchText) ?? false) ||
             conversation.lastMessage?.localizedCaseInsensitiveContains(searchText) ?? false
         }
     }    
@@ -290,8 +290,8 @@ struct MessagesView: View {
                 id: existingConversation.otherUser.id,
                 username: existingConversation.otherUser.username ?? "user\(existingConversation.otherUser.id)",
                 email: "",
-                firstName: existingConversation.otherUser.firstName,
-                lastName: existingConversation.otherUser.lastName,
+                firstName: existingConversation.otherUser.firstName ?? "",
+                lastName: existingConversation.otherUser.lastName ?? "",
                 displayName: existingConversation.otherUser.displayName ?? "User \(existingConversation.otherUser.id)",
                 profilePicture: existingConversation.otherUser.profilePicture,
                 year: nil,
