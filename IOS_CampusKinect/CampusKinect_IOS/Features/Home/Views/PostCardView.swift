@@ -21,7 +21,6 @@ struct PostCardView: View {
     // Loading states for better UX
     @State private var isRepostLoading = false
     @State private var isBookmarkLoading = false
-    @State private var isShareLoading = false
     
     // Success/Error feedback states
     @State private var showingSuccessMessage = false
@@ -74,11 +73,9 @@ struct PostCardView: View {
                 isReposted: isReposted,
                 isRepostLoading: isRepostLoading,
                 isBookmarkLoading: isBookmarkLoading,
-                isShareLoading: isShareLoading,
                 onMessage: handleMessage,
                 onRepost: handleRepost,
-                onBookmark: handleBookmark,
-                onShare: handleShare
+                onBookmark: handleBookmark
             )
         }
         .padding()
@@ -101,11 +98,6 @@ struct PostCardView: View {
             Button(action: handleBookmark) {
                 Label(isBookmarked ? "Remove Bookmark" : "Bookmark", 
                       systemImage: isBookmarked ? "bookmark.fill" : "bookmark")
-            }
-            
-            // Share
-            Button(action: handleShare) {
-                Label("Share", systemImage: "square.and.arrow.up")
             }
             
             Divider()
@@ -338,96 +330,6 @@ struct PostCardView: View {
         }
     }
     
-    private func handleShare() {
-        // Prevent multiple simultaneous requests
-        guard !isShareLoading else { return }
-        
-        Task {
-            await MainActor.run {
-                isShareLoading = true
-                // Haptic feedback for button press
-                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                impactFeedback.impactOccurred()
-            }
-            
-            // Create comprehensive share content
-            var shareText = post.title
-            if !post.content.isEmpty {
-                shareText += "\n\n\(post.content)"
-            }
-            if let location = post.location {
-                shareText += "\n📍 \(location)"
-            }
-            shareText += "\n\nShared from CampusKinect"
-            
-            // Create activity items
-            var activityItems: [Any] = [shareText]
-            
-            // Add post images if available
-            if post.hasImages && !post.images.isEmpty {
-                // For now, just add the first image URL as text
-                // In a full implementation, you'd download and add actual images
-                let imageURL = "\(APIConstants.baseURL)\(post.images[0])"
-                activityItems.append(imageURL)
-            }
-            
-            await MainActor.run {
-                let activityViewController = UIActivityViewController(
-                    activityItems: activityItems,
-                    applicationActivities: nil
-                )
-                
-                // Configure for iPad
-                if let popover = activityViewController.popoverPresentationController {
-                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let window = windowScene.windows.first {
-                        popover.sourceView = window
-                    }
-                    popover.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
-                    popover.permittedArrowDirections = []
-                }
-                
-                // Completion handler for better UX
-                activityViewController.completionWithItemsHandler = { activityType, completed, returnedItems, error in
-                    Task { @MainActor in
-                        isShareLoading = false
-                        
-                        if completed {
-                            // Success feedback
-                            let successFeedback = UINotificationFeedbackGenerator()
-                            successFeedback.notificationOccurred(.success)
-                            
-                            // Show success message
-                            successMessage = "Post shared successfully!"
-                            showingSuccessMessage = true
-                            
-                            // Auto-hide success message
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                showingSuccessMessage = false
-                            }
-                        } else if error != nil {
-                            // Error feedback
-                            let errorFeedback = UINotificationFeedbackGenerator()
-                            errorFeedback.notificationOccurred(.error)
-                            
-                            // Show error alert
-                            errorMessage = "Failed to share post. Please try again."
-                            showingErrorAlert = true
-                        } else {
-                            // User cancelled - no feedback needed
-                        }
-                    }
-                }
-                
-                // Present share sheet
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first {
-                    window.rootViewController?.present(activityViewController, animated: true)
-                }
-            }
-        }
-    }
-    
     private func handleBlockUser() {
         Task {
             do {
@@ -639,11 +541,9 @@ struct PostActionBar: View {
     let isReposted: Bool
     let isRepostLoading: Bool
     let isBookmarkLoading: Bool
-    let isShareLoading: Bool
     let onMessage: () -> Void
     let onRepost: () -> Void
     let onBookmark: () -> Void
-    let onShare: () -> Void
     
     var body: some View {
         HStack(spacing: 0) {
@@ -675,17 +575,6 @@ struct PostActionBar: View {
                 isLoading: isBookmarkLoading,
                 activeColor: .orange,
                 action: onBookmark
-            )
-            
-            Spacer()
-            
-            // Share Button
-            PostActionButton(
-                systemImage: "square.and.arrow.up",
-                isActive: false,
-                isLoading: isShareLoading,
-                activeColor: .blue,
-                action: onShare
             )
         }
         .padding(.top, 8)

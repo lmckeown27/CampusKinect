@@ -5,7 +5,6 @@ import { Post, User as UserType } from "../../types";
 import { formatDate, getPostTypeColor, getPostTypeIcon } from "../../utils";
 import { 
   MessageCircle, 
-  Share2, 
   Bookmark, 
   Repeat,
   MoreHorizontal,
@@ -53,6 +52,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Content moderation states
   const [showReportModal, setShowReportModal] = useState(false);
@@ -63,7 +63,11 @@ const PostCard: React.FC<PostCardProps> = ({
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isOutsideButton = buttonRef.current && !buttonRef.current.contains(target);
+      const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(target);
+      
+      if (isOutsideButton && isOutsideDropdown) {
         setShowOptions(false);
       }
     };
@@ -87,20 +91,6 @@ const PostCard: React.FC<PostCardProps> = ({
     
     // Navigate to post-centric chat
     router.push(`/chat/${post.userId}?postId=${post.id}&postTitle=${encodeURIComponent(post.title)}`);
-  };
-
-  const handleShare = () => {
-    // Implement share functionality
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        text: post.description,
-        url: window.location.href,
-      });
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(`${post.title}\n${post.description}`);
-    }
   };
 
   const handleRepost = () => {
@@ -237,29 +227,6 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {/* Action Icons - Top Right */}
           <div className="flex items-center" style={{ gap: "16px" }}>
-            <button
-              onClick={handleShare}
-              className="p-2 rounded-lg transition-all duration-200"
-              style={{
-                backgroundColor: "#708d81",
-                color: "white",
-                border: "2px solid #708d81",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#a8c4a2";
-                e.currentTarget.style.border = "2px solid #a8c4a2";
-                e.currentTarget.style.cursor = "pointer";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#708d81";
-                e.currentTarget.style.border = "2px solid #708d81";
-                e.currentTarget.style.cursor = "pointer";
-              }}
-            >
-              <Share2 size={18} />
-            </button>
-
             <div className="relative">
               <button
                 ref={buttonRef}
@@ -292,6 +259,7 @@ const PostCard: React.FC<PostCardProps> = ({
               {/* Dropdown menu positioned relative to button */}
               {showOptions && (
                 <div 
+                  ref={dropdownRef}
                   className="absolute right-0 top-full mt-2 w-52 bg-gray-800 rounded-lg shadow-lg border border-gray-600 py-2 flex flex-col items-center"
                   style={{ 
                     zIndex: 50,
@@ -344,30 +312,6 @@ const PostCard: React.FC<PostCardProps> = ({
                       <span>Block User</span>
                     </button>
                   )}
-
-                  <div className="w-44 h-px bg-gray-600 my-1" />
-
-                  <button 
-                    onClick={handleShare}
-                    className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
-                    style={{
-                      backgroundColor: "#708d81",
-                      color: "white",
-                      border: "2px solid #708d81",
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#a8c4a2";
-                      e.currentTarget.style.border = "2px solid #a8c4a2";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#708d81";
-                      e.currentTarget.style.border = "2px solid #708d81";
-                    }}
-                  >
-                    <Share2 size={16} />
-                    <span>Copy Link</span>
-                  </button>
                 </div>
               )}
             </div>
