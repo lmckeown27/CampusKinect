@@ -86,3 +86,4 @@ nginx/logs/
 *_backup_*/
 backend_backup_*/
 backend_broken_temp/
+backups/

@@ -5,9 +5,13 @@ echo "🚀 Starting safe deployment..."
 # Navigate to project root
 cd "$(dirname "$0")"
 
-# Backup current .env files
-echo "📦 Backing up environment files..."
-cp backend/.env.production backend/.env.production.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+# Create full backend backup before deployment
+echo "💾 Creating full backend backup before deployment..."
+./backup-backend.sh
+if [ $? -ne 0 ]; then
+    echo "⚠️  Backup failed, but continuing with deployment..."
+fi
+echo ""
 
 # Stash any local changes to tracked files
 echo "💾 Stashing local changes..."
