@@ -1,1 +1,88 @@
+# Xcode
 *.xcuserstate
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+!*.xcworkspace/xcshareddata
+*.xcuserdata
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+build/
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+package-lock.json
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.*.backup*
+*.backup
+
+# Logs
+logs/
+*.log
+combined-*.log
+error-*.log
+out-*.log
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.temp
+temp_key.txt
+
+# Backend uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+*.tsbuildinfo
+
+# Cache
+.cache/
+.npm/
+.eslintcache
+
+# Nginx logs
+nginx/logs/
+
+# Backups
+*_backup_*/
+backend_backup_*/
+backend_broken_temp/
