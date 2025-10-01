@@ -64,7 +64,7 @@ struct ReportRowView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     // Report Header
                     HStack {
-                        Text("Report #\(String(report.id.suffix(8)))")
+                        Text("Report #\(String(String(report.id).suffix(8)))")
                             .font(.headline)
                             .foregroundColor(.primary)
                         
@@ -109,14 +109,20 @@ struct ReportRowView: View {
             .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(report.isUrgent || report.isOverdue ? Color.red.opacity(0.1) : Color.clear)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(report.isOverdue ? Color.red : Color.clear, lineWidth: 1)
-        )
+        .background(backgroundView)
+        .overlay(overlayView)
+    }
+    
+    private var backgroundView: some View {
+        let fillColor: Color = (report.isUrgent || report.isOverdue) ? Color.red.opacity(0.1) : Color.clear
+        return RoundedRectangle(cornerRadius: 8)
+            .fill(fillColor)
+    }
+    
+    private var overlayView: some View {
+        let strokeColor: Color = report.isOverdue ? Color.red : Color.clear
+        return RoundedRectangle(cornerRadius: 8)
+            .stroke(strokeColor, lineWidth: 1)
     }
     
     private func formatDate(_ dateString: String) -> String {
