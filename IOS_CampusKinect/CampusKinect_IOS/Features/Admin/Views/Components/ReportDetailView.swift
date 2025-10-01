@@ -18,6 +18,11 @@ struct ReportDetailView: View {
                     
                     Divider()
                     
+                    // Reported Content
+                    reportedContent
+                    
+                    Divider()
+                    
                     // Report Details
                     reportDetails
                     
@@ -117,6 +122,33 @@ struct ReportDetailView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .fill((report.isOverdue ? Color.red : Color.orange).opacity(0.1))
                 )
+            }
+        }
+    }
+    
+    // MARK: - Reported Content
+    private var reportedContent: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Reported Content")
+                .font(.headline)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Image(systemName: report.contentType.iconName)
+                        .foregroundColor(.blue)
+                    Text(report.contentType.displayName)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                
+                Text(report.fullContentDescription)
+                    .font(.body)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color(.systemGray6))
+                    )
             }
         }
     }
@@ -438,7 +470,7 @@ struct StatusBadge: View {
             reporterDisplayName: "Reporter User",
             reportedUsername: "bad_user",
             reportedDisplayName: "Bad User",
-            postTitle: "Selling illegal items",
+            postTitle: "Selling banned substances on campus. Meet me behind the library at midnight. Cash only. No questions asked.",
             messageContent: nil
         ),
         viewModel: AdminDashboardViewModel()

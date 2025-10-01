@@ -147,15 +147,26 @@ struct ContentReport: Codable, Identifiable {
     var contentTitle: String {
         switch contentType {
         case .post:
-            return postTitle ?? "Untitled Post"
-        case .message:
-            if let content = messageContent, !content.isEmpty {
-                // Truncate long messages to first 50 characters
-                return content.count > 50 ? String(content.prefix(50)) + "..." : content
+            // Truncate long post content for title display
+            if let content = postTitle, !content.isEmpty {
+                return content.count > 80 ? String(content.prefix(80)) + "..." : content
             }
-            return "Chat Message"
+            return "Untitled Post"
+        case .message:
+            return "Message"
         case .user:
             return reportedDisplayName ?? reportedUsername ?? "User Report"
+        }
+    }
+    
+    var fullContentDescription: String {
+        switch contentType {
+        case .post:
+            return postTitle ?? "No post content available"
+        case .message:
+            return messageContent ?? "No message content available"
+        case .user:
+            return "Report against user: \(reportedDisplayName ?? reportedUsername ?? "Unknown")"
         }
     }
 }

@@ -279,7 +279,7 @@ struct LoadMoreView: View {
                     reporterDisplayName: "Reporter User",
                     reportedUsername: "bad_user",
                     reportedDisplayName: "Bad User",
-                    postTitle: "Looking for a roommate",
+                    postTitle: "Looking for a roommate for Spring semester. 2BR apartment near campus. $600/month utilities included. Must be clean and quiet.",
                     messageContent: nil
                 )
             ],

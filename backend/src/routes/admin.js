@@ -73,7 +73,7 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
         u1.display_name as reporter_display_name,
         u2.username as reported_username,
         u2.display_name as reported_display_name,
-        p.title as post_title,
+        p.content as post_title,
         m.content as message_content
       FROM content_reports cr
       LEFT JOIN users u1 ON cr.reporter_id = u1.id

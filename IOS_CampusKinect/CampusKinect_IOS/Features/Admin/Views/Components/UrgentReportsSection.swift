@@ -234,7 +234,7 @@ struct RecentReportRow: View {
                         reporterDisplayName: "Reporter One",
                         reportedUsername: "baduser1",
                         reportedDisplayName: "Bad User One",
-                        postTitle: "Need help with homework",
+                        postTitle: "Need help with CS 101 homework. Will pay $20/hour for tutoring. Must know Python and data structures.",
                         messageContent: nil
                     )
                 ],
