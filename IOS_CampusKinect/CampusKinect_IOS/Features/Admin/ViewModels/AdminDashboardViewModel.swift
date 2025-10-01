@@ -296,7 +296,7 @@ class AdminDashboardViewModel: ObservableObject {
                         } else {
                             // Success - refresh data
                             self?.refreshData()
-                            self?.showSuccessMessage(for: .banUser)
+                            self?.showSuccessMessage(for: .banUserOnly())
                         }
                     }
                 },
@@ -327,7 +327,7 @@ class AdminDashboardViewModel: ObservableObject {
                             // Remove user from banned list and refresh stats
                             self?.bannedUsers.removeAll { $0.id == user.id }
                             self?.refreshStats()
-                            self?.showSuccessMessage(for: .dismiss)
+                            self?.showSuccessMessage(for: .dismiss())
                         }
                         self?.userToUnban = nil
                     }
