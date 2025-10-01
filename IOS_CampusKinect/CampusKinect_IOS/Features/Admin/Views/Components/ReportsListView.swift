@@ -256,10 +256,10 @@ struct LoadMoreView: View {
         ReportsListView(
             reports: [
                 ContentReport(
-                    id: "1",
-                    reporterId: "reporter1",
-                    reportedUserId: "user1",
-                    contentId: "post1",
+                    id: 1,
+                    reporterId: 101,
+                    reportedUserId: 201,
+                    contentId: 301,
                     contentType: .post,
                     reason: .harassment,
                     details: "This user is sending threatening messages",

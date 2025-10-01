@@ -216,10 +216,10 @@ struct RecentReportRow: View {
             UrgentReportsSection(
                 reports: [
                     ContentReport(
-                        id: "urgent1",
-                        reporterId: "reporter1",
-                        reportedUserId: "user1",
-                        contentId: "post1",
+                        id: 1,
+                        reporterId: 101,
+                        reportedUserId: 201,
+                        contentId: 301,
                         contentType: .post,
                         reason: .harassment,
                         details: "Urgent harassment case",
@@ -240,10 +240,10 @@ struct RecentReportRow: View {
             RecentReportsSection(
                 reports: [
                     ContentReport(
-                        id: "recent1",
-                        reporterId: "reporter2",
-                        reportedUserId: "user2",
-                        contentId: "post2",
+                        id: 2,
+                        reporterId: 102,
+                        reportedUserId: 202,
+                        contentId: 302,
                         contentType: .message,
                         reason: .spam,
                         details: "Spam message",

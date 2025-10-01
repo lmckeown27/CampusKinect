@@ -2,15 +2,15 @@ import Foundation
 
 // MARK: - Content Report Models
 struct ContentReport: Codable, Identifiable {
-    let id: String
-    let reporterId: String
-    let reportedUserId: String
-    let contentId: String
+    let id: Int
+    let reporterId: Int
+    let reportedUserId: Int
+    let contentId: Int
     let contentType: ContentType
     let reason: ReportReason
     let details: String?
     let status: ReportStatus
-    let moderatorId: String?
+    let moderatorId: Int?
     let moderatorNotes: String?
     let createdAt: String
     let resolvedAt: String?

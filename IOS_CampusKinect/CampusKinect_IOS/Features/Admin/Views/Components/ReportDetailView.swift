@@ -421,10 +421,10 @@ struct StatusBadge: View {
 #Preview {
     ReportDetailView(
         report: ContentReport(
-            id: "12345678",
-            reporterId: "reporter1",
-            reportedUserId: "user1",
-            contentId: "post1",
+            id: 12345678,
+            reporterId: 101,
+            reportedUserId: 201,
+            contentId: 301,
             contentType: .post,
             reason: .harassment,
             details: "This user is posting threatening messages and making other users uncomfortable. The content violates our community guidelines.",

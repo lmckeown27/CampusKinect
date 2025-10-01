@@ -260,7 +260,7 @@ class AdminDashboardViewModel: ObservableObject {
         isLoadingAction = true
         errorMessage = nil
         
-        apiService.moderateReport(reportId: report.id, action: action)
+        apiService.moderateReport(reportId: String(report.id), action: action)
             .sink(
                 receiveCompletion: { [weak self] completion in
                     DispatchQueue.main.async {
