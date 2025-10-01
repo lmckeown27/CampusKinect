@@ -180,12 +180,12 @@ router.get('/moderation/stats', auth, adminAuth, async (req, res) => {
 });
 
 // @route   POST /api/v1/admin/reports/:reportId/moderate
-// @desc    Moderate a content report (approve/dismiss)
+// @desc    Moderate a content report (with granular actions)
 // @access  Admin only
 router.post('/reports/:reportId/moderate', auth, adminAuth, async (req, res) => {
   try {
     const { reportId } = req.params;
-    const { action, moderatorNotes } = req.body;
+    const { action, moderatorNotes, deleteContent = false, banUser = false } = req.body;
 
     if (!['approve', 'dismiss'].includes(action)) {
       return res.status(400).json({
@@ -213,36 +213,40 @@ router.post('/reports/:reportId/moderate', auth, adminAuth, async (req, res) => 
     const report = reportResult.rows[0];
 
     if (action === 'approve') {
-      // Remove the content and ban the user
-      if (report.content_type === 'post') {
-        // Deactivate the post
-        await query(`
-          UPDATE posts 
-          SET is_active = false, 
-              is_flagged = true, 
-              flag_reason = $1,
-              flagged_at = CURRENT_TIMESTAMP
-          WHERE id = $2
-        `, [report.reason, report.content_id]);
-      } else if (report.content_type === 'message') {
-        // Mark message as deleted
-        await query(`
-          UPDATE messages 
-          SET is_deleted = true, 
-              deleted_at = CURRENT_TIMESTAMP,
-              deleted_reason = $1
-          WHERE id = $2
-        `, [report.reason, report.content_id]);
+      // Delete content if requested
+      if (deleteContent) {
+        if (report.content_type === 'post') {
+          // Deactivate the post
+          await query(`
+            UPDATE posts 
+            SET is_active = false, 
+                is_flagged = true, 
+                flag_reason = $1,
+                flagged_at = CURRENT_TIMESTAMP
+            WHERE id = $2
+          `, [report.reason, report.content_id]);
+        } else if (report.content_type === 'message') {
+          // Mark message as deleted
+          await query(`
+            UPDATE messages 
+            SET is_deleted = true, 
+                deleted_at = CURRENT_TIMESTAMP,
+                deleted_reason = $1
+            WHERE id = $2
+          `, [report.reason, report.content_id]);
+        }
       }
 
-      // Ban the reported user
-      await query(`
-        UPDATE users 
-        SET is_active = false, 
-            banned_at = CURRENT_TIMESTAMP,
-            ban_reason = $1
-        WHERE id = $2
-      `, [`Content violation: ${report.reason}`, report.reported_user_id]);
+      // Ban the user if requested
+      if (banUser) {
+        await query(`
+          UPDATE users 
+          SET is_active = false, 
+              banned_at = CURRENT_TIMESTAMP,
+              ban_reason = $1
+          WHERE id = $2
+        `, [`Content violation: ${report.reason}`, report.reported_user_id]);
+      }
 
       // Update report status
       await query(`

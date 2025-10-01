@@ -120,10 +120,16 @@ export default function AdminModerationPage() {
     }
   };
 
-  const handleReportAction = async (reportId: string, action: 'approve' | 'dismiss', moderatorNotes?: string) => {
+  const handleReportAction = async (
+    reportId: string, 
+    action: 'approve' | 'dismiss', 
+    moderatorNotes?: string,
+    deleteContent: boolean = false,
+    banUser: boolean = false
+  ) => {
     try {
       setActionLoading(true);
-      await apiService.moderateReport(reportId, action, moderatorNotes);
+      await apiService.moderateReport(reportId, action, moderatorNotes, deleteContent, banUser);
       
       // Refresh data
       await loadModerationData();
@@ -655,18 +661,34 @@ export default function AdminModerationPage() {
                 </div>
               </div>
               
-              <div className="mt-6 flex space-x-3">
+              <div className="mt-6 space-y-3">
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleReportAction(selectedReport.id, 'approve', 'Content removed for policy violation', true, false)}
+                    disabled={actionLoading}
+                    className="flex-1 bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Processing...' : 'Delete Post Only'}
+                  </button>
+                  <button
+                    onClick={() => handleReportAction(selectedReport.id, 'approve', 'User banned for policy violation', false, true)}
+                    disabled={actionLoading}
+                    className="flex-1 bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Processing...' : 'Ban User Only'}
+                  </button>
+                </div>
                 <button
-                  onClick={() => handleReportAction(selectedReport.id, 'approve', 'Content removed for policy violation')}
+                  onClick={() => handleReportAction(selectedReport.id, 'approve', 'Content removed and user banned', true, true)}
                   disabled={actionLoading}
-                  className="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 disabled:opacity-50"
+                  className="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 disabled:opacity-50"
                 >
-                  {actionLoading ? 'Processing...' : 'Remove Content & Ban User'}
+                  {actionLoading ? 'Processing...' : 'Delete Post & Ban User'}
                 </button>
                 <button
                   onClick={() => handleReportAction(selectedReport.id, 'dismiss', 'Report reviewed - no violation found')}
                   disabled={actionLoading}
-                  className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
+                  className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
                 >
                   {actionLoading ? 'Processing...' : 'Dismiss Report'}
                 </button>

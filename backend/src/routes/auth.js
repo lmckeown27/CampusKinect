@@ -590,7 +590,7 @@ router.post('/login', [
       SELECT u.*, un.name as university_name, un.domain as university_domain
       FROM users u
       JOIN universities un ON u.university_id = un.id
-      WHERE (u.username = $1 OR u.email = $1) AND u.is_active = true
+      WHERE (u.username = $1 OR u.email = $1)
     `, [usernameOrEmail]);
 
     if (userCheck.rows.length === 0) {
@@ -604,14 +604,35 @@ router.post('/login', [
 
     const user = userCheck.rows[0];
 
-    // Check if user is banned
-    if (user.banned_at) {
+    // Check if user is banned (check both banned_at and is_active)
+    if (user.banned_at || (user.is_active === false && user.banned_at !== null)) {
+      const banMessage = user.ban_until 
+        ? `Your account has been suspended until ${new Date(user.ban_until).toLocaleDateString()}`
+        : 'Your account has been permanently banned from CampusKinect';
+      
+      const reasonText = user.ban_reason ? ` for: ${user.ban_reason}` : '';
+      
       return res.status(403).json({
         success: false,
         error: {
           message: 'Account Banned',
-          details: `Your account has been permanently banned from CampusKinect${user.ban_reason ? ` for: ${user.ban_reason}` : ''}. If you believe this is an error, please contact support at campuskinect01@gmail.com for assistance.`,
+          details: `${banMessage}${reasonText}. If you believe this is an error or would like to appeal, please email campuskinect01@gmail.com for assistance.`,
           code: 'ACCOUNT_BANNED',
+          contactEmail: 'campuskinect01@gmail.com',
+          isSuspension: !!user.ban_until,
+          banUntil: user.ban_until
+        }
+      });
+    }
+    
+    // Check if account is inactive for other reasons
+    if (!user.is_active) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          message: 'Account Inactive',
+          details: 'Your account has been deactivated. Please contact campuskinect01@gmail.com for assistance.',
+          code: 'ACCOUNT_INACTIVE',
           contactEmail: 'campuskinect01@gmail.com'
         }
       });

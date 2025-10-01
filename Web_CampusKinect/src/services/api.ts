@@ -1155,11 +1155,19 @@ class ApiService {
     throw new Error(response.data.message || 'Failed to fetch moderation stats');
   }
 
-  public async moderateReport(reportId: string, action: 'approve' | 'dismiss', moderatorNotes?: string): Promise<void> {
+  public async moderateReport(
+    reportId: string, 
+    action: 'approve' | 'dismiss', 
+    moderatorNotes?: string,
+    deleteContent: boolean = false,
+    banUser: boolean = false
+  ): Promise<void> {
     const response: AxiosResponse<ApiResponse<any>> = 
       await this.api.post(`/admin/reports/${reportId}/moderate`, {
         action,
-        moderatorNotes
+        moderatorNotes,
+        deleteContent,
+        banUser
       });
 
     if (!response.data.success) {
