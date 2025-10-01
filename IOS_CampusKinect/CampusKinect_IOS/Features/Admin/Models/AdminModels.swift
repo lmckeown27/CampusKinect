@@ -235,12 +235,14 @@ struct AnalyticsData: Codable {
 
 // MARK: - Banned User Models
 struct BannedUser: Codable, Identifiable {
-    let id: String
+    let id: Int
     let username: String
     let email: String
     let bannedAt: String
     let banReason: String
     let university: String
+    let banUntil: String?
+    let banType: String?
     
     var bannedDate: Date? {
         return ISO8601DateFormatter().date(from: bannedAt)
