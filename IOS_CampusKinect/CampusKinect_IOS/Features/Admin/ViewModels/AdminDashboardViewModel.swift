@@ -316,7 +316,7 @@ class AdminDashboardViewModel: ObservableObject {
         isLoadingAction = true
         showingUnbanConfirmation = false
         
-        apiService.unbanUser(userId: user.id)
+        apiService.unbanUser(userId: String(user.id))
             .sink(
                 receiveCompletion: { [weak self] completion in
                     DispatchQueue.main.async {
