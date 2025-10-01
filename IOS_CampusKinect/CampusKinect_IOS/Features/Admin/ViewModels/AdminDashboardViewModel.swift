@@ -85,13 +85,14 @@ class AdminDashboardViewModel: ObservableObject {
         loadInitialData()
     }
     
-    private func showSuccessMessage(for action: ModerationAction.ActionType) {
-        switch action {
-        case .dismiss:
+    private func showSuccessMessage(for action: ModerationAction) {
+        if action.action == "dismiss" {
             errorMessage = "Report dismissed successfully"
-        case .removePost:
-            errorMessage = "Post removed successfully"
-        case .banUser:
+        } else if action.deleteContent && action.banUser {
+            errorMessage = "Post deleted and user banned successfully"
+        } else if action.deleteContent {
+            errorMessage = "Post deleted successfully"
+        } else if action.banUser {
             errorMessage = "User banned successfully"
         }
         
@@ -251,13 +252,11 @@ class AdminDashboardViewModel: ObservableObject {
         showingReportDetail = true
     }
     
-    func handleReportModeration(_ report: ContentReport, action: ModerationAction.ActionType, notes: String? = nil) {
+    func handleReportModeration(_ report: ContentReport, action: ModerationAction, notes: String? = nil) {
         isLoadingAction = true
         errorMessage = nil
         
-        let moderationAction = ModerationAction(action: action, moderatorNotes: notes)
-        
-        apiService.moderateReport(reportId: report.id, action: moderationAction)
+        apiService.moderateReport(reportId: report.id, action: action)
             .sink(
                 receiveCompletion: { [weak self] completion in
                     DispatchQueue.main.async {

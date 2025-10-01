@@ -104,22 +104,41 @@ class APIService: NSObject, ObservableObject {
             case 401:
                 // Token expired, try to refresh
                 throw APIError.unauthorized
+            case 403:
+                // Handle account banned/inactive
+                if let errorResponse = try? decoder.decode(ErrorResponse.self, from: data) {
+                    if errorResponse.error.code == "ACCOUNT_BANNED" {
+                        let details = (try? errorResponse.error.details?.getStringValue()) ?? errorResponse.error.message
+                        let contactEmail = errorResponse.error.contactEmail ?? "campuskinect01@gmail.com"
+                        throw APIError.accountBanned(details, contactEmail: contactEmail)
+                    } else if errorResponse.error.code == "ACCOUNT_INACTIVE" {
+                        let details = (try? errorResponse.error.details?.getStringValue()) ?? errorResponse.error.message
+                        let contactEmail = errorResponse.error.contactEmail ?? "campuskinect01@gmail.com"
+                        throw APIError.accountInactive(details, contactEmail: contactEmail)
+                    }
+                }
+                throw APIError.unauthorized
             case 400:
                 if let errorResponse = try? decoder.decode(ErrorResponse.self, from: data) {
                     // Check for specific validation errors and provide user-friendly messages
                     if let details = errorResponse.error.details {
-                        for detail in details {
-                            if detail.field == "tags" {
-                                if detail.message.contains("1 to 10 items") {
-                                    throw APIError.badRequest("Please select at least one tag for your post")
-                                } else {
-                                    throw APIError.badRequest(detail.message)
+                        switch details {
+                        case .array(let validationDetails):
+                            for detail in validationDetails {
+                                if detail.field == "tags" {
+                                    if detail.message.contains("1 to 10 items") {
+                                        throw APIError.badRequest("Please select at least one tag for your post")
+                                    } else {
+                                        throw APIError.badRequest(detail.message)
+                                    }
                                 }
                             }
-                        }
-                        // If we have validation details but none are tag-specific, use the first one
-                        if let firstDetail = details.first {
-                            throw APIError.badRequest(firstDetail.message)
+                            // If we have validation details but none are tag-specific, use the first one
+                            if let firstDetail = validationDetails.first {
+                                throw APIError.badRequest(firstDetail.message)
+                            }
+                        case .string(let detailString):
+                            throw APIError.badRequest(detailString)
                         }
                     }
                     // Fallback to the general error message

@@ -7,7 +7,7 @@ struct ReportDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingActionSheet = false
     @State private var moderatorNotes = ""
-    @State private var selectedAction: ModerationAction.ActionType?
+    @State private var selectedAction: ModerationAction?
     
     var body: some View {
         NavigationView {
@@ -51,17 +51,22 @@ struct ReportDetailView: View {
                 titleVisibility: .visible
             ) {
                 Button("Dismiss Report") {
-                    selectedAction = .dismiss
+                    selectedAction = .dismiss()
                     handleModerationAction()
                 }
                 
-                Button("Remove Post", role: .destructive) {
-                    selectedAction = .removePost
+                Button("Delete Post Only", role: .destructive) {
+                    selectedAction = .deletePostOnly()
                     handleModerationAction()
                 }
                 
-                Button("Ban User", role: .destructive) {
-                    selectedAction = .banUser
+                Button("Ban User Only", role: .destructive) {
+                    selectedAction = .banUserOnly()
+                    handleModerationAction()
+                }
+                
+                Button("Delete Post & Ban User", role: .destructive) {
+                    selectedAction = .deleteAndBan()
                     handleModerationAction()
                 }
                 
@@ -240,10 +245,67 @@ struct ReportDetailView: View {
     // MARK: - Action Buttons
     private var actionButtons: some View {
         VStack(spacing: 12) {
+            // Top row: Delete Post Only | Ban User Only
+            HStack(spacing: 12) {
+                Button(action: {
+                    selectedAction = .deletePostOnly()
+                    handleModerationAction()
+                }) {
+                    HStack {
+                        Image(systemName: "doc.text.fill")
+                        Text("Delete Post Only")
+                            .fontWeight(.semibold)
+                            .font(.subheadline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.orange)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .disabled(viewModel.isLoadingAction)
+                
+                Button(action: {
+                    selectedAction = .banUserOnly()
+                    handleModerationAction()
+                }) {
+                    HStack {
+                        Image(systemName: "person.fill.xmark")
+                        Text("Ban User Only")
+                            .fontWeight(.semibold)
+                            .font(.subheadline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.yellow.opacity(0.8))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .disabled(viewModel.isLoadingAction)
+            }
+            
+            // Delete Post & Ban User
+            Button(action: {
+                selectedAction = .deleteAndBan()
+                handleModerationAction()
+            }) {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                    Text("Delete Post & Ban User")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.red)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .disabled(viewModel.isLoadingAction)
+            
             // Dismiss Report
             Button(action: {
-                selectedAction = .dismiss
-                showingActionSheet = true
+                selectedAction = .dismiss()
+                handleModerationAction()
             }) {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
@@ -252,43 +314,7 @@ struct ReportDetailView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.gray)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            .disabled(viewModel.isLoadingAction)
-            
-            // Remove Post
-            Button(action: {
-                selectedAction = .removePost
-                showingActionSheet = true
-            }) {
-                HStack {
-                    Image(systemName: "doc.text.fill")
-                    Text("Remove Post")
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.orange)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            .disabled(viewModel.isLoadingAction)
-            
-            // Ban User
-            Button(action: {
-                selectedAction = .banUser
-                showingActionSheet = true
-            }) {
-                HStack {
-                    Image(systemName: "person.fill.xmark")
-                    Text("Ban User")
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.red)
+                .background(Color.green)
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }
@@ -311,10 +337,8 @@ struct ReportDetailView: View {
     private func handleModerationAction() {
         guard let action = selectedAction else { return }
         
-        let notes = moderatorNotes.isEmpty ? nil : moderatorNotes
-        
         // Call the moderation method
-        viewModel.handleReportModeration(report, action: action, notes: notes)
+        viewModel.handleReportModeration(report, action: action)
         
         // Close the detail view
         dismiss()

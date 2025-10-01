@@ -135,37 +135,33 @@ struct ModerationStats: Codable {
 
 // MARK: - Moderation Action
 struct ModerationAction: Codable {
-    let action: ActionType
+    let action: String
     let moderatorNotes: String?
+    let deleteContent: Bool
+    let banUser: Bool
     
-    enum ActionType: String, Codable {
-        case dismiss = "dismiss"
-        case removePost = "remove_post"
-        case banUser = "ban_user"
-        
-        var displayName: String {
-            switch self {
-            case .dismiss: return "Dismiss Report"
-            case .removePost: return "Remove Post"
-            case .banUser: return "Ban User"
-            }
-        }
-        
-        var description: String {
-            switch self {
-            case .dismiss: return "Mark report as reviewed with no action"
-            case .removePost: return "Remove the reported post from platform"
-            case .banUser: return "Ban user indefinitely from platform"
-            }
-        }
-        
-        var color: String {
-            switch self {
-            case .dismiss: return "gray"
-            case .removePost: return "orange"
-            case .banUser: return "red"
-            }
-        }
+    init(action: String, moderatorNotes: String?, deleteContent: Bool, banUser: Bool) {
+        self.action = action
+        self.moderatorNotes = moderatorNotes
+        self.deleteContent = deleteContent
+        self.banUser = banUser
+    }
+    
+    // Convenience initializers for common actions
+    static func deletePostOnly(notes: String = "Content removed for policy violation") -> ModerationAction {
+        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: true, banUser: false)
+    }
+    
+    static func banUserOnly(notes: String = "User banned for policy violation") -> ModerationAction {
+        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: false, banUser: true)
+    }
+    
+    static func deleteAndBan(notes: String = "Content removed and user banned") -> ModerationAction {
+        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: true, banUser: true)
+    }
+    
+    static func dismiss(notes: String = "Report reviewed - no violation found") -> ModerationAction {
+        return ModerationAction(action: "dismiss", moderatorNotes: notes, deleteContent: false, banUser: false)
     }
 }
 

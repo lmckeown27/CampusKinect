@@ -18,6 +18,8 @@ enum APIError: LocalizedError, Equatable {
     case networkError(String)
     case decodingError(String)
     case keychainError
+    case accountBanned(String, contactEmail: String)
+    case accountInactive(String, contactEmail: String)
     case unknown(Int)
     
     var errorDescription: String? {
@@ -40,6 +42,10 @@ enum APIError: LocalizedError, Equatable {
             return "Data parsing error: \(message)"
         case .keychainError:
             return "Authentication failed. Please log in again."
+        case .accountBanned(let details, let contactEmail):
+            return "\(details)\n\nContact: \(contactEmail)"
+        case .accountInactive(let details, let contactEmail):
+            return "\(details)\n\nContact: \(contactEmail)"
         case .unknown(let code):
             return "Unknown error (Code: \(code))"
         }
@@ -61,6 +67,10 @@ enum APIError: LocalizedError, Equatable {
             return "Please check your internet connection and try again."
         case .keychainError:
             return "Authentication failed. Please log in again."
+        case .accountBanned(let details, _):
+            return details
+        case .accountInactive(let details, _):
+            return details
         case .unknown:
             return "An unexpected error occurred. Please try again."
         }
@@ -70,7 +80,7 @@ enum APIError: LocalizedError, Equatable {
         switch self {
         case .networkError, .serverError, .unknown:
             return true
-        case .invalidURL, .invalidResponse, .unauthorized, .badRequest, .notFound, .decodingError, .keychainError:
+        case .invalidURL, .invalidResponse, .unauthorized, .badRequest, .notFound, .decodingError, .keychainError, .accountBanned, .accountInactive:
             return false
         }
     }
@@ -84,7 +94,45 @@ struct ErrorResponse: Codable {
     struct ErrorDetail: Codable {
         let message: String
         let code: String?
-        let details: [ValidationDetail]?
+        let details: StringOrArray?
+        let contactEmail: String?
+        let isSuspension: Bool?
+        let banUntil: String?
+        
+        enum StringOrArray: Codable {
+            case string(String)
+            case array([ValidationDetail])
+            
+            init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                if let stringValue = try? container.decode(String.self) {
+                    self = .string(stringValue)
+                } else if let arrayValue = try? container.decode([ValidationDetail].self) {
+                    self = .array(arrayValue)
+                } else {
+                    throw DecodingError.typeMismatch(StringOrArray.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unable to decode details"))
+                }
+            }
+            
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                switch self {
+                case .string(let value):
+                    try container.encode(value)
+                case .array(let value):
+                    try container.encode(value)
+                }
+            }
+            
+            func getStringValue() throws -> String {
+                switch self {
+                case .string(let value):
+                    return value
+                case .array:
+                    throw NSError(domain: "StringOrArray", code: -1, userInfo: [NSLocalizedDescriptionKey: "Expected string but got array"])
+                }
+            }
+        }
     }
     
     struct ValidationDetail: Codable {
