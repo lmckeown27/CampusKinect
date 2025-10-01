@@ -64,9 +64,10 @@ struct ReportRowView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     // Report Header
                     HStack {
-                        Text("Report #\(String(String(report.id).suffix(8)))")
+                        Text(report.contentTitle)
                             .font(.headline)
                             .foregroundColor(.primary)
+                            .lineLimit(2)
                         
                         Spacer()
                         
@@ -277,7 +278,9 @@ struct LoadMoreView: View {
                     reporterUsername: "reporter_user",
                     reporterDisplayName: "Reporter User",
                     reportedUsername: "bad_user",
-                    reportedDisplayName: "Bad User"
+                    reportedDisplayName: "Bad User",
+                    postTitle: "Looking for a roommate",
+                    messageContent: nil
                 )
             ],
             isLoading: false,

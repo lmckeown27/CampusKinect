@@ -21,6 +21,10 @@ struct ContentReport: Codable, Identifiable {
     let reportedUsername: String?
     let reportedDisplayName: String?
     
+    // Content details
+    let postTitle: String?
+    let messageContent: String?
+    
     enum CodingKeys: String, CodingKey {
         case id
         case reporterId = "reporter_id"
@@ -38,6 +42,8 @@ struct ContentReport: Codable, Identifiable {
         case reporterDisplayName = "reporter_display_name"
         case reportedUsername = "reported_username"
         case reportedDisplayName = "reported_display_name"
+        case postTitle = "post_title"
+        case messageContent = "message_content"
     }
     
     enum ContentType: String, Codable, CaseIterable {
@@ -48,7 +54,7 @@ struct ContentReport: Codable, Identifiable {
         var displayName: String {
             switch self {
             case .post: return "Post"
-            case .message: return "Message"
+            case .message: return "Chat"
             case .user: return "User"
             }
         }
@@ -135,6 +141,21 @@ struct ContentReport: Codable, Identifiable {
         } else {
             let hours = Int(timeRemaining / 3600)
             return "\(hours)h remaining"
+        }
+    }
+    
+    var contentTitle: String {
+        switch contentType {
+        case .post:
+            return postTitle ?? "Untitled Post"
+        case .message:
+            if let content = messageContent, !content.isEmpty {
+                // Truncate long messages to first 50 characters
+                return content.count > 50 ? String(content.prefix(50)) + "..." : content
+            }
+            return "Chat Message"
+        case .user:
+            return reportedDisplayName ?? reportedUsername ?? "User Report"
         }
     }
 }

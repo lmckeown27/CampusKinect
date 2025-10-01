@@ -57,7 +57,7 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
     const { page = 1, limit = 20 } = req.query;
     const offset = (page - 1) * limit;
 
-    // Get pending reports with user information
+    // Get pending reports with user information and content titles
     const reportsResult = await query(`
       SELECT 
         cr.id,
@@ -72,10 +72,14 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
         u1.username as reporter_username,
         u1.display_name as reporter_display_name,
         u2.username as reported_username,
-        u2.display_name as reported_display_name
+        u2.display_name as reported_display_name,
+        p.title as post_title,
+        m.content as message_content
       FROM content_reports cr
       LEFT JOIN users u1 ON cr.reporter_id = u1.id
       LEFT JOIN users u2 ON cr.reported_user_id = u2.id
+      LEFT JOIN posts p ON cr.content_type = 'post' AND cr.content_id::text = p.id::text
+      LEFT JOIN messages m ON cr.content_type = 'message' AND cr.content_id::text = m.id::text
       WHERE cr.status = 'pending'
       ORDER BY cr.created_at ASC
       LIMIT $1 OFFSET $2

@@ -71,10 +71,11 @@ struct UrgentReportRow: View {
                     .frame(width: 20, height: 20)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Report #\(String(String(report.id).suffix(8)))")
+                    Text(report.contentTitle)
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
+                        .lineLimit(2)
                     
                     HStack {
                         ReasonBadge(reason: report.reason)
@@ -159,10 +160,11 @@ struct RecentReportRow: View {
                     .frame(width: 20, height: 20)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Report #\(String(String(report.id).suffix(8)))")
+                    Text(report.contentTitle)
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
+                        .lineLimit(2)
                     
                     HStack {
                         ReasonBadge(reason: report.reason)
@@ -231,7 +233,9 @@ struct RecentReportRow: View {
                         reporterUsername: "reporter1",
                         reporterDisplayName: "Reporter One",
                         reportedUsername: "baduser1",
-                        reportedDisplayName: "Bad User One"
+                        reportedDisplayName: "Bad User One",
+                        postTitle: "Need help with homework",
+                        messageContent: nil
                     )
                 ],
                 onReportTap: { _ in }
@@ -255,7 +259,9 @@ struct RecentReportRow: View {
                         reporterUsername: "reporter2",
                         reporterDisplayName: "Reporter Two",
                         reportedUsername: "spammer",
-                        reportedDisplayName: "Spammer User"
+                        reportedDisplayName: "Spammer User",
+                        postTitle: nil,
+                        messageContent: "Buy my product now! Click here for amazing deals!"
                     )
                 ],
                 onReportTap: { _ in }

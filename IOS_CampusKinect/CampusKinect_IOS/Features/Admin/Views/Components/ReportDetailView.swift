@@ -86,9 +86,10 @@ struct ReportDetailView: View {
                     .foregroundColor(.blue)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Report #\(String(String(report.id).suffix(8)))")
+                    Text(report.contentTitle)
                         .font(.title2)
                         .fontWeight(.bold)
+                        .lineLimit(3)
                     
                     Text(report.contentType.displayName)
                         .font(.subheadline)
@@ -436,7 +437,9 @@ struct StatusBadge: View {
             reporterUsername: "reporter_user",
             reporterDisplayName: "Reporter User",
             reportedUsername: "bad_user",
-            reportedDisplayName: "Bad User"
+            reportedDisplayName: "Bad User",
+            postTitle: "Selling illegal items",
+            messageContent: nil
         ),
         viewModel: AdminDashboardViewModel()
     )
