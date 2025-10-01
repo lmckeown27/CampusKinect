@@ -424,7 +424,7 @@ struct StatusBadge: View {
             id: 12345678,
             reporterId: 101,
             reportedUserId: 201,
-            contentId: 301,
+            contentId: "301",
             contentType: .post,
             reason: .harassment,
             details: "This user is posting threatening messages and making other users uncomfortable. The content violates our community guidelines.",

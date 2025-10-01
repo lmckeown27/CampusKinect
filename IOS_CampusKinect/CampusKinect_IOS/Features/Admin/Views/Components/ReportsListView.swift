@@ -265,7 +265,7 @@ struct LoadMoreView: View {
                     id: 1,
                     reporterId: 101,
                     reportedUserId: 201,
-                    contentId: 301,
+                    contentId: "301",
                     contentType: .post,
                     reason: .harassment,
                     details: "This user is sending threatening messages",

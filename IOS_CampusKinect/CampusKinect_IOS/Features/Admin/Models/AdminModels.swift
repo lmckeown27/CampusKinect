@@ -5,7 +5,7 @@ struct ContentReport: Codable, Identifiable {
     let id: Int
     let reporterId: Int
     let reportedUserId: Int
-    let contentId: Int
+    let contentId: String
     let contentType: ContentType
     let reason: ReportReason
     let details: String?
@@ -20,6 +20,25 @@ struct ContentReport: Codable, Identifiable {
     let reporterDisplayName: String?
     let reportedUsername: String?
     let reportedDisplayName: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case reporterId = "reporter_id"
+        case reportedUserId = "reported_user_id"
+        case contentId = "content_id"
+        case contentType = "content_type"
+        case reason
+        case details
+        case status
+        case moderatorId = "moderator_id"
+        case moderatorNotes = "moderator_notes"
+        case createdAt = "created_at"
+        case resolvedAt = "resolved_at"
+        case reporterUsername = "reporter_username"
+        case reporterDisplayName = "reporter_display_name"
+        case reportedUsername = "reported_username"
+        case reportedDisplayName = "reported_display_name"
+    }
     
     enum ContentType: String, Codable, CaseIterable {
         case post = "post"
