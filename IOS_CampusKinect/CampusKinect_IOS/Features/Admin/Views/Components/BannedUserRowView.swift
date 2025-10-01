@@ -66,24 +66,28 @@ struct BannedUserRowView: View {
     List {
         BannedUserRowView(
             user: BannedUser(
-                id: "1",
+                id: 1,
                 username: "testuser",
                 email: "test@example.com",
                 bannedAt: "2024-01-15T10:30:00Z",
                 banReason: "Harassment and inappropriate content",
-                university: "Cal Poly"
+                university: "Cal Poly",
+                banUntil: nil,
+                banType: "permanent"
             ),
             onUnban: {}
         )
         
         BannedUserRowView(
             user: BannedUser(
-                id: "2",
+                id: 2,
                 username: "spammer123",
                 email: "spam@example.com",
                 bannedAt: "2024-01-10T15:45:00Z",
                 banReason: "Spam",
-                university: "UC San Diego"
+                university: "UC San Diego",
+                banUntil: "2024-02-10T15:45:00Z",
+                banType: "temporary"
             ),
             onUnban: {}
         )
