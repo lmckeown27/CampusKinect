@@ -110,6 +110,10 @@ class CreatePostViewModel: ObservableObject {
                     errorMessage = "Resource not found"
                 case .keychainError:
                     errorMessage = "Authentication error"
+                case .accountBanned(let details, _):
+                    errorMessage = details
+                case .accountInactive(let details, _):
+                    errorMessage = details
                 case .unknown(let code):
                     errorMessage = "Unknown error (code: \(code))"
                 }

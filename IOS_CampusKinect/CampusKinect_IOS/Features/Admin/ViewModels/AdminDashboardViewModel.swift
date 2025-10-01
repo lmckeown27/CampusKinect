@@ -69,6 +69,10 @@ class AdminDashboardViewModel: ObservableObject {
                 return "Data parsing error: \(message)"
             case .keychainError:
                 return "Authentication error. Please log in again."
+            case .accountBanned(let details, _):
+                return details
+            case .accountInactive(let details, _):
+                return details
             case .unknown(let code):
                 return "Unknown error (Code: \(code))"
             }
