@@ -71,7 +71,7 @@ struct UrgentReportRow: View {
                     .frame(width: 20, height: 20)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Report #\(String(report.id.suffix(8)))")
+                    Text("Report #\(String(String(report.id).suffix(8)))")
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
@@ -159,7 +159,7 @@ struct RecentReportRow: View {
                     .frame(width: 20, height: 20)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Report #\(String(report.id.suffix(8)))")
+                    Text("Report #\(String(String(report.id).suffix(8)))")
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
