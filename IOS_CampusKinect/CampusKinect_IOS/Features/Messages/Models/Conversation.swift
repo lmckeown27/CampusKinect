@@ -274,6 +274,11 @@ struct ConversationDetail: Codable, Identifiable {
     func toConversation() -> Conversation {
         let conversationListUser = ConversationListUser(
             id: otherUser.id,
+            username: otherUser.username,
+            firstName: otherUser.firstName,
+            lastName: otherUser.lastName,
+            displayName: otherUser.displayName,
+            profilePicture: otherUser.profilePicture,
             university: "Unknown University" // ConversationDetail doesn't include university info
         )
         
