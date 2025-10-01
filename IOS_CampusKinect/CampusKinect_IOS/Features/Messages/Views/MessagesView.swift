@@ -491,14 +491,15 @@ struct ConversationRow: View {
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
+            .background(Color(.systemBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.campusPrimary, lineWidth: 1.5)
+            )
+            .cornerRadius(12)
         }
         .buttonStyle(PlainButtonStyle())
-        .background(Color(.systemBackground))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.campusPrimary, lineWidth: 1.5)
-        )
-        .cornerRadius(12)
+        .contentShape(Rectangle()) // Make entire area tappable
         .padding(.vertical, 6)
         .padding(.horizontal, 4)
     }
