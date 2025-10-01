@@ -86,7 +86,7 @@ struct ReportDetailView: View {
                     .foregroundColor(.blue)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Report #\(String(report.id.suffix(8)))")
+                    Text("Report #\(String(String(report.id).suffix(8)))")
                         .font(.title2)
                         .fontWeight(.bold)
                     
