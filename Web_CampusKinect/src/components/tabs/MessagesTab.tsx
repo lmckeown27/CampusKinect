@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle, Image as ImageIcon } from 'lucide-react';
+import { Send, User, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle, Image as ImageIcon, Flag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Conversation, User as UserType } from '../../types';
 import apiService from '../../services/api';
 import { useRealTimeMessages } from '../../hooks/useRealTimeMessages';
+import ReportModal from '../ui/ReportModal';
+import BlockUserModal from '../ui/BlockUserModal';
 
 // Simple Conversation Item Component for Web - Comment Style
 interface ConversationItemProps {
@@ -249,6 +251,11 @@ const MessagesTab: React.FC = () => {
   const [searchResults, setSearchResults] = useState<UserType[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  
+  // Report and Block modals state
+  const [showReportUserModal, setShowReportUserModal] = useState(false);
+  const [showBlockUserModal, setShowBlockUserModal] = useState(false);
+  const [reportingMessageId, setReportingMessageId] = useState<string | null>(null);
 
   // Initialize real-time messaging
   const { isConnected, newMessageReceived, clearNewMessage } = useRealTimeMessages(currentConversation?.id || null);
@@ -901,26 +908,20 @@ const MessagesTab: React.FC = () => {
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm(`Report ${currentConversation.otherUser.displayName} for inappropriate behavior?`)) {
-                          alert('Report functionality will be implemented soon.');
-                        }
+                        setReportingMessageId(null); // Report user, not specific message
+                        setShowReportUserModal(true);
                       }}
                       className="p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors cursor-pointer"
                       title="Report User"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
-                        <line x1="4" y1="22" x2="4" y2="15"/>
-                      </svg>
+                      <Flag size={20} />
                     </button>
                     
                     {/* Block User Button */}
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm(`Block ${currentConversation.otherUser.displayName}? This will prevent them from messaging you.`)) {
-                          alert('Block functionality will be implemented soon.');
-                        }
+                        setShowBlockUserModal(true);
                       }}
                       className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                       title="Block User"
@@ -966,8 +967,22 @@ const MessagesTab: React.FC = () => {
                   <>
                     {conversationMessages.map((message) => {
                       const isCurrentUser = message.senderId === currentUser?.id?.toString();
+                      const [showMessageMenu, setShowMessageMenu] = useState(false);
+                      const [messageMenuPosition, setMessageMenuPosition] = useState({ x: 0, y: 0 });
+                      
                       return (
-                        <div key={message.id} className="comment-message py-2">
+                        <div 
+                          key={message.id} 
+                          className="comment-message py-2 relative"
+                          onContextMenu={(e) => {
+                            // Only allow reporting other user's messages
+                            if (!isCurrentUser) {
+                              e.preventDefault();
+                              setMessageMenuPosition({ x: e.clientX, y: e.clientY });
+                              setShowMessageMenu(true);
+                            }
+                          }}
+                        >
                           {/* Comment Header */}
                           <div className="flex items-baseline space-x-2 mb-1">
                             <span className="font-semibold text-sm" style={{ color: isCurrentUser ? '#a8c4a2' : '#708d81' }}>
@@ -989,6 +1004,35 @@ const MessagesTab: React.FC = () => {
                               />
                             )}
                           </div>
+                          
+                          {/* Context Menu for Message */}
+                          {showMessageMenu && (
+                            <>
+                              <div 
+                                className="fixed inset-0 z-40"
+                                onClick={() => setShowMessageMenu(false)}
+                              />
+                              <div 
+                                className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                                style={{ 
+                                  top: `${messageMenuPosition.y}px`,
+                                  left: `${messageMenuPosition.x}px`
+                                }}
+                              >
+                                <button
+                                  onClick={() => {
+                                    setShowMessageMenu(false);
+                                    setReportingMessageId(message.id);
+                                    setShowReportUserModal(true);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center space-x-2"
+                                >
+                                  <Flag size={16} className="text-red-500" />
+                                  <span>Report Message</span>
+                                </button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       );
                     })}
@@ -1061,6 +1105,50 @@ const MessagesTab: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {/* Report and Block Modals */}
+      {currentConversation && (
+        <>
+          <ReportModal
+            isOpen={showReportUserModal}
+            onClose={() => {
+              setShowReportUserModal(false);
+              setReportingMessageId(null);
+            }}
+            contentId={reportingMessageId || currentConversation.otherUser.id.toString()}
+            contentType={reportingMessageId ? 'message' : 'user'}
+            contentTitle={reportingMessageId ? 'Message' : currentConversation.otherUser.displayName || 'User'}
+            onReportSubmitted={() => {
+              console.log('Report submitted successfully');
+              setShowReportUserModal(false);
+              setReportingMessageId(null);
+            }}
+          />
+          
+          <BlockUserModal
+            isOpen={showBlockUserModal}
+            onClose={() => setShowBlockUserModal(false)}
+            user={{
+              id: currentConversation.otherUser.id.toString(),
+              username: currentConversation.otherUser.id.toString(), // Use ID as fallback
+              email: '',
+              firstName: '',
+              lastName: '',
+              displayName: currentConversation.otherUser.displayName || `User ${currentConversation.otherUser.id}`,
+              profilePicture: undefined,
+              universityId: '',
+              createdAt: '',
+              updatedAt: ''
+            }}
+            onUserBlocked={() => {
+              console.log('User blocked successfully');
+              setShowBlockUserModal(false);
+              // Optionally refresh conversations to hide blocked user
+              fetchConversations();
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };
