@@ -296,14 +296,28 @@ struct ConversationDetail: Codable, Identifiable {
 // MARK: - Conversation List User (Simplified)
 struct ConversationListUser: Codable, Equatable {
     let id: Int
+    let username: String?
+    let firstName: String?
+    let lastName: String?
+    let displayName: String?
+    let profilePicture: String?
     let university: String
     
-    // Computed properties for compatibility
-    var displayName: String {
-        return "User \(id)" // Fallback display name
+    enum CodingKeys: String, CodingKey {
+        case id
+        case username
+        case firstName
+        case lastName
+        case displayName
+        case profilePicture
+        case university
     }
     
+    // Computed properties for compatibility
     var initials: String {
+        if let displayName = displayName, !displayName.isEmpty {
+            return String(displayName.prefix(1))
+        }
         return "U\(id)" // Fallback initials
     }
     
