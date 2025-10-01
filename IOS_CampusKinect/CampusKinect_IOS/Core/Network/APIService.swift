@@ -603,11 +603,17 @@ class APIService: NSObject, ObservableObject {
     // MARK: - User Moderation Methods
     
     func reportUser(userId: Int, reason: String, details: String?) async throws {
-        let request = ReportUserRequest(userId: userId, reason: reason, details: details)
+        // Use the same /reports endpoint with contentType='user'
+        let request = ReportContentRequest(
+            contentId: userId,
+            contentType: "user",
+            reason: reason,
+            details: details
+        )
         let body = try encoder.encode(request)
         
-        let _: EmptyResponse = try await performRequest(
-            endpoint: "/users/report",
+        let _: MessageResponse = try await performRequest(
+            endpoint: "/reports",
             method: .POST,
             body: body,
             requiresAuth: true
