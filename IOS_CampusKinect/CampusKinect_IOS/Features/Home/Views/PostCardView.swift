@@ -129,17 +129,17 @@ struct PostCardView: View {
             )
         }
         .sheet(isPresented: $showingReportView) {
-            ReportContentView(
-                contentId: post.id,
-                contentType: .post,
-                contentAuthor: post.poster.displayName
+            ReportUserView(
+                userId: post.poster.id,
+                userName: post.poster.displayName,
+                context: "post"
             )
         }
         .actionSheet(isPresented: $showingThreeDotsMenu) {
             ActionSheet(
                 title: Text("Post Options"),
                 buttons: [
-                    .default(Text("Report Post")) {
+                    .default(Text("Report User")) {
                         showingReportView = true
                     },
                     post.poster.id != authManager.currentUser?.id ? 

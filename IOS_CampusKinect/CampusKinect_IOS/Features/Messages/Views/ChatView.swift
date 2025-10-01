@@ -134,7 +134,7 @@ struct ChatView: View {
             Text("Are you sure you want to block \(otherUserName)? You won't receive messages from them anymore.")
         }
         .sheet(isPresented: $showingReportSheet) {
-            ReportUserView(userId: otherUserId, userName: otherUserName)
+            ReportUserView(userId: otherUserId, userName: otherUserName, context: "conversation")
         }
         .confirmationDialog("Add Photo", isPresented: $showingImageActionSheet) {
             Button("Take Photo") {
