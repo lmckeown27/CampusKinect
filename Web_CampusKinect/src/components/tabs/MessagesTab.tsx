@@ -256,6 +256,10 @@ const MessagesTab: React.FC = () => {
   const [showReportUserModal, setShowReportUserModal] = useState(false);
   const [showBlockUserModal, setShowBlockUserModal] = useState(false);
   const [reportingMessageId, setReportingMessageId] = useState<string | null>(null);
+  
+  // Message menu state (moved out of map to fix hooks error)
+  const [openMessageMenuId, setOpenMessageMenuId] = useState<string | null>(null);
+  const [messageMenuPosition, setMessageMenuPosition] = useState({ x: 0, y: 0 });
 
   // Initialize real-time messaging
   const { isConnected, newMessageReceived, clearNewMessage } = useRealTimeMessages(currentConversation?.id || null);
@@ -967,8 +971,7 @@ const MessagesTab: React.FC = () => {
                   <>
                     {conversationMessages.map((message) => {
                       const isCurrentUser = message.senderId === currentUser?.id?.toString();
-                      const [showMessageMenu, setShowMessageMenu] = useState(false);
-                      const [messageMenuPosition, setMessageMenuPosition] = useState({ x: 0, y: 0 });
+                      const showMessageMenu = openMessageMenuId === message.id;
                       
                       return (
                         <div 
@@ -979,7 +982,7 @@ const MessagesTab: React.FC = () => {
                             if (!isCurrentUser) {
                               e.preventDefault();
                               setMessageMenuPosition({ x: e.clientX, y: e.clientY });
-                              setShowMessageMenu(true);
+                              setOpenMessageMenuId(message.id);
                             }
                           }}
                         >
@@ -1010,7 +1013,7 @@ const MessagesTab: React.FC = () => {
                             <>
                               <div 
                                 className="fixed inset-0 z-40"
-                                onClick={() => setShowMessageMenu(false)}
+                                onClick={() => setOpenMessageMenuId(null)}
                               />
                               <div 
                                 className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
@@ -1021,7 +1024,7 @@ const MessagesTab: React.FC = () => {
                               >
                                 <button
                                   onClick={() => {
-                                    setShowMessageMenu(false);
+                                    setOpenMessageMenuId(null);
                                     setReportingMessageId(message.id);
                                     setShowReportUserModal(true);
                                   }}
