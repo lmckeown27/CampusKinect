@@ -45,7 +45,7 @@ const auth = async (req, res, next) => {
     if (!user) {
       // If not in cache, get from database
       const result = await query(
-        'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_reason FROM users WHERE id = $1 AND is_active = true AND banned_at IS NULL',
+        'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_until, ban_reason FROM users WHERE id = $1',
         [decoded.userId]
       );
 
@@ -53,12 +53,68 @@ const auth = async (req, res, next) => {
         return res.status(401).json({
           success: false,
           error: {
-            message: 'User not found or account deactivated.'
+            message: 'User not found.'
           }
         });
       }
 
       user = result.rows[0];
+      
+      // Check if user is banned and if temporary ban has expired
+      if (user.banned_at) {
+        if (user.ban_until) {
+          const banUntil = new Date(user.ban_until);
+          const now = new Date();
+          
+          if (now > banUntil) {
+            // Temporary ban has expired - automatically unban the user
+            await query(`
+              UPDATE users 
+              SET is_active = true,
+                  banned_at = NULL,
+                  ban_until = NULL,
+                  ban_reason = NULL
+              WHERE id = $1
+            `, [user.id]);
+            
+            console.log(`✅ Temporary ban expired for user ${user.id} - automatically unbanned`);
+            
+            // Refresh user data after unbanning
+            const refreshedResult = await query(
+              'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_until, ban_reason FROM users WHERE id = $1',
+              [user.id]
+            );
+            user = refreshedResult.rows[0];
+          } else {
+            // Temporary ban still active
+            return res.status(403).json({
+              success: false,
+              error: {
+                message: `Account suspended until ${banUntil.toLocaleDateString()}. Reason: ${user.ban_reason || 'Violation of terms'}`,
+                banUntil: user.ban_until
+              }
+            });
+          }
+        } else {
+          // Permanent ban
+          return res.status(403).json({
+            success: false,
+            error: {
+              message: `Account permanently banned. Reason: ${user.ban_reason || 'Violation of terms'}`
+            }
+          });
+        }
+      }
+      
+      // Check if account is deactivated
+      if (!user.is_active) {
+        return res.status(401).json({
+          success: false,
+          error: {
+            message: 'Account deactivated.'
+          }
+        });
+      }
       
       // Cache user data
       await redisSet(cacheKey, user, CACHE_TTL.SESSION);
@@ -120,13 +176,44 @@ const optionalAuth = async (req, res, next) => {
 
         if (!user) {
           const result = await query(
-            'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_reason FROM users WHERE id = $1 AND is_active = true AND banned_at IS NULL',
+            'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_until, ban_reason FROM users WHERE id = $1',
             [decoded.userId]
           );
 
           if (result.rows.length > 0) {
             user = result.rows[0];
-            await redisSet(cacheKey, user, CACHE_TTL.SESSION);
+            
+            // Check if temporary ban has expired (same logic as main auth)
+            if (user.banned_at && user.ban_until) {
+              const banUntil = new Date(user.ban_until);
+              const now = new Date();
+              
+              if (now > banUntil) {
+                // Auto-unban
+                await query(`
+                  UPDATE users 
+                  SET is_active = true,
+                      banned_at = NULL,
+                      ban_until = NULL,
+                      ban_reason = NULL
+                  WHERE id = $1
+                `, [user.id]);
+                
+                // Refresh user
+                const refreshedResult = await query(
+                  'SELECT id, username, email, first_name, last_name, display_name, profile_picture, year, major, hometown, university_id, is_verified, is_active, banned_at, ban_until, ban_reason FROM users WHERE id = $1',
+                  [user.id]
+                );
+                user = refreshedResult.rows[0];
+              }
+            }
+            
+            // Only cache and attach user if they're not banned and active
+            if (user.is_active && !user.banned_at) {
+              await redisSet(cacheKey, user, CACHE_TTL.SESSION);
+            } else {
+              user = null; // Don't attach banned/inactive users
+            }
           }
         }
 

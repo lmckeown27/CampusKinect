@@ -283,12 +283,12 @@ router.post('/reports/:reportId/moderate', auth, adminAuth, async (req, res) => 
 });
 
 // @route   POST /api/v1/admin/users/:userId/ban
-// @desc    Ban a user
+// @desc    Ban a user (permanent or temporary)
 // @access  Admin only
 router.post('/users/:userId/ban', auth, adminAuth, async (req, res) => {
   try {
     const { userId } = req.params;
-    const { reason } = req.body;
+    const { reason, duration } = req.body; // duration in days (optional)
 
     if (!reason) {
       return res.status(400).json({
@@ -313,13 +313,34 @@ router.post('/users/:userId/ban', auth, adminAuth, async (req, res) => {
       });
     }
 
-    // Ban the user (keep them active but mark as banned for auth middleware to block)
-    await query(`
-      UPDATE users 
-      SET banned_at = CURRENT_TIMESTAMP,
-          ban_reason = $1
-      WHERE id = $2
-    `, [reason, userId]);
+    // Calculate ban_until timestamp if duration is provided
+    let banUntil = null;
+    if (duration && !isNaN(duration) && duration > 0) {
+      banUntil = `CURRENT_TIMESTAMP + INTERVAL '${parseInt(duration)} days'`;
+    }
+
+    // Ban the user (deactivate account and mark as banned)
+    if (banUntil) {
+      // Temporary ban
+      await query(`
+        UPDATE users 
+        SET is_active = false,
+            banned_at = CURRENT_TIMESTAMP,
+            ban_until = ${banUntil},
+            ban_reason = $1
+        WHERE id = $2
+      `, [reason, userId]);
+    } else {
+      // Permanent ban
+      await query(`
+        UPDATE users 
+        SET is_active = false,
+            banned_at = CURRENT_TIMESTAMP,
+            ban_until = NULL,
+            ban_reason = $1
+        WHERE id = $2
+      `, [reason, userId]);
+    }
 
     // Deactivate all user's posts
     await query(`
@@ -331,9 +352,20 @@ router.post('/users/:userId/ban', auth, adminAuth, async (req, res) => {
       WHERE user_id = $1
     `, [userId]);
 
+    const banType = duration ? `temporary (${duration} days)` : 'permanent';
+    console.log(`🚫 User ${userId} banned (${banType}): ${reason}`);
+
     res.json({
       success: true,
-      message: 'User banned successfully'
+      message: duration 
+        ? `User banned for ${duration} days` 
+        : 'User permanently banned',
+      data: {
+        userId,
+        banType: duration ? 'temporary' : 'permanent',
+        duration: duration || null,
+        reason
+      }
     });
 
   } catch (error) {
@@ -509,6 +541,7 @@ router.get('/users/banned', auth, adminAuth, async (req, res) => {
         u.username,
         u.email,
         u.banned_at,
+        u.ban_until,
         u.ban_reason,
         un.name as university
       FROM users u
@@ -525,6 +558,8 @@ router.get('/users/banned', auth, adminAuth, async (req, res) => {
           username: user.username,
           email: user.email,
           bannedAt: user.banned_at,
+          banUntil: user.ban_until,
+          banType: user.ban_until ? 'temporary' : 'permanent',
           banReason: user.ban_reason,
           university: user.university
         }))
@@ -573,10 +608,12 @@ router.post('/users/:userId/unban', auth, adminAuth, async (req, res) => {
       });
     }
 
-    // Unban the user
+    // Unban the user and reactivate account
     await query(`
       UPDATE users 
-      SET banned_at = NULL,
+      SET is_active = true,
+          banned_at = NULL,
+          ban_until = NULL,
           ban_reason = NULL
       WHERE id = $1
     `, [userId]);
