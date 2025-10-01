@@ -173,8 +173,8 @@ struct MessagesView: View {
                         ConversationRow(conversation: conversation, currentUserId: authManager.currentUser?.id ?? 0) {
                             print("📱 ConversationRow tapped for POST: '\(conversation.postTitle)' with user: \(conversation.otherUser.displayName)")
                             
-                            // Store user information
-                            selectedUser = User(id: conversation.otherUser.id, username: "user\(conversation.otherUser.id)", email: nil, firstName: "User", lastName: "\(conversation.otherUser.id)", displayName: conversation.otherUser.displayName, profilePicture: nil, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
+                            // Store user information with correct display name
+                            selectedUser = User(id: conversation.otherUser.id, username: conversation.otherUser.username, email: nil, firstName: conversation.otherUser.firstName, lastName: conversation.otherUser.lastName, displayName: conversation.otherUser.displayName, profilePicture: conversation.otherUser.profilePicture, year: nil, major: nil, hometown: nil, bio: nil, universityId: nil, universityName: conversation.otherUser.university, universityDomain: nil, isVerified: nil, isActive: nil, createdAt: Date(), updatedAt: nil)
                             
                             // Store post information for post-centric chat
                             selectedPostId = conversation.postId
@@ -284,21 +284,22 @@ struct MessagesView: View {
             $0.otherUser.id == userId && $0.postId == postId 
         }) {
             // Conversation exists - navigate directly without confirmation
+            // Use actual user data from the conversation
             print("📱 Existing conversation found - navigating directly")
             selectedUser = User(
-                id: userId,
-                username: userName,
+                id: existingConversation.otherUser.id,
+                username: existingConversation.otherUser.username,
                 email: "",
-                firstName: userName,
-                lastName: "",
-                displayName: userName,
-                profilePicture: nil,
+                firstName: existingConversation.otherUser.firstName,
+                lastName: existingConversation.otherUser.lastName,
+                displayName: existingConversation.otherUser.displayName,
+                profilePicture: existingConversation.otherUser.profilePicture,
                 year: nil,
                 major: nil,
                 hometown: nil,
                 bio: nil,
                 universityId: nil,
-                universityName: nil,
+                universityName: existingConversation.otherUser.university,
                 universityDomain: nil,
                 isVerified: nil,
                 isActive: nil,

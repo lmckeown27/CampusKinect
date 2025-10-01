@@ -211,7 +211,7 @@ struct ChatView: View {
                         
                         Text("• \(otherUserName)")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.black)
                     }
                 }
                 
