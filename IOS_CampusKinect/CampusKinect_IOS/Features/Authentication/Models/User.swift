@@ -221,7 +221,7 @@ struct PartialUser: Codable {
             isVerified: existingUser.isVerified,
             isActive: existingUser.isActive,
             createdAt: existingUser.createdAt ?? Date(),
-            updatedAt: updatedAt ?? existingUser.updatedAt
+            updatedAt: existingUser.updatedAt // Keep existing updatedAt since PartialUser returns String
         )
     }
 }
