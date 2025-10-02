@@ -386,40 +386,50 @@ struct RegisterView: View {
                         .foregroundColor(.primary)
                         .fixedSize(horizontal: false, vertical: true)
                     
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 0) {
-                            Text("By creating an account, you agree to our ")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
-                            Button("Terms of Service") {
-                                showingTerms = true
-                            }
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(Color("BrandPrimary"))
+                    // Flowing text with inline tappable links using wrapping HStack
+                    (Text("By creating an account, you agree to our ")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    + Text("Terms of Service")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color("BrandPrimary"))
+                    + Text(" and ")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    + Text("Privacy Policy")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color("BrandPrimary"))
+                    + Text(".")
+                        .font(.caption)
+                        .foregroundColor(.secondary))
+                    .fixedSize(horizontal: false, vertical: true)
+                    
+                    // Separate tap hint for users
+                    HStack(spacing: 4) {
+                        Image(systemName: "hand.tap")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        Text("Tap to view")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        Button("Terms") {
+                            showingTerms = true
                         }
-                        
-                        HStack(spacing: 0) {
-                            Text("and ")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
-                            Button("Privacy Policy") {
-                                showingPrivacy = true
-                            }
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(Color("BrandPrimary"))
-                            
-                            Text(".")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                        .font(.caption2)
+                        .foregroundColor(Color("BrandPrimary"))
+                        Text("or")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        Button("Privacy") {
+                            showingPrivacy = true
                         }
+                        .font(.caption2)
+                        .foregroundColor(Color("BrandPrimary"))
                     }
                 }
-            }
-            
+
             // Additional compliance notice
             HStack(alignment: .top, spacing: 8) {
                 Image(systemName: "exclamationmark.triangle.fill")
