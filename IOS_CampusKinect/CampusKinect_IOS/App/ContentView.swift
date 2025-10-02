@@ -14,6 +14,7 @@ struct ContentView: View {
     
     // CRITICAL: Prevent presentation conflicts
     @State private var isTermsCheckComplete = false
+    @State private var showingNotificationPermissionAlert = false
     
     var body: some View {
         ZStack {
@@ -52,6 +53,11 @@ struct ContentView: View {
                 }
                 // CRITICAL: Mark terms check as complete
                 isTermsCheckComplete = true
+                
+                // Show notification permission popup after terms acceptance
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    showingNotificationPermissionAlert = true
+                }
             } onDecline: {
                 // User declined terms - log them out
                 print("📋 Terms declined - logging out user")
@@ -61,6 +67,19 @@ struct ContentView: View {
                 // CRITICAL: Mark terms check as complete (user will be logged out)
                 isTermsCheckComplete = true
             }
+        }
+        .alert("Enable Notifications?", isPresented: $showingNotificationPermissionAlert) {
+            Button("Enable") {
+                Task {
+                    let granted = await PushNotificationManager.shared.requestPermission()
+                    print("📱 User chose to enable notifications: \(granted ? "granted" : "denied")")
+                }
+            }
+            Button("Not Now") {
+                print("📱 User chose not to enable notifications")
+            }
+        } message: {
+            Text("Would you like to receive notifications for new messages and updates? You can change this anytime in your phone's Settings.")
         }
         .overlay(alignment: .top) {
             if !networkMonitor.isConnected {

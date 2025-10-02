@@ -16,10 +16,10 @@ struct SettingsView: View {
     @State private var showingAbout = false
     @State private var showingTerms = false
     @State private var showingMailComposer = false
-    @State private var showingNotificationSettings = false
     @State private var showingBlockedUsers = false
     @State private var showingMyReports = false
     @State private var showingAdminDashboard = false
+    @State private var showingRestoreTermsAlert = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -73,14 +73,6 @@ struct SettingsView: View {
                 
                 // Support
                 Section("Support") {
-                    SettingsRow(
-                        icon: "bell",
-                        title: "Notifications",
-                        subtitle: "Manage notification preferences"
-                    ) {
-                        showingNotificationSettings = true
-                    }
-                    
                     SettingsRow(
                         icon: "questionmark.circle",
                         title: "Help & Support",
@@ -148,6 +140,14 @@ struct SettingsView: View {
                         ) {
                             showingAdminDashboard = true
                         }
+                        
+                        SettingsRow(
+                            icon: "doc.text.badge.plus",
+                            title: "Restore Terms Popup",
+                            subtitle: "Force show Terms of Service on next login"
+                        ) {
+                            showingRestoreTermsAlert = true
+                        }
                     }
                 }
                                 // Account Actions
@@ -209,19 +209,24 @@ struct SettingsView: View {
                     body: "Hi CampusKinect Team,\n\nI need help with:\n\n"
                 )
             }
-            .sheet(isPresented: $showingNotificationSettings) {
-        }
         .sheet(isPresented: $showingBlockedUsers) {
             BlockedUsersView()
-        }
-        .sheet(isPresented: $showingNotificationSettings) {
-            NotificationSettingsView()
         }
         .sheet(isPresented: $showingMyReports) {
             MyReportsView()
         }
         .sheet(isPresented: $showingAdminDashboard) {
             AdminDashboardView()
+        }
+        .alert("Restore Terms Popup", isPresented: $showingRestoreTermsAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Restore") {
+                if let user = authManager.currentUser {
+                    TermsOfServiceManager.shared.resetTermsAcceptance(for: String(user.id))
+                }
+            }
+        } message: {
+            Text("The Terms of Service popup will appear on your next login. This is useful for testing.")
         }
             .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
             .frame(maxHeight: .infinity)
