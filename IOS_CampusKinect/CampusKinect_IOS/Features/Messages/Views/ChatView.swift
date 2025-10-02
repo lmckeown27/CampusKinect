@@ -134,7 +134,17 @@ struct ChatView: View {
             Text("Are you sure you want to block \(otherUserName)? You won't receive messages from them anymore.")
         }
         .sheet(isPresented: $showingReportSheet) {
-            ReportUserView(userId: otherUserId, userName: otherUserName, context: "conversation")
+            // Report the most recent message to include full conversation history
+            if let latestMessage = viewModel.messages.last {
+                ReportConversationView(
+                    messageId: latestMessage.id,
+                    conversationWith: otherUserName,
+                    otherUserId: otherUserId
+                )
+            } else {
+                // Fallback to user report if no messages
+                ReportUserView(userId: otherUserId, userName: otherUserName, context: "conversation")
+            }
         }
         .confirmationDialog("Add Photo", isPresented: $showingImageActionSheet) {
             Button("Take Photo") {
