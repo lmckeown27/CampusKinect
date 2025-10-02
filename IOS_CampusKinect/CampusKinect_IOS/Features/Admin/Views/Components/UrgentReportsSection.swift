@@ -238,7 +238,8 @@ struct RecentReportRow: View {
                         postDescription: "Need help with CS 101 homework. Will pay $20/hour for tutoring. Must know Python and data structures.",
                         postImageUrl: nil,
                         messageContent: nil,
-                        conversationHistory: nil
+                        conversationHistory: nil,
+                        isReporterPostOwner: nil
                     )
                 ],
                 onReportTap: { _ in }
@@ -267,7 +268,8 @@ struct RecentReportRow: View {
                         postDescription: nil,
                         postImageUrl: nil,
                         messageContent: "Buy my product now! Click here for amazing deals!",
-                        conversationHistory: nil
+                        conversationHistory: nil,
+                        isReporterPostOwner: nil
                     )
                 ],
                 onReportTap: { _ in }
