@@ -72,20 +72,16 @@ struct TermsOfServiceView: View {
                 
                 // Bottom Controls
                 VStack(spacing: 16) {
-                    // Scroll Progress Indicator
-                    if !hasScrolledToBottom {
-                        HStack {
-                            Image(systemName: "arrow.down.circle.fill")
-                                .foregroundColor(.orange)
-                            Text("You must scroll through and read all terms to continue")
-                                .font(.caption)
-                                .foregroundColor(.orange)
-                        }
-                        .padding(.horizontal)
+                    // Scroll Progress Indicator (always allocate space to prevent layout shift)
+                    HStack {
+                        Image(systemName: "arrow.down.circle.fill")
+                            .foregroundColor(.orange)
+                        Text("You must scroll through and read all terms to continue")
+                            .font(.caption)
+                            .foregroundColor(.orange)
                     }
-                    
-
-                    
+                    .padding(.horizontal)
+                    .opacity(hasScrolledToBottom ? 0 : 1)
                     // Action Buttons
                     HStack(spacing: 12) {
                         // Decline Button
