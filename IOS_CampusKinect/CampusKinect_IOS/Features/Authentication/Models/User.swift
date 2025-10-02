@@ -199,7 +199,7 @@ struct PartialUser: Codable {
     let major: String?
     let hometown: String?
     let bio: String?
-    let updatedAt: Date?
+    let updatedAt: String?
     
     // Convert to full User by merging with existing user data
     func mergeWith(existingUser: User) -> User {
