@@ -109,13 +109,12 @@ struct PostCardView: View {
             
             Divider()
             
-            // Report Post
-            Button(action: { showingReportView = true }) {
-                Label("Report Post", systemImage: "flag")
-            }
-            
-            // Block User (only show if not own post)
+            // Report Post and Block User (only show if not own post)
             if post.poster.id != authManager.currentUser?.id {
+                Button(action: { showingReportView = true }) {
+                    Label("Report Post", systemImage: "flag")
+                }
+                
                 Button(action: { showingBlockUserConfirmation = true }) {
                     Label("Block User", systemImage: "person.crop.circle.badge.xmark")
                 }
@@ -147,12 +146,12 @@ struct PostCardView: View {
                 })
             }
             
-            // Regular user actions
-            buttons.append(.default(Text("Report User")) {
-                showingReportView = true
-            })
-            
+            // Regular user actions (only show if not own post)
             if post.poster.id != authManager.currentUser?.id {
+                buttons.append(.default(Text("Report User")) {
+                    showingReportView = true
+                })
+                
                 buttons.append(.destructive(Text("Block User")) {
                     showingBlockUserConfirmation = true
                 })

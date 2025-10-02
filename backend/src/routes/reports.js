@@ -36,18 +36,50 @@ router.post('/', [
 
     // Determine the reported_user_id based on content type
     let reportedUserId = null;
+    
     if (contentType === 'post') {
       const postResult = await query('SELECT user_id FROM posts WHERE id = $1', [contentId]);
       if (postResult.rows.length > 0) {
         reportedUserId = postResult.rows[0].user_id;
+        
+        // Prevent users from reporting their own posts
+        if (reportedUserId === reporterId) {
+          return res.status(400).json({
+            success: false,
+            error: { message: 'You cannot report your own post. If you want to remove it, please delete it instead.' }
+          });
+        }
       }
     } else if (contentType === 'message') {
-      const messageResult = await query('SELECT sender_id FROM messages WHERE id = $1', [contentId]);
+      // For message reports, find the OTHER user in the conversation (not the reporter)
+      const messageResult = await query(`
+        SELECT 
+          m.conversation_id,
+          c.user1_id,
+          c.user2_id
+        FROM messages m
+        JOIN conversations c ON m.conversation_id = c.id
+        WHERE m.id = $1
+      `, [contentId]);
+      
       if (messageResult.rows.length > 0) {
-        reportedUserId = messageResult.rows[0].sender_id;
+        const { user1_id, user2_id } = messageResult.rows[0];
+        
+        // The reported user is the OTHER person in the conversation
+        reportedUserId = (user1_id === reporterId) ? user2_id : user1_id;
+        
+        console.log(`📋 Message report: Reporter ${reporterId} is reporting the other user ${reportedUserId} in conversation`);
       }
     } else if (contentType === 'user') {
       reportedUserId = contentId;
+      
+      // Prevent users from reporting themselves
+      if (reportedUserId === reporterId) {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'You cannot report yourself.' }
+        });
+      }
     }
 
     if (!reportedUserId) {
