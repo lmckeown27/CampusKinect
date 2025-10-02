@@ -18,6 +18,10 @@ struct PostCardView: View {
     @State private var isBookmarked = false
     @State private var isReposted = false
     
+    // Admin actions
+    @State private var showingAdminDeleteConfirmation = false
+    @State private var showingAdminBanConfirmation = false
+    
     // Loading states for better UX
     @State private var isRepostLoading = false
     @State private var isBookmarkLoading = false
@@ -31,6 +35,7 @@ struct PostCardView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
+    private let adminAPIService = AdminAPIService()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -128,18 +133,34 @@ struct PostCardView: View {
             )
         }
         .actionSheet(isPresented: $showingThreeDotsMenu) {
-            ActionSheet(
+            var buttons: [ActionSheet.Button] = []
+            
+            // Admin actions (only show for admin users)
+            if isAdmin {
+                buttons.append(.destructive(Text("🗑️ Admin: Delete Post")) {
+                    showingAdminDeleteConfirmation = true
+                })
+                buttons.append(.destructive(Text("🚫 Admin: Ban User")) {
+                    showingAdminBanConfirmation = true
+                })
+            }
+            
+            // Regular user actions
+            buttons.append(.default(Text("Report User")) {
+                showingReportView = true
+            })
+            
+            if post.poster.id != authManager.currentUser?.id {
+                buttons.append(.destructive(Text("Block User")) {
+                    showingBlockUserConfirmation = true
+                })
+            }
+            
+            buttons.append(.cancel())
+            
+            return ActionSheet(
                 title: Text("Post Options"),
-                buttons: [
-                    .default(Text("Report User")) {
-                        showingReportView = true
-                    },
-                    post.poster.id != authManager.currentUser?.id ? 
-                        .destructive(Text("Block User")) {
-                            showingBlockUserConfirmation = true
-                        } : nil,
-                    .cancel()
-                ].compactMap { $0 }
+                buttons: buttons
             )
         }
         .alert("Block User", isPresented: $showingBlockUserConfirmation) {
@@ -149,6 +170,22 @@ struct PostCardView: View {
             }
         } message: {
             Text("Are you sure you want to block \(post.poster.displayName)? You won't see their posts anymore.")
+        }
+        .alert("Admin: Delete Post", isPresented: $showingAdminDeleteConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                handleAdminDeletePost()
+            }
+        } message: {
+            Text("Are you sure you want to delete this post? This action cannot be undone.")
+        }
+        .alert("Admin: Ban User", isPresented: $showingAdminBanConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Ban", role: .destructive) {
+                handleAdminBanUser()
+            }
+        } message: {
+            Text("Are you sure you want to ban \(post.poster.displayName)? They will be unable to access the platform.")
         }
         .alert("Message Error", isPresented: $showingMessageConfirmation) {
             Button("OK") { }
@@ -339,6 +376,70 @@ struct PostCardView: View {
                 print("Error blocking user: \(error)")
             }
         }
+    }
+    
+    private func handleAdminDeletePost() {
+        Task {
+            do {
+                _ = try await adminAPIService.deletePost(postId: post.id)
+                
+                await MainActor.run {
+                    successMessage = "Post deleted successfully"
+                    showingSuccessMessage = true
+                    
+                    // Auto-hide success message
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        showingSuccessMessage = false
+                    }
+                    
+                    // Notify to refresh feed
+                    NotificationCenter.default.post(name: .postDeleted, object: post.id)
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Failed to delete post. Please try again."
+                    showingErrorAlert = true
+                }
+                print("Error deleting post: \(error)")
+            }
+        }
+    }
+    
+    private func handleAdminBanUser() {
+        Task {
+            do {
+                _ = try await adminAPIService.banUserAdmin(userId: post.poster.id, reason: "Banned by admin from post")
+                
+                await MainActor.run {
+                    successMessage = "User banned successfully"
+                    showingSuccessMessage = true
+                    
+                    // Auto-hide success message
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        showingSuccessMessage = false
+                    }
+                    
+                    // Notify to refresh feed
+                    NotificationCenter.default.post(name: .userBanned, object: post.poster.id)
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Failed to ban user. Please try again."
+                    showingErrorAlert = true
+                }
+                print("Error banning user: \(error)")
+            }
+        }
+    }
+    
+    private var isAdmin: Bool {
+        // Check if current user is admin
+        guard let email = authManager.currentUser?.email,
+              let username = authManager.currentUser?.username else {
+            return false
+        }
+        // Admin check (adjust this to match your admin criteria)
+        return email == "lmckeown@calpoly.edu" || username == "liam_mckeown38"
     }
     
     private func loadPostInteractionState() {

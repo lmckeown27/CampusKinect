@@ -697,4 +697,53 @@ router.post('/users/:userId/unban', auth, adminAuth, async (req, res) => {
   }
 });
 
+// @route   DELETE /api/v1/admin/posts/:postId
+// @desc    Admin delete any post
+// @access  Admin only
+router.delete('/posts/:postId', auth, adminAuth, async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    // Check if post exists
+    const postResult = await query(`
+      SELECT id, user_id FROM posts WHERE id = $1
+    `, [postId]);
+
+    if (postResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'Post not found'
+        }
+      });
+    }
+
+    // Mark post as inactive (soft delete)
+    await query(`
+      UPDATE posts 
+      SET is_active = false, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+    `, [postId]);
+
+    // Clear cache
+    const { redisDel } = require('../config/redis');
+    const cacheKey = `post:${postId}`;
+    await redisDel(cacheKey);
+
+    res.json({
+      success: true,
+      message: 'Post deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to delete post'
+      }
+    });
+  }
+});
+
 module.exports = router; 

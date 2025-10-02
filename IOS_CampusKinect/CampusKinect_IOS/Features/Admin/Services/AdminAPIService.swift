@@ -289,6 +289,57 @@ class AdminAPIService: ObservableObject {
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
+    
+    // MARK: - Admin Delete Post
+    func deletePost(postId: String) -> AnyPublisher<Void, Error> {
+        guard let url = URL(string: "\(baseURL)/posts/\(postId)") else {
+            return Fail(error: URLError(.badURL))
+                .eraseToAnyPublisher()
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<AdminEmptyResponse>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? () : nil
+                    }
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Admin Ban User
+    func banUserAdmin(userId: Int, reason: String) -> AnyPublisher<Void, Error> {
+        guard let url = URL(string: "\(baseURL)/users/\(userId)/ban") else {
+            return Fail(error: URLError(.badURL))
+                .eraseToAnyPublisher()
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        
+        let body = BanUserRequest(reason: reason)
+        request.httpBody = try? JSONEncoder().encode(body)
+        
+        return addAuthToken(to: request)
+            .flatMap { authenticatedRequest in
+                return self.session.dataTaskPublisher(for: authenticatedRequest)
+                    .map(\.data)
+                    .decode(type: APIResponse<AdminEmptyResponse>.self, decoder: JSONDecoder())
+                    .compactMap { response in
+                        response.success ? () : nil
+                    }
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - Supporting Models
