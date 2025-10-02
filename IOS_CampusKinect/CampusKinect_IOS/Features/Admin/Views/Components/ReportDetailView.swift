@@ -590,7 +590,9 @@ struct StatusBadge: View {
             reportedUsername: "bad_user",
             reportedDisplayName: "Bad User",
             postTitle: "Selling banned substances on campus. Meet me behind the library at midnight. Cash only. No questions asked.",
-            messageContent: nil
+            messageContent: nil,
+            postMedia: nil,
+            conversationHistory: nil
         ),
         viewModel: AdminDashboardViewModel()
     )

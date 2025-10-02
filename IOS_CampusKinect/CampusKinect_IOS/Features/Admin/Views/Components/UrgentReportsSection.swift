@@ -235,7 +235,9 @@ struct RecentReportRow: View {
                         reportedUsername: "baduser1",
                         reportedDisplayName: "Bad User One",
                         postTitle: "Need help with CS 101 homework. Will pay $20/hour for tutoring. Must know Python and data structures.",
-                        messageContent: nil
+                        messageContent: nil,
+                        postMedia: nil,
+                        conversationHistory: nil
                     )
                 ],
                 onReportTap: { _ in }
@@ -261,7 +263,9 @@ struct RecentReportRow: View {
                         reportedUsername: "spammer",
                         reportedDisplayName: "Spammer User",
                         postTitle: nil,
-                        messageContent: "Buy my product now! Click here for amazing deals!"
+                        messageContent: "Buy my product now! Click here for amazing deals!",
+                        postMedia: nil,
+                        conversationHistory: nil
                     )
                 ],
                 onReportTap: { _ in }
