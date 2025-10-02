@@ -395,6 +395,36 @@ router.post('/users/:userId/ban', auth, adminAuth, async (req, res) => {
       `, [reason, userId]);
     }
 
+    // Get all posts from this user
+    const userPostsResult = await query(`
+      SELECT id FROM posts WHERE user_id = $1
+    `, [userId]);
+    
+    const postIds = userPostsResult.rows.map(row => row.id);
+    
+    if (postIds.length > 0) {
+      // Delete all conversations related to these posts
+      const conversationsResult = await query(`
+        SELECT id FROM conversations WHERE post_id = ANY($1)
+      `, [postIds]);
+      
+      const conversationIds = conversationsResult.rows.map(row => row.id);
+      
+      if (conversationIds.length > 0) {
+        // Delete all messages in these conversations
+        await query(`
+          DELETE FROM messages WHERE conversation_id = ANY($1)
+        `, [conversationIds]);
+        
+        // Delete the conversations themselves
+        await query(`
+          DELETE FROM conversations WHERE post_id = ANY($1)
+        `, [postIds]);
+        
+        console.log(`🗑️ Deleted ${conversationIds.length} conversations and their messages for banned user ${userId}`);
+      }
+    }
+
     // Deactivate all user's posts
     await query(`
       UPDATE posts 
@@ -718,6 +748,27 @@ router.delete('/posts/:postId', auth, adminAuth, async (req, res) => {
       });
     }
 
+    // Delete all conversations about this post first
+    const conversationsResult = await query(`
+      SELECT id FROM conversations WHERE post_id = $1
+    `, [postId]);
+    
+    const conversationIds = conversationsResult.rows.map(row => row.id);
+    
+    if (conversationIds.length > 0) {
+      // Delete all messages in these conversations
+      await query(`
+        DELETE FROM messages WHERE conversation_id = ANY($1)
+      `, [conversationIds]);
+      
+      // Delete the conversations themselves
+      await query(`
+        DELETE FROM conversations WHERE post_id = $1
+      `, [postId]);
+      
+      console.log(`🗑️ Deleted ${conversationIds.length} conversations and their messages for post ${postId}`);
+    }
+
     // Mark post as inactive (soft delete)
     await query(`
       UPDATE posts 
@@ -732,7 +783,7 @@ router.delete('/posts/:postId', auth, adminAuth, async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Post deleted successfully'
+      message: 'Post and related conversations deleted successfully'
     });
 
   } catch (error) {
