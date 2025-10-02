@@ -429,7 +429,8 @@ struct RegisterView: View {
                         .foregroundColor(Color("BrandPrimary"))
                     }
                 }
-
+            }
+            
             // Additional compliance notice
             HStack(alignment: .top, spacing: 8) {
                 Image(systemName: "exclamationmark.triangle.fill")
