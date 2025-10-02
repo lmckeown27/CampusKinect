@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import ReportModal from "./ReportModal";
 import BlockUserModal from "./BlockUserModal";
 import { apiService } from "../../services/api";
+import { useAuthStore } from "../../stores/authStore";
 
 // Helper function to convert year number to descriptive name
 const getYearLabel = (year: number): string => {
@@ -49,6 +50,7 @@ const PostCard: React.FC<PostCardProps> = ({
   onEdit,
 }) => {
   const router = useRouter();
+  const user = useAuthStore(state => state.user);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -59,6 +61,9 @@ const PostCard: React.FC<PostCardProps> = ({
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [isUserBlocked, setIsUserBlocked] = useState(false);
   const [isLoadingBlockStatus, setIsLoadingBlockStatus] = useState(false);
+  
+  // Check if this is the user's own post
+  const isOwnPost = user && post.userId === String(user.id);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -267,50 +272,55 @@ const PostCard: React.FC<PostCardProps> = ({
                     gap: "8px",
                   }}
                 >
-                  <button 
-                    onClick={handleReportPost}
-                    className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
-                    style={{
-                      backgroundColor: "#dc2626",
-                      color: "white",
-                      border: "2px solid #dc2626",
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#ef4444";
-                      e.currentTarget.style.border = "2px solid #ef4444";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#dc2626";
-                      e.currentTarget.style.border = "2px solid #dc2626";
-                    }}
-                  >
-                    <Flag size={16} />
-                    <span>Report Post</span>
-                  </button>
+                  {/* Only show Report/Block buttons if not own post */}
+                  {!isOwnPost && (
+                    <>
+                      <button 
+                        onClick={handleReportPost}
+                        className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                        style={{
+                          backgroundColor: "#dc2626",
+                          color: "white",
+                          border: "2px solid #dc2626",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "#ef4444";
+                          e.currentTarget.style.border = "2px solid #ef4444";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "#dc2626";
+                          e.currentTarget.style.border = "2px solid #dc2626";
+                        }}
+                      >
+                        <Flag size={16} />
+                        <span>Report Post</span>
+                      </button>
 
-                  {post.poster && (
-                    <button
-                      onClick={handleBlockUser}
-                      className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
-                      style={{
-                        backgroundColor: "#dc2626",
-                        color: "white",
-                        border: "2px solid #dc2626",
-                        cursor: "pointer",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#ef4444";
-                        e.currentTarget.style.border = "2px solid #ef4444";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#dc2626";
-                        e.currentTarget.style.border = "2px solid #dc2626";
-                      }}
-                    >
-                      <Shield size={16} />
-                      <span>Block User</span>
-                    </button>
+                      {post.poster && (
+                        <button
+                          onClick={handleBlockUser}
+                          className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                          style={{
+                            backgroundColor: "#dc2626",
+                            color: "white",
+                            border: "2px solid #dc2626",
+                            cursor: "pointer",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "#ef4444";
+                            e.currentTarget.style.border = "2px solid #ef4444";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "#dc2626";
+                            e.currentTarget.style.border = "2px solid #dc2626";
+                          }}
+                        >
+                          <Shield size={16} />
+                          <span>Block User</span>
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               )}
