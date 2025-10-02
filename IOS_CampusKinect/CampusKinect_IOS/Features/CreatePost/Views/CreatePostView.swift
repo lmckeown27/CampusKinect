@@ -52,17 +52,12 @@ struct CreatePostView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)
+            .onTapGesture {
+                hideKeyboard()
+            }
         }
         .navigationTitle("Create Post")
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") {
-                        hideKeyboard()
-                    }
-                }
-            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     postButton
@@ -293,14 +288,6 @@ struct CreatePostView: View {
             
             TextField("Add a location...", text: $location)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Done") {
-                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        }
-                    }
-                }
         }
     }
     
