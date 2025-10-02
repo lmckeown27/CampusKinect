@@ -211,6 +211,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // API routes
 app.use(`/api/${process.env.API_VERSION || 'v1'}/auth`, authRoutes);
+// Register userBlocking routes BEFORE userRoutes so /users/blocked matches before /users/:id
+app.use(`/api/${process.env.API_VERSION || 'v1'}/users`, userBlockingRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/users`, userRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/posts`, postRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/messages`, messageRoutes);
@@ -222,7 +224,6 @@ app.use(`/api/${process.env.API_VERSION || 'v1'}/reshuffle`, reshuffleRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/market-size`, marketSizeRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/notifications`, notificationsRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/reports`, reportsRoutes);
-app.use(`/api/${process.env.API_VERSION || 'v1'}/users`, userBlockingRoutes);
 app.use(`/api/${process.env.API_VERSION || 'v1'}/admin`, adminRoutes);// Only register mobile routes if they loaded successfully
 if (mobileRoutes) {
   app.use(`/api/${process.env.API_VERSION || 'v1'}/mobile`, mobileRoutes);

@@ -1187,7 +1187,9 @@ router.get('/', [
       LEFT JOIN post_images pi ON p.id = pi.post_id
       LEFT JOIN post_tags pt ON p.id = pt.post_id
       LEFT JOIN tags t ON pt.tag_id = t.id
+      LEFT JOIN user_blocks ub ON ub.blocker_id = ${user ? user.id : null} AND ub.blocked_id = p.user_id
       WHERE p.is_active = true
+        AND ub.id IS NULL
     `;
 
     const queryParams = [];
