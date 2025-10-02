@@ -89,23 +89,29 @@ struct TermsOfServiceView: View {
                     // Action Buttons
                     HStack(spacing: 12) {
                         // Decline Button
-                        Button("Decline") {
+                        Button(action: {
                             onDecline()
                             isPresented = false
+                        }) {
+                            Text("Decline")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .contentShape(Rectangle())
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
                         .background(Color(.systemGray5))
                         .foregroundColor(.primary)
                         .cornerRadius(12)
                         
                         // Accept Button
-                        Button("Accept") {
+                        Button(action: {
                             // Immediate response - no delays
                             showingRememberChoicePopup = true
+                        }) {
+                            Text("Accept")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .contentShape(Rectangle())
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
                         .background(hasScrolledToBottom ? Color(red: 0.5, green: 0.5, blue: 0.0) : Color(.systemGray4))
                         .foregroundColor(.white)
                         .cornerRadius(12)
