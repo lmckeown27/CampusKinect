@@ -18,6 +18,7 @@ struct CampusKinectApp: App {
             ContentView()
                 .environmentObject(authManager)
                 .environmentObject(networkMonitor)
+                .tint(.campusOlive400) // Global tint for ProgressViews and other interactive elements
                 .onAppear {
                     setupApp()
                 }

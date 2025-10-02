@@ -15,7 +15,7 @@ struct TermsOfServiceView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "doc.text.fill")
                         .font(.system(size: 40))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.campusOlive400)
                     
                     Text(TermsOfServiceContent.title)
                         .font(.title2)
