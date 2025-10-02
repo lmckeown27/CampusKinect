@@ -39,16 +39,6 @@ struct EditProfileView: View {
                                 .disableAutocorrection(true)
                         }
                         
-                        // Display Name Field
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Display Name")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            TextField("Enter display name", text: $viewModel.displayName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        
                         // First Name Field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("First Name")
@@ -67,48 +57,6 @@ struct EditProfileView: View {
                             
                             TextField("Enter last name", text: $viewModel.lastName)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        
-                        // Year Field
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Year")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            TextField("Enter year (e.g., 2)", text: $viewModel.year)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .keyboardType(.numberPad)
-                        }
-                        
-                        // Major Field
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Major")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            TextField("Enter major", text: $viewModel.major)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        
-                        // Hometown Field
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Hometown")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            TextField("Enter hometown", text: $viewModel.hometown)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        
-                        // Bio Field
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Bio")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            TextField("Tell us about yourself", text: $viewModel.bio, axis: .vertical)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .lineLimit(3...6)
                         }
                     }
                     

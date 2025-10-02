@@ -152,23 +152,13 @@ struct User: Codable, Identifiable, Equatable {
 // MARK: - Update Profile Request
 struct UpdateProfileRequest: Codable {
     let username: String?
-    let displayName: String?
     let firstName: String?
     let lastName: String?
-    let year: String?
-    let major: String?
-    let hometown: String?
-    let bio: String?
     
     enum CodingKeys: String, CodingKey {
         case username
-        case displayName
         case firstName
         case lastName
-        case year
-        case major
-        case hometown
-        case bio
     }
 }
 

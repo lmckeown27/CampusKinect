@@ -11,13 +11,8 @@ import UIKit
 @MainActor
 class EditProfileViewModel: ObservableObject {
     @Published var username: String = ""
-    @Published var displayName: String = ""
     @Published var firstName: String = ""
     @Published var lastName: String = ""
-    @Published var year: String = ""
-    @Published var major: String = ""
-    @Published var hometown: String = ""
-    @Published var bio: String = ""
     @Published var profileImage: UIImage?
     @Published var profileImageUrl: String?
     
@@ -38,13 +33,8 @@ class EditProfileViewModel: ObservableObject {
         guard let user = authManager?.currentUser else { return }
         
         username = user.username ?? ""
-        displayName = user.displayName
         firstName = user.firstName
         lastName = user.lastName
-        year = user.year ?? ""
-        major = user.major ?? ""
-        hometown = user.hometown ?? ""
-        bio = user.bio ?? ""
         profileImageUrl = user.profilePicture
     }
     
@@ -61,13 +51,8 @@ class EditProfileViewModel: ObservableObject {
             // Then update profile data
             let updateRequest = UpdateProfileRequest(
                 username: username.isEmpty ? nil : username,
-                displayName: displayName.isEmpty ? nil : displayName,
                 firstName: firstName.isEmpty ? nil : firstName,
-                lastName: lastName.isEmpty ? nil : lastName,
-                year: year.isEmpty ? nil : year,
-                major: major.isEmpty ? nil : major,
-                hometown: hometown.isEmpty ? nil : hometown,
-                bio: bio.isEmpty ? nil : bio
+                lastName: lastName.isEmpty ? nil : lastName
             )
             
             guard let currentUser = authManager?.currentUser else {
@@ -136,8 +121,7 @@ class EditProfileViewModel: ObservableObject {
     }
     
     func validateForm() -> Bool {
-        return !displayName.trimmingCharacters(in: .whitespaces).isEmpty &&
-               !firstName.trimmingCharacters(in: .whitespaces).isEmpty &&
+        return !firstName.trimmingCharacters(in: .whitespaces).isEmpty &&
                !lastName.trimmingCharacters(in: .whitespaces).isEmpty
     }
     
