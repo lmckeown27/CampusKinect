@@ -102,6 +102,8 @@ struct ReportRowView: View {
                         .foregroundColor(.secondary)
                 }
                 
+                Spacer(minLength: 0)
+                
                 // Chevron
                 Image(systemName: "chevron.right")
                     .font(.caption)
@@ -109,11 +111,12 @@ struct ReportRowView: View {
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .background(backgroundView)
         .overlay(overlayView)
-        .contentShape(Rectangle())
     }
     
     private var backgroundView: some View {
