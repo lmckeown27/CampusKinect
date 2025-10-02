@@ -23,6 +23,7 @@ struct ContentReport: Codable, Identifiable {
     
     // Content details
     let postTitle: String?
+    let postDescription: String?
     let messageContent: String?
     let postMedia: PostMedia?
     let conversationHistory: [ConversationMessage]?
@@ -45,6 +46,7 @@ struct ContentReport: Codable, Identifiable {
         case reportedUsername = "reported_username"
         case reportedDisplayName = "reported_display_name"
         case postTitle = "post_title"
+        case postDescription = "post_description"
         case messageContent = "message_content"
         case postMedia = "post_media"
         case conversationHistory = "conversation_history"
@@ -54,6 +56,11 @@ struct ContentReport: Codable, Identifiable {
     struct PostMedia: Codable {
         let imageUrl: String?
         let thumbnailUrl: String?
+        
+        enum CodingKeys: String, CodingKey {
+            case imageUrl = "imageUrl"
+            case thumbnailUrl = "thumbnailUrl"
+        }
         
         var fullImageUrl: String? {
             guard let imageUrl = imageUrl else { return nil }
@@ -208,7 +215,14 @@ struct ContentReport: Codable, Identifiable {
     var fullContentDescription: String {
         switch contentType {
         case .post:
-            return postTitle ?? "No post content available"
+            var content = ""
+            if let title = postTitle, !title.isEmpty {
+                content += "Title: \(title)\n\n"
+            }
+            if let description = postDescription, !description.isEmpty {
+                content += description
+            }
+            return content.isEmpty ? "No post content available" : content
         case .message:
             return messageContent ?? "No message content available"
         case .user:

@@ -73,7 +73,8 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
         u1.display_name as reporter_display_name,
         u2.username as reported_username,
         u2.display_name as reported_display_name,
-        p.description as post_title,
+        p.title as post_title,
+        p.description as post_description,
         p.camera_metadata as post_media,
         m.content as message_content,
         m.conversation_id as conversation_id

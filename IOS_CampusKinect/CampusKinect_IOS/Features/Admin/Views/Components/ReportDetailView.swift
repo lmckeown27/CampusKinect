@@ -589,7 +589,8 @@ struct StatusBadge: View {
             reporterDisplayName: "Reporter User",
             reportedUsername: "bad_user",
             reportedDisplayName: "Bad User",
-            postTitle: "Selling banned substances on campus. Meet me behind the library at midnight. Cash only. No questions asked.",
+            postTitle: "Urgent Housing Offer",
+            postDescription: "Selling banned substances on campus. Meet me behind the library at midnight. Cash only. No questions asked.",
             messageContent: nil,
             postMedia: nil,
             conversationHistory: nil

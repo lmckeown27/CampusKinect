@@ -108,11 +108,12 @@ struct ReportRowView: View {
                     .foregroundColor(.secondary)
             }
             .padding(.vertical, 8)
+            .padding(.horizontal, 12)
         }
         .buttonStyle(.plain)
-        .contentShape(Rectangle())
         .background(backgroundView)
         .overlay(overlayView)
+        .contentShape(Rectangle())
     }
     
     private var backgroundView: some View {
@@ -280,7 +281,8 @@ struct LoadMoreView: View {
                     reporterDisplayName: "Reporter User",
                     reportedUsername: "bad_user",
                     reportedDisplayName: "Bad User",
-                    postTitle: "Looking for a roommate for Spring semester. 2BR apartment near campus. $600/month utilities included. Must be clean and quiet.",
+                    postTitle: "Roommate Needed - Spring Semester",
+                    postDescription: "Looking for a roommate for Spring semester. 2BR apartment near campus. $600/month utilities included. Must be clean and quiet.",
                     messageContent: nil,
                     postMedia: nil,
                     conversationHistory: nil
