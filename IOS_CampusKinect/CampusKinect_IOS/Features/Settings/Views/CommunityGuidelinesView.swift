@@ -1,13 +1,6 @@
-//
-//  TermsView.swift
-//  CampusKinect_IOS
-//
-//  Created by Liam McKeown on 9/16/25.
-//
-
 import SwiftUI
 
-struct TermsView: View {
+struct CommunityGuidelinesView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -20,7 +13,7 @@ struct TermsView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Terms of Service")
+            .navigationTitle("Community Guidelines")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -34,5 +27,5 @@ struct TermsView: View {
 }
 
 #Preview {
-    TermsView()
+    CommunityGuidelinesView()
 } 

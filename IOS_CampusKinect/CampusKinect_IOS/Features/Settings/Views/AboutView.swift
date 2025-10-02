@@ -12,6 +12,12 @@ struct AboutView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
+    // State for showing legal pages
+    @State private var showingPrivacyPolicy = false
+    @State private var showingTermsOfService = false
+    @State private var showingCommunityGuidelines = false
+    @State private var showingSafetyCenter = false
+    
     // iPad detection
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
@@ -47,6 +53,18 @@ struct AboutView: View {
                 }
                 .foregroundColor(Color("BrandPrimary"))
             }
+        }
+        .sheet(isPresented: $showingPrivacyPolicy) {
+            PrivacyView()
+        }
+        .sheet(isPresented: $showingTermsOfService) {
+            TermsView()
+        }
+        .sheet(isPresented: $showingCommunityGuidelines) {
+            CommunityGuidelinesView()
+        }
+        .sheet(isPresented: $showingSafetyCenter) {
+            SafetyCenterView()
         }
     }
     
@@ -125,10 +143,18 @@ struct AboutView: View {
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
-                LegalLinkRow(title: "Privacy Policy", description: "How we protect your data")
-                LegalLinkRow(title: "Terms of Service", description: "Terms and conditions of use")
-                LegalLinkRow(title: "Community Guidelines", description: "Rules for a safe community")
-                LegalLinkRow(title: "Safety Center", description: "Resources for staying safe")
+                LegalLinkRow(title: "Privacy Policy", description: "How we protect your data") {
+                    showingPrivacyPolicy = true
+                }
+                LegalLinkRow(title: "Terms of Service", description: "Terms and conditions of use") {
+                    showingTermsOfService = true
+                }
+                LegalLinkRow(title: "Community Guidelines", description: "Rules for a safe community") {
+                    showingCommunityGuidelines = true
+                }
+                LegalLinkRow(title: "Safety Center", description: "Resources for staying safe") {
+                    showingSafetyCenter = true
+                }
             }
         }
         .padding()
@@ -230,11 +256,10 @@ struct TeamMemberRow: View {
 struct LegalLinkRow: View {
     let title: String
     let description: String
+    let action: () -> Void
     
     var body: some View {
-        Button(action: {
-            // Handle legal link tap
-        }) {
+        Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: "doc.text.fill")
                     .font(.title2)
