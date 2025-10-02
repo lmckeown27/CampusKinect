@@ -18,6 +18,7 @@ struct SettingsView: View {
     @State private var showingMailComposer = false
     @State private var showingNotificationSettings = false
     @State private var showingBlockedUsers = false
+    @State private var showingMyReports = false
     @State private var showingAdminDashboard = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -129,10 +130,10 @@ struct SettingsView: View {
                     
                     SettingsRow(
                         icon: "exclamationmark.shield",
-                        title: "Report Content",
-                        subtitle: "Report inappropriate content"
+                        title: "My Reports",
+                        subtitle: "View your submitted reports"
                     ) {
-                        // This will be handled per-content item
+                        showingMyReports = true
                     }
                 }
                 
@@ -215,6 +216,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingNotificationSettings) {
             NotificationSettingsView()
+        }
+        .sheet(isPresented: $showingMyReports) {
+            MyReportsView()
         }
         .sheet(isPresented: $showingAdminDashboard) {
             AdminDashboardView()

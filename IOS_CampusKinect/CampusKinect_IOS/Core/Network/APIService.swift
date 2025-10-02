@@ -734,6 +734,15 @@ extension APIService {
         
         return response.data
     }
+    
+    /// Get user's submitted reports
+    func getMyReports() async throws -> [UserReport] {
+        let response: MyReportsResponse = try await performRequest(
+            endpoint: "/reports/my-reports"
+        )
+        
+        return response.data
+    }
 }
 
 // MARK: - Notification Request/Response Models
@@ -823,4 +832,8 @@ struct BlockedUsersResponse: Codable {
     let data: [BlockedUser]
 }
 
+struct MyReportsResponse: Codable {
+    let success: Bool
+    let data: [UserReport]
+}
 
