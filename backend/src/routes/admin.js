@@ -83,11 +83,18 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
       LEFT JOIN users u2 ON cr.reported_user_id = u2.id
       LEFT JOIN posts p ON cr.content_type = 'post' AND cr.content_id::text = p.id::text
       LEFT JOIN post_images pi ON p.id = pi.post_id AND pi.image_order = 0
-      LEFT JOIN messages m ON cr.content_type = 'message' AND cr.content_id::text = m.id::text
+      LEFT JOIN messages m ON cr.content_type = 'message' AND cr.content_id::integer = m.id
       WHERE cr.status = 'pending'
       ORDER BY cr.created_at ASC
       LIMIT $1 OFFSET $2
     `, [limit, offset]);
+
+    console.log(`📊 Found ${reportsResult.rows.length} pending reports`);
+    reportsResult.rows.forEach(report => {
+      if (report.content_type === 'message') {
+        console.log(`📋 Message report ${report.id}: content_id=${report.content_id}, conversation_id=${report.conversation_id}`);
+      }
+    });
 
     // Get total count
     const countResult = await query(`
@@ -102,7 +109,8 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
     const reportsWithHistory = await Promise.all(
       reportsResult.rows.map(async (report) => {
         if (report.content_type === 'message' && report.conversation_id) {
-          // Fetch last 20 messages from the conversation for context
+          // Fetch ALL messages from the conversation for full context
+          console.log(`📋 Fetching conversation history for report ${report.id}, conversation_id: ${report.conversation_id}`);
           const messagesResult = await query(`
             SELECT 
               m.id,
@@ -115,14 +123,17 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
             FROM messages m
             LEFT JOIN users u ON m.sender_id = u.id
             WHERE m.conversation_id = $1
-            ORDER BY m.created_at DESC
-            LIMIT 20
+            ORDER BY m.created_at ASC
           `, [report.conversation_id]);
+          
+          console.log(`📋 Found ${messagesResult.rows.length} messages for conversation ${report.conversation_id}`);
           
           return {
             ...report,
-            conversation_history: messagesResult.rows.reverse() // Oldest first
+            conversation_history: messagesResult.rows // Already in chronological order
           };
+        } else if (report.content_type === 'message' && !report.conversation_id) {
+          console.log(`⚠️  Message report ${report.id} has no conversation_id! content_id=${report.content_id}`);
         }
         return report;
       })

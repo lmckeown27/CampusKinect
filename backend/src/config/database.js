@@ -178,9 +178,27 @@ const createTables = async () => {
         conversation_id INTEGER REFERENCES conversations(id) ON DELETE CASCADE,
         sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         content TEXT NOT NULL,
+        message_type VARCHAR(20) DEFAULT 'text' CHECK (message_type IN ('text', 'image', 'contact', 'location', 'file')),
+        media_url VARCHAR(500),
         is_read BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        is_deleted BOOLEAN DEFAULT FALSE,
+        deleted_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        is_flagged BOOLEAN DEFAULT FALSE,
+        flag_reason VARCHAR(100),
+        flagged_at TIMESTAMP,
+        content_safety_score INTEGER DEFAULT 0
       )
+    `);
+
+    // Create indexes for messages table
+    await query(`
+      CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id);
+      CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id);
+      CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
+      CREATE INDEX IF NOT EXISTS idx_messages_is_read ON messages(is_read);
+      CREATE INDEX IF NOT EXISTS idx_messages_conversation_created ON messages(conversation_id, created_at DESC);
     `);
 
     // Message requests table
