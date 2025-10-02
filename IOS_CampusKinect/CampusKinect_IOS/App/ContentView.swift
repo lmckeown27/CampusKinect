@@ -16,6 +16,9 @@ struct ContentView: View {
     @State private var isTermsCheckComplete = false
     @State private var showingNotificationPermissionAlert = false
     
+    // UserDefaults key for tracking notification permission request
+    private let hasRequestedNotificationKey = "hasRequestedNotificationPermission"
+    
     var body: some View {
         ZStack {
             if authManager.isLoading {
@@ -54,9 +57,14 @@ struct ContentView: View {
                 // CRITICAL: Mark terms check as complete
                 isTermsCheckComplete = true
                 
-                // Show notification permission popup after terms acceptance
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    showingNotificationPermissionAlert = true
+                // Show notification permission popup ONLY if never requested before
+                let hasRequestedBefore = UserDefaults.standard.bool(forKey: hasRequestedNotificationKey)
+                if !hasRequestedBefore {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        showingNotificationPermissionAlert = true
+                    }
+                } else {
+                    print("📱 Notification permission already requested - skipping popup")
                 }
             } onDecline: {
                 // User declined terms - log them out
@@ -70,12 +78,16 @@ struct ContentView: View {
         }
         .alert("Enable Notifications?", isPresented: $showingNotificationPermissionAlert) {
             Button("Enable") {
+                // Mark as requested and request permission
+                UserDefaults.standard.set(true, forKey: hasRequestedNotificationKey)
                 Task {
                     let granted = await PushNotificationManager.shared.requestPermission()
                     print("📱 User chose to enable notifications: \(granted ? "granted" : "denied")")
                 }
             }
             Button("Not Now") {
+                // Mark as requested even if declined
+                UserDefaults.standard.set(true, forKey: hasRequestedNotificationKey)
                 print("📱 User chose not to enable notifications")
             }
         } message: {
