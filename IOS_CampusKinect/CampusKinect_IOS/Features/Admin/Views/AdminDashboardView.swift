@@ -59,7 +59,11 @@ struct AdminDashboardView: View {
     private var reportDetailBinding: Binding<Bool> {
         Binding(
             get: { _viewModel.wrappedValue.showingReportDetail },
-            set: { _viewModel.wrappedValue.showingReportDetail = $0 }
+            set: { newValue in 
+                DispatchQueue.main.async {
+                    _viewModel.wrappedValue.showingReportDetail = newValue
+                }
+            }
         )
     }
     
@@ -74,7 +78,11 @@ struct AdminDashboardView: View {
     private var unbanConfirmationBinding: Binding<Bool> {
         Binding(
             get: { _viewModel.wrappedValue.showingUnbanConfirmation },
-            set: { _viewModel.wrappedValue.showingUnbanConfirmation = $0 }
+            set: { newValue in 
+                DispatchQueue.main.async {
+                    _viewModel.wrappedValue.showingUnbanConfirmation = newValue
+                }
+            }
         )
     }
     
@@ -100,7 +108,11 @@ struct AdminDashboardView: View {
     private var errorAlertBinding: Binding<Bool> {
         Binding(
             get: { _viewModel.wrappedValue.errorMessage != nil },
-            set: { _ in _viewModel.wrappedValue.errorMessage = nil }
+            set: { _ in 
+                DispatchQueue.main.async {
+                    _viewModel.wrappedValue.errorMessage = nil
+                }
+            }
         )
     }
     
