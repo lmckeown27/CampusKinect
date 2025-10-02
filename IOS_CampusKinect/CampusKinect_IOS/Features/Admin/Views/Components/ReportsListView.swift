@@ -77,7 +77,7 @@ struct ReportRowView: View {
                     
                     // Report Details
                     HStack {
-                        ReasonBadge(reason: report.reason)
+                        ReasonBadge(reason: report.primaryReason)
                         
                         Text("•")
                             .foregroundColor(.secondary)

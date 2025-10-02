@@ -78,7 +78,7 @@ struct UrgentReportRow: View {
                         .lineLimit(2)
                     
                     HStack {
-                        ReasonBadge(reason: report.reason)
+                        ReasonBadge(reason: report.primaryReason)
                         
                         Spacer()
                         
@@ -167,7 +167,7 @@ struct RecentReportRow: View {
                         .lineLimit(2)
                     
                     HStack {
-                        ReasonBadge(reason: report.reason)
+                        ReasonBadge(reason: report.primaryReason)
                         
                         Text("•")
                             .foregroundColor(.secondary)
