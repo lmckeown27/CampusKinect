@@ -97,7 +97,7 @@ struct ReportConversationView: View {
                     // Reasons
                     VStack(spacing: 0) {
                         ForEach(ReportReason.allCases, id: \.self) { reason in
-                            ReasonCheckboxRow(
+                            ConversationReasonCheckboxRow(
                                 reason: reason,
                                 isSelected: selectedReasons.contains(reason),
                                 onTap: {
@@ -236,7 +236,7 @@ struct ReportConversationView: View {
     }
 }
 
-struct ReasonCheckboxRow: View {
+struct ConversationReasonCheckboxRow: View {
     let reason: ReportConversationView.ReportReason
     let isSelected: Bool
     let onTap: () -> Void
