@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct PostCardView: View {
     let post: Post
@@ -36,6 +37,7 @@ struct PostCardView: View {
     
     private let apiService = APIService.shared
     private let adminAPIService = AdminAPIService()
+    @State private var cancellables = Set<AnyCancellable>()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -379,11 +381,19 @@ struct PostCardView: View {
     }
     
     private func handleAdminDeletePost() {
-        Task {
-            do {
-                _ = try await adminAPIService.deletePost(postId: post.id)
-                
-                await MainActor.run {
+        adminAPIService.deletePost(postId: String(post.id))
+            .sink(
+                receiveCompletion: { [self] completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        errorMessage = "Failed to delete post. Please try again."
+                        showingErrorAlert = true
+                        print("Error deleting post: \(error)")
+                    }
+                },
+                receiveValue: { [self] _ in
                     successMessage = "Post deleted successfully"
                     showingSuccessMessage = true
                     
@@ -395,22 +405,24 @@ struct PostCardView: View {
                     // Notify to refresh feed
                     NotificationCenter.default.post(name: .postDeleted, object: post.id)
                 }
-            } catch {
-                await MainActor.run {
-                    errorMessage = "Failed to delete post. Please try again."
-                    showingErrorAlert = true
-                }
-                print("Error deleting post: \(error)")
-            }
-        }
+            )
+            .store(in: &cancellables)
     }
     
     private func handleAdminBanUser() {
-        Task {
-            do {
-                _ = try await adminAPIService.banUserAdmin(userId: post.poster.id, reason: "Banned by admin from post")
-                
-                await MainActor.run {
+        adminAPIService.banUserAdmin(userId: post.poster.id, reason: "Banned by admin from post")
+            .sink(
+                receiveCompletion: { [self] completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        errorMessage = "Failed to ban user. Please try again."
+                        showingErrorAlert = true
+                        print("Error banning user: \(error)")
+                    }
+                },
+                receiveValue: { [self] _ in
                     successMessage = "User banned successfully"
                     showingSuccessMessage = true
                     
@@ -422,14 +434,8 @@ struct PostCardView: View {
                     // Notify to refresh feed
                     NotificationCenter.default.post(name: .userBanned, object: post.poster.id)
                 }
-            } catch {
-                await MainActor.run {
-                    errorMessage = "Failed to ban user. Please try again."
-                    showingErrorAlert = true
-                }
-                print("Error banning user: \(error)")
-            }
-        }
+            )
+            .store(in: &cancellables)
     }
     
     private var isAdmin: Bool {
