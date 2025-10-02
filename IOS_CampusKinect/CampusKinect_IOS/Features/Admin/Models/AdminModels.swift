@@ -24,8 +24,8 @@ struct ContentReport: Codable, Identifiable {
     // Content details
     let postTitle: String?
     let postDescription: String?
+    let postImageUrl: String?
     let messageContent: String?
-    let postMedia: PostMedia?
     let conversationHistory: [ConversationMessage]?
     
     enum CodingKeys: String, CodingKey {
@@ -47,28 +47,18 @@ struct ContentReport: Codable, Identifiable {
         case reportedDisplayName = "reported_display_name"
         case postTitle = "post_title"
         case postDescription = "post_description"
+        case postImageUrl = "post_image_url"
         case messageContent = "message_content"
-        case postMedia = "post_media"
         case conversationHistory = "conversation_history"
     }
     
-    // Helper structs for nested data
-    struct PostMedia: Codable {
-        let imageUrl: String?
-        let thumbnailUrl: String?
-        
-        enum CodingKeys: String, CodingKey {
-            case imageUrl = "imageUrl"
-            case thumbnailUrl = "thumbnailUrl"
+    // Computed property for full image URL
+    var fullPostImageUrl: String? {
+        guard let imageUrl = postImageUrl else { return nil }
+        if imageUrl.starts(with: "http") {
+            return imageUrl
         }
-        
-        var fullImageUrl: String? {
-            guard let imageUrl = imageUrl else { return nil }
-            if imageUrl.starts(with: "http") {
-                return imageUrl
-            }
-            return "\(APIConstants.baseURL)\(imageUrl)"
-        }
+        return "\(APIConstants.baseURL)\(imageUrl)"
     }
     
     struct ConversationMessage: Codable, Identifiable {

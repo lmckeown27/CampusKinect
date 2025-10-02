@@ -283,8 +283,8 @@ struct LoadMoreView: View {
                     reportedDisplayName: "Bad User",
                     postTitle: "Roommate Needed - Spring Semester",
                     postDescription: "Looking for a roommate for Spring semester. 2BR apartment near campus. $600/month utilities included. Must be clean and quiet.",
+                    postImageUrl: nil,
                     messageContent: nil,
-                    postMedia: nil,
                     conversationHistory: nil
                 )
             ],

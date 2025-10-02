@@ -154,7 +154,7 @@ struct ReportDetailView: View {
                 }
                 
                 // Post image if available
-                if report.contentType == .post, let media = report.postMedia, let imageUrl = media.fullImageUrl {
+                if report.contentType == .post, let imageUrl = report.fullPostImageUrl {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Attached Image")
                             .font(.subheadline)
@@ -591,8 +591,8 @@ struct StatusBadge: View {
             reportedDisplayName: "Bad User",
             postTitle: "Urgent Housing Offer",
             postDescription: "Selling banned substances on campus. Meet me behind the library at midnight. Cash only. No questions asked.",
+            postImageUrl: nil,
             messageContent: nil,
-            postMedia: nil,
             conversationHistory: nil
         ),
         viewModel: AdminDashboardViewModel()

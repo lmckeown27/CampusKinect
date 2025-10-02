@@ -236,8 +236,8 @@ struct RecentReportRow: View {
                         reportedDisplayName: "Bad User One",
                         postTitle: "CS 101 Tutoring",
                         postDescription: "Need help with CS 101 homework. Will pay $20/hour for tutoring. Must know Python and data structures.",
+                        postImageUrl: nil,
                         messageContent: nil,
-                        postMedia: nil,
                         conversationHistory: nil
                     )
                 ],
@@ -265,8 +265,8 @@ struct RecentReportRow: View {
                         reportedDisplayName: "Spammer User",
                         postTitle: nil,
                         postDescription: nil,
+                        postImageUrl: nil,
                         messageContent: "Buy my product now! Click here for amazing deals!",
-                        postMedia: nil,
                         conversationHistory: nil
                     )
                 ],

@@ -75,13 +75,14 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
         u2.display_name as reported_display_name,
         p.title as post_title,
         p.description as post_description,
-        p.camera_metadata as post_media,
+        pi.image_url as post_image_url,
         m.content as message_content,
         m.conversation_id as conversation_id
       FROM content_reports cr
       LEFT JOIN users u1 ON cr.reporter_id = u1.id
       LEFT JOIN users u2 ON cr.reported_user_id = u2.id
       LEFT JOIN posts p ON cr.content_type = 'post' AND cr.content_id::text = p.id::text
+      LEFT JOIN post_images pi ON p.id = pi.post_id AND pi.image_order = 0
       LEFT JOIN messages m ON cr.content_type = 'message' AND cr.content_id::text = m.id::text
       WHERE cr.status = 'pending'
       ORDER BY cr.created_at ASC
