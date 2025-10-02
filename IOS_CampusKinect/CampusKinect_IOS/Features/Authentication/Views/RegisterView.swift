@@ -387,13 +387,12 @@ struct RegisterView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     
                     // Flowing text with inline tappable links
-                    ViewThatFits {
-                        // Try single line first
-                        HStack(spacing: 0) {
-                            Text("By creating an account, you agree to our ")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("By creating an account, you agree to our")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        HStack(spacing: 4) {
                             Button(action: { showingTerms = true }) {
                                 Text("Terms of Service")
                                     .font(.caption)
@@ -402,7 +401,7 @@ struct RegisterView: View {
                                     .underline()
                             }
                             
-                            Text(" and ")
+                            Text("and")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
@@ -412,45 +411,6 @@ struct RegisterView: View {
                                     .fontWeight(.medium)
                                     .foregroundColor(Color("BrandPrimary"))
                                     .underline()
-                            }
-                            
-                            Text(".")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        // Wrap if needed
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 0) {
-                                Text("By creating an account, you agree to our ")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                Button(action: { showingTerms = true }) {
-                                    Text("Terms of Service")
-                                        .font(.caption)
-                                        .fontWeight(.medium)
-                                        .foregroundColor(Color("BrandPrimary"))
-                                        .underline()
-                                }
-                            }
-                            
-                            HStack(spacing: 0) {
-                                Text("and ")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                Button(action: { showingPrivacy = true }) {
-                                    Text("Privacy Policy")
-                                        .font(.caption)
-                                        .fontWeight(.medium)
-                                        .foregroundColor(Color("BrandPrimary"))
-                                        .underline()
-                                }
-                                
-                                Text(".")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
                             }
                         }
                     }
