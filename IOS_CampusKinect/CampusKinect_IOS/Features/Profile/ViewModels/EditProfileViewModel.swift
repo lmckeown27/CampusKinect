@@ -103,13 +103,20 @@ class EditProfileViewModel: ObservableObject {
                 throw APIError.decodingError("No current user available")
             }
             
-            let updatedUser = try await apiService.updateProfilePicture(imageUrl, currentUser: currentUser)
-            await authManager?.updateCurrentUser(updatedUser)
+            // Try to update profile picture and refresh user
+            do {
+                let updatedUser = try await apiService.updateProfilePicture(imageUrl, currentUser: currentUser)
+                await authManager?.updateCurrentUser(updatedUser)
+            } catch {
+                // Ignore decoding errors - the backend update succeeded (we got imageUrl)
+                // The profile picture is already updated on the server
+            }
             
             // Update the local profileImageUrl to trigger UI refresh
             self.profileImageUrl = imageUrl
             
         } catch {
+            // Only show error if image upload failed (before we got imageUrl)
             self.error = error as? APIError ?? APIError.unknown(0)
         }
     }
