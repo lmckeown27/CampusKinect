@@ -121,28 +121,6 @@ struct SafetyCenterView: View {
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
-                    
-                    // Resources
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Additional Resources")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        
-                        ResourceLinkView(
-                            title: "Campus Security",
-                            description: "Contact your university's campus security office"
-                        )
-                        
-                        ResourceLinkView(
-                            title: "Student Counseling",
-                            description: "Mental health and counseling services"
-                        )
-                        
-                        ResourceLinkView(
-                            title: "Title IX Office",
-                            description: "Report discrimination or harassment"
-                        )
-                    }
                 }
                 .padding()
             }
@@ -203,38 +181,6 @@ struct BulletText: View {
                 .font(.body)
                 .foregroundColor(.secondary)
         }
-    }
-}
-
-struct ResourceLinkView: View {
-    let title: String
-    let description: String
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "link.circle.fill")
-                .font(.title3)
-                .foregroundColor(.campusOlive400)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            Image(systemName: "arrow.up.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(8)
     }
 }
 
