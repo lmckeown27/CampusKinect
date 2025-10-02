@@ -78,7 +78,7 @@ struct UrgentReportRow: View {
                         .lineLimit(2)
                     
                     HStack {
-                        ReasonBadge(reason: report.primaryReason)
+                        ReasonBadge(reason: report.reason)
                         
                         Spacer()
                         
@@ -167,7 +167,7 @@ struct RecentReportRow: View {
                         .lineLimit(2)
                     
                     HStack {
-                        ReasonBadge(reason: report.primaryReason)
+                        ReasonBadge(reason: report.reason)
                         
                         Text("•")
                             .foregroundColor(.secondary)
@@ -223,7 +223,7 @@ struct RecentReportRow: View {
                         reportedUserId: 201,
                         contentId: "301",
                         contentType: .post,
-                        reason: "harassment",
+                        reason: .harassment,
                         details: "Urgent harassment case",
                         status: .pending,
                         moderatorId: nil,
@@ -253,7 +253,7 @@ struct RecentReportRow: View {
                         reportedUserId: 202,
                         contentId: "302",
                         contentType: .message,
-                        reason: "spam",
+                        reason: .spam,
                         details: "Spam message",
                         status: .pending,
                         moderatorId: nil,

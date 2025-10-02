@@ -77,7 +77,7 @@ struct ReportRowView: View {
                     
                     // Report Details
                     HStack {
-                        ReasonBadge(reason: report.primaryReason)
+                        ReasonBadge(reason: report.reason)
                         
                         Text("•")
                             .foregroundColor(.secondary)
@@ -273,7 +273,7 @@ struct LoadMoreView: View {
                     reportedUserId: 201,
                     contentId: "301",
                     contentType: .post,
-                    reason: "harassment, inappropriate_content",
+                    reason: .harassment,
                     details: "This user is sending threatening messages",
                     status: .pending,
                     moderatorId: nil,

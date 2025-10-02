@@ -203,12 +203,14 @@ struct ReportConversationView: View {
     private func submitReport() {
         isSubmitting = true
         
-        guard !selectedReasons.isEmpty else {
+        // Use the first selected reason as the primary reason
+        guard let primaryReason = selectedReasons.first else {
             return
         }
         
-        // Send all reasons as comma-separated string
+        // Combine all reasons if multiple selected
         let reasonsString = selectedReasons.map { $0.rawValue }.joined(separator: ", ")
+        let fullDetails = "Reported conversation with \(conversationWith). Reasons: \(reasonsString). " + (additionalDetails.isEmpty ? "" : additionalDetails)
         
         Task {
             do {
@@ -216,8 +218,8 @@ struct ReportConversationView: View {
                 _ = try await APIService.shared.reportContent(
                     contentId: messageId,
                     contentType: "message",
-                    reason: reasonsString,
-                    details: additionalDetails.isEmpty ? nil : additionalDetails
+                    reason: primaryReason.rawValue,
+                    details: fullDetails
                 )
                 
                 await MainActor.run {
