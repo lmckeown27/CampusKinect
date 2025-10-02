@@ -13,6 +13,25 @@ if [ $? -ne 0 ]; then
 fi
 echo ""
 
+# Run database migrations FIRST (before code changes)
+echo "📊 Running database migrations..."
+if [ -d "backend/migrations" ]; then
+    for migration in backend/migrations/*.sql; do
+        if [ -f "$migration" ]; then
+            echo "  Running $(basename $migration)..."
+            sudo -u postgres psql -d "$(grep -oP 'postgresql://[^:]+:[^@]+@[^/]+/\K[^?]+' backend/.env.production 2>/dev/null || echo 'campuskinect')" -f "$migration"
+            if [ $? -eq 0 ]; then
+                echo "  ✅ $(basename $migration) completed"
+            else
+                echo "  ⚠️  $(basename $migration) failed (might already be applied)"
+            fi
+        fi
+    done
+else
+    echo "  ℹ️  No migrations directory found, skipping..."
+fi
+echo ""
+
 # Stash any local changes to tracked files
 echo "💾 Stashing local changes..."
 git stash push -m "Auto-stash before deployment $(date +%Y%m%d_%H%M%S)"
