@@ -41,6 +41,10 @@ struct ReportDetailView: View {
                 }
                 .padding()
             }
+            .background(Color(.systemBackground))
+            .onTapGesture {
+                hideKeyboard()
+            }
             .navigationTitle("Report Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -504,6 +508,10 @@ struct ReportDetailView: View {
         displayFormatter.dateStyle = .full
         displayFormatter.timeStyle = .short
         return displayFormatter.string(from: date)
+    }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
