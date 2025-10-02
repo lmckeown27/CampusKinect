@@ -60,7 +60,7 @@ struct ContentReport: Codable, Identifiable {
             if imageUrl.starts(with: "http") {
                 return imageUrl
             }
-            return "\(APIService.shared.baseURL)\(imageUrl)"
+            return "\(APIConstants.baseURL)\(imageUrl)"
         }
     }
     
@@ -88,7 +88,7 @@ struct ContentReport: Codable, Identifiable {
             if mediaUrl.starts(with: "http") {
                 return mediaUrl
             }
-            return "\(APIService.shared.baseURL)\(mediaUrl)"
+            return "\(APIConstants.baseURL)\(mediaUrl)"
         }
     }
     
