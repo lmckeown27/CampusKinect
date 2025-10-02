@@ -384,29 +384,38 @@ struct RegisterView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
                     
-                    HStack(spacing: 4) {
-                        Text("By creating an account, you agree to our")
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 0) {
+                            Text("By creating an account, you agree to our ")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Button("Terms of Service") {
+                                showingTerms = true
+                            }
                             .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Button("Terms of Service") {
-                            showingTerms = true
+                            .fontWeight(.medium)
+                            .foregroundColor(Color("BrandPrimary"))
                         }
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(Color("BrandPrimary"))
                         
-                        Text("and")
+                        HStack(spacing: 0) {
+                            Text("and ")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Button("Privacy Policy") {
+                                showingPrivacy = true
+                            }
                             .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Button("Privacy Policy") {
-                            showingPrivacy = true
+                            .fontWeight(.medium)
+                            .foregroundColor(Color("BrandPrimary"))
+                            
+                            Text(".")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(Color("BrandPrimary"))
                     }
                 }
             }
@@ -486,6 +495,7 @@ struct CompliancePoint: View {
             Text(text)
                 .font(.caption)
                 .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
