@@ -108,7 +108,7 @@ router.put('/profile', [
   auth,
   requireVerification,
   body('username').optional().isLength({ min: 3, max: 30 }).matches(/^[a-zA-Z0-9_]+$/).withMessage('Username must be 3-30 characters and contain only letters, numbers, and underscores'),
-  body('displayName').optional().isLength({ min: 1, max: 100 }).withMessage('Display name must be 1-100 characters'),
+  // Note: displayName is auto-generated from firstName + lastName, so it's not accepted as input
   body('firstName').optional().isLength({ min: 1, max: 100 }).isAlpha().withMessage('First name must be 1-100 letters'),
   body('lastName').optional().isLength({ min: 1, max: 100 }).isAlpha().withMessage('Last name must be 1-100 letters'),
   body('year').optional().isInt({ min: 1, max: 10 }).withMessage('Year must be 1-10'),
@@ -119,7 +119,7 @@ router.put('/profile', [
 ], async (req, res) => {
   try {
     const userId = req.user.id;
-    const { username, displayName, firstName, lastName, year, major, hometown, bio } = req.body;
+    const { username, firstName, lastName, year, major, hometown, bio } = req.body;
 
     // Build update query dynamically
     const updateFields = [];
@@ -142,11 +142,8 @@ router.put('/profile', [
       queryParams.push(username);
     }
 
-    if (displayName !== undefined) {
-      paramCount++;
-      updateFields.push(`display_name = $${paramCount}`);
-      queryParams.push(displayName);
-    }
+    // Note: display_name is a GENERATED column (first_name || ' ' || last_name)
+    // It will automatically update when first_name or last_name changes
 
     if (firstName !== undefined) {
       paramCount++;
