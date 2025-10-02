@@ -5,6 +5,18 @@ const { auth } = require('../middleware/auth');
 const { validate } = require('../middleware/validation');
 const router = express.Router();
 
+// Custom validator for comma-separated reasons
+const validReasons = [
+  'harassment', 'hate_speech', 'spam', 'inappropriate_content', 
+  'scam', 'violence', 'sexual_content', 'false_information', 'other'
+];
+
+const validateReasons = (value) => {
+  // Allow single reason or comma-separated list
+  const reasons = value.split(',').map(r => r.trim());
+  return reasons.every(reason => validReasons.includes(reason));
+};
+
 // @route   POST /api/v1/reports
 // @desc    Report objectionable content
 // @access  Private
@@ -12,10 +24,7 @@ router.post('/', [
   auth,
   body('contentId').isInt().withMessage('Content ID must be an integer'),
   body('contentType').isIn(['post', 'message', 'user']).withMessage('Content type must be post, message, or user'),
-  body('reason').isIn([
-    'harassment', 'hate_speech', 'spam', 'inappropriate_content', 
-    'scam', 'violence', 'sexual_content', 'false_information', 'other'
-  ]).withMessage('Invalid report reason'),
+  body('reason').custom(validateReasons).withMessage('Invalid report reason(s). Must be one or more of: ' + validReasons.join(', ')),
   body('details').optional().isLength({ max: 1000 }).withMessage('Details must be less than 1000 characters'),
   validate
 ], async (req, res) => {

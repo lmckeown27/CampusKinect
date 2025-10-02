@@ -273,7 +273,7 @@ struct LoadMoreView: View {
                     reportedUserId: 201,
                     contentId: "301",
                     contentType: .post,
-                    reason: .harassment,
+                    reason: "harassment, inappropriate_content",
                     details: "This user is sending threatening messages",
                     status: .pending,
                     moderatorId: nil,

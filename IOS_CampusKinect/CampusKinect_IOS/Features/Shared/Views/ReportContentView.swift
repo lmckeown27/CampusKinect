@@ -13,7 +13,7 @@ struct ReportContentView: View {
     let contentAuthor: String
     
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedReason: ReportReason?
+    @State private var selectedReasons: Set<ReportReason> = []
     @State private var additionalDetails = ""
     @State private var isSubmitting = false
     @State private var showingConfirmation = false
@@ -109,15 +109,21 @@ struct ReportContentView: View {
                     
                     // Report Reasons
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Why are you reporting this \(contentType.displayName.lowercased())?")
+                        Text("Why are you reporting this \(contentType.displayName.lowercased())? Select all that apply:")
                             .font(.headline)
                         
                         LazyVStack(spacing: 12) {
                             ForEach(ReportReason.allCases, id: \.self) { reason in
                                 ReportReasonRow(
                                     reason: reason,
-                                    isSelected: selectedReason == reason,
-                                    onTap: { selectedReason = reason }
+                                    isSelected: selectedReasons.contains(reason),
+                                    onTap: {
+                                        if selectedReasons.contains(reason) {
+                                            selectedReasons.remove(reason)
+                                        } else {
+                                            selectedReasons.insert(reason)
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -173,7 +179,7 @@ struct ReportContentView: View {
                     Button("Submit") {
                         submitReport()
                     }
-                    .disabled(selectedReason == nil || isSubmitting)
+                    .disabled(selectedReasons.isEmpty || isSubmitting)
                     .fontWeight(.semibold)
                 }
             }
@@ -188,16 +194,21 @@ struct ReportContentView: View {
     }
     
     private func submitReport() {
-        guard let reason = selectedReason else { return }
+        guard !selectedReasons.isEmpty else { return }
         
         isSubmitting = true
+        
+        // Send all reasons as comma-separated string
+        let reasonsString = selectedReasons.map { $0.rawValue }.joined(separator: ", ")
+        // Send all reasons as comma-separated string
+        let reasonsString = selectedReasons.map { $0.rawValue }.joined(separator: ", ")
         
         Task {
             do {
                 let success = try await APIService.shared.reportContent(
                     contentId: contentId,
                     contentType: contentType.rawValue,
-                    reason: reason.rawValue,
+                    reason: reasonsString,
                     details: additionalDetails.isEmpty ? nil : additionalDetails
                 )
                 
@@ -226,7 +237,7 @@ struct ReportReasonRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
                     .foregroundColor(isSelected ? .blue : .secondary)
                     .font(.title3)
                 

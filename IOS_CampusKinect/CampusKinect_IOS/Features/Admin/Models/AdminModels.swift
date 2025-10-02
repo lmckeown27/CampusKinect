@@ -7,7 +7,7 @@ struct ContentReport: Codable, Identifiable {
     let reportedUserId: Int
     let contentId: String
     let contentType: ContentType
-    let reason: ReportReason
+    let reason: String // Can be single reason or comma-separated list
     let details: String?
     let status: ReportStatus
     let moderatorId: Int?
@@ -54,6 +54,7 @@ struct ContentReport: Codable, Identifiable {
         case isReporterPostOwner = "is_reporter_post_owner"
     }
     
+    
     // Computed property for full image URL
     var fullPostImageUrl: String? {
         guard let imageUrl = postImageUrl else { return nil }
@@ -61,6 +62,24 @@ struct ContentReport: Codable, Identifiable {
             return imageUrl
         }
         return "\(APIConstants.baseURL)\(imageUrl)"
+    }
+    
+    // Parse comma-separated reasons into array
+    var reasons: [ReportReason] {
+        return reason.split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .compactMap { ReportReason(rawValue: $0) }
+    }
+    
+    // Display names for all reasons
+    var reasonsDisplay: String {
+        let displayNames = reasons.map { $0.displayName }
+        return displayNames.isEmpty ? "Unknown" : displayNames.joined(separator: ", ")
+    }
+    
+    // Primary reason (first one) for compatibility
+    var primaryReason: ReportReason {
+        return reasons.first ?? .other
     }
     
     struct ConversationMessage: Codable, Identifiable {
