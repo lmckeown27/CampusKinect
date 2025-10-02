@@ -80,8 +80,10 @@ struct TermsOfServiceView: View {
                             .font(.caption)
                             .foregroundColor(.orange)
                     }
+                    .frame(height: 20)
                     .padding(.horizontal)
                     .opacity(hasScrolledToBottom ? 0 : 1)
+                    
                     // Action Buttons
                     HStack(spacing: 12) {
                         // Decline Button
@@ -117,6 +119,7 @@ struct TermsOfServiceView: View {
                 }
                 .padding(.vertical)
                 .background(Color(.systemGroupedBackground))
+                .animation(nil, value: hasScrolledToBottom)
             }
             .navigationTitle("Terms of Service")
             .navigationBarTitleDisplayMode(.inline)
