@@ -24,6 +24,8 @@ struct ContentReport: Codable, Identifiable {
     // Content details
     let postTitle: String?
     let messageContent: String?
+    let postMedia: PostMedia?
+    let conversationHistory: [ConversationMessage]?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -44,6 +46,50 @@ struct ContentReport: Codable, Identifiable {
         case reportedDisplayName = "reported_display_name"
         case postTitle = "post_title"
         case messageContent = "message_content"
+        case postMedia = "post_media"
+        case conversationHistory = "conversation_history"
+    }
+    
+    // Helper structs for nested data
+    struct PostMedia: Codable {
+        let imageUrl: String?
+        let thumbnailUrl: String?
+        
+        var fullImageUrl: String? {
+            guard let imageUrl = imageUrl else { return nil }
+            if imageUrl.starts(with: "http") {
+                return imageUrl
+            }
+            return "\(APIService.shared.baseURL)\(imageUrl)"
+        }
+    }
+    
+    struct ConversationMessage: Codable, Identifiable {
+        let id: Int
+        let senderId: Int
+        let content: String?
+        let mediaUrl: String?
+        let createdAt: String
+        let username: String?
+        let displayName: String?
+        
+        enum CodingKeys: String, CodingKey {
+            case id
+            case senderId = "sender_id"
+            case content
+            case mediaUrl = "media_url"
+            case createdAt = "created_at"
+            case username
+            case displayName = "display_name"
+        }
+        
+        var fullMediaUrl: String? {
+            guard let mediaUrl = mediaUrl else { return nil }
+            if mediaUrl.starts(with: "http") {
+                return mediaUrl
+            }
+            return "\(APIService.shared.baseURL)\(mediaUrl)"
+        }
     }
     
     enum ContentType: String, Codable, CaseIterable {

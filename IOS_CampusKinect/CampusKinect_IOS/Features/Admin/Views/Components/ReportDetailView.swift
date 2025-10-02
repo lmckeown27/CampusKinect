@@ -141,16 +141,135 @@ struct ReportDetailView: View {
                         .fontWeight(.medium)
                 }
                 
-                Text(report.fullContentDescription)
-                    .font(.body)
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color(.systemGray6))
-                    )
+                // Text content
+                if !report.fullContentDescription.isEmpty {
+                    Text(report.fullContentDescription)
+                        .font(.body)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(.systemGray6))
+                        )
+                }
+                
+                // Post image if available
+                if report.contentType == .post, let media = report.postMedia, let imageUrl = media.fullImageUrl {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Attached Image")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        
+                        AsyncImage(url: URL(string: imageUrl)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(maxWidth: .infinity, minHeight: 200)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .cornerRadius(8)
+                            case .failure:
+                                Image(systemName: "photo")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.secondary)
+                                    .frame(maxWidth: .infinity, minHeight: 200)
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    }
+                }
+                
+                // Conversation history if available
+                if report.contentType == .message, let history = report.conversationHistory, !history.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Conversation History")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        
+                        VStack(spacing: 8) {
+                            ForEach(history) { message in
+                                HStack(alignment: .top, spacing: 8) {
+                                    // User indicator
+                                    VStack {
+                                        Circle()
+                                            .fill(Color.blue.opacity(0.2))
+                                            .frame(width: 32, height: 32)
+                                            .overlay(
+                                                Text((message.displayName ?? message.username ?? "U").prefix(1).uppercased())
+                                                    .font(.caption)
+                                                    .fontWeight(.semibold)
+                                            )
+                                        Spacer()
+                                    }
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        // Name and time
+                                        HStack {
+                                            Text(message.displayName ?? message.username ?? "Unknown")
+                                                .font(.caption)
+                                                .fontWeight(.semibold)
+                                            
+                                            Text(formatMessageTime(message.createdAt))
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        // Message content
+                                        if let content = message.content, !content.isEmpty {
+                                            Text(content)
+                                                .font(.body)
+                                        }
+                                        
+                                        // Message image if available
+                                        if let mediaUrl = message.fullMediaUrl {
+                                            AsyncImage(url: URL(string: mediaUrl)) { phase in
+                                                switch phase {
+                                                case .success(let image):
+                                                    image
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fit)
+                                                        .frame(maxWidth: 200)
+                                                        .cornerRadius(8)
+                                                case .failure, .empty:
+                                                    Image(systemName: "photo")
+                                                        .foregroundColor(.secondary)
+                                                @unknown default:
+                                                    EmptyView()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                .padding(8)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                            }
+                        }
+                    }
+                    .padding(.top, 8)
+                }
             }
         }
+    }
+    
+    // Helper to format message timestamp
+    private func formatMessageTime(_ dateString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        guard let date = formatter.date(from: dateString) else { return "" }
+        
+        let displayFormatter = DateFormatter()
+        displayFormatter.dateStyle = .short
+        displayFormatter.timeStyle = .short
+        return displayFormatter.string(from: date)
     }
     
     // MARK: - Report Details

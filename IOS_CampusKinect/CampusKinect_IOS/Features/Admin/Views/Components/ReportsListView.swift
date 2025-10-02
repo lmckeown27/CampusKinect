@@ -110,6 +110,7 @@ struct ReportRowView: View {
             .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
+        .contentShape(Rectangle())
         .background(backgroundView)
         .overlay(overlayView)
     }

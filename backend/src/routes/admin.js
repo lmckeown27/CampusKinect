@@ -74,7 +74,9 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
         u2.username as reported_username,
         u2.display_name as reported_display_name,
         p.description as post_title,
-        m.content as message_content
+        p.camera_metadata as post_media,
+        m.content as message_content,
+        m.conversation_id as conversation_id
       FROM content_reports cr
       LEFT JOIN users u1 ON cr.reporter_id = u1.id
       LEFT JOIN users u2 ON cr.reported_user_id = u2.id
@@ -94,10 +96,40 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
 
     const total = parseInt(countResult.rows[0].total);
 
+    // Fetch conversation history for message reports
+    const reportsWithHistory = await Promise.all(
+      reportsResult.rows.map(async (report) => {
+        if (report.content_type === 'message' && report.conversation_id) {
+          // Fetch last 20 messages from the conversation for context
+          const messagesResult = await query(`
+            SELECT 
+              m.id,
+              m.sender_id,
+              m.content,
+              m.media_url,
+              m.created_at,
+              u.username,
+              u.display_name
+            FROM messages m
+            LEFT JOIN users u ON m.sender_id = u.id
+            WHERE m.conversation_id = $1
+            ORDER BY m.created_at DESC
+            LIMIT 20
+          `, [report.conversation_id]);
+          
+          return {
+            ...report,
+            conversation_history: messagesResult.rows.reverse() // Oldest first
+          };
+        }
+        return report;
+      })
+    );
+
     res.json({
       success: true,
       data: {
-        data: reportsResult.rows,
+        data: reportsWithHistory,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
