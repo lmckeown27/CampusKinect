@@ -198,9 +198,6 @@ struct ReportContentView: View {
         
         isSubmitting = true
         
-        // Send all reasons as comma-separated string
-        let reasonsString = selectedReasons.map { $0.rawValue }.joined(separator: ", ")
-        // Send all reasons as comma-separated string
         let reasonsString = selectedReasons.map { $0.rawValue }.joined(separator: ", ")
         
         Task {
