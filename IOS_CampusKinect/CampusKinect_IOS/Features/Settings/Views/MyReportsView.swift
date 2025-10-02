@@ -18,7 +18,7 @@ struct MyReportsView: View {
                     ProgressView("Loading your reports...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if viewModel.reports.isEmpty {
-                    EmptyReportsView()
+                    UserEmptyReportsView()
                 } else {
                     List {
                         ForEach(viewModel.reports) { report in
@@ -54,7 +54,7 @@ struct ReportRow: View {
             // Header
             HStack {
                 // Status badge
-                StatusBadge(status: report.status)
+                UserReportStatusBadge(status: report.status)
                 
                 Spacer()
                 
@@ -116,8 +116,8 @@ struct ReportRow: View {
     }
 }
 
-struct StatusBadge: View {
-    let status: ReportStatus
+struct UserReportStatusBadge: View {
+    let status: UserReportStatus
     
     var body: some View {
         Text(status.displayName)
@@ -131,7 +131,7 @@ struct StatusBadge: View {
     }
 }
 
-struct EmptyReportsView: View {
+struct UserEmptyReportsView: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.shield.fill")
@@ -157,10 +157,10 @@ struct EmptyReportsView: View {
 struct UserReport: Identifiable, Codable {
     let id: Int
     let contentId: String
-    let contentType: ContentType
-    let reason: ReportReason
+    let contentType: UserReportContentType
+    let reason: UserReportReason
     let details: String?
-    let status: ReportStatus
+    let status: UserReportStatus
     let createdAt: Date
     let resolvedAt: Date?
     let moderatorNotes: String?
@@ -177,7 +177,7 @@ struct UserReport: Identifiable, Codable {
         case moderatorNotes = "moderator_notes"
     }
     
-    enum ContentType: String, Codable {
+    enum UserReportContentType: String, Codable {
         case post
         case message
         case user
@@ -199,7 +199,7 @@ struct UserReport: Identifiable, Codable {
         }
     }
     
-    enum ReportReason: String, Codable {
+    enum UserReportReason: String, Codable {
         case harassment
         case hate_speech
         case spam
@@ -226,7 +226,7 @@ struct UserReport: Identifiable, Codable {
     }
 }
 
-enum ReportStatus: String, Codable {
+enum UserReportStatus: String, Codable {
     case pending
     case reviewed
     case resolved
