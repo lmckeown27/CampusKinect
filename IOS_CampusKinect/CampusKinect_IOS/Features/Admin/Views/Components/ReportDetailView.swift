@@ -64,9 +64,12 @@ struct ReportDetailView: View {
                     handleModerationAction()
                 }
                 
-                Button("Delete Post Only", role: .destructive) {
-                    selectedAction = .deletePostOnly()
-                    handleModerationAction()
+                // Only show "Delete Post" options if reporter is not the post owner
+                if !(report.isReporterPostOwner ?? false) {
+                    Button("Delete Post Only", role: .destructive) {
+                        selectedAction = .deletePostOnly()
+                        handleModerationAction()
+                    }
                 }
                 
                 Button("Ban User Only", role: .destructive) {
@@ -74,9 +77,12 @@ struct ReportDetailView: View {
                     handleModerationAction()
                 }
                 
-                Button("Delete Post & Ban User", role: .destructive) {
-                    selectedAction = .deleteAndBan()
-                    handleModerationAction()
+                // Only show "Delete Post & Ban User" if reporter is not the post owner
+                if !(report.isReporterPostOwner ?? false) {
+                    Button("Delete Post & Ban User", role: .destructive) {
+                        selectedAction = .deleteAndBan()
+                        handleModerationAction()
+                    }
                 }
                 
                 Button("Cancel", role: .cancel) { }
@@ -601,7 +607,8 @@ struct StatusBadge: View {
             postDescription: "Selling banned substances on campus. Meet me behind the library at midnight. Cash only. No questions asked.",
             postImageUrl: nil,
             messageContent: nil,
-            conversationHistory: nil
+            conversationHistory: nil,
+            isReporterPostOwner: nil
         ),
         viewModel: AdminDashboardViewModel()
     )

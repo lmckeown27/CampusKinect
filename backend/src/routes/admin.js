@@ -75,15 +75,18 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
         u2.display_name as reported_display_name,
         p.title as post_title,
         p.description as post_description,
+        p.user_id as post_author_id,
         pi.image_url as post_image_url,
         m.content as message_content,
-        m.conversation_id as conversation_id
+        m.conversation_id as conversation_id,
+        conv.post_id as conversation_post_id
       FROM content_reports cr
       LEFT JOIN users u1 ON cr.reporter_id = u1.id
       LEFT JOIN users u2 ON cr.reported_user_id = u2.id
       LEFT JOIN posts p ON cr.content_type = 'post' AND cr.content_id::text = p.id::text
       LEFT JOIN post_images pi ON p.id = pi.post_id AND pi.image_order = 0
       LEFT JOIN messages m ON cr.content_type = 'message' AND cr.content_id::integer = m.id
+      LEFT JOIN conversations conv ON m.conversation_id = conv.id
       WHERE cr.status = 'pending'
       ORDER BY cr.created_at ASC
       LIMIT $1 OFFSET $2
@@ -105,7 +108,7 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
 
     const total = parseInt(countResult.rows[0].total);
 
-    // Fetch conversation history for message reports
+    // Fetch conversation history and post info for message reports
     const reportsWithHistory = await Promise.all(
       reportsResult.rows.map(async (report) => {
         if (report.content_type === 'message' && report.conversation_id) {
@@ -128,9 +131,35 @@ router.get('/reports/pending', auth, adminAuth, async (req, res) => {
           
           console.log(`📋 Found ${messagesResult.rows.length} messages for conversation ${report.conversation_id}`);
           
+          // Fetch post info for the conversation
+          let conversationPostInfo = null;
+          if (report.conversation_post_id) {
+            const postResult = await query(`
+              SELECT 
+                p.id,
+                p.title,
+                p.description,
+                p.user_id,
+                pi.image_url
+              FROM posts p
+              LEFT JOIN post_images pi ON p.id = pi.post_id AND pi.image_order = 0
+              WHERE p.id = $1
+            `, [report.conversation_post_id]);
+            
+            if (postResult.rows.length > 0) {
+              conversationPostInfo = postResult.rows[0];
+              console.log(`📋 Conversation about post: "${conversationPostInfo.title}" (author: ${conversationPostInfo.user_id})`);
+            }
+          }
+          
+          // Determine if reporter is the post owner
+          const isReporterPostOwner = conversationPostInfo && report.reporter_id === conversationPostInfo.user_id;
+          
           return {
             ...report,
-            conversation_history: messagesResult.rows // Already in chronological order
+            conversation_history: messagesResult.rows,
+            conversation_post_info: conversationPostInfo,
+            is_reporter_post_owner: isReporterPostOwner
           };
         } else if (report.content_type === 'message' && !report.conversation_id) {
           console.log(`⚠️  Message report ${report.id} has no conversation_id! content_id=${report.content_id}`);

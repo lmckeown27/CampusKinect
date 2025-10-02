@@ -27,6 +27,7 @@ struct ContentReport: Codable, Identifiable {
     let postImageUrl: String?
     let messageContent: String?
     let conversationHistory: [ConversationMessage]?
+    let isReporterPostOwner: Bool?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -50,6 +51,7 @@ struct ContentReport: Codable, Identifiable {
         case postImageUrl = "post_image_url"
         case messageContent = "message_content"
         case conversationHistory = "conversation_history"
+        case isReporterPostOwner = "is_reporter_post_owner"
     }
     
     // Computed property for full image URL
