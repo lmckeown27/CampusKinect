@@ -55,10 +55,8 @@ struct PostCardView: View {
             // Content
             PostContent(post: post)
             
-            // Tags
-            if !post.tags.isEmpty {
-                PostTags(tags: post.tags)
-            }
+            // Tags (always show PostTags, it will filter internally)
+            PostTags(tags: post.tags)
             
             // Images
             if post.hasImages {
@@ -809,21 +807,16 @@ struct CategoryBadge: View {
             Text(category)
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(Color.campusPrimary)
+                .foregroundColor(.white)
             
             Image(systemName: categoryIcon)
                 .font(.system(size: 16))
-                .foregroundColor(Color.campusPrimary)
+                .foregroundColor(.white)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(Color.white)
+        .background(Color.campusPrimary)
         .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.campusPrimary.opacity(0.3), lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private var categoryIcon: String {
@@ -991,14 +984,22 @@ struct ImageViewer: View {
 struct PostTags: View {
     let tags: [String]
     
+    // Filter out old duration-type tags (recurring, limited, one-time, etc.)
+    private var filteredTags: [String] {
+        let excludedTags = ["recurring", "limited", "one-time", "onetime", "permanent", "offer", "request"]
+        return tags.filter { !excludedTags.contains($0.lowercased()) }
+    }
+    
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(tags, id: \.self) { tag in
-                    TagChip(text: tag)
+        if !filteredTags.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(filteredTags, id: \.self) { tag in
+                        TagChip(text: tag)
+                    }
                 }
+                .padding(.horizontal, 2)
             }
-            .padding(.horizontal, 2)
         }
     }
 }
