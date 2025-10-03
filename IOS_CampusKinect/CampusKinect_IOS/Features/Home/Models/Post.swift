@@ -16,8 +16,6 @@ struct Post: Codable, Identifiable, Equatable {
     let postType: String
     let durationType: String
     let location: String?
-    let repostFrequency: String?
-    let isRecurring: Bool?
     let originalPostId: Int?
     let expiresAt: String?
     let eventStart: String?
@@ -45,7 +43,6 @@ struct Post: Codable, Identifiable, Equatable {
     var category: String { postType }
     var subcategory: String? { nil }
     var user: PostUser { poster }
-    var isRecurringComputed: Bool { isRecurring ?? (durationType == "recurring") }
     var userIdComputed: Int { userId ?? poster.id }
     var imageCountComputed: String { imageCount ?? String(images.count) }
     
@@ -170,8 +167,6 @@ struct BookmarkPost: Codable, Identifiable, Equatable {
             postType: postType,
             durationType: duration,
             location: location,
-            repostFrequency: nil,
-            isRecurring: duration == "recurring" ? true : nil,
             originalPostId: nil,
             expiresAt: nil,
             eventStart: nil,
@@ -234,8 +229,6 @@ struct RepostPost: Codable, Identifiable, Equatable {
             postType: postType,
             durationType: duration,
             location: location,
-            repostFrequency: nil,
-            isRecurring: duration == "recurring" ? true : nil,
             originalPostId: nil,
             expiresAt: nil,
             eventStart: nil,
