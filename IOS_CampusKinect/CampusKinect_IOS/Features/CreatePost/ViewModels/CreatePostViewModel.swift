@@ -50,10 +50,7 @@ class CreatePostViewModel: ObservableObject {
                 tags.append(subcategory.displayName)
             }
             
-            // Add offer/request tag if applicable
-            if let offerRequest = offerRequest {
-                tags.append(offerRequest.lowercased())
-            }
+            // Don't add offer/request to tags - it's already in durationType
             
             // Map category to postType
             let postType: String

@@ -1594,9 +1594,12 @@ router.post('/', [
         const post = postResult.rows[0];
         createdPosts.push(post);
 
-        // Add tags if provided
+        // Add tags if provided (filter out old duration-type tags)
         if (tags && tags.length > 0) {
-          for (const tagName of tags) {
+          const excludedTags = ['recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request'];
+          const validTags = tags.filter(tag => !excludedTags.includes(tag.toLowerCase()));
+          
+          for (const tagName of validTags) {
             // Get or create tag
             let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
             
