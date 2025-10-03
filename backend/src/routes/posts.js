@@ -1558,17 +1558,33 @@ router.post('/', [
 
     const userId = req.user.id;
     const userUniversityId = req.user.university_id;
+    const username = req.user.username;
     
     // Determine target universities for admin multi-university posting
     let universityIds = [];
     
+    // Check if user is admin (liam_mckeown38 only)
+    const isAdmin = username === 'liam_mckeown38';
+    
     if (postToAllUniversities === true) {
+      if (!isAdmin) {
+        return res.status(403).json({
+          success: false,
+          error: { message: 'Only admin can post to all universities' }
+        });
+      }
       // Admin posting to all universities
       console.log('🎓 Admin posting to ALL universities');
       const allUniversitiesResult = await query('SELECT id FROM universities ORDER BY id');
       universityIds = allUniversitiesResult.rows.map(row => row.id);
       console.log(`📍 Found ${universityIds.length} universities`);
     } else if (targetUniversities && Array.isArray(targetUniversities) && targetUniversities.length > 0) {
+      if (!isAdmin) {
+        return res.status(403).json({
+          success: false,
+          error: { message: 'Only admin can post to multiple universities' }
+        });
+      }
       // Admin posting to specific universities
       universityIds = targetUniversities;
       console.log(`🎓 Admin posting to ${universityIds.length} specific universities:`, universityIds);

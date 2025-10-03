@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CreatePostView: View {
     @StateObject private var viewModel = CreatePostViewModel()
+    @EnvironmentObject var authManager: AuthenticationManager
     @State private var title = ""
     @State private var content = ""
     @State private var selectedCategory: PostCategory?
@@ -35,9 +36,9 @@ struct CreatePostView: View {
     @State private var selectedUniversities: Set<Int> = []
     @State private var isSelectingAllUniversities = false
     
-    // Check if current user is admin (simplified for now)
+    // Check if current user is admin (liam_mckeown38 only)
     private var isAdmin: Bool {
-        return true // TODO: Implement proper admin check from backend
+        return authManager.currentUser?.username == "liam_mckeown38"
     }
     
     // Computed property to determine if we're on iPad
