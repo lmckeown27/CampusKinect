@@ -245,6 +245,11 @@ class APIService: NSObject, ObservableObject {
         // Add universityId parameter if provided (for admin viewing different universities)
         if let universityId = universityId {
             endpoint += "&universityId=\(universityId)"
+            print("🌐 APIService: Fetching posts for university ID \(universityId)")
+            print("🌐 APIService: Full endpoint: \(APIConstants.fullBaseURL)\(endpoint)")
+        } else {
+            print("🌐 APIService: Fetching posts for user's default university")
+            print("🌐 APIService: Full endpoint: \(APIConstants.fullBaseURL)\(endpoint)")
         }
         
         return try await performRequest(

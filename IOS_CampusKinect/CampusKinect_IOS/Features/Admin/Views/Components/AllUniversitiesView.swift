@@ -202,7 +202,9 @@ struct UniversityDetailRow: View {
         // View University Button
         if !isCurrentlyViewing {
             Button(action: {
+                print("🎓 Admin: Selected university ID \(university.id) - \(university.name)")
                 universitySwitcher.setViewingUniversity(id: university.id, name: university.name)
+                print("🎓 Admin: University switcher updated - currentViewingUniversityId = \(universitySwitcher.currentViewingUniversityId ?? -1)")
             }) {
                 HStack {
                     Image(systemName: "eye")

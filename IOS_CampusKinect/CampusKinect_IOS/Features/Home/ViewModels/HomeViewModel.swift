@@ -52,8 +52,10 @@ class HomeViewModel: ObservableObject {
         // Reload posts when admin switches universities
         universitySwitcher.$currentViewingUniversityId
             .dropFirst() // Skip initial value
-            .sink { [weak self] _ in
+            .sink { [weak self] newId in
+                print("🏠 HomeViewModel: University ID changed to \(newId?.description ?? "nil")")
                 Task { @MainActor in
+                    print("🏠 HomeViewModel: Reloading posts for university ID \(newId?.description ?? "nil")")
                     await self?.loadPosts()
                 }
             }
@@ -62,7 +64,9 @@ class HomeViewModel: ObservableObject {
     
     // Get the current university ID to use for API calls
     private var currentUniversityId: Int? {
-        return universitySwitcher.currentViewingUniversityId
+        let id = universitySwitcher.currentViewingUniversityId
+        print("🏠 HomeViewModel: currentUniversityId = \(id?.description ?? "nil")")
+        return id
     }
     
     // MARK: - Public Methods

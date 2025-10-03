@@ -19,13 +19,18 @@ class AdminUniversitySwitcher: ObservableObject {
     
     /// Set the university the admin wants to view
     func setViewingUniversity(id: Int, name: String) {
+        print("🎓 AdminUniversitySwitcher: BEFORE - currentViewingUniversityId = \(currentViewingUniversityId?.description ?? "nil")")
         currentViewingUniversityId = id
         currentViewingUniversityName = name
+        print("🎓 AdminUniversitySwitcher: AFTER - currentViewingUniversityId = \(currentViewingUniversityId?.description ?? "nil")")
         
         // Save to UserDefaults
         userDefaults.set(id, forKey: viewingUniversityKey)
         userDefaults.set(name, forKey: viewingUniversityNameKey)
         
+        // Verify it was saved
+        let savedId = userDefaults.object(forKey: viewingUniversityKey) as? Int
+        print("🎓 AdminUniversitySwitcher: Verified UserDefaults - savedId = \(savedId?.description ?? "nil")")
         print("🎓 Admin switched to viewing university: \(name) (ID: \(id))")
     }
     
