@@ -92,12 +92,32 @@ struct PlatformOverviewView: View {
 // MARK: - University Stats
 struct UniversityStatsView: View {
     let universities: [AnalyticsData.UniversityStats]
+    @State private var showingAllUniversities = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Top Universities")
-                .font(.title2)
-                .fontWeight(.bold)
+            HStack {
+                Text("Top Universities")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Spacer()
+                
+                if !universities.isEmpty {
+                    Button(action: {
+                        showingAllUniversities = true
+                    }) {
+                        HStack(spacing: 4) {
+                            Text("View All")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+            }
             
             if universities.isEmpty {
                 Text("No university data available")
@@ -114,11 +134,22 @@ struct UniversityStatsView: View {
                         )
                     }
                 }
+                
+                if universities.count > 5 {
+                    Text("+ \(universities.count - 5) more universities")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 4)
+                }
             }
         }
         .padding()
         .background(Color(.systemGroupedBackground))
         .cornerRadius(12)
+        .sheet(isPresented: $showingAllUniversities) {
+            AllUniversitiesView(universities: universities)
+        }
     }
 }
 
