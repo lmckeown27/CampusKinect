@@ -169,13 +169,24 @@ struct UniversityRowView: View {
                 .frame(width: 30)
             
             // University Info
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(university.name)
                     .font(.headline)
                 
-                Text("\(university.userCount) \(university.userCount == 1 ? "user" : "users")")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack(spacing: 6) {
+                    Text("ID: \(university.id)")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(4)
+                    
+                    Text("\(university.userCount) \(university.userCount == 1 ? "user" : "users")")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             
             Spacer()
