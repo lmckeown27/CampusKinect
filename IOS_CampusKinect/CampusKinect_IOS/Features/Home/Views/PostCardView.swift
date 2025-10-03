@@ -19,6 +19,9 @@ struct PostCardView: View {
     @State private var isBookmarked = false
     @State private var isReposted = false
     
+    // Owner actions
+    @State private var showingOwnerDeleteConfirmation = false
+    
     // Admin actions
     @State private var showingAdminDeleteConfirmation = false
     @State private var showingAdminBanConfirmation = false
@@ -146,6 +149,13 @@ struct PostCardView: View {
                 })
             }
             
+            // Owner actions (only show if user owns the post)
+            if post.poster.id == authManager.currentUser?.id {
+                buttons.append(.destructive(Text("Delete Post")) {
+                    showingOwnerDeleteConfirmation = true
+                })
+            }
+            
             // Regular user actions (only show if not own post)
             if post.poster.id != authManager.currentUser?.id {
                 buttons.append(.default(Text("Report Post")) {
@@ -171,6 +181,14 @@ struct PostCardView: View {
             }
         } message: {
             Text("Are you sure you want to block \(post.poster.displayName)? You won't see their posts anymore.")
+        }
+        .alert("Delete Post", isPresented: $showingOwnerDeleteConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                handleOwnerDeletePost()
+            }
+        } message: {
+            Text("Are you sure you want to delete this post? This action cannot be undone.")
         }
         .alert("Admin: Delete Post", isPresented: $showingAdminDeleteConfirmation) {
             Button("Cancel", role: .cancel) { }
@@ -435,6 +453,32 @@ struct PostCardView: View {
                 }
             )
             .store(in: &cancellables)
+    }
+    
+    private func handleOwnerDeletePost() {
+        Task {
+            do {
+                try await apiService.deletePost(post.id)
+                await MainActor.run {
+                    successMessage = "Post deleted successfully"
+                    showingSuccessMessage = true
+                    
+                    // Auto-hide success message
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        showingSuccessMessage = false
+                    }
+                    
+                    // Notify to refresh feed
+                    NotificationCenter.default.post(name: .postDeleted, object: post.id)
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Failed to delete post. Please try again."
+                    showingErrorAlert = true
+                    print("Error deleting post: \(error)")
+                }
+            }
+        }
     }
     
     private var isAdmin: Bool {

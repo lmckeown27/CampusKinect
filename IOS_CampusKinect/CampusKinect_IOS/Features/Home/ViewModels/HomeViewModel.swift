@@ -45,6 +45,7 @@ class HomeViewModel: ObservableObject {
     init() {
         // No need for search debouncing in tag-based system
         setupUniversitySwitcherObserver()
+        setupPostDeletedObserver()
     }
     
     // MARK: - University Switcher
@@ -57,6 +58,20 @@ class HomeViewModel: ObservableObject {
                 Task { @MainActor in
                     print("🏠 HomeViewModel: Reloading posts for university ID \(newId?.description ?? "nil")")
                     await self?.loadPosts()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Post Deleted Observer
+    private func setupPostDeletedObserver() {
+        // Remove deleted posts from the feed
+        NotificationCenter.default.publisher(for: .postDeleted)
+            .sink { [weak self] notification in
+                guard let postId = notification.object as? Int else { return }
+                Task { @MainActor in
+                    self?.posts.removeAll { $0.id == postId }
+                    print("🗑️ Removed deleted post \(postId) from feed")
                 }
             }
             .store(in: &cancellables)
