@@ -173,7 +173,7 @@ struct UniversityRowView: View {
                 Text(university.name)
                     .font(.headline)
                 
-                Text("\(university.userCount) users")
+                Text("\(university.userCount) \(university.userCount == 1 ? "user" : "users")")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -378,9 +378,9 @@ struct AnalyticsCard: View {
                     postsToday: 35,
                     messagesPerDay: 125,
                     topUniversities: [
-                        AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150),
-                        AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120),
-                        AnalyticsData.UniversityStats(name: "Stanford", userCount: 100)
+                        AnalyticsData.UniversityStats(id: 1, name: "Cal Poly", userCount: 150),
+                        AnalyticsData.UniversityStats(id: 2, name: "UC San Diego", userCount: 120),
+                        AnalyticsData.UniversityStats(id: 3, name: "Stanford", userCount: 100)
                     ],
                     contentTrends: [],
                     reportsByReason: [
@@ -394,9 +394,9 @@ struct AnalyticsCard: View {
             
             UniversityStatsView(
                 universities: [
-                    AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 150),
-                    AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 120),
-                    AnalyticsData.UniversityStats(name: "Stanford", userCount: 100)
+                    AnalyticsData.UniversityStats(id: 1, name: "Cal Poly", userCount: 150),
+                    AnalyticsData.UniversityStats(id: 2, name: "UC San Diego", userCount: 120),
+                    AnalyticsData.UniversityStats(id: 3, name: "Stanford", userCount: 100)
                 ]
             )
         }

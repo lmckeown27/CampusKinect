@@ -3,6 +3,7 @@ import SwiftUI
 struct AllUniversitiesView: View {
     let universities: [AnalyticsData.UniversityStats]
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var universitySwitcher = AdminUniversitySwitcher.shared
     
     var sortedUniversities: [AnalyticsData.UniversityStats] {
         universities.sorted { $0.userCount > $1.userCount }
@@ -44,13 +45,43 @@ struct AllUniversitiesView: View {
                     .background(Color(.systemGroupedBackground))
                     .cornerRadius(12)
                     
+                    // Current Viewing Banner (if viewing a different university)
+                    if let viewingId = universitySwitcher.currentViewingUniversityId,
+                       let viewingName = universitySwitcher.currentViewingUniversityName {
+                        HStack {
+                            Image(systemName: "eye.fill")
+                                .foregroundColor(.blue)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Currently Viewing")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text(viewingName)
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                Text("ID: \(viewingId)")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Button("Reset") {
+                                universitySwitcher.clearViewingUniversity()
+                            }
+                            .font(.caption)
+                            .foregroundColor(.red)
+                        }
+                        .padding()
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(12)
+                    }
+                    
                     // Universities List
                     VStack(spacing: 0) {
                         ForEach(Array(sortedUniversities.enumerated()), id: \.element.id) { index, university in
                             UniversityDetailRow(
                                 rank: index + 1,
                                 university: university,
-                                totalUsers: totalUsers
+                                totalUsers: totalUsers,
+                                isCurrentlyViewing: university.id == universitySwitcher.currentViewingUniversityId
                             )
                             
                             if index < sortedUniversities.count - 1 {
@@ -83,6 +114,8 @@ struct UniversityDetailRow: View {
     let rank: Int
     let university: AnalyticsData.UniversityStats
     let totalUsers: Int
+    let isCurrentlyViewing: Bool
+    @StateObject private var universitySwitcher = AdminUniversitySwitcher.shared
     
     var percentage: Double {
         guard totalUsers > 0 else { return 0 }
@@ -90,6 +123,7 @@ struct UniversityDetailRow: View {
     }
     
     var body: some View {
+        VStack(spacing: 0) {
         HStack(spacing: 16) {
             // Rank Badge
             ZStack {
@@ -110,11 +144,20 @@ struct UniversityDetailRow: View {
                     .lineLimit(1)
                 
                 HStack(spacing: 4) {
+                    Text("ID: \(university.id)")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(4)
+                    
                     Image(systemName: "person.2.fill")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                     
-                    Text("\(university.userCount) users")
+                    Text("\(university.userCount) \(university.userCount == 1 ? "user" : "users")")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
@@ -155,6 +198,42 @@ struct UniversityDetailRow: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        
+        // View University Button
+        if !isCurrentlyViewing {
+            Button(action: {
+                universitySwitcher.setViewingUniversity(id: university.id, name: university.name)
+            }) {
+                HStack {
+                    Image(systemName: "eye")
+                    Text("View This University's Feed")
+                }
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(Color.blue)
+                .cornerRadius(8)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 12)
+        } else {
+            HStack {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                Text("Currently Viewing")
+                    .fontWeight(.medium)
+            }
+            .font(.caption)
+            .foregroundColor(.green)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(Color.green.opacity(0.1))
+            .padding(.horizontal, 16)
+            .padding(.bottom, 12)
+        }
+        }
     }
     
     private var rankColor: Color {
@@ -169,14 +248,14 @@ struct UniversityDetailRow: View {
 
 #Preview {
     AllUniversitiesView(universities: [
-        AnalyticsData.UniversityStats(name: "Cal Poly", userCount: 1523),
-        AnalyticsData.UniversityStats(name: "UC Berkeley", userCount: 1245),
-        AnalyticsData.UniversityStats(name: "Stanford University", userCount: 987),
-        AnalyticsData.UniversityStats(name: "UCLA", userCount: 856),
-        AnalyticsData.UniversityStats(name: "USC", userCount: 734),
-        AnalyticsData.UniversityStats(name: "UC San Diego", userCount: 612),
-        AnalyticsData.UniversityStats(name: "UC Davis", userCount: 543),
-        AnalyticsData.UniversityStats(name: "UC Irvine", userCount: 498)
+        AnalyticsData.UniversityStats(id: 1, name: "Cal Poly", userCount: 1523),
+        AnalyticsData.UniversityStats(id: 2, name: "UC Berkeley", userCount: 1245),
+        AnalyticsData.UniversityStats(id: 3, name: "Stanford University", userCount: 987),
+        AnalyticsData.UniversityStats(id: 4, name: "UCLA", userCount: 856),
+        AnalyticsData.UniversityStats(id: 5, name: "USC", userCount: 734),
+        AnalyticsData.UniversityStats(id: 6, name: "UC San Diego", userCount: 612),
+        AnalyticsData.UniversityStats(id: 7, name: "UC Davis", userCount: 543),
+        AnalyticsData.UniversityStats(id: 8, name: "UC Irvine", userCount: 498)
     ])
 }
 

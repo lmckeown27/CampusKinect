@@ -315,12 +315,14 @@ struct AnalyticsData: Codable {
     let userGrowth: [GrowthData]
     
     struct UniversityStats: Codable, Identifiable {
-        let id = UUID()
+        let id: Int
         let name: String
         let userCount: Int
         
         private enum CodingKeys: String, CodingKey {
-            case name, userCount
+            case id = "universityId"
+            case name
+            case userCount
         }
     }
     
