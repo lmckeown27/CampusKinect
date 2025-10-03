@@ -134,17 +134,7 @@ struct ChatView: View {
             Text("Are you sure you want to block \(otherUserName)? You won't receive messages from them anymore.")
         }
         .sheet(isPresented: $showingReportSheet) {
-            // Report the most recent message to include full conversation history
-            if let latestMessage = viewModel.messages.last {
-                ReportConversationView(
-                    messageId: latestMessage.id,
-                    conversationWith: otherUserName,
-                    otherUserId: otherUserId
-                )
-            } else {
-                // Fallback to user report if no messages
-                ReportUserView(userId: otherUserId, userName: otherUserName, context: "conversation")
-            }
+            reportSheetContent
         }
         .confirmationDialog("Add Photo", isPresented: $showingImageActionSheet) {
             Button("Take Photo") {
@@ -406,6 +396,50 @@ struct ChatView: View {
         }
     }
     
+    // MARK: - Report Sheet Content
+    @ViewBuilder
+    private var reportSheetContent: some View {
+        // Report the most recent message to include full conversation history
+        // Only allow reporting if there are messages (content to report)
+        if let latestMessage = viewModel.messages.last {
+            ReportConversationView(
+                messageId: latestMessage.id,
+                conversationWith: otherUserName,
+                otherUserId: otherUserId
+            )
+        } else {
+            // No messages to report - show explanatory message
+            VStack(spacing: 20) {
+                Image(systemName: "exclamationmark.bubble")
+                    .font(.system(size: 60))
+                    .foregroundColor(.secondary)
+                
+                Text("No Content to Report")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("You can only report conversations that contain messages. If this user is bothering you, please block them instead.")
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+                
+                Button("Block User") {
+                    showingReportSheet = false
+                    showingBanAlert = true
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+                
+                Button("Cancel") {
+                    showingReportSheet = false
+                }
+                .buttonStyle(.bordered)
+            }
+            .padding()
+        }
+    }
+    
+    // MARK: - Helper Methods
     private func blockUser() {
         Task {
             do {

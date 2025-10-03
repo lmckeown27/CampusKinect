@@ -324,6 +324,10 @@ router.post('/reports/:reportId/moderate', auth, adminAuth, async (req, res) => 
             RETURNING id, is_deleted
           `, [report.reason, report.content_id]);
           console.log(`✅ Message deleted - affected rows: ${deleteResult.rowCount}, result:`, deleteResult.rows[0]);
+        } else if (report.content_type === 'user') {
+          console.log(`ℹ️ Skipping content deletion - USER reports don't have deletable content. Use ban instead.`);
+        } else {
+          console.log(`⚠️ Unknown content type: ${report.content_type} - no deletion performed`);
         }
       } else {
         console.log(`⏭️ Skipping content deletion (deleteContent=false)`);

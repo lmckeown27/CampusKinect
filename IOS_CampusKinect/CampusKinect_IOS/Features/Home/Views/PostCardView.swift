@@ -127,10 +127,10 @@ struct PostCardView: View {
             )
         }
         .sheet(isPresented: $showingReportView) {
-            ReportUserView(
-                userId: post.poster.id,
-                userName: post.poster.displayName,
-                context: "post"
+            ReportContentView(
+                contentId: post.id,
+                contentType: .post,
+                contentAuthor: post.poster.displayName
             )
         }
         .actionSheet(isPresented: $showingThreeDotsMenu) {
@@ -148,7 +148,7 @@ struct PostCardView: View {
             
             // Regular user actions (only show if not own post)
             if post.poster.id != authManager.currentUser?.id {
-                buttons.append(.default(Text("Report User")) {
+                buttons.append(.default(Text("Report Post")) {
                     showingReportView = true
                 })
                 
