@@ -40,6 +40,16 @@ struct AllUniversitiesView: View {
                                     .fontWeight(.bold)
                             }
                         }
+                        
+                        // Note about IDs
+                        HStack(spacing: 4) {
+                            Image(systemName: "info.circle")
+                                .font(.caption)
+                            Text("University IDs shown are for reference. Backend integration pending for full ID support.")
+                                .font(.caption2)
+                        }
+                        .foregroundColor(.secondary)
+                        .padding(.top, 4)
                     }
                     .padding()
                     .background(Color(.systemGroupedBackground))

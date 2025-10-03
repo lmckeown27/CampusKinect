@@ -320,9 +320,36 @@ struct AnalyticsData: Codable {
         let userCount: Int
         
         private enum CodingKeys: String, CodingKey {
-            case id = "universityId"
+            case universityId
             case name
             case userCount
+        }
+        
+        init(id: Int, name: String, userCount: Int) {
+            self.id = id
+            self.name = name
+            self.userCount = userCount
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.name = try container.decode(String.self, forKey: .name)
+            self.userCount = try container.decode(Int.self, forKey: .userCount)
+            
+            // Try to decode universityId, fallback to hash of name if not present
+            if let universityId = try? container.decode(Int.self, forKey: .universityId) {
+                self.id = universityId
+            } else {
+                // Use hash of name as fallback ID
+                self.id = abs(name.hashValue)
+            }
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(id, forKey: .universityId)
+            try container.encode(name, forKey: .name)
+            try container.encode(userCount, forKey: .userCount)
         }
     }
     
