@@ -1011,16 +1011,11 @@ struct TagChip: View {
         Text(text)
             .font(.caption)
             .fontWeight(.medium)
-            .foregroundColor(Color("BrandPrimary"))
+            .foregroundColor(.white)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(Color.white)
+            .background(Color.campusPrimary)
             .cornerRadius(16)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color("BrandPrimary").opacity(0.3), lineWidth: 1)
-            )
-            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
