@@ -59,7 +59,7 @@ class MessagesViewModel: ObservableObject {
         do {
             let response = try await apiService.fetchConversations()
             await MainActor.run {
-                self.conversations = response.data.conversations
+                self.conversations = self.sortConversationsByPriority(response.data.conversations)
                 self.isLoading = false
             }
         } catch {
@@ -98,9 +98,11 @@ class MessagesViewModel: ObservableObject {
                 unreadCount: newUnreadCount
             )
             
-            // Remove from current position and add to top
-            conversations.remove(at: index)
-            conversations.insert(updatedConversationData, at: 0)
+            // Update the conversation in the array
+            conversations[index] = updatedConversationData
+            
+            // Re-sort to maintain priority order (incoming messages first)
+            conversations = sortConversationsByPriority(conversations)
         } else {
             // Conversation not found locally, refresh to get it
             Task {
@@ -203,11 +205,34 @@ class MessagesViewModel: ObservableObject {
             // Check if there are new conversations or updates
             if newConversations.count != conversations.count || 
                newConversations.first?.lastMessageTime != conversations.first?.lastMessageTime {
-                conversations = newConversations
+                conversations = sortConversationsByPriority(newConversations)
             }
         } catch {
             // Silently fail polling to avoid spamming errors
             print("⚠️ Conversation polling failed: \(error)")
+        }
+    }
+    
+    // MARK: - Sorting Logic
+    /// Sorts conversations to prioritize incoming messages at the top
+    /// Incoming messages (where lastMessageSenderId != currentUserId) are shown first,
+    /// then sent messages, both sorted by most recent time
+    private func sortConversationsByPriority(_ conversations: [Conversation]) -> [Conversation] {
+        let userId = getCurrentUserId()
+        
+        return conversations.sorted { conv1, conv2 in
+            let isIncoming1 = conv1.lastMessageSenderId != nil && conv1.lastMessageSenderId != userId
+            let isIncoming2 = conv2.lastMessageSenderId != nil && conv2.lastMessageSenderId != userId
+            
+            // If one is incoming and the other isn't, prioritize incoming
+            if isIncoming1 != isIncoming2 {
+                return isIncoming1
+            }
+            
+            // If both are incoming or both are sent, sort by most recent time
+            let time1 = conv1.lastMessageTime ?? conv1.createdAt
+            let time2 = conv2.lastMessageTime ?? conv2.createdAt
+            return time1 > time2
         }
     }
 }
