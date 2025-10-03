@@ -484,7 +484,9 @@ struct CreatePostView: View {
             subcategory: selectedSubcategory,
             location: location,
             offerRequest: selectedOfferRequest,
-            images: selectedImages
+            images: selectedImages,
+            targetUniversities: isAdmin ? selectedUniversities : nil,
+            postToAllUniversities: isAdmin && isSelectingAllUniversities
         )
         
         if viewModel.successMessage != nil {
@@ -500,6 +502,8 @@ struct CreatePostView: View {
         location = ""
         selectedOfferRequest = nil
         selectedImages = []
+        selectedUniversities = []
+        isSelectingAllUniversities = false
     }
     
     private func hideKeyboard() {

@@ -23,7 +23,9 @@ class CreatePostViewModel: ObservableObject {
         subcategory: PostSubcategory?,
         location: String,
         offerRequest: String?,
-        images: [LocalImage] = []
+        images: [LocalImage] = [],
+        targetUniversities: Set<Int>? = nil,
+        postToAllUniversities: Bool = false
     ) async {
         isLoading = true
         errorMessage = nil
@@ -68,6 +70,12 @@ class CreatePostViewModel: ObservableObject {
                 postType = "goods" // fallback
             }
             
+            // Prepare admin multi-university fields
+            let universities = (postToAllUniversities || targetUniversities == nil || targetUniversities!.isEmpty) 
+                ? nil 
+                : Array(targetUniversities!)
+            let postToAll = postToAllUniversities ? true : nil
+            
             // Create the request
             let request = CreatePostRequest(
                 title: title,
@@ -76,7 +84,9 @@ class CreatePostViewModel: ObservableObject {
                 durationType: "recurring", // Default to recurring for now
                 location: location,
                 tags: tags,
-                images: imageUrls.isEmpty ? nil : imageUrls
+                images: imageUrls.isEmpty ? nil : imageUrls,
+                targetUniversities: universities,
+                postToAllUniversities: postToAll
             )
             
             print("🔍 Creating post with request: \(request)")

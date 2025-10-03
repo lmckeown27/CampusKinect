@@ -1551,11 +1551,32 @@ router.post('/', [
       eventStart,
       eventEnd,
       tags,
-      images
+      images,
+      targetUniversities,      // Admin: array of university IDs
+      postToAllUniversities    // Admin: boolean to post to all
     } = req.body;
 
     const userId = req.user.id;
-    const universityId = req.user.university_id;
+    const userUniversityId = req.user.university_id;
+    
+    // Determine target universities for admin multi-university posting
+    let universityIds = [];
+    
+    if (postToAllUniversities === true) {
+      // Admin posting to all universities
+      console.log('🎓 Admin posting to ALL universities');
+      const allUniversitiesResult = await query('SELECT id FROM universities ORDER BY id');
+      universityIds = allUniversitiesResult.rows.map(row => row.id);
+      console.log(`📍 Found ${universityIds.length} universities`);
+    } else if (targetUniversities && Array.isArray(targetUniversities) && targetUniversities.length > 0) {
+      // Admin posting to specific universities
+      universityIds = targetUniversities;
+      console.log(`🎓 Admin posting to ${universityIds.length} specific universities:`, universityIds);
+    } else {
+      // Normal user - post to their own university
+      universityIds = [userUniversityId];
+      console.log(`🎓 Normal user posting to own university: ${userUniversityId}`);
+    }
 
     // Start transaction
     const client = await pool.connect();
@@ -1569,67 +1590,77 @@ router.post('/', [
         nextRepostDate = calculateNextRepostDate(repostFrequency);
       }
 
-      // Create post
-      const postResult = await client.query(`
-        INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end, created_at
-      `, [userId, universityId, title, description, postType, durationType, location, repostFrequency, nextRepostDate, expiresAt, eventStart, eventEnd]);
+      // Create posts for each target university
+      const createdPosts = [];
+      
+      for (const universityId of universityIds) {
+        console.log(`📍 Creating post for university ${universityId}`);
+        
+        const postResult = await client.query(`
+          INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+          RETURNING id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end, created_at, university_id
+        `, [userId, universityId, title, description, postType, durationType, location, repostFrequency, nextRepostDate, expiresAt, eventStart, eventEnd]);
 
-      const post = postResult.rows[0];
+        const post = postResult.rows[0];
+        createdPosts.push(post);
 
-      // Add tags if provided
-      if (tags && tags.length > 0) {
-        for (const tagName of tags) {
-          // Get or create tag
-          let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
-          
-          let tagId;
-          if (tagResult.rows.length === 0) {
-            // Create new tag
-            const newTagResult = await client.query(`
-              INSERT INTO tags (name, category) 
-              VALUES ($1, 'custom') 
-              RETURNING id
-            `, [tagName]);
-            tagId = newTagResult.rows[0].id;
-          } else {
-            tagId = tagResult.rows[0].id;
+        // Add tags if provided
+        if (tags && tags.length > 0) {
+          for (const tagName of tags) {
+            // Get or create tag
+            let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
+            
+            let tagId;
+            if (tagResult.rows.length === 0) {
+              // Create new tag
+              const newTagResult = await client.query(`
+                INSERT INTO tags (name, category) 
+                VALUES ($1, 'custom') 
+                RETURNING id
+              `, [tagName]);
+              tagId = newTagResult.rows[0].id;
+            } else {
+              tagId = tagResult.rows[0].id;
+            }
+
+            // Link tag to post
+            await client.query(`
+              INSERT INTO post_tags (post_id, tag_id) 
+              VALUES ($1, $2)
+            `, [post.id, tagId]);
           }
-
-          // Link tag to post
-          await client.query(`
-            INSERT INTO post_tags (post_id, tag_id) 
-            VALUES ($1, $2)
-          `, [post.id, tagId]);
         }
-      }
 
-      // Add images if provided
-      console.log('🖼️ Backend received images:', images);
-      if (images && images.length > 0) {
-        console.log('💾 Saving', images.length, 'images to database for post', post.id);
-        for (let i = 0; i < images.length; i++) {
-          console.log('📸 Saving image:', images[i]);
-          await client.query(`
-            INSERT INTO post_images (post_id, image_url, image_order)
-            VALUES ($1, $2, $3)
-          `, [post.id, images[i], i]);
+        // Add images if provided
+        if (images && images.length > 0) {
+          console.log(`💾 Saving ${images.length} images to post ${post.id}`);
+          for (let i = 0; i < images.length; i++) {
+            await client.query(`
+              INSERT INTO post_images (post_id, image_url, image_order)
+              VALUES ($1, $2, $3)
+            `, [post.id, images[i], i]);
+          }
         }
-      } else {
-        console.log('❌ No images to save - images array:', images);
+        
+        // Calculate and update scores for this post
+        await updatePostScores(post.id);
       }
+      
+      console.log(`✅ Created ${createdPosts.length} post(s) across ${universityIds.length} university(ies)`);
+      
+      // Use the first created post as the primary one for response
+      const primaryPost = createdPosts[0];
 
       await client.query('COMMIT');
 
-      // Calculate and update initial scores
-      await updatePostScores(post.id);
+      // Clear cache for all created posts
+      for (const post of createdPosts) {
+        const cacheKey = generateCacheKey('post', post.id);
+        await redisDel(cacheKey);
+      }
 
-      // Clear cache
-      const cacheKey = generateCacheKey('post', post.id);
-      await redisDel(cacheKey);
-
-      // Get full post with tags and images
+      // Get full post with tags and images (return the primary post)
       const fullPostResult = await query(`
         SELECT 
           p.*,
@@ -1649,7 +1680,7 @@ router.post('/', [
         LEFT JOIN post_images pi ON p.id = pi.post_id
         WHERE p.id = $1
         GROUP BY p.id, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture, un.name
-      `, [post.id]);
+      `, [primaryPost.id]);
 
       const fullPost = fullPostResult.rows[0];
 
@@ -1684,9 +1715,13 @@ router.post('/', [
 
       res.status(201).json({
         success: true,
-        message: 'Post created successfully',
+        message: createdPosts.length > 1 
+          ? `Post created successfully for ${createdPosts.length} universities`
+          : 'Post created successfully',
         data: {
-          post: formattedPost
+          post: formattedPost,
+          universitiesCount: createdPosts.length,
+          postIds: createdPosts.map(p => p.id)
         }
       });
 

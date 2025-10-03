@@ -16,7 +16,11 @@ struct CreatePostRequest: Codable {
     let tags: [String]
     let images: [String]? // URLs of uploaded images
     
-    init(title: String, description: String, postType: String, durationType: String, location: String?, tags: [String], images: [String]? = nil) {
+    // Admin multi-university posting
+    let targetUniversities: [Int]?
+    let postToAllUniversities: Bool?
+    
+    init(title: String, description: String, postType: String, durationType: String, location: String?, tags: [String], images: [String]? = nil, targetUniversities: [Int]? = nil, postToAllUniversities: Bool? = nil) {
         self.title = title
         self.description = description
         self.postType = postType
@@ -24,6 +28,8 @@ struct CreatePostRequest: Codable {
         self.location = location?.isEmpty == true ? nil : location
         self.tags = tags
         self.images = images
+        self.targetUniversities = targetUniversities
+        self.postToAllUniversities = postToAllUniversities
     }
 }
 
