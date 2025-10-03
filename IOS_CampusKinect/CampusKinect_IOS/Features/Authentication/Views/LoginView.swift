@@ -11,11 +11,23 @@ struct LoginView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @State private var email = ""
     @State private var password = ""
-    @State private var showingAlert = false
-    @State private var showingBannedAlert = false
     @State private var isPasswordVisible = false
     @State private var shouldNavigateToRegister = false
-    @State private var showingForgotPasswordAlert = false
+    @State private var activeAlert: ActiveAlert?
+    
+    enum ActiveAlert: Identifiable {
+        case loginFailed
+        case accountBanned
+        case forgotPassword
+        
+        var id: Int {
+            switch self {
+            case .loginFailed: return 1
+            case .accountBanned: return 2
+            case .forgotPassword: return 3
+            }
+        }
+    }
     @FocusState private var focusedField: LoginField?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -48,30 +60,37 @@ struct LoginView: View {
             .background(Color.campusBackground)
         }
         .navigationBarHidden(true)
-        .alert("Account Banned", isPresented: $showingBannedAlert) {
-            Button("Contact Support") {
-                if let url = URL(string: "mailto:campuskinect01@gmail.com") {
-                    UIApplication.shared.open(url)
-                }
-                authManager.clearError()
+        .alert(item: $activeAlert) { alertType in
+            switch alertType {
+            case .accountBanned:
+                return Alert(
+                    title: Text("Account Banned"),
+                    message: Text(authManager.authError?.userFriendlyMessage ?? "Your account has been banned. Please contact campuskinect01@gmail.com"),
+                    primaryButton: .default(Text("Contact Support")) {
+                        if let url = URL(string: "mailto:campuskinect01@gmail.com") {
+                            UIApplication.shared.open(url)
+                        }
+                        authManager.clearError()
+                    },
+                    secondaryButton: .cancel(Text("OK")) {
+                        authManager.clearError()
+                    }
+                )
+            case .loginFailed:
+                return Alert(
+                    title: Text("Login Failed"),
+                    message: Text(authManager.authError?.userFriendlyMessage ?? "An error occurred"),
+                    dismissButton: .default(Text("OK")) {
+                        authManager.clearError()
+                    }
+                )
+            case .forgotPassword:
+                return Alert(
+                    title: Text("Forgot Password"),
+                    message: Text("Email campuskinect01@gmail.com"),
+                    dismissButton: .default(Text("OK"))
+                )
             }
-            Button("OK", role: .cancel) {
-                authManager.clearError()
-            }
-        } message: {
-            Text(authManager.authError?.userFriendlyMessage ?? "Your account has been banned. Please contact campuskinect01@gmail.com")
-        }
-        .alert("Login Failed", isPresented: $showingAlert) {
-            Button("OK") {
-                authManager.clearError()
-            }
-        } message: {
-            Text(authManager.authError?.userFriendlyMessage ?? "An error occurred")
-        }
-        .alert("Forgot Password", isPresented: $showingForgotPasswordAlert) {
-            Button("OK") { }
-        } message: {
-            Text("Email campuskinect01@gmail.com")
         }
     }
     
@@ -126,7 +145,7 @@ struct LoginView: View {
                     Spacer()
                     
                     Button("Forgot?") {
-                        showingForgotPasswordAlert = true
+                        activeAlert = .forgotPassword
                     }
                     .font(.caption)
                     .foregroundColor(Color("BrandPrimary"))
@@ -224,10 +243,10 @@ struct LoginView: View {
             await MainActor.run {
                 if case .accountBanned = authManager.authError {
                     print("🚫 Showing banned alert")
-                    showingBannedAlert = true
+                    activeAlert = .accountBanned
                 } else {
                     print("❌ Showing generic error alert")
-                    showingAlert = true
+                    activeAlert = .loginFailed
                 }
             }
         }
