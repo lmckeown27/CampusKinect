@@ -161,7 +161,7 @@ class AdminAPIService: ObservableObject {
     }
     
     // MARK: - Ban User
-    func banUser(userId: String, reason: String) -> AnyPublisher<Void, Error> {
+    func banUser(userId: String, reason: String, duration: String? = nil) -> AnyPublisher<Void, Error> {
         guard let url = URL(string: "\(baseURL)/users/\(userId)/ban") else {
             return Fail(error: URLError(.badURL))
                 .eraseToAnyPublisher()
@@ -171,7 +171,7 @@ class AdminAPIService: ObservableObject {
         request.httpMethod = "POST"
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        let banRequest = BanUserRequest(reason: reason)
+        let banRequest = BanUserRequest(reason: reason, duration: duration)
         
         do {
             request.httpBody = try JSONEncoder().encode(banRequest)
@@ -353,6 +353,7 @@ private struct AdminEmptyResponse: Codable {}
 
 private struct BanUserRequest: Codable {
     let reason: String
+    let duration: String?
 }
 
 private struct BannedUsersResponse: Codable {

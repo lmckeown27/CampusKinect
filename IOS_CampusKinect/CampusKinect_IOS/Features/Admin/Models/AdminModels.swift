@@ -7,7 +7,7 @@ struct ContentReport: Codable, Identifiable {
     let reportedUserId: Int
     let contentId: String
     let contentType: ContentType
-    let reason: ReportReason
+    let reason: String  // Comma-separated reasons from backend
     let details: String?
     let status: ReportStatus
     let moderatorId: Int?
@@ -61,6 +61,24 @@ struct ContentReport: Codable, Identifiable {
             return imageUrl
         }
         return "\(APIConstants.baseURL)\(imageUrl)"
+    }
+    
+    // Parse comma-separated reasons into array
+    var reasons: [ReportReason] {
+        return reason.split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .compactMap { ReportReason(rawValue: $0) }
+    }
+    
+    // Display all reasons as comma-separated string
+    var reasonsDisplay: String {
+        let displayNames = reasons.map { $0.displayName }
+        return displayNames.isEmpty ? "Unknown" : displayNames.joined(separator: ", ")
+    }
+    
+    // Get primary reason (first one) for badge display in lists
+    var primaryReason: ReportReason {
+        return reasons.first ?? .other
     }
     
     struct ConversationMessage: Codable, Identifiable {
@@ -242,29 +260,31 @@ struct ModerationAction: Codable {
     let moderatorNotes: String?
     let deleteContent: Bool
     let banUser: Bool
+    let duration: String?
     
-    init(action: String, moderatorNotes: String?, deleteContent: Bool, banUser: Bool) {
+    init(action: String, moderatorNotes: String?, deleteContent: Bool, banUser: Bool, duration: String? = nil) {
         self.action = action
         self.moderatorNotes = moderatorNotes
         self.deleteContent = deleteContent
         self.banUser = banUser
+        self.duration = duration
     }
     
     // Convenience initializers for common actions
     static func deletePostOnly(notes: String = "Content removed for policy violation") -> ModerationAction {
-        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: true, banUser: false)
+        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: true, banUser: false, duration: nil)
     }
     
-    static func banUserOnly(notes: String = "User banned for policy violation") -> ModerationAction {
-        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: false, banUser: true)
+    static func banUserOnly(notes: String = "User banned for policy violation", duration: String? = nil) -> ModerationAction {
+        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: false, banUser: true, duration: duration)
     }
     
-    static func deleteAndBan(notes: String = "Content removed and user banned") -> ModerationAction {
-        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: true, banUser: true)
+    static func deleteAndBan(notes: String = "Content removed and user banned", duration: String? = nil) -> ModerationAction {
+        return ModerationAction(action: "approve", moderatorNotes: notes, deleteContent: true, banUser: true, duration: duration)
     }
     
     static func dismiss(notes: String = "Report reviewed - no violation found") -> ModerationAction {
-        return ModerationAction(action: "dismiss", moderatorNotes: notes, deleteContent: false, banUser: false)
+        return ModerationAction(action: "dismiss", moderatorNotes: notes, deleteContent: false, banUser: false, duration: nil)
     }
 }
 

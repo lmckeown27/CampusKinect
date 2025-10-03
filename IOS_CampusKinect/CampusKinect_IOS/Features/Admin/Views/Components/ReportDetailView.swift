@@ -8,6 +8,8 @@ struct ReportDetailView: View {
     @State private var showingActionSheet = false
     @State private var moderatorNotes = ""
     @State private var selectedAction: ModerationAction?
+    @State private var selectedBanDuration: BanDuration = .indefinite
+    @State private var showingBanDurationPicker = false
     
     var body: some View {
         NavigationView {
@@ -73,8 +75,7 @@ struct ReportDetailView: View {
                 }
                 
                 Button("Ban User Only", role: .destructive) {
-                    selectedAction = .banUserOnly()
-                    handleModerationAction()
+                    showingBanDurationPicker = true
                 }
                 
                 // Only show "Delete Post & Ban User" if reporter is not the post owner
@@ -88,6 +89,16 @@ struct ReportDetailView: View {
                 Button("Cancel", role: .cancel) { }
             } message: {
                 Text("Choose an action for this report. This action cannot be undone.")
+            }
+            .sheet(isPresented: $showingBanDurationPicker) {
+                BanDurationPickerView(
+                    selectedDuration: $selectedBanDuration,
+                    onConfirm: {
+                        selectedAction = .banUserOnly(duration: selectedBanDuration.apiValue)
+                        showingBanDurationPicker = false
+                        handleModerationAction()
+                    }
+                )
             }
         }
     }
@@ -288,8 +299,29 @@ struct ReportDetailView: View {
             Text("Report Information")
                 .font(.headline)
             
-            DetailRow(title: "Reason", value: report.reason.displayName) {
-                ReasonBadge(reason: report.reason)
+            
+            // Display all selected reasons
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Reason(s)")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                
+                FlowLayout(alignment: .leading, spacing: 8) {
+                    ForEach(report.reasons, id: \.self) { reason in
+                        ReasonBadge(reason: reason)
+                    }
+                }
+            }
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                
+                FlowLayout(alignment: .leading, spacing: 8) {
+                    ForEach(report.reasons, id: \.self) { reason in
+                        ReasonBadge(reason: reason)
+                    }
+                }
             }
             
             DetailRow(title: "Status", value: report.status.displayName) {
@@ -298,6 +330,7 @@ struct ReportDetailView: View {
             
             DetailRow(title: "Reported At", value: formatFullDate(report.createdAt))
             
+            // Only show user's typed notes in Additional Details
             if let details = report.details, !details.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Additional Details")
@@ -428,8 +461,7 @@ struct ReportDetailView: View {
                 .disabled(viewModel.isLoadingAction)
                 
                 Button(action: {
-                    selectedAction = .banUserOnly()
-                    handleModerationAction()
+                    showingBanDurationPicker = true
                 }) {
                     HStack {
                         Image(systemName: "person.fill.xmark")
@@ -592,8 +624,8 @@ struct StatusBadge: View {
             reportedUserId: 201,
             contentId: "301",
             contentType: .post,
-            reason: .harassment,
-            details: "This user is posting threatening messages and making other users uncomfortable. The content violates our community guidelines.",
+            reason: "harassment, spam",
+            details: "User typed notes go here",
             status: .pending,
             moderatorId: nil,
             moderatorNotes: nil,
@@ -614,3 +646,159 @@ struct StatusBadge: View {
     )
 } 
  
+
+// MARK: - Ban Duration Picker View
+struct BanDurationPickerView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var selectedDuration: BanDuration
+    let onConfirm: () -> Void
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Select Ban Duration")) {
+                    ForEach(BanDuration.allCases) { duration in
+                        Button(action: {
+                            selectedDuration = duration
+                        }) {
+                            HStack {
+                                Text(duration.displayName)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                if selectedDuration == duration {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Section {
+                    Text("Selected: \(selectedDuration.displayName)")
+                        .foregroundColor(.secondary)
+                }
+            }
+            .navigationTitle("Ban Duration")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Confirm") {
+                        onConfirm()
+                        dismiss()
+                    }
+                    .fontWeight(.bold)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Ban Duration Enum
+enum BanDuration: String, CaseIterable, Identifiable {
+    case oneDay = "1d"
+    case oneWeek = "7d"
+    case oneMonth = "30d"
+    case oneYear = "365d"
+    case indefinite = "indefinite"
+    
+    var id: String { rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .oneDay: return "1 Day"
+        case .oneWeek: return "1 Week"
+        case .oneMonth: return "1 Month"
+        case .oneYear: return "1 Year"
+        case .indefinite: return "Indefinite"
+        }
+    }
+    
+    var apiValue: String? {
+        return self == .indefinite ? nil : rawValue
+    }
+}
+
+// MARK: - FlowLayout Helper
+struct FlowLayout: Layout {
+    var alignment: Alignment = .center
+    var spacing: CGFloat = 10
+    
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = FlowResult(
+            in: proposal.replacingUnspecifiedDimensions().width,
+            subviews: subviews,
+            alignment: alignment,
+            spacing: spacing
+        )
+        return result.size
+    }
+    
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = FlowResult(
+            in: bounds.width,
+            subviews: subviews,
+            alignment: alignment,
+            spacing: spacing
+        )
+        for row in result.rows {
+            let rowXOffset = bounds.minX + (bounds.width - row.frame.width) / 2
+            for index in row.range {
+                let xPos = rowXOffset + result.frames[index].minX
+                let yPos = bounds.minY + result.frames[index].minY
+                let position = CGPoint(x: xPos, y: yPos)
+                subviews[index].place(at: position, anchor: .topLeading, proposal: .unspecified)
+            }
+        }
+    }
+    
+    struct FlowResult {
+        var size = CGSize.zero
+        var rows = [Row]()
+        var frames = [CGRect]()
+        
+        struct Row {
+            var range: Range<Int>
+            var frame: CGRect
+        }
+        
+        init(in maxWidth: CGFloat, subviews: Subviews, alignment: Alignment, spacing: CGFloat) {
+            var itemsInRow = 0
+            var currentX = 0.0
+            var currentY = 0.0
+            var rowHeight = 0.0
+            var rowStartIndex = 0
+            
+            for (index, subview) in subviews.enumerated() {
+                let size = subview.sizeThatFits(.unspecified)
+                
+                if currentX + size.width > maxWidth && itemsInRow > 0 {
+                    // Start new row
+                    rows.append(Row(range: rowStartIndex..<index, frame: CGRect(x: 0, y: currentY, width: currentX - spacing, height: rowHeight)))
+                    rowStartIndex = index
+                    currentX = 0
+                    currentY += rowHeight + spacing
+                    rowHeight = 0
+                    itemsInRow = 0
+                }
+                
+                frames.append(CGRect(x: currentX, y: currentY, width: size.width, height: size.height))
+                currentX += size.width + spacing
+                rowHeight = max(rowHeight, size.height)
+                itemsInRow += 1
+            }
+            
+            // Last row
+            if itemsInRow > 0 {
+                rows.append(Row(range: rowStartIndex..<subviews.count, frame: CGRect(x: 0, y: currentY, width: currentX - spacing, height: rowHeight)))
+            }
+            
+            size = CGSize(width: maxWidth, height: currentY + rowHeight)
+        }
+    }
+}

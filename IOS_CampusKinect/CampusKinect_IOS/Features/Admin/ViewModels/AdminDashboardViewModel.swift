@@ -283,10 +283,10 @@ class AdminDashboardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func banUser(_ userId: String, reason: String) {
+    func banUser(_ userId: String, reason: String, duration: String? = nil) {
         isLoadingAction = true
         
-        apiService.banUser(userId: userId, reason: reason)
+        apiService.banUser(userId: userId, reason: reason, duration: duration)
             .sink(
                 receiveCompletion: { [weak self] completion in
                     DispatchQueue.main.async {
