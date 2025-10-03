@@ -97,8 +97,15 @@ class PersonalizedFeedService {
         p.created_at, p.updated_at, p.review_count, p.average_rating, p.review_score_bonus,
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
-        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')) ||
-        ARRAY[CASE WHEN p.post_type = 'offer' THEN 'Offer' WHEN p.post_type = 'request' THEN 'Request' ELSE NULL END] FILTER (WHERE p.post_type IN ('offer', 'request')) as tags,
+        COALESCE(
+          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY[]::text[]
+        ) || 
+        CASE 
+          WHEN p.post_type = 'offer' THEN ARRAY['Offer']
+          WHEN p.post_type = 'request' THEN ARRAY['Request']
+          ELSE ARRAY[]::text[]
+        END as tags,
         -- Check if user has interacted with this post
         CASE WHEN ui.post_id IS NOT NULL THEN true ELSE false END as user_has_interacted,
         -- Get user's last interaction timestamp
@@ -474,8 +481,15 @@ class PersonalizedFeedService {
         p.relative_grade, p.market_size,
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
-        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')) ||
-        ARRAY[CASE WHEN p.post_type = 'offer' THEN 'Offer' WHEN p.post_type = 'request' THEN 'Request' ELSE NULL END] FILTER (WHERE p.post_type IN ('offer', 'request')) as tags
+        COALESCE(
+          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY[]::text[]
+        ) || 
+        CASE 
+          WHEN p.post_type = 'offer' THEN ARRAY['Offer']
+          WHEN p.post_type = 'request' THEN ARRAY['Request']
+          ELSE ARRAY[]::text[]
+        END as tags
       FROM posts p
       JOIN users u ON p.user_id = u.id
       JOIN universities un ON p.university_id = un.id
