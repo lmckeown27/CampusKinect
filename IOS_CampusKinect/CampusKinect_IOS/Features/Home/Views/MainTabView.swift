@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
+    @State private var previousTab: Tab = .home
     @State private var isMessagesPreloaded = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -83,6 +84,15 @@ struct MainTabView: View {
             withAnimation(.easeInOut(duration: 0.3)) {
                 selectedTab = .home
             }
+        }
+        .onChange(of: selectedTab) { oldValue, newValue in
+            // Scroll to top when switching to home tab from another tab
+            if newValue == .home && oldValue != .home {
+                print("📱 MainTabView: Switched to home tab - scrolling to top")
+                NotificationCenter.default.post(name: .scrollToTopHome, object: nil)
+            }
+            // Note: Tapping home while already on home doesn't trigger onChange in TabView
+            // Users can tap the logo to scroll to top when already on home page
         }
     }
 } 

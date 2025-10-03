@@ -13,6 +13,7 @@ struct HomeView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
+    @State private var scrollToTopTrigger = 0
     
     // Computed property to determine if we're on iPad
     private var isIPad: Bool {
@@ -72,7 +73,7 @@ struct HomeView: View {
                 }
                 
                 // Posts List
-                PostsList()
+                PostsList(scrollToTopTrigger: $scrollToTopTrigger)
                     .environmentObject(viewModel)
             }
             .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
@@ -98,11 +99,16 @@ struct HomeView: View {
                                 .foregroundColor(.secondary)
                         }
                     } else {
-                        // Normal logo
-                        Image("Logo")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 32)
+                        // Normal logo - tap to scroll to top
+                        Button(action: {
+                            scrollToTopTrigger += 1
+                        }) {
+                            Image("Logo")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 32)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }
@@ -119,6 +125,10 @@ struct HomeView: View {
             }
             .task {
                 await viewModel.loadPosts()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .scrollToTopHome)) { _ in
+                // Scroll to top when notification is received
+                scrollToTopTrigger += 1
             }
         }
     }
@@ -250,62 +260,95 @@ struct ActiveFilterBar: View {
 // MARK: - Posts List
 struct PostsList: View {
     @EnvironmentObject var viewModel: HomeViewModel
+    @Binding var scrollToTopTrigger: Int
     
     var body: some View {
-        Group {
-            if viewModel.isLoading && viewModel.posts.isEmpty {
-                LoadingView()
-            } else if viewModel.posts.isEmpty {
-                EmptyStateView(
-                    title: "No Posts Yet",
-                    message: "Be the first to share something with your campus community!",
-                    systemImage: "doc.text"
-                )
-            } else {
-                List {
-                    ForEach(viewModel.filteredPosts) { post in
-                        PostCardView(post: post)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .onAppear {
-                                // Load more posts when reaching the end
-                                if post.id == viewModel.posts.last?.id {
-                                    Task {
-                                        await viewModel.loadMorePosts()
-                                    }
-                                }
-                            }
-                    }
-                    
-                    // Loading more indicator
-                    if viewModel.isLoading && !viewModel.posts.isEmpty {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                                .padding()
-                            Spacer()
-                        }
-                        .listRowSeparator(.hidden)
+        content
+            .overlay(errorOverlay)
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        if viewModel.isLoading && viewModel.posts.isEmpty {
+            LoadingView()
+        } else if viewModel.posts.isEmpty {
+            EmptyStateView(
+                title: "No Posts Yet",
+                message: "Be the first to share something with your campus community!",
+                systemImage: "doc.text"
+            )
+        } else {
+            postsListWithScroll
+        }
+    }
+    
+    private var postsListWithScroll: some View {
+        ScrollViewReader { proxy in
+            postsList
+                .onChange(of: scrollToTopTrigger) { oldValue, newValue in
+                    withAnimation {
+                        proxy.scrollTo("top", anchor: .top)
                     }
                 }
-                .listStyle(PlainListStyle())
-                .scrollIndicators(.hidden)
+        }
+    }
+    
+    private var postsList: some View {
+        List {
+            postsForEach
+            
+            if viewModel.isLoading && !viewModel.posts.isEmpty {
+                loadingIndicator
             }
         }
-        .overlay(
-            Group {
-                if let error = viewModel.error {
-                    ErrorView(
-                        error: error,
-                        onRetry: {
-                            Task {
-                                await viewModel.loadPosts()
-                            }
-                        }
-                    )
+        .listStyle(PlainListStyle())
+        .scrollIndicators(.hidden)
+    }
+    
+    private var postsForEach: some View {
+        ForEach(viewModel.filteredPosts) { post in
+            postRow(for: post)
+        }
+    }
+    
+    private func postRow(for post: Post) -> some View {
+        let rowId: AnyHashable = (post.id == viewModel.filteredPosts.first?.id) ? "top" : post.id
+        
+        return PostCardView(post: post)
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+            .id(rowId)
+            .onAppear {
+                if post.id == viewModel.posts.last?.id {
+                    Task {
+                        await viewModel.loadMorePosts()
+                    }
                 }
             }
-        )
+    }
+    
+    private var loadingIndicator: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .padding()
+            Spacer()
+        }
+        .listRowSeparator(.hidden)
+    }
+    
+    @ViewBuilder
+    private var errorOverlay: some View {
+        if let error = viewModel.error {
+            ErrorView(
+                error: error,
+                onRetry: {
+                    Task {
+                        await viewModel.loadPosts()
+                    }
+                }
+            )
+        }
     }
 }
 
