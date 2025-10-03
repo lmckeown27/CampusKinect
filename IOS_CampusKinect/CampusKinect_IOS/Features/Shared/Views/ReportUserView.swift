@@ -13,7 +13,7 @@ struct ReportUserView: View {
     let context: String? // Optional: "post" or "conversation" to give admin context
     
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedReasons: Set<ReportReason> = []
+    @State private var selectedReason: ReportReason?
     @State private var additionalDetails = ""
     @State private var isSubmitting = false
     @State private var showingSuccessAlert = false
@@ -124,7 +124,7 @@ struct ReportUserView: View {
                     
                     // Reasons Section
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Select all reasons that apply")
+                        Text("Select a reason")
                             .font(.headline)
                             .padding(.horizontal, 20)
                             .padding(.top, 20)
@@ -133,12 +133,12 @@ struct ReportUserView: View {
                             ForEach(ReportReason.allCases, id: \.self) { reason in
                                 ReasonCheckboxRow(
                                     reason: reason,
-                                    isSelected: selectedReasons.contains(reason),
+                                    isSelected: selectedReason == reason,
                                     onTap: {
-                                        if selectedReasons.contains(reason) {
-                                            selectedReasons.remove(reason)
-                                        } else {
-                                            selectedReasons.insert(reason)
+                                        selectedReason = reason
+                                        // Clear additional details when switching away from "Other"
+                                        if reason != .other {
+                                            additionalDetails = ""
                                         }
                                     }
                                 )
@@ -147,28 +147,31 @@ struct ReportUserView: View {
                         .padding(.horizontal, 20)
                     }
                     
-                    // Description Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Additional Details")
-                            .font(.headline)
-                        
-                        Text("Please provide specific details to help our moderation team understand the issue.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        TextEditor(text: $additionalDetails)
-                            .focused($isTextFieldFocused)
-                            .frame(minHeight: 120)
-                            .padding(12)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color(.systemGray4), lineWidth: 1)
-                            )
+                    // Description Section - Only shown when "Other" is selected
+                    if selectedReason == .other {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Additional Details")
+                                .font(.headline)
+                            
+                            Text("Please provide specific details to help our moderation team understand the issue.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            TextEditor(text: $additionalDetails)
+                                .focused($isTextFieldFocused)
+                                .frame(minHeight: 120)
+                                .padding(12)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color(.systemGray4), lineWidth: 1)
+                                )
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 24)
+                        .transition(.opacity)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 24)
                     
                     // Warning
                     HStack(alignment: .top, spacing: 12) {
@@ -211,10 +214,10 @@ struct ReportUserView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(!selectedReasons.isEmpty && !isSubmitting ? Color.red : Color.gray)
+                        .background(selectedReason != nil && !isSubmitting ? Color.red : Color.gray)
                         .cornerRadius(12)
                     }
-                    .disabled(selectedReasons.isEmpty || isSubmitting)
+                    .disabled(selectedReason == nil || isSubmitting)
                     .padding(.horizontal, 20)
                     .padding(.top, 24)
                     .padding(.bottom, 32)
@@ -267,28 +270,19 @@ struct ReportUserView: View {
     private func submitReport() {
         isSubmitting = true
         
-        // Backend only accepts a single reason - use the first selected reason
-        guard let primaryReason = selectedReasons.first else {
+        guard let reason = selectedReason else {
             isSubmitting = false
             return
         }
         
-        // If multiple reasons selected, add others to details
-        var fullDetails = additionalDetails
-        if selectedReasons.count > 1 {
-            let sortedReasons = Array(selectedReasons)
-            let additionalReasons = sortedReasons.dropFirst().map { $0.rawValue }.joined(separator: ", ")
-            let reasonsNote = "Additional reasons: \(additionalReasons)"
-            fullDetails = fullDetails.isEmpty ? reasonsNote : "\(fullDetails)\n\n\(reasonsNote)"
-        }
-        
-        let details = fullDetails.isEmpty ? nil : fullDetails
+        // Only send details if "Other" is selected and text is not empty
+        let details = (reason == .other && !additionalDetails.isEmpty) ? additionalDetails : nil
         
         Task {
             do {
                 try await APIService.shared.reportUser(
                     userId: userId,
-                    reason: primaryReason.apiValue,
+                    reason: reason.apiValue,
                     details: details
                 )
                 

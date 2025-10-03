@@ -117,26 +117,35 @@ struct ReportContentView: View {
                                 ReportReasonRow(
                                     reason: reason,
                                     isSelected: selectedReason == reason,
-                                    onTap: { selectedReason = reason }
+                                    onTap: {
+                                        selectedReason = reason
+                                        // Clear additional details when switching away from "Other"
+                                        if reason != .other {
+                                            additionalDetails = ""
+                                        }
+                                    }
                                 )
                             }
                         }
                     }
                     
-                    // Additional Details
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Additional Details (Optional)")
-                            .font(.headline)
-                        
-                        Text("Provide any additional context that might help our moderation team.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        TextEditor(text: $additionalDetails)
-                            .frame(minHeight: 100)
-                            .padding(8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
+                    // Additional Details - Only shown when "Other" is selected
+                    if selectedReason == .other {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Additional Details (Required)")
+                                .font(.headline)
+                            
+                            Text("Please describe the issue to help our moderation team.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            TextEditor(text: $additionalDetails)
+                                .frame(minHeight: 100)
+                                .padding(8)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                        }
+                        .transition(.opacity)
                     }
                     
                     // Warning
@@ -192,13 +201,16 @@ struct ReportContentView: View {
         
         isSubmitting = true
         
+        // Only send details if "Other" is selected and text is not empty
+        let details = (reason == .other && !additionalDetails.isEmpty) ? additionalDetails : nil
+        
         Task {
             do {
                 let success = try await APIService.shared.reportContent(
                     contentId: contentId,
                     contentType: contentType.rawValue,
                     reason: reason.rawValue,
-                    details: additionalDetails.isEmpty ? nil : additionalDetails
+                    details: details
                 )
                 
                 await MainActor.run {
