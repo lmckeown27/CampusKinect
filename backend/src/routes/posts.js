@@ -1540,7 +1540,7 @@ router.post('/', [
   body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
   body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
   body('postType').isIn(['goods', 'services', 'housing', 'events']).withMessage('Post type must be goods, services, housing, or events'),
-        body('durationType').isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
+        body('durationType').optional().isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
       body('location').optional().isLength({ max: 255 }).withMessage('Location must be less than 255 characters').trim(),
       body('repostFrequency').optional().isIn(['daily', 'weekly', 'monthly']).withMessage('Repost frequency must be daily, weekly, or monthly'),
       body('expiresAt').optional().isISO8601().withMessage('Expiration date must be a valid ISO 8601 date'),
@@ -1570,6 +1570,9 @@ router.post('/', [
     const userId = req.user.id;
     const userUniversityId = req.user.university_id;
     const username = req.user.username;
+    
+    // Set default durationType to 'recurring' if not provided (all posts are recurring now)
+    const finalDurationType = durationType || 'recurring';
     
     // Determine target universities for admin multi-university posting
     let universityIds = [];
@@ -1621,7 +1624,7 @@ router.post('/', [
           INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, expires_at, event_start, event_end)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, created_at, university_id
-        `, [userId, universityId, title, description, postType, durationType, location, expiresAt, eventStart, eventEnd]);
+        `, [userId, universityId, title, description, postType, finalDurationType, location, expiresAt, eventStart, eventEnd]);
 
         const post = postResult.rows[0];
         createdPosts.push(post);
@@ -1792,7 +1795,7 @@ router.put('/:id', [
   body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
   body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
   body('postType').optional().isIn(['goods', 'services', 'housing', 'events', 'offer', 'request']).withMessage('Post type must be a valid category'),
-  body('durationType').isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
+  body('durationType').optional().isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
   body('location').optional().isLength({ max: 255 }).withMessage('Location must be less than 255 characters').trim(),
   body('expiresAt').optional().isISO8601().withMessage('Expiration date must be a valid ISO 8601 date'),
   body('eventStart').optional().isISO8601().withMessage('Event start date must be a valid ISO 8601 date'),
@@ -1827,6 +1830,9 @@ router.put('/:id', [
       tags
     });
 
+    // Set default durationType to 'recurring' if not provided (all posts are recurring now)
+    const finalDurationType = durationType || 'recurring';
+
     // Start transaction
     const client = await pool.connect();
     
@@ -1849,7 +1855,7 @@ router.put('/:id', [
         WHERE id = $9
         RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, updated_at
         `;
-        updateParams = [title, description, postType, durationType, location, expiresAt, eventStart, eventEnd, id];
+        updateParams = [title, description, postType, finalDurationType, location, expiresAt, eventStart, eventEnd, id];
       } else {
         // Don't update primary category, only update other fields
         updateQuery = `
@@ -1859,7 +1865,7 @@ router.put('/:id', [
           WHERE id = $8
           RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, updated_at
         `;
-        updateParams = [title, description, durationType, location, expiresAt, eventStart, eventEnd, id];
+        updateParams = [title, description, finalDurationType, location, expiresAt, eventStart, eventEnd, id];
         
         // Add postType to tags if it's a secondary tag
         if (postType && secondaryTags.includes(postType)) {

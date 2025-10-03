@@ -139,6 +139,7 @@ const commonValidations = {
     },
     durationType: {
       in: ['body'],
+      optional: true,
       isIn: {
         options: [['one-time', 'recurring', 'event']],
         errorMessage: 'Duration type must be one-time, recurring, or event'
