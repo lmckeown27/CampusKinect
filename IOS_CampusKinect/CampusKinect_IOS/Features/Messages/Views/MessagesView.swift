@@ -455,11 +455,17 @@ struct ConversationRow: View {
                         .foregroundColor(.primary)
                         .lineLimit(1)
                     
-                    // MESSAGE DIRECTION (SECONDARY)
-                    Text(messageDirectionText)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .fontWeight(.medium)
+                    // USER INFO - WHO YOU'RE MESSAGING (PROMINENT)
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.caption)
+                            .foregroundColor(.campusPrimary)
+                        
+                        Text("With: \(conversation.otherUser.displayName ?? "User")")
+                            .font(.subheadline)
+                            .foregroundColor(.campusPrimary)
+                            .fontWeight(.semibold)
+                    }
                     
                     // LAST MESSAGE (TERTIARY)
                     if let lastMessage = conversation.lastMessage, !lastMessage.isEmpty {
@@ -469,14 +475,14 @@ struct ConversationRow: View {
                             .lineLimit(1)
                     } else if conversation.lastMessageSenderId != nil {
                         // Empty message but has a sender = image message
-                        Text("Image")
+                        Text("📷 Image")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                     } else {
-                        Text("Tap to start messaging about this post")
+                        Text("Start conversation")
                             .font(.caption)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.secondary)
                             .italic()
                     }
                 }
@@ -537,17 +543,6 @@ struct ConversationRow: View {
         return Color.campusPrimary
     }
     
-    private var messageDirectionText: String {
-        // Determine if this is an incoming or sent conversation based on last message
-        if let lastMessageSenderId = conversation.lastMessageSenderId {
-            // If the last message was sent by the current user, it's "Sent"
-            // If the last message was sent by the other user, it's "Incoming"
-            return lastMessageSenderId == currentUserId ? "Sent" : "Incoming"
-        } else {
-            // No messages yet
-            return "Tap to start conversation"
-        }
-    }
 }
 
 struct MessagesView_Previews: PreviewProvider {
