@@ -339,15 +339,25 @@ struct ChatView: View {
                     }
                     .disabled(isUploadingImage)
                     
-                    TextField(viewModel.conversation == nil ? "Send the first message..." : "Add a message...", text: $viewModel.newMessageText, axis: .vertical)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.campusBackgroundSecondary)
-                        .cornerRadius(16)
-                        .focused($isTextFieldFocused)
-                        .lineLimit(1...3)
+                    ZStack(alignment: .leading) {
+                        // Custom placeholder
+                        if viewModel.newMessageText.isEmpty {
+                            Text(viewModel.conversation == nil ? "Send the first message..." : "Send a message...")
+                                .foregroundColor(.black.opacity(0.5))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                        }
+                        
+                        TextField("", text: $viewModel.newMessageText, axis: .vertical)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .focused($isTextFieldFocused)
+                            .lineLimit(1...3)
+                    }
+                    .background(Color.campusBackgroundSecondary)
+                    .cornerRadius(16)
                     
                     // Send button (like comment post button)
                     Button(action: {
