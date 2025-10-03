@@ -1539,7 +1539,7 @@ router.post('/', [
   requireVerification,
   body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
   body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
-  body('postType').isIn(['goods', 'services', 'housing', 'events']).withMessage('Post type must be goods, services, housing, or events'),
+  body('postType').isIn(['goods', 'services', 'housing', 'events', 'offer', 'request']).withMessage('Post type must be goods, services, housing, events, offer, or request'),
         body('durationType').optional().isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
       body('location').optional().isLength({ max: 255 }).withMessage('Location must be less than 255 characters').trim(),
       body('repostFrequency').optional().isIn(['daily', 'weekly', 'monthly']).withMessage('Repost frequency must be daily, weekly, or monthly'),

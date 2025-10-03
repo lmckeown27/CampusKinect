@@ -133,8 +133,8 @@ const commonValidations = {
     postType: {
       in: ['body'],
       isIn: {
-        options: [['offer', 'request', 'event']],
-        errorMessage: 'Post type must be offer, request, or event'
+        options: [['goods', 'services', 'housing', 'events', 'offer', 'request']],
+        errorMessage: 'Post type must be goods, services, housing, events, offer, or request'
       }
     },
     durationType: {
@@ -226,8 +226,8 @@ const commonValidations = {
       in: ['query'],
       optional: true,
       isIn: {
-        options: [['offer', 'request', 'event', 'all']],
-        errorMessage: 'Post type filter must be offer, request, event, or all'
+        options: [['goods', 'services', 'housing', 'events', 'offer', 'request', 'all']],
+        errorMessage: 'Post type filter must be goods, services, housing, events, offer, request, or all'
       }
     },
     tags: {
