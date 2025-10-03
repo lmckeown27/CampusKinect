@@ -1658,9 +1658,6 @@ router.post('/', [
             `, [post.id, images[i], i]);
           }
         }
-        
-        // Calculate and update scores for this post
-        await updatePostScores(post.id);
       }
       
       console.log(`✅ Created ${createdPosts.length} post(s) across ${universityIds.length} university(ies)`);
@@ -1669,6 +1666,16 @@ router.post('/', [
       const primaryPost = createdPosts[0];
 
       await client.query('COMMIT');
+      
+      // Calculate and update scores for all created posts (AFTER commit so posts are visible)
+      for (const post of createdPosts) {
+        try {
+          await updatePostScores(post.id);
+        } catch (scoreError) {
+          console.error(`⚠️ Failed to update scores for post ${post.id}:`, scoreError.message);
+          // Continue even if scoring fails - post is already created
+        }
+      }
 
       // Clear cache for all created posts
       for (const post of createdPosts) {
@@ -1750,10 +1757,17 @@ router.post('/', [
 
   } catch (error) {
     console.error('Create post error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      detail: error.detail
+    });
     res.status(500).json({
       success: false,
       error: {
-        message: 'Failed to create post. Please try again.'
+        message: 'Failed to create post. Please try again.',
+        debug: process.env.NODE_ENV === 'development' ? error.message : undefined
       }
     });
   }
