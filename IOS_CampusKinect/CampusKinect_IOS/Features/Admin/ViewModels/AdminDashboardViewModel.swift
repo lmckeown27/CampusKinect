@@ -191,34 +191,91 @@ class AdminDashboardViewModel: ObservableObject {
         isLoadingAnalytics = true
         print("🔍 AdminDashboard: Loading analytics data...")
         
-        apiService.getAnalyticsData()
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    DispatchQueue.main.async {
-                        self?.isLoadingAnalytics = false
-                        if case .failure(let error) = completion {
-                            print("❌ AdminDashboard: Failed to load analytics - \(error)")
-                            // For new platforms with no data, this is expected
-                            if error.localizedDescription.contains("404") || error.localizedDescription.contains("not found") {
-                                print("ℹ️ AdminDashboard: Analytics endpoint not found - this is normal for new platforms")
-                                // Don't set error message for 404s on analytics
-                            } else {
-                                self?.errorMessage = self?.formatError(error)
-                            }
-                        }
-                    }
-                },
-                receiveValue: { [weak self] analyticsData in
-                    DispatchQueue.main.async {
-                        print("✅ AdminDashboard: Analytics data loaded successfully")
-                        print("📊 Analytics: \(analyticsData.totalPosts) posts, \(analyticsData.totalMessages) messages, \(analyticsData.activeUsers) active users")
-                        print("🔄 AdminDashboard: Setting isLoadingAnalytics = false (success case)")
-                        self?.isLoadingAnalytics = false
-                        self?.analytics = analyticsData
+        // Fetch both analytics and universities
+        Task {
+            do {
+                async let analyticsResult = try await fetchAnalyticsData()
+                async let universitiesResult = try await fetchUniversitiesData()
+                
+                let (analytics, universities) = try await (analyticsResult, universitiesResult)
+                
+                // Merge university data with analytics
+                let updatedAnalytics = mergeUniversityData(analytics: analytics, universities: universities)
+                
+                await MainActor.run {
+                    print("✅ AdminDashboard: Analytics and universities loaded successfully")
+                    print("📊 Analytics: \(updatedAnalytics.totalPosts) posts, \(updatedAnalytics.totalMessages) messages")
+                    print("🎓 Universities: \(updatedAnalytics.topUniversities.count) universities with real IDs")
+                    self.isLoadingAnalytics = false
+                    self.analytics = updatedAnalytics
+                }
+            } catch {
+                await MainActor.run {
+                    print("❌ AdminDashboard: Failed to load analytics - \(error)")
+                    self.isLoadingAnalytics = false
+                    if !error.localizedDescription.contains("404") {
+                        self.errorMessage = self.formatError(error)
                     }
                 }
-            )
-            .store(in: &cancellables)
+            }
+        }
+    }
+    
+    private func fetchAnalyticsData() async throws -> AnalyticsData {
+        return try await withCheckedThrowingContinuation { continuation in
+            apiService.getAnalyticsData()
+                .sink(
+                    receiveCompletion: { completion in
+                        if case .failure(let error) = completion {
+                            continuation.resume(throwing: error)
+                        }
+                    },
+                    receiveValue: { data in
+                        continuation.resume(returning: data)
+                    }
+                )
+                .store(in: &cancellables)
+        }
+    }
+    
+    private func fetchUniversitiesData() async throws -> [UniversitySearchResult] {
+        let response = try await APIService.shared.fetchAllUniversities()
+        return response.data.universities
+    }
+    
+    private func mergeUniversityData(analytics: AnalyticsData, universities: [UniversitySearchResult]) -> AnalyticsData {
+        // Create a mapping of university names to their data
+        let universityMap = Dictionary(uniqueKeysWithValues: universities.map { ($0.name, $0) })
+        
+        // Update topUniversities with real IDs and user counts
+        let updatedUniversities: [AnalyticsData.UniversityStats] = analytics.topUniversities.compactMap { stat in
+            if let uni = universityMap[stat.name] {
+                // Use real university data
+                return AnalyticsData.UniversityStats(
+                    id: uni.id,
+                    name: uni.name,
+                    userCount: uni.userCount
+                )
+            } else {
+                // Keep the stat but log that we couldn't find the university
+                print("⚠️ AdminDashboard: Could not find university '\(stat.name)' in search results")
+                return stat
+            }
+        }
+        
+        // Return analytics with updated university data
+        return AnalyticsData(
+            totalPosts: analytics.totalPosts,
+            totalMessages: analytics.totalMessages,
+            activeUsers: analytics.activeUsers,
+            newUsersToday: analytics.newUsersToday,
+            postsToday: analytics.postsToday,
+            messagesPerDay: analytics.messagesPerDay,
+            topUniversities: updatedUniversities,
+            contentTrends: analytics.contentTrends,
+            reportsByReason: analytics.reportsByReason,
+            userGrowth: analytics.userGrowth
+        )
     }
     
     func loadBannedUsers() {

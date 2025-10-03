@@ -228,6 +228,16 @@ class APIService: NSObject, ObservableObject {
         )
     }
     
+    // MARK: - University Methods
+    func fetchAllUniversities() async throws -> UniversitiesResponse {
+        return try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.search)/universities",
+            method: .GET,
+            body: nil,
+            requiresAuth: false
+        )
+    }
+    
     // MARK: - Posts Methods
     func fetchPosts(page: Int = 1, limit: Int = 20, universityId: Int? = nil) async throws -> PostsResponse {
         var endpoint = "\(APIConstants.Endpoints.posts)?page=\(page)&limit=\(limit)"

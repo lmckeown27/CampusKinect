@@ -18,6 +18,7 @@ struct APIConstants {
         static let messages = "/messages"
         static let users = "/users"
         static let upload = "/upload"
+        static let search = "/search"
     }
     
     // Full API base URL for production
