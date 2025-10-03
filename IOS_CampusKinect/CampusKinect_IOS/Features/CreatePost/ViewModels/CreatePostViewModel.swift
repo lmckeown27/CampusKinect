@@ -81,7 +81,7 @@ class CreatePostViewModel: ObservableObject {
                 title: title,
                 description: description,
                 postType: postType,
-                durationType: "recurring", // Default to recurring for now
+                durationType: offerRequest ?? "request", // Use offer/request, default to "request"
                 location: location,
                 tags: tags,
                 images: imageUrls.isEmpty ? nil : imageUrls,

@@ -163,16 +163,10 @@ router.get('/organized', [
       queryParams.push(tags);
     }
 
-    // Organized ordering: high-engagement recurring first, then events, then low-engagement recurring, then one-time posts
+    // Sort by engagement score and creation date
     organizedQuery += ` 
       GROUP BY p.id, u.username, u.first_name, u.last_name, u.display_name, u.profile_picture, un.name, un.city, un.state
       ORDER BY 
-        CASE 
-          WHEN p.duration_type = 'recurring' AND p.engagement_score >= 5.0 THEN 0
-          WHEN p.duration_type = 'event' THEN 1
-          WHEN p.duration_type = 'recurring' AND p.engagement_score < 5.0 THEN 2
-          ELSE 3
-        END,
         p.engagement_score DESC,
         p.created_at DESC
       LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
@@ -235,8 +229,6 @@ router.get('/organized', [
       postType: post.post_type,
       durationType: post.duration_type,
       location: post.location,
-      repostFrequency: post.repost_frequency,
-      isRecurring: post.duration_type === 'recurring',
       originalPostId: post.original_post_id,
       engagement: {
         messageCount: post.message_count || 0,
@@ -286,7 +278,6 @@ router.get('/organized', [
       data: {
         posts,
         organization: {
-          recurringCount: posts.filter(p => p.isRecurring).length,
           eventCount: posts.filter(p => p.durationType === 'event').length,
           oneTimeCount: posts.filter(p => p.durationType === 'one-time').length
         },
@@ -423,8 +414,6 @@ router.get('/personalized-feed', [
       description: post.description,
       postType: post.post_type,
       durationType: post.duration_type,
-      repostFrequency: post.repost_frequency,
-      isRecurring: post.duration_type === 'recurring',
       originalPostId: post.original_post_id,
       expiresAt: post.expires_at,
       eventStart: post.event_start,
@@ -714,8 +703,6 @@ router.get('/tabbed', [
       description: post.description,
       postType: post.post_type,
       durationType: post.duration_type,
-      repostFrequency: post.repost_frequency,
-      isRecurring: post.duration_type === 'recurring',
       originalPostId: post.original_post_id,
       expiresAt: post.expires_at,
       eventStart: post.event_start,
@@ -1270,18 +1257,9 @@ router.get('/', [
       case 'expiring':
         baseQuery += ` ORDER BY p.expires_at ASC NULLS LAST, p.created_at DESC`;
         break;
-      case 'recurring':
-        baseQuery += ` ORDER BY p.duration_type = 'recurring' DESC, p.created_at DESC`;
-        break;
       case 'organized':
-        // Organized feed: recurring posts first, then events, then one-time posts
-        baseQuery += ` ORDER BY 
-          CASE 
-            WHEN p.duration_type = 'recurring' THEN 0
-            WHEN p.duration_type = 'event' THEN 1
-            ELSE 2
-          END,
-          p.created_at DESC`;
+        // Organized feed: sort by creation date
+        baseQuery += ` ORDER BY p.created_at DESC`;
         break;
       case 'recent':
       default:
@@ -1548,7 +1526,6 @@ router.post('/', [
       postType,
       durationType,
       location,
-      repostFrequency,
       expiresAt,
       eventStart,
       eventEnd,
@@ -1602,12 +1579,6 @@ router.post('/', [
     try {
       await client.query('BEGIN');
 
-      // Calculate next repost date for recurring posts
-      let nextRepostDate = null;
-      if (durationType === 'recurring' && repostFrequency) {
-        nextRepostDate = calculateNextRepostDate(repostFrequency);
-      }
-
       // Create posts for each target university
       const createdPosts = [];
       
@@ -1615,10 +1586,10 @@ router.post('/', [
         console.log(`📍 Creating post for university ${universityId}`);
         
         const postResult = await client.query(`
-          INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-          RETURNING id, title, description, post_type, duration_type, location, repost_frequency, next_repost_date, expires_at, event_start, event_end, created_at, university_id
-        `, [userId, universityId, title, description, postType, durationType, location, repostFrequency, nextRepostDate, expiresAt, eventStart, eventEnd]);
+          INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, expires_at, event_start, event_end)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, created_at, university_id
+        `, [userId, universityId, title, description, postType, durationType, location, expiresAt, eventStart, eventEnd]);
 
         const post = postResult.rows[0];
         createdPosts.push(post);
