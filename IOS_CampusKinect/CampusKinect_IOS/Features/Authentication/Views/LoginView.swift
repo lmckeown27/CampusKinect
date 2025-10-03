@@ -221,10 +221,14 @@ struct LoginView: View {
         let success = await authManager.login(email: email, password: password)
         if !success {
             // Check if it's a banned account error
-            if case .accountBanned = authManager.authError {
-                showingBannedAlert = true
-            } else {
-                showingAlert = true
+            await MainActor.run {
+                if case .accountBanned = authManager.authError {
+                    print("🚫 Showing banned alert")
+                    showingBannedAlert = true
+                } else {
+                    print("❌ Showing generic error alert")
+                    showingAlert = true
+                }
             }
         }
     }
