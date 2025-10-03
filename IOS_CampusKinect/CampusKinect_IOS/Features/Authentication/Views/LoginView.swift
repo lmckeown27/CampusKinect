@@ -14,7 +14,14 @@ struct LoginView: View {
     @State private var isPasswordVisible = false
     @State private var shouldNavigateToRegister = false
     @State private var activeAlert: ActiveAlert?
-    @State private var isBanned = false
+    
+    // Derive banned state directly from authManager instead of maintaining separate state
+    private var isBanned: Bool {
+        if case .accountBanned = authManager.authError {
+            return true
+        }
+        return false
+    }
     
     enum ActiveAlert: Identifiable {
         case loginFailed
@@ -270,15 +277,14 @@ struct LoginView: View {
     
     private func performLogin() async {
         let success = await authManager.login(email: email, password: password)
+        
         if !success {
-            // Check if it's a banned account error
-            await MainActor.run {
-                if case .accountBanned = authManager.authError {
-                    // Show inline banned message
-                    isBanned = true
-                } else {
-                    // Show error alert for other failures
-                    isBanned = false
+            // Check if it's NOT a banned account error - show alert for other failures
+            if case .accountBanned = authManager.authError {
+                // isBanned computed property will automatically return true
+                // The view will re-render because authManager.authError changed
+            } else {
+                await MainActor.run {
                     activeAlert = .loginFailed
                 }
             }
