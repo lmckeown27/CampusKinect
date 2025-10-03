@@ -1,17 +1,26 @@
 import SwiftUI
+import UIKit
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
-    @State private var previousTab: Tab = .home
     @State private var isMessagesPreloaded = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
-    enum Tab: String, CaseIterable {
-        case home = "Home"
-        case createPost = "Create"
-        case messages = "Messages"
-        case profile = "Profile"
+    enum Tab: Int, CaseIterable {
+        case home = 0
+        case createPost = 1
+        case messages = 2
+        case profile = 3
+        
+        var title: String {
+            switch self {
+            case .home: return "Home"
+            case .createPost: return "Create"
+            case .messages: return "Messages"
+            case .profile: return "Profile"
+            }
+        }
     }
     
     // Computed property to determine if we're on iPad
@@ -37,35 +46,8 @@ struct MainTabView: View {
                         }
                 }
                 
-                // Main TabView (visible to user)
-                TabView(selection: $selectedTab) {
-                    HomeView()
-                        .tabItem {
-                            Label("Home", systemImage: "house.fill")
-                        }
-                        .tag(Tab.home)
-                    
-                    CreatePostView()
-                        .tabItem {
-                            Label("Create", systemImage: "plus.circle.fill")
-                        }
-                        .tag(Tab.createPost)
-                    
-                    MessagesView()
-                        .tabItem {
-                            Label("Messages", systemImage: "message.fill")
-                        }
-                        .tag(Tab.messages)
-                    
-                    ProfileView()
-                        .tabItem {
-                            Label("Profile", systemImage: "person.fill")
-                        }
-                        .tag(Tab.profile)
-                }
-                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
-                .frame(maxHeight: .infinity)
-                .clipped()
+                // Main TabView with custom tab bar controller
+                CustomTabBarController(selectedTab: $selectedTab, isIPad: isIPad)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)
@@ -85,14 +67,87 @@ struct MainTabView: View {
                 selectedTab = .home
             }
         }
-        .onChange(of: selectedTab) { oldValue, newValue in
-            // Scroll to top when switching to home tab from another tab
-            if newValue == .home && oldValue != .home {
-                print("📱 MainTabView: Switched to home tab - scrolling to top")
-                NotificationCenter.default.post(name: .scrollToTopHome, object: nil)
+    }
+}
+
+// MARK: - Custom Tab Bar Controller
+struct CustomTabBarController: UIViewControllerRepresentable {
+    @Binding var selectedTab: MainTabView.Tab
+    let isIPad: Bool
+    
+    func makeUIViewController(context: Context) -> UITabBarController {
+        let tabBarController = TabBarControllerWithDelegate()
+        tabBarController.delegate = context.coordinator
+        
+        // Create view controllers for each tab
+        let homeVC = UIHostingController(rootView: HomeView())
+        homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
+        
+        let createPostVC = UIHostingController(rootView: CreatePostView())
+        createPostVC.tabBarItem = UITabBarItem(title: "Create", image: UIImage(systemName: "plus.circle.fill"), tag: 1)
+        
+        let messagesVC = UIHostingController(rootView: MessagesView())
+        messagesVC.tabBarItem = UITabBarItem(title: "Messages", image: UIImage(systemName: "message.fill"), tag: 2)
+        
+        let profileVC = UIHostingController(rootView: ProfileView())
+        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"), tag: 3)
+        
+        tabBarController.viewControllers = [homeVC, createPostVC, messagesVC, profileVC]
+        tabBarController.selectedIndex = selectedTab.rawValue
+        
+        // Style the tab bar
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+        tabBarController.tabBar.standardAppearance = appearance
+        tabBarController.tabBar.scrollEdgeAppearance = appearance
+        tabBarController.tabBar.tintColor = UIColor(named: "BrandPrimary")
+        
+        return tabBarController
+    }
+    
+    func updateUIViewController(_ uiViewController: UITabBarController, context: Context) {
+        uiViewController.selectedIndex = selectedTab.rawValue
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UITabBarControllerDelegate {
+        var parent: CustomTabBarController
+        
+        init(_ parent: CustomTabBarController) {
+            self.parent = parent
+        }
+        
+        func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+            guard let index = tabBarController.viewControllers?.firstIndex(of: viewController),
+                  let tab = MainTabView.Tab(rawValue: index) else {
+                return true
             }
-            // Note: Tapping home while already on home doesn't trigger onChange in TabView
-            // Users can tap the logo to scroll to top when already on home page
+            
+            // Check if tapping the already-selected tab
+            if tab.rawValue == tabBarController.selectedIndex {
+                // Tapping same tab
+                if tab == .home {
+                    // Tapping home while already on home - scroll to top
+                    print("📱 TabBarController: Tapped home tab while already on home - scrolling to top")
+                    NotificationCenter.default.post(name: .scrollToTopHome, object: nil)
+                }
+                // Don't change selection
+                return false
+            } else {
+                // Switching to different tab - update binding
+                DispatchQueue.main.async {
+                    self.parent.selectedTab = tab
+                }
+                return true
+            }
         }
     }
+}
+
+// Custom UITabBarController subclass
+class TabBarControllerWithDelegate: UITabBarController {
+    // This subclass exists to ensure proper delegate behavior
 } 
