@@ -81,7 +81,8 @@ struct AllUniversitiesView: View {
                                 rank: index + 1,
                                 university: university,
                                 totalUsers: totalUsers,
-                                isCurrentlyViewing: university.id == universitySwitcher.currentViewingUniversityId
+                                isCurrentlyViewing: university.id == universitySwitcher.currentViewingUniversityId,
+                                onDismiss: { dismiss() }
                             )
                             
                             if index < sortedUniversities.count - 1 {
@@ -115,6 +116,7 @@ struct UniversityDetailRow: View {
     let university: AnalyticsData.UniversityStats
     let totalUsers: Int
     let isCurrentlyViewing: Bool
+    let onDismiss: () -> Void
     @StateObject private var universitySwitcher = AdminUniversitySwitcher.shared
     
     var percentage: Double {
@@ -207,7 +209,7 @@ struct UniversityDetailRow: View {
                 print("🎓 Admin: University switcher updated - currentViewingUniversityId = \(universitySwitcher.currentViewingUniversityId ?? -1)")
                 
                 // Dismiss this sheet to return to admin dashboard
-                dismiss()
+                onDismiss()
                 
                 // Post notification to switch to Home tab
                 print("🎓 Admin: Posting notification to switch to Home tab")
