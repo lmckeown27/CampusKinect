@@ -85,10 +85,25 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Image("Logo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 32)
+                    if let universityName = universitySwitcher.currentViewingUniversityName {
+                        // Admin is viewing a different university - show in toolbar
+                        VStack(spacing: 2) {
+                            Text(universityName)
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(.blue)
+                                .lineLimit(1)
+                            Text("Admin View")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        // Normal logo
+                        Image("Logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 32)
+                    }
                 }
             }
             .toolbar {

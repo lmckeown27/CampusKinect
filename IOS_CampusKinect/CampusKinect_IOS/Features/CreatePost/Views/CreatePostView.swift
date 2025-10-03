@@ -30,6 +30,16 @@ struct CreatePostView: View {
     // Category tag display visibility (separate from actual selection)
     @State private var showingCategoryTag = true
     
+    // Admin multi-university posting
+    @State private var showingUniversitySelector = false
+    @State private var selectedUniversities: Set<Int> = []
+    @State private var isSelectingAllUniversities = false
+    
+    // Check if current user is admin (simplified for now)
+    private var isAdmin: Bool {
+        return true // TODO: Implement proper admin check from backend
+    }
+    
     // Computed property to determine if we're on iPad
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
@@ -43,6 +53,12 @@ struct CreatePostView: View {
                     titleInputSection
                     contentInputSection
                     categorySelectionSection
+                    
+                    // Admin University Selection
+                    if isAdmin {
+                        adminUniversitySelectionSection
+                    }
+                    
                     locationInputSection
                     ImagePickerView(selectedImages: $selectedImages)
                     Spacer(minLength: 20)
@@ -71,6 +87,12 @@ struct CreatePostView: View {
                     isPresented: $showingCategorySelection
                 )
             }
+            .sheet(isPresented: $showingUniversitySelector) {
+                AdminUniversitySelector(
+                    selectedUniversities: $selectedUniversities,
+                    isSelectingAll: $isSelectingAllUniversities
+                )
+            }
             .onChange(of: selectedCategory) { _, _ in
                 // Show the tag again when a category is selected
                 if selectedCategory != nil {
@@ -82,7 +104,13 @@ struct CreatePostView: View {
                     clearForm()
                 }
             } message: {
-                Text("Your post has been shared with the campus community!")
+                if isAdmin && isSelectingAllUniversities {
+                    Text("Your post has been sent to all universities!")
+                } else if isAdmin && !selectedUniversities.isEmpty {
+                    Text("Your post has been sent to \(selectedUniversities.count) \(selectedUniversities.count == 1 ? "university" : "universities")!")
+                } else {
+                    Text("Your post has been shared with the campus community!")
+                }
             }
             .alert("Post Requirements", isPresented: $showingValidationAlert) {
                 Button("OK") {
@@ -288,6 +316,71 @@ struct CreatePostView: View {
             
             TextField("Add a location...", text: $location)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+    }
+    
+    // MARK: - Admin University Selection Section
+    private var adminUniversitySelectionSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Target Universities")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Image(systemName: "crown.fill")
+                    .font(.caption)
+                    .foregroundColor(.yellow)
+            }
+            
+            Button(action: {
+                showingUniversitySelector = true
+            }) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        if isSelectingAllUniversities {
+                            Text("All Universities")
+                                .font(.body)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            Text("Post will be sent to all universities")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        } else if !selectedUniversities.isEmpty {
+                            Text("\(selectedUniversities.count) Universities Selected")
+                                .font(.body)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            Text("Tap to view or modify selection")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        } else {
+                            Text("Select Universities")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                            Text("Choose which universities will see this post")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color.blue.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                )
+                .cornerRadius(12)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
     
