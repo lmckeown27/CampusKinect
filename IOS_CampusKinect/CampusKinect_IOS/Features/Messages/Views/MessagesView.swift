@@ -184,7 +184,9 @@ struct MessagesView: View {
                             selectedPostId = conversation.postId
                             selectedPostTitle = conversation.postTitle
                             selectedPostType = conversation.postType
-                            selectedPostImages = nil // No images available from conversation list
+                            
+                            // Try to retrieve stored images for this post
+                            selectedPostImages = UserDefaults.standard.array(forKey: "postImages_\(conversation.postId)") as? [String]
                             
                             shouldNavigateToChat = true
                             print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), post='\(conversation.postTitle)', shouldNavigateToChat=\(shouldNavigateToChat)")
@@ -315,7 +317,10 @@ struct MessagesView: View {
             selectedPostId = postId
             selectedPostTitle = postTitle
             selectedPostType = existingConversation.postType
-            selectedPostImages = postImages
+            
+            // Use provided images or retrieve from UserDefaults
+            selectedPostImages = postImages ?? (UserDefaults.standard.array(forKey: "postImages_\(postId)") as? [String])
+            
             shouldNavigateToChat = true
             return
         }
@@ -345,7 +350,10 @@ struct MessagesView: View {
         pendingConversationPostId = postId
         pendingConversationPostTitle = postTitle
         pendingConversationPostType = postType // Use actual post type (housing, goods, services, etc.)
-        pendingConversationPostImages = postImages
+        
+        // Use provided images or retrieve from UserDefaults
+        pendingConversationPostImages = postImages ?? (UserDefaults.standard.array(forKey: "postImages_\(postId)") as? [String])
+        
         showingConversationConfirmation = true
     }
     
