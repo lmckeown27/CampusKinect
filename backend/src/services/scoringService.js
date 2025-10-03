@@ -621,7 +621,8 @@ const getFeedPositionedPosts = async (limit = 20, offset = 0) => {
         p.*,
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
-        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags
+        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')) ||
+        ARRAY[CASE WHEN p.post_type = 'offer' THEN 'Offer' WHEN p.post_type = 'request' THEN 'Request' ELSE NULL END] FILTER (WHERE p.post_type IN ('offer', 'request')) as tags
       FROM posts p
       JOIN users u ON p.user_id = u.id
       JOIN universities un ON p.university_id = un.id
