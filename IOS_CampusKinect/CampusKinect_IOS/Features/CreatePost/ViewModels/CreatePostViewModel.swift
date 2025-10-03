@@ -50,7 +50,7 @@ class CreatePostViewModel: ObservableObject {
                 tags.append(subcategory.displayName)
             }
             
-            // Don't add offer/request to tags - it's already in durationType
+            // Don't add offer/request to tags - it's now handled by postType
             
             // Map category to postType
             let postType: String
@@ -73,12 +73,20 @@ class CreatePostViewModel: ObservableObject {
                 : Array(targetUniversities!)
             let postToAll = postToAllUniversities ? true : nil
             
+            // Map offerRequest to postType (offer/request replaces the category for goods/services/housing)
+            let finalPostType: String
+            if let offerRequest = offerRequest, !offerRequest.isEmpty {
+                finalPostType = offerRequest // "offer" or "request"
+            } else {
+                finalPostType = postType // use category as fallback
+            }
+            
             // Create the request
             let request = CreatePostRequest(
                 title: title,
                 description: description,
-                postType: postType,
-                durationType: offerRequest ?? "request", // Use offer/request, default to "request"
+                postType: finalPostType,
+                durationType: "recurring", // All posts are recurring now
                 location: location,
                 tags: tags,
                 images: imageUrls.isEmpty ? nil : imageUrls,

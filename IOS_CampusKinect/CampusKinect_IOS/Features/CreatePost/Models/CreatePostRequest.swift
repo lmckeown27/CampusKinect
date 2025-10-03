@@ -11,7 +11,7 @@ struct CreatePostRequest: Codable {
     let title: String
     let description: String
     let postType: String
-    let durationType: String
+    let durationType: String? // Optional - defaults to "recurring" on backend
     let location: String?
     let tags: [String]
     let images: [String]? // URLs of uploaded images
@@ -20,7 +20,7 @@ struct CreatePostRequest: Codable {
     let targetUniversities: [Int]?
     let postToAllUniversities: Bool?
     
-    init(title: String, description: String, postType: String, durationType: String, location: String?, tags: [String], images: [String]? = nil, targetUniversities: [Int]? = nil, postToAllUniversities: Bool? = nil) {
+    init(title: String, description: String, postType: String, durationType: String? = "recurring", location: String?, tags: [String], images: [String]? = nil, targetUniversities: [Int]? = nil, postToAllUniversities: Bool? = nil) {
         self.title = title
         self.description = description
         self.postType = postType
