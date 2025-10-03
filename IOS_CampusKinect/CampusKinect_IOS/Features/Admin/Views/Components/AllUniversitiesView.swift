@@ -202,9 +202,16 @@ struct UniversityDetailRow: View {
         // View University Button
         if !isCurrentlyViewing {
             Button(action: {
-                print("🎓 Admin: Selected university ID \(university.id) - \(university.name)")
+                print("🎓 Admin: Button clicked for university ID \(university.id) - \(university.name)")
                 universitySwitcher.setViewingUniversity(id: university.id, name: university.name)
                 print("🎓 Admin: University switcher updated - currentViewingUniversityId = \(universitySwitcher.currentViewingUniversityId ?? -1)")
+                
+                // Dismiss this sheet to return to admin dashboard
+                dismiss()
+                
+                // Post notification to switch to Home tab
+                print("🎓 Admin: Posting notification to switch to Home tab")
+                NotificationCenter.default.post(name: Notification.Name("SwitchToHomeTab"), object: nil)
             }) {
                 HStack {
                     Image(systemName: "eye")

@@ -1125,13 +1125,27 @@ router.get('/', [
       userId
     } = req.query;
 
-    // Get user's university ID for filtering (if authenticated)
-    let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
-    if (req.user && req.user.id) {
+    // Determine which university to filter by
+    // Priority: 1) universityId query param (for admin), 2) user's university, 3) default (Cal Poly)
+    let targetUniversityId;
+    
+    if (universityId) {
+      // Admin or explicit university selection
+      targetUniversityId = parseInt(universityId);
+      console.log(`📍 Posts: Using query param universityId=${targetUniversityId}`);
+    } else if (req.user && req.user.id) {
+      // Use authenticated user's university
       const userResult = await query('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
       if (userResult.rows.length > 0) {
-        userUniversityId = userResult.rows[0].university_id;
+        targetUniversityId = userResult.rows[0].university_id;
+        console.log(`📍 Posts: Using user's universityId=${targetUniversityId}`);
+      } else {
+        targetUniversityId = UNIVERSITY_CONFIG.primaryUniversityId;
       }
+    } else {
+      // Not authenticated, use default
+      targetUniversityId = UNIVERSITY_CONFIG.primaryUniversityId;
+      console.log(`📍 Posts: Using default universityId=${targetUniversityId}`);
     }
 
     // Handle tags parameter (support both 'tags' and 'tags[]' formats)
@@ -1195,10 +1209,10 @@ router.get('/', [
     const queryParams = [];
     let paramCount = 0;
 
-    // Filter to user's university (defaults to Cal Poly if not authenticated)
+    // Filter to target university (respects universityId query param for admin)
     paramCount++;
     baseQuery += ` AND p.university_id = $${paramCount}`;
-    queryParams.push(userUniversityId);
+    queryParams.push(targetUniversityId);
 
     // Add post type filter - New system: Primary tag is the main category
     if (postTypes && postTypes.length > 0) {
