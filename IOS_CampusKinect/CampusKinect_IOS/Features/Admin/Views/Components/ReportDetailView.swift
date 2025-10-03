@@ -313,16 +313,6 @@ struct ReportDetailView: View {
                     }
                 }
             }
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-                
-                FlowLayout(alignment: .leading, spacing: 8) {
-                    ForEach(report.reasons, id: \.self) { reason in
-                        ReasonBadge(reason: reason)
-                    }
-                }
-            }
             
             DetailRow(title: "Status", value: report.status.displayName) {
                 StatusBadge(status: report.status)

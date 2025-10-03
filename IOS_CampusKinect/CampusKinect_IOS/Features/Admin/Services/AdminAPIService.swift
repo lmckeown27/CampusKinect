@@ -325,7 +325,7 @@ class AdminAPIService: ObservableObject {
         request.httpMethod = "POST"
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        let body = BanUserRequest(reason: reason)
+        let body = BanUserRequest(reason: reason, duration: nil)
         request.httpBody = try? JSONEncoder().encode(body)
         
         return addAuthToken(to: request)

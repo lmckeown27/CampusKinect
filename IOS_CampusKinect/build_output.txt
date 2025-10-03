@@ -1,0 +1,803 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project CampusKinect.xcodeproj -scheme CampusKinect -configuration Debug -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" build
+
+Build settings from command line:
+    SDKROOT = iphonesimulator18.5
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  nanopb: https://github.com/firebase/nanopb.git @ 2.30910.0
+  GoogleDataTransport: https://github.com/google/GoogleDataTransport.git @ 10.1.0
+  AppCheck: https://github.com/google/app-check.git @ 11.2.0
+  SDWebImage: https://github.com/SDWebImage/SDWebImage.git @ 5.21.2
+  GoogleUtilities: https://github.com/google/GoogleUtilities.git @ 8.1.0
+  SwiftProtobuf: https://github.com/apple/swift-protobuf.git @ 1.31.0
+  Promises: https://github.com/google/promises.git @ 2.4.0
+  abseil: https://github.com/google/abseil-cpp-binary.git @ 1.2024072200.0
+  Firebase: https://github.com/firebase/firebase-ios-sdk.git @ 12.2.0
+  gRPC: https://github.com/google/grpc-binary.git @ 1.69.1
+  GoogleAdsOnDeviceConversion: https://github.com/googleads/google-ads-on-device-conversion-ios-sdk @ 2.3.0
+  Alamofire: https://github.com/Alamofire/Alamofire.git @ 5.10.2
+  GoogleAppMeasurement: https://github.com/google/GoogleAppMeasurement.git @ 12.2.0
+  Lottie: https://github.com/airbnb/lottie-ios.git @ 4.5.2
+  InteropForGoogle: https://github.com/google/interop-ios-for-google-sdks.git @ 101.0.0
+  GTMSessionFetcher: https://github.com/google/gtm-session-fetcher.git @ 5.0.0
+  leveldb: https://github.com/firebase/leveldb.git @ 1.22.5
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:iOS Simulator, arch:arm64, id:7FB73B25-1A79-4741-80FE-4751D3A59E7C, OS:18.6, name:iPhone 16 }
+{ platform:iOS Simulator, arch:x86_64, id:7FB73B25-1A79-4741-80FE-4751D3A59E7C, OS:18.6, name:iPhone 16 }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'CampusKinect' in project 'CampusKinect' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Resources/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 48e366ef226aeb386e3de5053f9a912a
+Build description path: /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/XCBuildData/48e366ef226aeb386e3de5053f9a912a.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk /Users/liammckeown/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -o /Users/liammckeown/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache
+
+WriteAuxiliaryFile /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.SwiftFileList (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    write-file /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.SwiftFileList
+
+WriteAuxiliaryFile /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.LinkFileList (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    write-file /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.LinkFileList
+
+CompileAssetCatalogVariant thinned /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator/CampusKinect.app /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Resources/Assets.xcassets (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Resources/Assets.xcassets --compile /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --filter-for-thinning-device-configuration iPhone17,3 --filter-for-device-os-version 18.6 --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 18.0 --platform iphonesimulator
+/* com.apple.actool.compilation-results */
+/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_generated_info.plist_thinned
+/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
+/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png
+/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_output/thinned/Assets.car
+
+
+WriteAuxiliaryFile /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.SwiftConstValuesFileList (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    write-file /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.SwiftConstValuesFileList
+
+SwiftDriver CampusKinect normal arm64 com.apple.xcode.tools.swift.compiler (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name CampusKinect -Onone -enforce-exclusivity\=checked @/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -target arm64-apple-ios18.0-simulator -g -module-cache-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Index.noindex/DataStore -swift-version 5 -I /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator -F /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator -emit-localized-strings -emit-localized-strings-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64 -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/liammckeown/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache -output-file-map /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/liammckeown/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect_const_extract_protocols.json -Xcc -iquote -Xcc /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-generated-files.hmap -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-own-target-headers.hmap -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-all-target-headers.hmap -Xcc -iquote -Xcc /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-project-headers.hmap -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/DerivedSources-normal/arm64 -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/DerivedSources/arm64 -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect-Swift.h -working-directory /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect -experimental-emit-module-separately -disable-cmo
+
+SwiftCompile normal arm64 Compiling\ NetworkMonitor.swift,\ Post.swift,\ CacheManager.swift,\ HomeViewModel.swift,\ NewMessageViewModel.swift,\ CommunityGuidelinesView.swift,\ Constants.swift,\ ButtonStyles.swift,\ ImageLightboxView.swift,\ NetworkError.swift,\ CampusLocationService.swift,\ ReportPostView.swift,\ TagViewModel.swift,\ BiometricUtils.swift,\ AuthResponse.swift,\ AdminModels.swift,\ NavigationManager.swift,\ ContentFilterService.swift,\ CategoryViewModel.swift,\ CampusKinectApp.swift,\ LocationManager.swift,\ UserProfile.swift,\ PostViewModel.swift,\ MainTabView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/NetworkMonitor.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/Post.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/CacheManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/HomeViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/NewMessageViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/CommunityGuidelinesView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Constants.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/ButtonStyles.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/ImageLightboxView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/NetworkError.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/CampusLocationService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportPostView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/TagViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/BiometricUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/AuthResponse.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Models/AdminModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/NavigationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Services/ContentFilterService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/CategoryViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/CampusKinectApp.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/LocationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/UserProfile.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/PostViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/MainTabView.swift (in target 'CampusKinect' from project 'CampusKinect')
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/NetworkMonitor.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/Post.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/CacheManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/HomeViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/NewMessageViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/CommunityGuidelinesView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Constants.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/ButtonStyles.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/ImageLightboxView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/NetworkError.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/CampusLocationService.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportPostView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/TagViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/BiometricUtils.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/AuthResponse.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Models/AdminModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/NavigationManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Services/ContentFilterService.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/CategoryViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/CampusKinectApp.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/LocationManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/UserProfile.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/PostViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/MainTabView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 Compiling\ BlockUserView.swift,\ MapView.swift,\ PullToRefreshView.swift,\ AdminDashboardView.swift,\ HapticFeedback.swift,\ ProfileImage.swift,\ SettingsView.swift,\ SafetyCenterView.swift,\ ChatView.swift,\ ImageFilterView.swift,\ SwipeablePostCard.swift,\ RegisterRequest.swift,\ OfflineStorageManager.swift,\ BiometricSettingsView.swift,\ AuthenticationService.swift,\ PostCardView.swift,\ AccountSettingsView.swift,\ MailComposeView.swift,\ ProfileView.swift,\ PostsTabView.swift,\ CustomImageView.swift,\ CameraModels.swift,\ SearchViewModel.swift,\ Message.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/BlockUserView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Location/MapView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/PullToRefreshView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/AdminDashboardView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/HapticFeedback.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/ProfileImage.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/SettingsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/SafetyCenterView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ChatView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/ImageFilterView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/SwipeablePostCard.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/RegisterRequest.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/OfflineStorageManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/BiometricSettingsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/PostCardView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/AccountSettingsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/MailComposeView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfileView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/PostsTabView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomImageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/CameraModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/SearchViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/Message.swift (in target 'CampusKinect' from project 'CampusKinect')
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/BlockUserView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Location/MapView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/PullToRefreshView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/AdminDashboardView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/HapticFeedback.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/ProfileImage.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/SettingsView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/SafetyCenterView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ChatView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/ImageFilterView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/SwipeablePostCard.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/RegisterRequest.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/OfflineStorageManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/BiometricSettingsView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationService.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/PostCardView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/AccountSettingsView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/MailComposeView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfileView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/PostsTabView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomImageView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/CameraModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/SearchViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/Message.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 Compiling\ InfiniteScrollView.swift,\ MessageBubbleView.swift,\ NotificationModels.swift,\ ReportContentView.swift,\ BookmarksTabView.swift,\ ColorUtils.swift,\ NavigationRouter.swift,\ ImageProcessingService.swift,\ LoginViewModel.swift,\ CameraView.swift,\ LocationModels.swift,\ NotificationService.swift,\ MyReportsView.swift,\ CategoryCardView.swift,\ AnalyticsViews.swift,\ PostCategory.swift,\ BiometricAuthManager.swift,\ APIError.swift,\ ForgotPasswordView.swift,\ ChatViewModel.swift,\ HelpSupportView.swift,\ ReportDetailView.swift,\ OfflineActionView.swift,\ AdminAPIService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/InfiniteScrollView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/MessageBubbleView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/NotificationModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportContentView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/BookmarksTabView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ColorUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/NavigationRouter.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/ImageProcessingService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/LoginViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/CameraView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/LocationModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/NotificationService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/MyReportsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CategoryCardView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/AnalyticsViews.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/PostCategory.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/BiometricAuthManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/APIError.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/ForgotPasswordView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/ChatViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/HelpSupportView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/ReportDetailView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/OfflineActionView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Services/AdminAPIService.swift (in target 'CampusKinect' from project 'CampusKinect')
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/InfiniteScrollView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/MessageBubbleView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/NotificationModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportContentView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/BookmarksTabView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ColorUtils.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/NavigationRouter.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/ImageProcessingService.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/LoginViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/CameraView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/LocationModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/NotificationService.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/MyReportsView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CategoryCardView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/AnalyticsViews.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/PostCategory.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/BiometricAuthManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/APIError.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/ForgotPasswordView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/ChatViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/HelpSupportView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/ReportDetailView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/OfflineActionView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Services/AdminAPIService.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 Compiling\ Tag.swift,\ SceneDelegate.swift,\ ValidationUtils.swift,\ KeychainManager.swift,\ ErrorView.swift,\ Helpers.swift,\ AdminDashboardViewModel.swift,\ Conversation.swift,\ User.swift,\ PrivacyView.swift,\ LocationSearchView.swift,\ LoadingButton.swift,\ ConversationView.swift,\ ProfilePostCard.swift,\ EditProfileView.swift,\ UserSearchView.swift,\ DateUtils.swift,\ AuthenticationModels.swift,\ PostPreviewView.swift,\ APIEndpoints.swift,\ AdminStatsView.swift,\ TabBarController.swift,\ ImageCropView.swift,\ PostDraft.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/Tag.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/SceneDelegate.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ValidationUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/KeychainManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ErrorView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Helpers.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/ViewModels/AdminDashboardViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/Conversation.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/User.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/PrivacyView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Location/LocationSearchView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/LoadingButton.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ConversationView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfilePostCard.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/EditProfileView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/UserSearchView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/DateUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/PostPreviewView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/APIEndpoints.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/AdminStatsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/TabBarController.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/ImageCropView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Models/PostDraft.swift (in target 'CampusKinect' from project 'CampusKinect')
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/Tag.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/SceneDelegate.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ValidationUtils.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/KeychainManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ErrorView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Helpers.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/ViewModels/AdminDashboardViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/Conversation.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/User.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/PrivacyView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Location/LocationSearchView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/LoadingButton.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ConversationView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfilePostCard.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/EditProfileView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/UserSearchView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/DateUtils.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/PostPreviewView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/APIEndpoints.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/AdminStatsView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/TabBarController.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/ImageCropView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Models/PostDraft.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 Compiling\ TermsOfServiceManager.swift,\ AboutView.swift,\ CustomButton.swift,\ CameraManager.swift,\ ContentView.swift,\ PrivacySettings.swift,\ RegisterViewModel.swift,\ FilterViewModel.swift,\ LoginView.swift,\ AdvancedCameraView.swift,\ EditProfileViewModel.swift,\ ConversationViewModel.swift,\ UIImage+Extensions.swift,\ PushNotificationManager.swift,\ PaginationModel.swift,\ OfflineBannerView.swift,\ CategorySelectionView.swift,\ ReportConversationView.swift,\ MessagesViewModel.swift,\ TabBarView.swift,\ CreatePostViewModel.swift,\ ReportUserView.swift,\ NavigationStyles.swift,\ DateFormatter+Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Services/TermsOfServiceManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/AboutView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomButton.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/CameraManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/ContentView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Models/PrivacySettings.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/RegisterViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/FilterViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/LoginView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/AdvancedCameraView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/EditProfileViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/ConversationViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/UIImage+Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/PushNotificationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/PaginationModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/OfflineBannerView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/CategorySelectionView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportConversationView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/MessagesViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/TabBarView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/CreatePostViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportUserView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/NavigationStyles.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/DateFormatter+Extensions.swift (in target 'CampusKinect' from project 'CampusKinect')
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Services/TermsOfServiceManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/AboutView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomButton.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/CameraManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/ContentView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Models/PrivacySettings.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/RegisterViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/FilterViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/LoginView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/AdvancedCameraView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/EditProfileViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/ConversationViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/UIImage+Extensions.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/PushNotificationManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/PaginationModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/OfflineBannerView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/CategorySelectionView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportConversationView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/MessagesViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/TabBarView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/CreatePostViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportUserView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/NavigationStyles.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/DateFormatter+Extensions.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 Compiling\ ReportsListView.swift,\ ProfileUpdate.swift,\ ImageCache.swift,\ TermsView.swift,\ PostFilter.swift,\ APIResponse.swift,\ TermsOfServiceModels.swift,\ ImagePickerViewModel.swift,\ MultImagePickerView.swift,\ BannedUserRowView.swift,\ BlockedUsersView.swift,\ VerificationViewModel.swift,\ Color+Extensions.swift,\ UserProfileView.swift,\ DeepLinkManager.swift,\ CustomTextField.swift,\ ProfileImageView.swift,\ EmptyStateView.swift,\ APIService.swift,\ SettingsViewModel.swift,\ CampusKinectColors.swift,\ RequestInterceptor.swift,\ SearchView.swift,\ ProfileViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/ReportsListView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/ProfileUpdate.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ImageCache.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/TermsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/PostFilter.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/APIResponse.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/TermsOfServiceModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/ImagePickerViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/MultImagePickerView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/BannedUserRowView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/BlockedUsersView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/VerificationViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Color+Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/UserProfileView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/DeepLinking/DeepLinkManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomTextField.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfileImageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/EmptyStateView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/APIService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/ViewModels/SettingsViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/CampusKinectColors.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/RequestInterceptor.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/SearchView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/ProfileViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/ReportsListView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/ProfileUpdate.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ImageCache.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/TermsView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/PostFilter.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/APIResponse.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/TermsOfServiceModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/ImagePickerViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/MultImagePickerView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/BannedUserRowView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/BlockedUsersView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/VerificationViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Color+Extensions.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/UserProfileView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/DeepLinking/DeepLinkManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomTextField.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfileImageView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/EmptyStateView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/APIService.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/ViewModels/SettingsViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/CampusKinectColors.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/RequestInterceptor.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/SearchView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/ProfileViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ CampusKinect (in target 'CampusKinect' from project 'CampusKinect')
+Failed frontend command:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -emit-module -experimental-skip-non-inlinable-function-bodies-without-types /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/InfiniteScrollView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/MessageBubbleView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/NotificationModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportContentView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/BookmarksTabView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ColorUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/NavigationRouter.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/ImageProcessingService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/LoginViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/CameraView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/LocationModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/NotificationService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/MyReportsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CategoryCardView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/AnalyticsViews.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/PostCategory.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/BiometricAuthManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/APIError.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/ForgotPasswordView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/ChatViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/HelpSupportView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/ReportDetailView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/OfflineActionView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Services/AdminAPIService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/BlockUserView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Location/MapView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/PullToRefreshView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/AdminDashboardView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/HapticFeedback.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/ProfileImage.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/SettingsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/SafetyCenterView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ChatView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/ImageFilterView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/SwipeablePostCard.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/RegisterRequest.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/OfflineStorageManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/BiometricSettingsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/PostCardView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/AccountSettingsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/MailComposeView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfileView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/PostsTabView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomImageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/CameraModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/SearchViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/Message.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/ViewModels/NotificationViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/HomeView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/NetworkManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/PostDetailView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/ProfileImageViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/DeepLinking/DeepLinkModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Models/CreatePostRequest.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/NewMessageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/ImagePickerView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/TagSelectionView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/MessageRequest.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/ReportModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/SyncStatusView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/CreatePostView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/RegisterView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ImageMessageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/LoadingView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/TermsOfServiceView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/TagChipView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/UrgentReportsSection.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/TextFieldStyles.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/SuccessView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/NetworkMonitor.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/Post.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/CacheManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/HomeViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/NewMessageViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/CommunityGuidelinesView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Constants.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/ButtonStyles.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/ImageLightboxView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/NetworkError.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/CampusLocationService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportPostView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/TagViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/BiometricUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/AuthResponse.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Models/AdminModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/NavigationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Services/ContentFilterService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/CategoryViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/CampusKinectApp.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Location/LocationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/UserProfile.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/PostViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/MainTabView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/Tag.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/SceneDelegate.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ValidationUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/KeychainManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ErrorView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Helpers.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/ViewModels/AdminDashboardViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/Conversation.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/User.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/PrivacyView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Location/LocationSearchView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/LoadingButton.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ConversationView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfilePostCard.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/EditProfileView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/UserSearchView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/DateUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/PostPreviewView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/APIEndpoints.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/AdminStatsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/TabBarController.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/ImageCropView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Models/PostDraft.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Services/TermsOfServiceManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/AboutView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomButton.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Camera/CameraManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/ContentView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Models/PrivacySettings.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/RegisterViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/ViewModels/FilterViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/LoginView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/AdvancedCameraView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/EditProfileViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/ConversationViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/UIImage+Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Notifications/PushNotificationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/PaginationModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/OfflineBannerView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/CategorySelectionView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportConversationView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/ViewModels/MessagesViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/TabBarView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/CreatePostViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/ReportUserView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/NavigationStyles.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/DateFormatter+Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/ReportsListView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Models/ProfileUpdate.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/ImageCache.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/TermsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Models/PostFilter.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/APIResponse.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Models/TermsOfServiceModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/ViewModels/ImagePickerViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Camera/MultImagePickerView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/BannedUserRowView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/BlockedUsersView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/VerificationViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Color+Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/UserProfileView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/DeepLinking/DeepLinkManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/CustomTextField.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/ProfileImageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/EmptyStateView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/APIService.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/ViewModels/SettingsViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/CampusKinectColors.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/RequestInterceptor.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/SearchView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/ProfileViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/DeepLinking/UniversalLinkHandler.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/UserDefaultsManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/String+Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/LocationPickerView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Navigation/DeepLinkRouter.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/UserProfileViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/Views/RepostsTabView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/ChatUser.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/BiometricSetupView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/ViewModifiers.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/ViewModels/AccountViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Utilities/StringUtils.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/MessagesView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Storage/CoreDataManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/ViewModels/BaseViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/ViewModels/BiometricViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Models/ImageUpload.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/App/AppDelegate.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Models/AppSettings.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/VerificationView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/Views/PrivacySettingsView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/KeyboardDismissModifier.swift /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/DerivedSources/GeneratedAssetSymbols.swift -target arm64-apple-ios18.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator -F /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=5 -module-cache-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -profile-generate -profile-coverage-mapping -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/liammckeown/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect -Xcc -ivfsstatcache -Xcc /Users/liammckeown/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-generated-files.hmap -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-own-target-headers.hmap -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-all-target-headers.hmap -Xcc -iquote -Xcc /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/CampusKinect-project-headers.hmap -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/DerivedSources-normal/arm64 -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/DerivedSources/arm64 -Xcc -I/Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/DerivedSources -Xcc -DDEBUG\=1 -module-name CampusKinect -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -emit-module-doc-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.swiftdoc -emit-module-source-info-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.swiftsourceinfo -emit-objc-header-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect-Swift.h -serialize-diagnostics-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect-master-emit-module.dia -emit-dependencies-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect-master-emit-module.d -o /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.swiftmodule -emit-abi-descriptor-path /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/Objects-normal/arm64/CampusKinect.abi.json
+
+EmitSwiftModule normal arm64 (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+/Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/ReportDetailView.swift:554:1: error: extraneous '}' at top level
+}
+^
+
+SwiftCompile normal arm64 Compiling\ NotificationViewModel.swift,\ HomeView.swift,\ NetworkManager.swift,\ PostDetailView.swift,\ AuthenticationManager.swift,\ ProfileImageViewModel.swift,\ DeepLinkModels.swift,\ CreatePostRequest.swift,\ NewMessageView.swift,\ ImagePickerView.swift,\ TagSelectionView.swift,\ MessageRequest.swift,\ ReportModels.swift,\ SyncStatusView.swift,\ CreatePostView.swift,\ RegisterView.swift,\ ImageMessageView.swift,\ LoadingView.swift,\ TermsOfServiceView.swift,\ TagChipView.swift,\ UrgentReportsSection.swift,\ TextFieldStyles.swift,\ SuccessView.swift,\ Extensions.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/ViewModels/NotificationViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/HomeView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/NetworkManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/PostDetailView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationManager.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/ProfileImageViewModel.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/DeepLinking/DeepLinkModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Models/CreatePostRequest.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/NewMessageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/ImagePickerView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/TagSelectionView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/MessageRequest.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/ReportModels.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/SyncStatusView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/CreatePostView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/RegisterView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ImageMessageView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/LoadingView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/TermsOfServiceView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/TagChipView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/UrgentReportsSection.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/TextFieldStyles.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/SuccessView.swift /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Extensions.swift (in target 'CampusKinect' from project 'CampusKinect')
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Settings/ViewModels/NotificationViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/HomeView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Network/NetworkManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Home/Views/PostDetailView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Authentication/AuthenticationManager.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Profile/ViewModels/ProfileImageViewModel.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/DeepLinking/DeepLinkModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Models/CreatePostRequest.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/NewMessageView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/ImagePickerView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/TagSelectionView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Models/MessageRequest.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Models/ReportModels.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/Offline/SyncStatusView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/CreatePost/Views/CreatePostView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/RegisterView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Messages/Views/ImageMessageView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/LoadingView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Authentication/Views/TermsOfServiceView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Components/UI/TagChipView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Admin/Views/Components/UrgentReportsSection.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Shared/Modifiers/TextFieldStyles.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Features/Shared/Views/SuccessView.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+SwiftCompile normal arm64 /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Core/Utils/Extensions.swift (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    
+
+LinkAssetCatalog /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect/CampusKinect_IOS/Resources/Assets.xcassets (in target 'CampusKinect' from project 'CampusKinect')
+    cd /Users/liammckeown/Desktop/CampusKinect/IOS_CampusKinect
+    builtin-linkAssetCatalog --thinned /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_output/thinned --thinned-dependencies /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_generated_info.plist_unthinned --output /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator/CampusKinect.app --plist-output /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Intermediates.noindex/CampusKinect.build/Debug-iphonesimulator/CampusKinect.build/assetcatalog_generated_info.plist
+note: Emplaced /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator/CampusKinect.app/AppIcon76x76@2x~ipad.png (in target 'CampusKinect' from project 'CampusKinect')
+note: Emplaced /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator/CampusKinect.app/AppIcon60x60@2x.png (in target 'CampusKinect' from project 'CampusKinect')
+note: Emplaced /Users/liammckeown/Library/Developer/Xcode/DerivedData/CampusKinect-ezujtcglxohdcbcmxuxbrmwmepmi/Build/Products/Debug-iphonesimulator/CampusKinect.app/Assets.car (in target 'CampusKinect' from project 'CampusKinect')
+
+note: Disabling hardened runtime with ad-hoc codesigning. (in target 'CampusKinect' from project 'CampusKinect')
+** BUILD FAILED **
+
+
+The following build commands failed:
+	SwiftEmitModule normal arm64 Emitting\ module\ for\ CampusKinect (in target 'CampusKinect' from project 'CampusKinect')
+	EmitSwiftModule normal arm64 (in target 'CampusKinect' from project 'CampusKinect')
+	Building project CampusKinect with scheme CampusKinect and configuration Debug
+(3 failures)
