@@ -9,6 +9,7 @@ struct MessagesView: View {
     @State private var selectedPostId: Int?
     @State private var selectedPostTitle: String?
     @State private var selectedPostType: String?
+    @State private var selectedPostImages: [String]?
     @State private var shouldNavigateToChat = false
     @State private var isViewReady = false // Track when view is fully initialized
     @State private var pendingNotification: [AnyHashable: Any]? // Queue notification if received before ready
@@ -17,6 +18,7 @@ struct MessagesView: View {
     @State private var pendingConversationPostId: Int?
     @State private var pendingConversationPostTitle: String?
     @State private var pendingConversationPostType: String?
+    @State private var pendingConversationPostImages: [String]?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -48,7 +50,8 @@ struct MessagesView: View {
                         postTitle: postTitle,
                         postType: postType,
                         otherUserId: user.id,
-                        otherUserName: user.displayName
+                        otherUserName: user.displayName,
+                        postImages: selectedPostImages
                     )
                     .onAppear {
                         print("📱 ChatView appeared successfully for post: '\(postTitle)'")
@@ -61,6 +64,7 @@ struct MessagesView: View {
                         selectedPostId = nil
                         selectedPostTitle = nil
                         selectedPostType = nil
+                        selectedPostImages = nil
                     }
                 }
             }        }
@@ -180,6 +184,7 @@ struct MessagesView: View {
                             selectedPostId = conversation.postId
                             selectedPostTitle = conversation.postTitle
                             selectedPostType = conversation.postType
+                            selectedPostImages = nil // No images available from conversation list
                             
                             shouldNavigateToChat = true
                             print("📱 Navigation state set: selectedUser=\(selectedUser?.displayName ?? "nil"), post='\(conversation.postTitle)', shouldNavigateToChat=\(shouldNavigateToChat)")
@@ -278,6 +283,7 @@ struct MessagesView: View {
         }
         
         let postType = userInfo["postType"] as? String ?? "general"
+        let postImages = userInfo["postImages"] as? [String]
         
         // Check if conversation already exists
         if let existingConversation = viewModel.conversations.first(where: { 
@@ -309,6 +315,7 @@ struct MessagesView: View {
             selectedPostId = postId
             selectedPostTitle = postTitle
             selectedPostType = existingConversation.postType
+            selectedPostImages = postImages
             shouldNavigateToChat = true
             return
         }
@@ -338,6 +345,7 @@ struct MessagesView: View {
         pendingConversationPostId = postId
         pendingConversationPostTitle = postTitle
         pendingConversationPostType = postType // Use actual post type (housing, goods, services, etc.)
+        pendingConversationPostImages = postImages
         showingConversationConfirmation = true
     }
     
@@ -371,6 +379,7 @@ struct MessagesView: View {
                     selectedPostId = postId
                     selectedPostTitle = postTitle
                     selectedPostType = postType
+                    selectedPostImages = pendingConversationPostImages
                     shouldNavigateToChat = true
                     
                     // Refresh conversations to show the new one

@@ -14,6 +14,7 @@ struct ChatView: View {
     let postType: String
     let otherUserId: Int
     let otherUserName: String
+    let postImages: [String]?
     
     @EnvironmentObject var authManager: AuthenticationManager
     @StateObject private var viewModel: ChatViewModel
@@ -23,6 +24,10 @@ struct ChatView: View {
     @State private var showingDeleteAlert = false
     @State private var showingReportSheet = false
     @State private var showingBanAlert = false
+    
+    // Post image viewer
+    @State private var showingPostImageViewer = false
+    @State private var selectedImageIndex = 0
     
     // Image sharing states
     @State private var showingImagePicker = false
@@ -39,12 +44,13 @@ struct ChatView: View {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
     
-    init(postId: Int, postTitle: String, postType: String, otherUserId: Int, otherUserName: String) {
+    init(postId: Int, postTitle: String, postType: String, otherUserId: Int, otherUserName: String, postImages: [String]? = nil) {
         self.postId = postId
         self.postTitle = postTitle
         self.postType = postType
         self.otherUserId = otherUserId
         self.otherUserName = otherUserName
+        self.postImages = postImages
         self._viewModel = StateObject(wrappedValue: ChatViewModel())
     }
     
@@ -163,6 +169,14 @@ struct ChatView: View {
                 allowsEditing: true
             )
         }
+        .fullScreenCover(isPresented: $showingPostImageViewer) {
+            if let images = postImages, !images.isEmpty {
+                PostImageViewer(
+                    images: images,
+                    selectedIndex: selectedImageIndex
+                )
+            }
+        }
         .onChange(of: photosPickerItems) { oldValue, newValue in
             Task {
                 if let item = newValue.first {
@@ -216,6 +230,27 @@ struct ChatView: View {
                 }
                 
                 Spacer()
+                
+                // View Images button (if post has images)
+                if let images = postImages, !images.isEmpty {
+                    Button(action: {
+                        selectedImageIndex = 0
+                        showingPostImageViewer = true
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "photo")
+                                .font(.caption)
+                            Text("View Images")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.campusPrimary)
+                        .cornerRadius(8)
+                    }
+                }
             }
         }
         .padding(.horizontal, 16)
@@ -668,6 +703,75 @@ struct CommentStyleMessageView: View {
     }
 }
 
+
+// MARK: - Post Image Viewer
+struct PostImageViewer: View {
+    let images: [String]
+    @State var selectedIndex: Int
+    @Environment(\.dismiss) private var dismiss
+    @State private var dragOffset: CGSize = .zero
+    @State private var isDragging: Bool = false
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+                .onTapGesture {
+                    dismiss()
+                }
+            
+            TabView(selection: $selectedIndex) {
+                ForEach(Array(images.enumerated()), id: \.offset) { index, imageURL in
+                    AsyncImage(url: URL(string: "\(APIConstants.baseURL)\(imageURL)")) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .offset(y: dragOffset.height)
+                            .scaleEffect(isDragging ? max(0.7, 1 - abs(dragOffset.height) / 1000.0) : 1)
+                            .animation(.interactiveSpring(), value: dragOffset)
+                    } placeholder: {
+                        ProgressView()
+                            .tint(.white)
+                    }
+                    .tag(index)
+                }
+            }
+            .tabViewStyle(PageTabViewStyle())
+            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+            .opacity(isDragging ? max(0.5, 1 - abs(dragOffset.height) / 500.0) : 1)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        if abs(value.translation.height) > abs(value.translation.width) {
+                            isDragging = true
+                            dragOffset = value.translation
+                        }
+                    }
+                    .onEnded { value in
+                        if abs(value.translation.height) > 200 {
+                            dismiss()
+                        } else {
+                            withAnimation(.spring()) {
+                                isDragging = false
+                                dragOffset = .zero
+                            }
+                        }
+                    }
+            )
+            
+            VStack {
+                HStack {
+                    Spacer()
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                    .padding()
+                }
+                Spacer()
+            }
+        }
+    }
+}
 
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {

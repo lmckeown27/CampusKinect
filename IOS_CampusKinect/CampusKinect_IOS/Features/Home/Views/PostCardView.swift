@@ -271,6 +271,7 @@ struct PostCardView: View {
         UserDefaults.standard.set(post.id, forKey: "pendingChatPostId")
         UserDefaults.standard.set(post.title, forKey: "pendingChatPostTitle")
         UserDefaults.standard.set(post.postType, forKey: "pendingChatPostType")
+        UserDefaults.standard.set(post.images, forKey: "pendingChatPostImages")
         
         // Navigate to chat with the post author (conversation will be created when first message is sent)
         NotificationCenter.default.post(
@@ -281,6 +282,7 @@ struct PostCardView: View {
                 "userName": post.poster.displayName,
                 "postId": post.id,
                 "postTitle": post.title,
+                "postImages": post.images,
                 "postType": post.postType
             ]
         )
