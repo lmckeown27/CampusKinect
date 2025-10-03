@@ -52,19 +52,22 @@ class CreatePostViewModel: ObservableObject {
             
             // Don't add offer/request to tags - it's now handled by postType
             
-            // Map category to postType
-            let postType: String
-            switch category.id {
-            case "goods":
-                postType = "goods"
-            case "services":
-                postType = "services"
-            case "events":
-                postType = "events"
-            case "housing":
-                postType = "housing"
-            default:
-                postType = "goods" // fallback
+            // Determine postType based on category and offer/request selection
+            let finalPostType: String
+            if category.id == "events" {
+                // Events don't have offer/request
+                finalPostType = "events"
+            } else if let offerRequest = offerRequest, !offerRequest.isEmpty {
+                // For goods/services/housing, use offer or request as the postType
+                finalPostType = offerRequest // "offer" or "request"
+            } else {
+                // Fallback to category
+                finalPostType = category.id
+            }
+            
+            // Add category as a tag for goods/services/housing posts
+            if category.id != "events" && !tags.contains(category.displayName) {
+                tags.append(category.displayName)
             }
             
             // Prepare admin multi-university fields
@@ -72,14 +75,6 @@ class CreatePostViewModel: ObservableObject {
                 ? nil 
                 : Array(targetUniversities!)
             let postToAll = postToAllUniversities ? true : nil
-            
-            // Map offerRequest to postType (offer/request replaces the category for goods/services/housing)
-            let finalPostType: String
-            if let offerRequest = offerRequest, !offerRequest.isEmpty {
-                finalPostType = offerRequest // "offer" or "request"
-            } else {
-                finalPostType = postType // use category as fallback
-            }
             
             // Create the request
             let request = CreatePostRequest(

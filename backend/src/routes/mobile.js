@@ -951,7 +951,7 @@ router.get('/location/suggestions', [
 router.post('/location/validate', [
   auth,
   body('location').notEmpty().withMessage('Location is required'),
-  body('postType').optional().isIn(['goods', 'services', 'housing', 'events', 'offer', 'request'])
+  body('postType').optional().isIn(['offer', 'request', 'events'])
 ], async (req, res) => {
   try {
     const { location, postType } = req.body;

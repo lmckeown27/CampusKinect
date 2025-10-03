@@ -133,8 +133,8 @@ const commonValidations = {
     postType: {
       in: ['body'],
       isIn: {
-        options: [['goods', 'services', 'housing', 'events', 'offer', 'request']],
-        errorMessage: 'Post type must be goods, services, housing, events, offer, or request'
+        options: [['offer', 'request', 'events']],
+        errorMessage: 'Post type must be offer, request, or events'
       }
     },
     durationType: {
