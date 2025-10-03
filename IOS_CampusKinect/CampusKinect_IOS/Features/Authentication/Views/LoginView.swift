@@ -14,6 +14,7 @@ struct LoginView: View {
     @State private var isPasswordVisible = false
     @State private var shouldNavigateToRegister = false
     @State private var activeAlert: ActiveAlert?
+    @State private var isBanned = false
     
     enum ActiveAlert: Identifiable {
         case loginFailed
@@ -174,9 +175,14 @@ struct LoginView: View {
     
     private var loginButton: some View {
         Button(action: {
-            focusedField = nil
-            Task {
-                await performLogin()
+            if isBanned {
+                // Show banned alert when user clicks the button
+                activeAlert = .accountBanned
+            } else {
+                focusedField = nil
+                Task {
+                    await performLogin()
+                }
             }
         }) {
             HStack {
@@ -185,18 +191,25 @@ struct LoginView: View {
                         .scaleEffect(0.8)
                         .foregroundColor(.white)
                 }
-                Text(authManager.isLoading ? "Signing In..." : "Sign In")
-                    .fontWeight(.semibold)
+                
+                if isBanned {
+                    Image(systemName: "exclamationmark.shield.fill")
+                    Text("Account Banned - Tap for Info")
+                        .fontWeight(.semibold)
+                } else {
+                    Text(authManager.isLoading ? "Signing In..." : "Sign In")
+                        .fontWeight(.semibold)
+                }
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding()
             .background(
-                isFormValid ? Color.campusPrimary : Color.campusGrey400
+                isBanned ? Color.red : (isFormValid ? Color.campusPrimary : Color.campusGrey400)
             )
             .cornerRadius(12)
         }
-        .disabled(!isFormValid || authManager.isLoading)
+        .disabled(!isBanned && (!isFormValid || authManager.isLoading))
     }
     
     private var footerSection: some View {
@@ -242,10 +255,11 @@ struct LoginView: View {
             // Check if it's a banned account error
             await MainActor.run {
                 if case .accountBanned = authManager.authError {
-                    print("🚫 Showing banned alert")
-                    activeAlert = .accountBanned
+                    print("🚫 Account is banned - changing button state")
+                    isBanned = true
                 } else {
-                    print("❌ Showing generic error alert")
+                    print("❌ Login failed - showing error alert")
+                    isBanned = false
                     activeAlert = .loginFailed
                 }
             }
