@@ -461,24 +461,37 @@ struct ConversationRow: View {
                             .font(.caption)
                             .foregroundColor(.campusPrimary)
                         
-                        Text("With: \(conversation.otherUser.displayName ?? "User")")
+                        Text(conversation.otherUser.displayName ?? "User")
                             .font(.subheadline)
                             .foregroundColor(.campusPrimary)
                             .fontWeight(.semibold)
                     }
                     
-                    // LAST MESSAGE (TERTIARY)
+                    // LAST MESSAGE WITH DIRECTION INDICATOR
                     if let lastMessage = conversation.lastMessage, !lastMessage.isEmpty {
-                        Text(lastMessage)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
+                        HStack(spacing: 4) {
+                            Text(messageDirectionLabel)
+                                .font(.caption)
+                                .foregroundColor(isIncoming ? .campusPrimary : .secondary)
+                                .fontWeight(.semibold)
+                            
+                            Text(lastMessage)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
                     } else if conversation.lastMessageSenderId != nil {
                         // Empty message but has a sender = image message
-                        Text("📷 Image")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
+                        HStack(spacing: 4) {
+                            Text(messageDirectionLabel)
+                                .font(.caption)
+                                .foregroundColor(isIncoming ? .campusPrimary : .secondary)
+                                .fontWeight(.semibold)
+                            
+                            Text("📷 Image")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     } else {
                         Text("Start conversation")
                             .font(.caption)
@@ -495,16 +508,32 @@ struct ConversationRow: View {
                         .font(.caption2)
                         .foregroundColor(.secondary)
                     
-                    // Unread count
-                    if conversation.hasUnreadMessages {
-                        Text("\(conversation.unreadCount)")
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.red)
-                            .cornerRadius(10)
+                    HStack(spacing: 8) {
+                        // White exclamation point for incoming messages
+                        if isIncoming {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.campusPrimary)
+                                    .frame(width: 24, height: 24)
+                                
+                                Image(systemName: "exclamationmark")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        
+                        // Unread count
+                        if conversation.hasUnreadMessages {
+                            Text("\(conversation.unreadCount)")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.red)
+                                .cornerRadius(10)
+                        }
                     }
                     
                     Image(systemName: "chevron.right")
@@ -543,6 +572,17 @@ struct ConversationRow: View {
         return Color.campusPrimary
     }
     
+    // MARK: - Message Direction Helpers
+    private var isIncoming: Bool {
+        guard let lastMessageSenderId = conversation.lastMessageSenderId else {
+            return false
+        }
+        return lastMessageSenderId != currentUserId
+    }
+    
+    private var messageDirectionLabel: String {
+        return isIncoming ? "Incoming:" : "Sent:"
+    }
 }
 
 struct MessagesView_Previews: PreviewProvider {
