@@ -264,6 +264,13 @@ router.post('/reports/:reportId/moderate', auth, adminAuth, async (req, res) => 
   try {
     const { reportId } = req.params;
     const { action, moderatorNotes, deleteContent = false, banUser = false } = req.body;
+    
+    console.log(`📋 Moderate Report ID ${reportId}:`);
+    console.log(`  - Action: ${action}`);
+    console.log(`  - Delete Content: ${deleteContent}`);
+    console.log(`  - Ban User: ${banUser}`);
+    console.log(`  - Notes: ${moderatorNotes || 'none'}`);
+    console.log(`  - Full body:`, req.body);
 
     if (!['approve', 'dismiss'].includes(action)) {
       return res.status(400).json({

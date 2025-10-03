@@ -141,7 +141,14 @@ class AdminAPIService: ObservableObject {
         getAuthHeaders().forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         do {
-            request.httpBody = try JSONEncoder().encode(action)
+            let encoder = JSONEncoder()
+            request.httpBody = try encoder.encode(action)
+            
+            // Debug logging
+            if let jsonData = request.httpBody,
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("🔍 Moderate Report Request Body: \(jsonString)")
+            }
         } catch {
             return Fail(error: error)
                 .eraseToAnyPublisher()
