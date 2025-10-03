@@ -556,8 +556,13 @@ struct PostHeaderWithMenu: View {
             
             Spacer()
             
-            // Category Badge
-            CategoryBadge(category: post.categoryDisplayName)
+            HStack(spacing: 8) {
+                // Offer/Request Badge (to the left)
+                OfferRequestBadge(durationType: post.durationType)
+                
+                // Category Badge (to the right)
+                CategoryBadge(category: post.categoryDisplayName)
+            }
             
             // 3-Dot Menu Button
             Button(action: onThreeDotsMenu) {
@@ -803,17 +808,22 @@ struct CategoryBadge: View {
         VStack(spacing: 4) {
             Text(category)
                 .font(.caption)
-                .fontWeight(.medium)
+                .fontWeight(.semibold)
                 .foregroundColor(Color.campusPrimary)
             
             Image(systemName: categoryIcon)
                 .font(.system(size: 16))
                 .foregroundColor(Color.campusPrimary)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .background(Color.campusPrimary.opacity(0.1))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color.white)
         .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.campusPrimary.opacity(0.3), lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private var categoryIcon: String {
@@ -828,6 +838,43 @@ struct CategoryBadge: View {
             return "calendar"
         default:
             return "doc.text.fill"
+        }
+    }
+}
+
+// MARK: - Offer/Request Badge
+struct OfferRequestBadge: View {
+    let durationType: String
+    
+    var body: some View {
+        Text(displayText)
+            .font(.caption)
+            .fontWeight(.semibold)
+            .foregroundColor(badgeColor)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.white)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(badgeColor.opacity(0.3), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+    }
+    
+    private var displayText: String {
+        // Capitalize first letter
+        return durationType.prefix(1).uppercased() + durationType.dropFirst().lowercased()
+    }
+    
+    private var badgeColor: Color {
+        switch durationType.lowercased() {
+        case "offer":
+            return Color.blue
+        case "request":
+            return Color.orange
+        default:
+            return Color.gray
         }
     }
 }
