@@ -300,37 +300,49 @@ router.post('/reports/:reportId/moderate', auth, adminAuth, async (req, res) => 
     if (action === 'approve') {
       // Delete content if requested
       if (deleteContent) {
+        console.log(`🗑️ Deleting content: type=${report.content_type}, id=${report.content_id}`);
         if (report.content_type === 'post') {
           // Deactivate the post
-          await query(`
+          const deleteResult = await query(`
             UPDATE posts 
             SET is_active = false, 
                 is_flagged = true, 
                 flag_reason = $1,
                 flagged_at = CURRENT_TIMESTAMP
             WHERE id = $2
+            RETURNING id, is_active
           `, [report.reason, report.content_id]);
+          console.log(`✅ Post deleted - affected rows: ${deleteResult.rowCount}, result:`, deleteResult.rows[0]);
         } else if (report.content_type === 'message') {
           // Mark message as deleted
-          await query(`
+          const deleteResult = await query(`
             UPDATE messages 
             SET is_deleted = true, 
                 deleted_at = CURRENT_TIMESTAMP,
                 deleted_reason = $1
             WHERE id = $2
+            RETURNING id, is_deleted
           `, [report.reason, report.content_id]);
+          console.log(`✅ Message deleted - affected rows: ${deleteResult.rowCount}, result:`, deleteResult.rows[0]);
         }
+      } else {
+        console.log(`⏭️ Skipping content deletion (deleteContent=false)`);
       }
 
       // Ban the user if requested
       if (banUser) {
-        await query(`
+        console.log(`🚫 Banning user: id=${report.reported_user_id}, reason=${report.reason}`);
+        const banResult = await query(`
           UPDATE users 
           SET is_active = false, 
               banned_at = CURRENT_TIMESTAMP,
               ban_reason = $1
           WHERE id = $2
+          RETURNING id, username, is_active, banned_at
         `, [`Content violation: ${report.reason}`, report.reported_user_id]);
+        console.log(`✅ User banned - affected rows: ${banResult.rowCount}, result:`, banResult.rows[0]);
+      } else {
+        console.log(`⏭️ Skipping user ban (banUser=false)`);
       }
 
       // Update report status

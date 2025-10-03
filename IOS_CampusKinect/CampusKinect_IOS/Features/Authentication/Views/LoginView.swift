@@ -12,6 +12,7 @@ struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var showingAlert = false
+    @State private var showingBannedAlert = false
     @State private var isPasswordVisible = false
     @State private var shouldNavigateToRegister = false
     @State private var showingForgotPasswordAlert = false
@@ -47,6 +48,19 @@ struct LoginView: View {
             .background(Color.campusBackground)
         }
         .navigationBarHidden(true)
+        .alert("Account Banned", isPresented: $showingBannedAlert) {
+            Button("Contact Support") {
+                if let url = URL(string: "mailto:campuskinect01@gmail.com") {
+                    UIApplication.shared.open(url)
+                }
+                authManager.clearError()
+            }
+            Button("OK", role: .cancel) {
+                authManager.clearError()
+            }
+        } message: {
+            Text(authManager.authError?.userFriendlyMessage ?? "Your account has been banned. Please contact campuskinect01@gmail.com")
+        }
         .alert("Login Failed", isPresented: $showingAlert) {
             Button("OK") {
                 authManager.clearError()
@@ -206,7 +220,12 @@ struct LoginView: View {
     private func performLogin() async {
         let success = await authManager.login(email: email, password: password)
         if !success {
-            showingAlert = true
+            // Check if it's a banned account error
+            if case .accountBanned = authManager.authError {
+                showingBannedAlert = true
+            } else {
+                showingAlert = true
+            }
         }
     }
 }
