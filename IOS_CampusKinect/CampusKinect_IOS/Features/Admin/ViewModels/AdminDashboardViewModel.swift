@@ -244,26 +244,22 @@ class AdminDashboardViewModel: ObservableObject {
     }
     
     private func mergeUniversityData(analytics: AnalyticsData, universities: [UniversitySearchResult]) -> AnalyticsData {
-        // Create a mapping of university names to their data
-        let universityMap = Dictionary(uniqueKeysWithValues: universities.map { ($0.name, $0) })
-        
-        // Update topUniversities with real IDs and user counts
-        let updatedUniversities: [AnalyticsData.UniversityStats] = analytics.topUniversities.compactMap { stat in
-            if let uni = universityMap[stat.name] {
-                // Use real university data
-                return AnalyticsData.UniversityStats(
-                    id: uni.id,
-                    name: uni.name,
-                    userCount: uni.userCount
-                )
-            } else {
-                // Keep the stat but log that we couldn't find the university
-                print("⚠️ AdminDashboard: Could not find university '\(stat.name)' in search results")
-                return stat
-            }
+        // Use ALL universities from the search endpoint (includes universities with 0 users)
+        // This ensures admin sees every university in the database
+        let allUniversities: [AnalyticsData.UniversityStats] = universities.map { uni in
+            AnalyticsData.UniversityStats(
+                id: uni.id,
+                name: uni.name,
+                userCount: uni.userCount
+            )
         }
         
-        // Return analytics with updated university data
+        print("🎓 AdminDashboard: Loaded \(allUniversities.count) total universities (including 0-user universities)")
+        let withUsers = allUniversities.filter { $0.userCount > 0 }.count
+        let withoutUsers = allUniversities.filter { $0.userCount == 0 }.count
+        print("🎓 AdminDashboard: \(withUsers) universities with users, \(withoutUsers) universities with 0 users")
+        
+        // Return analytics with ALL university data
         return AnalyticsData(
             totalPosts: analytics.totalPosts,
             totalMessages: analytics.totalMessages,
@@ -271,7 +267,7 @@ class AdminDashboardViewModel: ObservableObject {
             newUsersToday: analytics.newUsersToday,
             postsToday: analytics.postsToday,
             messagesPerDay: analytics.messagesPerDay,
-            topUniversities: updatedUniversities,
+            topUniversities: allUniversities,
             contentTrends: analytics.contentTrends,
             reportsByReason: analytics.reportsByReason,
             userGrowth: analytics.userGrowth

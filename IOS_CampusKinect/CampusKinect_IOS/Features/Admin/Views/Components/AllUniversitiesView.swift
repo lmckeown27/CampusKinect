@@ -143,7 +143,8 @@ struct UniversityDetailRow: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(university.name)
                     .font(.headline)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 HStack(spacing: 4) {
                     Text("ID: \(university.id)")
