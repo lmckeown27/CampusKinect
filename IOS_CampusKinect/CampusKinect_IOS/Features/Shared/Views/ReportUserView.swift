@@ -54,6 +54,30 @@ struct ReportUserView: View {
                 return "Other reason (please specify below)"
             }
         }
+        
+        // Backend API expects lowercase snake_case
+        var apiValue: String {
+            switch self {
+            case .spam:
+                return "spam"
+            case .harassment:
+                return "harassment"
+            case .inappropriate:
+                return "inappropriate_content"
+            case .scam:
+                return "scam"
+            case .hateSpeech:
+                return "hate_speech"
+            case .violence:
+                return "violence"
+            case .sexualContent:
+                return "sexual_content"
+            case .falseInfo:
+                return "false_information"
+            case .other:
+                return "other"
+            }
+        }
     }
     
     var body: some View {
@@ -243,15 +267,29 @@ struct ReportUserView: View {
     private func submitReport() {
         isSubmitting = true
         
-        let reasonsString = selectedReasons.map { $0.rawValue }.joined(separator: ", ")
-        let fullDetails = additionalDetails.isEmpty ? nil : additionalDetails
+        // Backend only accepts a single reason - use the first selected reason
+        guard let primaryReason = selectedReasons.first else {
+            isSubmitting = false
+            return
+        }
+        
+        // If multiple reasons selected, add others to details
+        var fullDetails = additionalDetails
+        if selectedReasons.count > 1 {
+            let sortedReasons = Array(selectedReasons)
+            let additionalReasons = sortedReasons.dropFirst().map { $0.rawValue }.joined(separator: ", ")
+            let reasonsNote = "Additional reasons: \(additionalReasons)"
+            fullDetails = fullDetails.isEmpty ? reasonsNote : "\(fullDetails)\n\n\(reasonsNote)"
+        }
+        
+        let details = fullDetails.isEmpty ? nil : fullDetails
         
         Task {
             do {
                 try await APIService.shared.reportUser(
                     userId: userId,
-                    reason: reasonsString,
-                    details: fullDetails
+                    reason: primaryReason.apiValue,
+                    details: details
                 )
                 
                 await MainActor.run {
