@@ -800,14 +800,35 @@ struct CategoryBadge: View {
     let category: String
     
     var body: some View {
-        Text(category)
-            .font(.caption)
-            .fontWeight(.medium)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.campusPrimary.opacity(0.1))
-            .foregroundColor(Color.campusPrimary)
-            .cornerRadius(12)
+        VStack(spacing: 4) {
+            Text(category)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(Color.campusPrimary)
+            
+            Image(systemName: categoryIcon)
+                .font(.system(size: 16))
+                .foregroundColor(Color.campusPrimary)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(Color.campusPrimary.opacity(0.1))
+        .cornerRadius(12)
+    }
+    
+    private var categoryIcon: String {
+        switch category.lowercased() {
+        case "goods":
+            return "cube.box.fill"
+        case "services":
+            return "wrench.and.screwdriver.fill"
+        case "housing":
+            return "house.fill"
+        case "events":
+            return "calendar"
+        default:
+            return "doc.text.fill"
+        }
     }
 }
 
