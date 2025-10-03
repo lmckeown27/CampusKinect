@@ -1201,9 +1201,11 @@ router.get('/', [
       LEFT JOIN post_images pi ON p.id = pi.post_id
       LEFT JOIN post_tags pt ON p.id = pt.post_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      LEFT JOIN user_blocks ub ON ub.blocker_id = ${user ? user.id : null} AND ub.blocked_id = p.user_id
+      LEFT JOIN user_blocks ub_blocked ON ub_blocked.blocker_id = ${user ? user.id : null} AND ub_blocked.blocked_id = p.user_id
+      LEFT JOIN user_blocks ub_blocker ON ub_blocker.blocker_id = p.user_id AND ub_blocker.blocked_id = ${user ? user.id : null}
       WHERE p.is_active = true
-        AND ub.id IS NULL
+        AND ub_blocked.id IS NULL
+        AND ub_blocker.id IS NULL
     `;
 
     const queryParams = [];
