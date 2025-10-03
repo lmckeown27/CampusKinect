@@ -50,6 +50,47 @@ struct LoginView: View {
                         headerSection
                         loginForm
                         loginButton
+                        
+                        // Banned account message
+                        if isBanned {
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "exclamationmark.shield.fill")
+                                        .foregroundColor(.red)
+                                        .font(.title2)
+                                    
+                                    Text("Account Banned")
+                                        .font(.headline)
+                                        .foregroundColor(.red)
+                                }
+                                
+                                Text(authManager.authError?.userFriendlyMessage ?? "Your account has been permanently banned from CampusKinect.")
+                                    .font(.body)
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(.primary)
+                                
+                                Text("For questions or to appeal, please email:")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                
+                                Button(action: {
+                                    if let url = URL(string: "mailto:campuskinect01@gmail.com") {
+                                        UIApplication.shared.open(url)
+                                    }
+                                }) {
+                                    Text("campuskinect01@gmail.com")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.blue)
+                                        .underline()
+                                }
+                            }
+                            .padding()
+                            .background(Color.red.opacity(0.1))
+                            .cornerRadius(12)
+                            .transition(.opacity)
+                        }
+                        
                         footerSection
                     }
                     .padding(.horizontal, isIPad ? 40 : 24)
@@ -63,20 +104,6 @@ struct LoginView: View {
         .navigationBarHidden(true)
         .alert(item: $activeAlert) { alertType in
             switch alertType {
-            case .accountBanned:
-                return Alert(
-                    title: Text("Account Banned"),
-                    message: Text(authManager.authError?.userFriendlyMessage ?? "Your account has been banned. Please contact campuskinect01@gmail.com"),
-                    primaryButton: .default(Text("Contact Support")) {
-                        if let url = URL(string: "mailto:campuskinect01@gmail.com") {
-                            UIApplication.shared.open(url)
-                        }
-                        authManager.clearError()
-                    },
-                    secondaryButton: .cancel(Text("OK")) {
-                        authManager.clearError()
-                    }
-                )
             case .loginFailed:
                 return Alert(
                     title: Text("Login Failed"),
@@ -91,6 +118,9 @@ struct LoginView: View {
                     message: Text("Email campuskinect01@gmail.com"),
                     dismissButton: .default(Text("OK"))
                 )
+            case .accountBanned:
+                // Not used anymore - showing inline text instead
+                return Alert(title: Text(""))
             }
         }
     }
@@ -175,14 +205,9 @@ struct LoginView: View {
     
     private var loginButton: some View {
         Button(action: {
-            if isBanned {
-                // Show banned alert when user clicks the button
-                activeAlert = .accountBanned
-            } else {
-                focusedField = nil
-                Task {
-                    await performLogin()
-                }
+            focusedField = nil
+            Task {
+                await performLogin()
             }
         }) {
             HStack {
@@ -192,24 +217,18 @@ struct LoginView: View {
                         .foregroundColor(.white)
                 }
                 
-                if isBanned {
-                    Image(systemName: "exclamationmark.shield.fill")
-                    Text("Account Banned - Tap for Info")
-                        .fontWeight(.semibold)
-                } else {
-                    Text(authManager.isLoading ? "Signing In..." : "Sign In")
-                        .fontWeight(.semibold)
-                }
+                Text(authManager.isLoading ? "Signing In..." : "Sign In")
+                    .fontWeight(.semibold)
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding()
             .background(
-                isBanned ? Color.red : (isFormValid ? Color.campusPrimary : Color.campusGrey400)
+                isFormValid ? Color.campusPrimary : Color.campusGrey400
             )
             .cornerRadius(12)
         }
-        .disabled(!isBanned && (!isFormValid || authManager.isLoading))
+        .disabled(!isFormValid || authManager.isLoading)
     }
     
     private var footerSection: some View {
@@ -255,10 +274,10 @@ struct LoginView: View {
             // Check if it's a banned account error
             await MainActor.run {
                 if case .accountBanned = authManager.authError {
-                    print("🚫 Account is banned - changing button state")
+                    // Show inline banned message
                     isBanned = true
                 } else {
-                    print("❌ Login failed - showing error alert")
+                    // Show error alert for other failures
                     isBanned = false
                     activeAlert = .loginFailed
                 }
