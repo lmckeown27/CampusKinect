@@ -102,7 +102,7 @@ struct CreatePostView: View {
             }
             .alert("Post Created!", isPresented: $showingSuccess) {
                 Button("OK") {
-                    clearForm()
+                    // Form will be cleared and navigation to home will happen automatically
                 }
             } message: {
                 if isAdmin && isSelectingAllUniversities {
@@ -492,6 +492,11 @@ struct CreatePostView: View {
         
         if viewModel.successMessage != nil {
             showingSuccess = true
+            // Navigate to Home tab after successful post creation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                NotificationCenter.default.post(name: .navigateToHome, object: nil)
+                clearForm()
+            }
         }
     }
     

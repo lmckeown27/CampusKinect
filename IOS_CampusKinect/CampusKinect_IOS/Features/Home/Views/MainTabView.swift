@@ -77,5 +77,12 @@ struct MainTabView: View {
                 selectedTab = .messages
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToHome)) { _ in
+            // Switch to Home tab when navigateToHome notification is received
+            print("📱 MainTabView: Received navigateToHome notification - switching to Home tab")
+            withAnimation(.easeInOut(duration: 0.3)) {
+                selectedTab = .home
+            }
+        }
     }
 } 

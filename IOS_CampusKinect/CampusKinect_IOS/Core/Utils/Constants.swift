@@ -71,6 +71,7 @@ extension Notification.Name {
     static let messageNotificationReceived = Notification.Name("messageNotificationReceived")
     static let navigateToChat = Notification.Name("navigateToChat")
     static let navigateToProfile = Notification.Name("navigateToProfile")
+    static let navigateToHome = Notification.Name("navigateToHome")
     
     // Admin actions
     static let postDeleted = Notification.Name("postDeleted")
