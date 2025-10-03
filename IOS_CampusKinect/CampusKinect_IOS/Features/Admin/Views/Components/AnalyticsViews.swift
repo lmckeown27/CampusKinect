@@ -219,15 +219,24 @@ struct ContentTrendsView: View {
     }
     
     private func formatDate(_ dateString: String) -> String {
-        // Try ISO8601 format first (e.g., "2025-09-27T00:00:00.000Z")
+        // Try ISO8601 format with fractional seconds (e.g., "2025-09-27T00:00:00.000Z")
         let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = isoFormatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
             displayFormatter.dateFormat = "M/d"
             return displayFormatter.string(from: date)
         }
         
-        // Fallback to simple date format
+        // Try ISO8601 without fractional seconds
+        isoFormatter.formatOptions = [.withInternetDateTime]
+        if let date = isoFormatter.date(from: dateString) {
+            let displayFormatter = DateFormatter()
+            displayFormatter.dateFormat = "M/d"
+            return displayFormatter.string(from: date)
+        }
+        
+        // Fallback to simple date format (yyyy-MM-dd)
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         if let date = formatter.date(from: dateString) {
