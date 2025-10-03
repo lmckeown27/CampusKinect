@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var universitySwitcher = AdminUniversitySwitcher.shared
     @EnvironmentObject var authManager: AuthenticationManager
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -54,6 +55,20 @@ struct HomeView: View {
                         .padding(.horizontal)
                         .padding(.top, 8)
                 
+                }
+                
+                // Admin University Viewing Banner
+                if let universityName = universitySwitcher.currentViewingUniversityName,
+                   let universityId = universitySwitcher.currentViewingUniversityId {
+                    AdminUniversityBanner(
+                        universityName: universityName,
+                        universityId: universityId,
+                        onReset: {
+                            universitySwitcher.clearViewingUniversity()
+                        }
+                    )
+                    .padding(.horizontal)
+                    .padding(.top, 8)
                 }
                 
                 // Posts List
@@ -399,6 +414,62 @@ struct CategoryToggleArrow: View {
             }
             .buttonStyle(PlainButtonStyle())
         }
+    }
+}
+
+// MARK: - Admin University Banner
+struct AdminUniversityBanner: View {
+    let universityName: String
+    let universityId: Int
+    let onReset: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "eye.fill")
+                .font(.title3)
+                .foregroundColor(.white)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Viewing University")
+                    .font(.caption2)
+                    .foregroundColor(.white.opacity(0.9))
+                
+                Text(universityName)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                
+                Text("ID: \(universityId)")
+                    .font(.caption2)
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            
+            Spacer()
+            
+            Button(action: onReset) {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.uturn.backward")
+                    Text("Reset")
+                }
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.white.opacity(0.2))
+                .cornerRadius(8)
+            }
+        }
+        .padding()
+        .background(
+            LinearGradient(
+                colors: [Color.blue, Color.blue.opacity(0.8)],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, y: 2)
     }
 }
 

@@ -229,9 +229,16 @@ class APIService: NSObject, ObservableObject {
     }
     
     // MARK: - Posts Methods
-    func fetchPosts(page: Int = 1, limit: Int = 20) async throws -> PostsResponse {
+    func fetchPosts(page: Int = 1, limit: Int = 20, universityId: Int? = nil) async throws -> PostsResponse {
+        var endpoint = "\(APIConstants.Endpoints.posts)?page=\(page)&limit=\(limit)"
+        
+        // Add universityId parameter if provided (for admin viewing different universities)
+        if let universityId = universityId {
+            endpoint += "&universityId=\(universityId)"
+        }
+        
         return try await performRequest(
-            endpoint: "\(APIConstants.Endpoints.posts)?page=\(page)&limit=\(limit)",
+            endpoint: endpoint,
             method: .GET,
             body: nil,
             requiresAuth: true

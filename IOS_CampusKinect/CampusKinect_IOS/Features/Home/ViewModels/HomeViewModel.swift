@@ -39,8 +39,30 @@ class HomeViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let apiService = APIService.shared
     
+    // Admin university switcher (for viewing different universities)
+    private let universitySwitcher = AdminUniversitySwitcher.shared
+    
     init() {
         // No need for search debouncing in tag-based system
+        setupUniversitySwitcherObserver()
+    }
+    
+    // MARK: - University Switcher
+    private func setupUniversitySwitcherObserver() {
+        // Reload posts when admin switches universities
+        universitySwitcher.$currentViewingUniversityId
+            .dropFirst() // Skip initial value
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    await self?.loadPosts()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    // Get the current university ID to use for API calls
+    private var currentUniversityId: Int? {
+        return universitySwitcher.currentViewingUniversityId
     }
     
     // MARK: - Public Methods
@@ -48,10 +70,15 @@ class HomeViewModel: ObservableObject {
     func loadPosts() async {
         isLoading = true
         do {
-            let response = try await apiService.fetchPosts()
+            let response = try await apiService.fetchPosts(universityId: currentUniversityId)
             await MainActor.run {
                 self.posts = response.data.posts
                 self.isLoading = false
+                
+                // Log if viewing a different university
+                if let universityId = self.currentUniversityId {
+                    print("📚 Loaded posts for university ID: \(universityId)")
+                }
             }
         } catch {
             await MainActor.run {
@@ -65,7 +92,7 @@ class HomeViewModel: ObservableObject {
     func refreshPosts() async {
         isRefreshing = true
         do {
-            let response = try await apiService.fetchPosts()
+            let response = try await apiService.fetchPosts(universityId: currentUniversityId)
             await MainActor.run {
                 self.posts = response.data.posts
                 self.isRefreshing = false
@@ -86,7 +113,7 @@ class HomeViewModel: ObservableObject {
         currentPage += 1
         
         do {
-            let response = try await apiService.fetchPosts(page: currentPage, limit: postsPerPage)
+            let response = try await apiService.fetchPosts(page: currentPage, limit: postsPerPage, universityId: currentUniversityId)
             self.posts.append(contentsOf: response.data.posts)
             self.hasMorePosts = response.data.pagination.hasNext
             print("Loaded \(response.data.posts.count) more posts. Total: \(self.posts.count)")
