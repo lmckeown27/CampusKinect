@@ -17,6 +17,7 @@ struct AdvancedCameraView: UIViewControllerRepresentable {
     var flashDuration: Double = 0.1 // Reduced flash duration (default is ~0.5s)
     var flashIntensity: Float = 0.7 // Reduced flash intensity (0.0 to 1.0)
     var enableCustomFlash: Bool = true
+    var enablePhotoReview: Bool = true // Enable Snapchat-like review screen
     
     func makeUIViewController(context: Context) -> AdvancedCameraViewController {
         let controller = AdvancedCameraViewController()
@@ -24,6 +25,7 @@ struct AdvancedCameraView: UIViewControllerRepresentable {
         controller.flashDuration = flashDuration
         controller.flashIntensity = flashIntensity
         controller.enableCustomFlash = enableCustomFlash
+        controller.enablePhotoReview = enablePhotoReview
         return controller
     }
     
@@ -65,6 +67,7 @@ class AdvancedCameraViewController: UIViewController {
     var flashDuration: Double = 0.1
     var flashIntensity: Float = 0.7
     var enableCustomFlash: Bool = true
+    var enablePhotoReview: Bool = true
     
     // Camera components
     private var captureSession: AVCaptureSession!
@@ -81,6 +84,14 @@ class AdvancedCameraViewController: UIViewController {
     private var flipButton: UIButton!
     private var isFlashEnabled = false
     private var isCapturing = false
+    
+    // Photo review
+    private var capturedImage: UIImage?
+    private var reviewHostingController: UIHostingController<PhotoReviewView>?
+    
+    // Zoom functionality
+    private var currentZoomFactor: CGFloat = 1.0
+    private var beginZoomScale: CGFloat = 1.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,9 +123,9 @@ class AdvancedCameraViewController: UIViewController {
             captureSession.addOutput(photoOutput)
         }
         
-        // Setup preview layer
+        // Setup preview layer - CRITICAL: resizeAspectFill ensures photo matches preview
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.videoGravity = .resizeAspectFill
+        previewLayer.videoGravity = .resizeAspectFill // Photo will match this exactly
         previewLayer.frame = view.bounds
         view.layer.addSublayer(previewLayer)
     }
@@ -154,14 +165,13 @@ class AdvancedCameraViewController: UIViewController {
         captureButton.layer.borderWidth = 5 // Slightly thicker border
         captureButton.layer.borderColor = UIColor(red: 0.44, green: 0.55, blue: 0.51, alpha: 1.0).cgColor // Olive Green
         
-        // Only use touchUpInside to prevent double captures
-        captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
+        // INSTANT CAPTURE: Photo taken the moment button is touched (no animations)
+        captureButton.addTarget(self, action: #selector(capturePhotoOnTouchDown), for: .touchDown)
         
-        // Add visual feedback for touch down/up without triggering capture
-        captureButton.addTarget(self, action: #selector(captureButtonTouchDown), for: .touchDown)
-        captureButton.addTarget(self, action: #selector(captureButtonTouchUp), for: .touchUpInside)
-        captureButton.addTarget(self, action: #selector(captureButtonTouchUp), for: .touchUpOutside)
-        captureButton.addTarget(self, action: #selector(captureButtonTouchUp), for: .touchCancel)
+        // Visual feedback on button release (doesn't affect capture timing)
+        captureButton.addTarget(self, action: #selector(resetCaptureButton), for: .touchUpInside)
+        captureButton.addTarget(self, action: #selector(resetCaptureButton), for: .touchUpOutside)
+        captureButton.addTarget(self, action: #selector(resetCaptureButton), for: .touchCancel)
         
         // Cancel button
         cancelButton = UIButton(type: .system)
@@ -226,6 +236,42 @@ class AdvancedCameraViewController: UIViewController {
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(flipCamera))
         doubleTapGesture.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTapGesture)
+        
+        // Pinch to zoom
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchToZoom(_:)))
+        view.addGestureRecognizer(pinchGesture)
+    }
+    
+    @objc private func handlePinchToZoom(_ gesture: UIPinchGestureRecognizer) {
+        guard let device = captureDevice else { return }
+        
+        // Get min and max zoom factors
+        let minZoomFactor: CGFloat = 1.0
+        let maxZoomFactor: CGFloat = min(device.activeFormat.videoMaxZoomFactor, 10.0) // Cap at 10x
+        
+        switch gesture.state {
+        case .began:
+            beginZoomScale = currentZoomFactor
+            
+        case .changed:
+            // Calculate new zoom factor
+            var newZoomFactor = beginZoomScale * gesture.scale
+            newZoomFactor = max(minZoomFactor, min(newZoomFactor, maxZoomFactor))
+            
+            // Apply zoom
+            do {
+                try device.lockForConfiguration()
+                device.videoZoomFactor = newZoomFactor
+                device.unlockForConfiguration()
+                
+                currentZoomFactor = newZoomFactor
+            } catch {
+                print("❌ Error setting zoom: \(error)")
+            }
+            
+        default:
+            break
+        }
     }
     
     private func startSession() {
@@ -240,60 +286,47 @@ class AdvancedCameraViewController: UIViewController {
         }
     }
     
-    @objc private func capturePhoto() {
-        // Prevent multiple rapid captures with shorter delay
+    @objc private func capturePhotoOnTouchDown() {
+        // *** ABSOLUTE INSTANT CAPTURE - ZERO LAG ***
         guard !isCapturing else { return }
-        isCapturing = true
         
-        // Stronger haptic feedback for capture confirmation
-        let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
-        impactFeedback.impactOccurred()
-        
-        // Enhanced visual feedback - simulate camera shutter
-        UIView.animate(withDuration: 0.05, animations: {
-            // Quick flash effect
-            self.view.backgroundColor = UIColor.white.withAlphaComponent(0.8)
-        }) { _ in
-            UIView.animate(withDuration: 0.05) {
-                self.view.backgroundColor = UIColor.black
-            }
-        }
-        
+        // CAPTURE - This is the ONLY thing that happens immediately
         let settings = AVCapturePhotoSettings()
-        
-        // Configure flash with custom duration and intensity
-        if isFlashEnabled && enableCustomFlash {
-            configureCustomFlash()
-        } else {
-            settings.flashMode = .off
-        }
-        
+        settings.flashMode = .off
         photoOutput.capturePhoto(with: settings, delegate: self)
         
-        // Shorter reset delay for better responsiveness
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.isCapturing = false
+        // Set lock
+        isCapturing = true
+        
+        // Change button to grey immediately after capture is triggered (non-blocking)
+        captureButton.backgroundColor = UIColor.systemGray3
+        
+        // Minimal feedback (flash only, no haptics to avoid lag)
+        DispatchQueue.main.async {
+            // Flash effect only
+            if self.isFlashEnabled && self.enableCustomFlash {
+                self.configureCustomFlash()
+            }
+            
+            // Visual shutter feedback (screen flash only)
+            UIView.animate(withDuration: 0.03, animations: {
+                self.view.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+            }) { _ in
+                UIView.animate(withDuration: 0.03) {
+                    self.view.backgroundColor = UIColor.black
+                }
+            }
+            
+            // Reset capture lock
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.isCapturing = false
+            }
         }
     }
     
-    @objc private func captureButtonTouchDown() {
-        // Light haptic feedback on touch down
-        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-        impactFeedback.impactOccurred()
-        
-        // Visual feedback - button press animation
-        UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction], animations: {
-            self.captureButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-            self.captureButton.backgroundColor = UIColor.white.withAlphaComponent(0.8)
-        })
-    }
-    
-    @objc private func captureButtonTouchUp() {
-        // Return button to normal state
-        UIView.animate(withDuration: 0.15, delay: 0, options: [.allowUserInteraction], animations: {
-            self.captureButton.transform = CGAffineTransform.identity
-            self.captureButton.backgroundColor = .white
-        })
+    @objc private func resetCaptureButton() {
+        // Reset button to white when user releases
+        captureButton.backgroundColor = .white
     }
     
     private func configureCustomFlash() {
@@ -302,12 +335,12 @@ class AdvancedCameraViewController: UIViewController {
         do {
             try captureDevice.lockForConfiguration()
             
-            // Enable torch with custom intensity
+            // Enable torch with custom intensity - happens instantly
             try captureDevice.setTorchModeOn(level: flashIntensity)
             
             captureDevice.unlockForConfiguration()
             
-            // Schedule torch off after custom duration
+            // Schedule torch off after custom duration (non-blocking)
             DispatchQueue.main.asyncAfter(deadline: .now() + flashDuration) { [weak self] in
                 guard let self = self else { return }
                 do {
@@ -339,6 +372,19 @@ class AdvancedCameraViewController: UIViewController {
         // Setup new camera input
         setupCameraInput(for: newPosition)
         currentCameraPosition = newPosition
+        
+        // Reset zoom when flipping cameras
+        currentZoomFactor = 1.0
+        beginZoomScale = 1.0
+        if let device = captureDevice {
+            do {
+                try device.lockForConfiguration()
+                device.videoZoomFactor = 1.0
+                device.unlockForConfiguration()
+            } catch {
+                print("❌ Error resetting zoom: \(error)")
+            }
+        }
         
         // Commit configuration
         captureSession.commitConfiguration()
@@ -408,16 +454,124 @@ extension AdvancedCameraViewController: AVCapturePhotoCaptureDelegate {
             return
         }
         
-        // Process image on background queue for faster response
-        DispatchQueue.global(qos: .userInitiated).async {
-            // Fix image orientation to ensure proper display
+        // Process image on high priority queue for instant response
+        DispatchQueue.global(qos: .userInteractive).async {
+            // Fix image orientation
             let orientedImage = image.fixedOrientation()
             
-            // Return to main queue for delegate callback
+            // Crop image to match preview layer (what user sees)
+            let croppedImage = self.cropImageToPreviewBounds(orientedImage)
+            
+            // Return to main queue for review or immediate callback
             DispatchQueue.main.async {
-                self.delegate?.didCaptureImage(orientedImage)
+                if self.enablePhotoReview {
+                    // Show review screen instantly (Snapchat-like behavior)
+                    self.showPhotoReview(croppedImage)
+                } else {
+                    // Immediate callback (original behavior)
+                    self.delegate?.didCaptureImage(croppedImage)
+                }
             }
         }
+    }
+    
+    private func showPhotoReview(_ image: UIImage) {
+        // Store captured image
+        capturedImage = image
+        
+        // Stop camera session to save battery
+        stopSession()
+        
+        // Hide camera controls
+        captureButton.isHidden = true
+        cancelButton.isHidden = true
+        flashButton.isHidden = true
+        flipButton.isHidden = true
+        
+        // Create and show review view
+        let reviewView = PhotoReviewView(
+            capturedImage: image,
+            onUsePhoto: { [weak self] in
+                self?.confirmPhoto()
+            },
+            onRetake: { [weak self] in
+                self?.retakePhoto()
+            },
+            onCancel: { [weak self] in
+                self?.delegate?.didCancel()
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: reviewView)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.frame = view.bounds
+        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        reviewHostingController = hostingController
+    }
+    
+    private func confirmPhoto() {
+        guard let image = capturedImage else { return }
+        delegate?.didCaptureImage(image)
+    }
+    
+    private func retakePhoto() {
+        // Remove review view
+        reviewHostingController?.willMove(toParent: nil)
+        reviewHostingController?.view.removeFromSuperview()
+        reviewHostingController?.removeFromParent()
+        reviewHostingController = nil
+        
+        // Clear captured image
+        capturedImage = nil
+        
+        // Show camera controls again
+        captureButton.isHidden = false
+        cancelButton.isHidden = false
+        flashButton.isHidden = !captureDevice.hasTorch
+        flipButton.isHidden = false
+        
+        // Restart camera session
+        startSession()
+    }
+    
+    // MARK: - Image Cropping to Match Preview
+    private func cropImageToPreviewBounds(_ image: UIImage) -> UIImage {
+        // Get preview layer bounds
+        guard let previewLayer = previewLayer else { return image }
+        
+        let previewBounds = previewLayer.bounds
+        let imageSize = image.size
+        
+        // Calculate the crop rect to match what's visible in the preview
+        // Preview uses resizeAspectFill, so we need to crop the image to match
+        let previewAspectRatio = previewBounds.width / previewBounds.height
+        let imageAspectRatio = imageSize.width / imageSize.height
+        
+        var cropRect: CGRect
+        
+        if imageAspectRatio > previewAspectRatio {
+            // Image is wider than preview - crop sides
+            let cropWidth = imageSize.height * previewAspectRatio
+            let cropX = (imageSize.width - cropWidth) / 2
+            cropRect = CGRect(x: cropX, y: 0, width: cropWidth, height: imageSize.height)
+        } else {
+            // Image is taller than preview - crop top/bottom
+            let cropHeight = imageSize.width / previewAspectRatio
+            let cropY = (imageSize.height - cropHeight) / 2
+            cropRect = CGRect(x: 0, y: cropY, width: imageSize.width, height: cropHeight)
+        }
+        
+        // Perform the crop
+        guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+            return image
+        }
+        
+        return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     }
 }
 

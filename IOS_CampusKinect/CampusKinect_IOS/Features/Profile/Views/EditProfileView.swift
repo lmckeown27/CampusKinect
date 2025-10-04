@@ -263,9 +263,10 @@ struct CameraPicker: UIViewControllerRepresentable {
         let controller = AdvancedCameraViewController()
         controller.delegate = context.coordinator
         // Configure with same settings as post creation camera
-        controller.flashDuration = 0.1
-        controller.flashIntensity = 0.7
+        controller.flashDuration = 0.15 // Longer flash - 150ms for proper dark photo illumination
+        controller.flashIntensity = 0.75 // Higher intensity for better lighting
         controller.enableCustomFlash = true
+        controller.enablePhotoReview = true // Enable Snapchat-like review before setting profile picture
         return controller
     }
     

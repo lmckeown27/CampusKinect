@@ -139,7 +139,8 @@ struct ImagePickerView: View {
                 },
                 flashMode: .off, // Disable flash for faster capture
                 cameraDevice: .rear,
-                allowsEditing: true
+                allowsEditing: true,
+                enablePhotoReview: true // Enable Snapchat-like review before adding
             )
         }
         .fullScreenCover(isPresented: $showingAdvancedCamera) {
@@ -147,9 +148,10 @@ struct ImagePickerView: View {
                 onImageCaptured: { image in
                     addImage(image)
                 },
-                flashDuration: 0.08, // Very fast flash - 80ms
-                flashIntensity: 0.6, // Moderate intensity
-                enableCustomFlash: true
+                flashDuration: 0.15, // Longer flash - 150ms for proper dark photo illumination
+                flashIntensity: 0.75, // Higher intensity for better lighting
+                enableCustomFlash: true,
+                enablePhotoReview: true // Enable Snapchat-like review before adding
             )
         }
         .onChange(of: photosPickerItems) { oldValue, newValue in
@@ -404,7 +406,7 @@ struct ImageThumbnailView: View {
                 }
             )
             
-            // Enhanced X button positioned to overlap beyond image bounds
+            // Simple Olive Green X button positioned to overlap beyond image bounds
             // This is placed after the image in the ZStack so it appears on top
             VStack {
                 HStack {
@@ -415,24 +417,11 @@ struct ImageThumbnailView: View {
                         impactFeedback.impactOccurred()
                         onRemove()
                     }) {
-                        ZStack {
-                            // Background circle for better visibility
-                            Circle()
-                                .fill(Color.black.opacity(0.8))
-                                .frame(width: 32, height: 32)
-                            
-                            // White border for contrast
-                            Circle()
-                                .stroke(Color.white, lineWidth: 2)
-                                .frame(width: 32, height: 32)
-                            
-                            // X mark icon
-                            Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.white)
-                        }
+                        // Just the X mark in Olive Green
+                        Image(systemName: "xmark")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(Color(red: 0.44, green: 0.55, blue: 0.51)) // Olive Green
                     }
-                    .shadow(color: Color.black.opacity(0.4), radius: 4, x: 0, y: 2)
                     .offset(x: 16, y: -16) // Positioned to extend beyond image bounds
                     .zIndex(1) // Ensure X button is on top
                 }
@@ -455,6 +444,7 @@ struct FullImageView: View {
     @State private var scale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
+    @State private var dragOffset: CGSize = .zero
     
     var body: some View {
         ZStack {
@@ -464,7 +454,7 @@ struct FullImageView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .scaleEffect(scale)
-                .offset(offset)
+                .offset(x: offset.width + dragOffset.width, y: offset.height + dragOffset.height)
                 .gesture(
                     SimultaneousGesture(
                         MagnificationGesture()
@@ -473,13 +463,46 @@ struct FullImageView: View {
                             },
                         DragGesture()
                             .onChanged { value in
-                                offset = CGSize(
-                                    width: lastOffset.width + value.translation.width,
-                                    height: lastOffset.height + value.translation.height
-                                )
+                                if scale > 1.0 {
+                                    // When zoomed, allow panning
+                                    offset = CGSize(
+                                        width: lastOffset.width + value.translation.width,
+                                        height: lastOffset.height + value.translation.height
+                                    )
+                                } else {
+                                    // When not zoomed, swipe to dismiss
+                                    dragOffset = value.translation
+                                }
                             }
-                            .onEnded { _ in
-                                lastOffset = offset
+                            .onEnded { value in
+                                if scale > 1.0 {
+                                    // Save pan position
+                                    lastOffset = offset
+                                } else {
+                                    // Check if swipe is far enough to dismiss
+                                    let swipeThreshold: CGFloat = 100
+                                    let verticalSwipe = abs(value.translation.height)
+                                    let horizontalSwipe = abs(value.translation.width)
+                                    
+                                    if verticalSwipe > swipeThreshold || horizontalSwipe > swipeThreshold {
+                                        // Swipe far enough - dismiss with animation
+                                        withAnimation(.easeOut(duration: 0.2)) {
+                                            dragOffset = CGSize(
+                                                width: value.translation.width * 2,
+                                                height: value.translation.height * 2
+                                            )
+                                        }
+                                        // Dismiss after animation
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            dismiss()
+                                        }
+                                    } else {
+                                        // Swipe not far enough - snap back
+                                        withAnimation(.spring()) {
+                                            dragOffset = .zero
+                                        }
+                                    }
+                                }
                             }
                     )
                 )
@@ -518,7 +541,10 @@ struct FullImageView: View {
             }
         }
         .onTapGesture {
-            dismiss()
+            // Only dismiss on tap if not zoomed
+            if scale <= 1.0 {
+                dismiss()
+            }
         }
     }
 }
@@ -531,6 +557,7 @@ struct CameraView: UIViewControllerRepresentable {
     var flashMode: UIImagePickerController.CameraFlashMode = .auto
     var cameraDevice: UIImagePickerController.CameraDevice = .rear
     var allowsEditing: Bool = true
+    var enablePhotoReview: Bool = true // Enable Snapchat-like review screen
     
     func makeUIViewController(context: Context) -> CameraViewController {
         let controller = CameraViewController()
@@ -538,6 +565,7 @@ struct CameraView: UIViewControllerRepresentable {
         controller.flashMode = flashMode
         controller.initialCameraDevice = cameraDevice
         controller.allowsEditing = allowsEditing
+        controller.enablePhotoReview = enablePhotoReview
         return controller
     }
     
@@ -579,10 +607,15 @@ class CameraViewController: UIViewController {
     var flashMode: UIImagePickerController.CameraFlashMode = .auto
     var initialCameraDevice: UIImagePickerController.CameraDevice = .rear
     var allowsEditing: Bool = true
+    var enablePhotoReview: Bool = true
     
     private var imagePicker: UIImagePickerController!
     private var currentCameraDevice: UIImagePickerController.CameraDevice = .rear
     private var flipButton: UIButton!
+    
+    // Photo review
+    private var capturedImage: UIImage?
+    private var reviewHostingController: UIHostingController<PhotoReviewView>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -682,14 +715,20 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
         notificationFeedback.notificationOccurred(.success)
         
         if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
-            // Process image on background queue for faster response
-            DispatchQueue.global(qos: .userInitiated).async {
+            // Process image on high priority queue for instant response
+            DispatchQueue.global(qos: .userInteractive).async {
                 // Fix image orientation to ensure proper display
                 let orientedImage = image.fixedOrientation()
                 
-                // Return to main queue for delegate callback
+                // Return to main queue for review or immediate callback
                 DispatchQueue.main.async {
-                    self.delegate?.didCaptureImage(orientedImage)
+                    if self.enablePhotoReview {
+                        // Show review screen instantly (Snapchat-like behavior)
+                        self.showPhotoReview(orientedImage)
+                    } else {
+                        // Immediate callback (original behavior)
+                        self.delegate?.didCaptureImage(orientedImage)
+                    }
                 }
             }
         } else {
@@ -699,6 +738,58 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         delegate?.didCancel()
+    }
+    
+    private func showPhotoReview(_ image: UIImage) {
+        // Store captured image
+        capturedImage = image
+        
+        // Hide image picker
+        imagePicker.view.isHidden = true
+        
+        // Create and show review view
+        let reviewView = PhotoReviewView(
+            capturedImage: image,
+            onUsePhoto: { [weak self] in
+                self?.confirmPhoto()
+            },
+            onRetake: { [weak self] in
+                self?.retakePhoto()
+            },
+            onCancel: { [weak self] in
+                self?.delegate?.didCancel()
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: reviewView)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.frame = view.bounds
+        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        reviewHostingController = hostingController
+    }
+    
+    private func confirmPhoto() {
+        guard let image = capturedImage else { return }
+        delegate?.didCaptureImage(image)
+    }
+    
+    private func retakePhoto() {
+        // Remove review view
+        reviewHostingController?.willMove(toParent: nil)
+        reviewHostingController?.view.removeFromSuperview()
+        reviewHostingController?.removeFromParent()
+        reviewHostingController = nil
+        
+        // Clear captured image
+        capturedImage = nil
+        
+        // Show image picker again
+        imagePicker.view.isHidden = false
     }
 }
 
