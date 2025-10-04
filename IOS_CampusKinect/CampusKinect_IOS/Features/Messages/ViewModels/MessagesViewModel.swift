@@ -14,18 +14,21 @@ extension Notification.Name {
 
 @MainActor
 class MessagesViewModel: ObservableObject {
+    static let shared = MessagesViewModel()
+    
     @Published var conversations: [Conversation] = []
     @Published var messageRequests: [MessageRequest] = []
     @Published var sentMessageRequests: [MessageRequest] = []
     @Published var isLoading = false
     @Published var error: APIError?
+    @Published var hasLoadedInitially = false
     
     private let apiService = APIService.shared
     private var cancellables = Set<AnyCancellable>()
     private var pollTimer: Timer?
     private var currentUserId: Int = 0
     
-    init() {
+    private init() {
         // Listen for message sent notifications
         NotificationCenter.default.publisher(for: .messageSent)
             .sink { [weak self] notification in
@@ -61,11 +64,14 @@ class MessagesViewModel: ObservableObject {
             await MainActor.run {
                 self.conversations = self.sortConversationsByPriority(response.data.conversations)
                 self.isLoading = false
+                self.hasLoadedInitially = true
+                print("📱 MessagesViewModel: Conversations loaded (\(self.conversations.count) conversations)")
             }
         } catch {
             await MainActor.run {
                 self.error = error as? APIError
                 self.isLoading = false
+                print("❌ MessagesViewModel: Failed to load conversations: \(error)")
             }
         }
     }

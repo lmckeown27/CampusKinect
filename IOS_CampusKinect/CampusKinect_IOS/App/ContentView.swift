@@ -33,6 +33,11 @@ struct ContentView: View {
                             Task {
                                 let granted = await PushNotificationManager.shared.requestPermission()
                                 print("📱 Authenticated User: Push notification permission \(granted ? "granted" : "denied")")
+                                
+                                // Preload conversations in the background
+                                print("📱 ContentView: Preloading conversations in background")
+                                MessagesViewModel.shared.setCurrentUserId(authManager.currentUser?.id ?? 0)
+                                await MessagesViewModel.shared.loadConversations()
                             }
                         }
                 } else {

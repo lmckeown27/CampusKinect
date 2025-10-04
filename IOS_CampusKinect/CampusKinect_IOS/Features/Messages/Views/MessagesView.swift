@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MessagesView: View {
-    @StateObject private var viewModel = MessagesViewModel()
+    @ObservedObject var viewModel = MessagesViewModel.shared
     @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingNewMessage = false
     @State private var searchText = ""
@@ -91,10 +91,17 @@ struct MessagesView: View {
             isViewReady = true
             // Set current user ID in view model
             viewModel.setCurrentUserId(authManager.currentUser?.id ?? 0)
+            
             Task {
-                await viewModel.loadConversations()
+                // Only load if not already loaded
+                if !viewModel.hasLoadedInitially {
+                    print("📱 MessagesView: Loading conversations for the first time")
+                    await viewModel.loadConversations()
+                } else {
+                    print("📱 MessagesView: Conversations already preloaded (\(viewModel.conversations.count) conversations)")
+                }
                 
-                // Process any pending navigation request after conversations load
+                // Process any pending navigation request after conversations are available
                 if let request = pendingNavigationRequest {
                     print("📱 Processing pending navigation request after conversations loaded")
                     await MainActor.run {
@@ -120,9 +127,9 @@ struct MessagesView: View {
         .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
             print("📱 MessagesView received navigateToChat notification: \(notification.userInfo ?? [:])")
             
-            // If conversations are still loading, defer the request
-            if viewModel.isLoading && viewModel.conversations.isEmpty {
-                print("📱 Conversations still loading, deferring navigation request")
+            // If conversations haven't loaded yet, defer the request
+            if !viewModel.hasLoadedInitially {
+                print("📱 Conversations not loaded yet, deferring navigation request")
                 pendingNavigationRequest = notification.userInfo ?? [:]
             } else {
                 handleNavigateToChat(notification.userInfo ?? [:])
