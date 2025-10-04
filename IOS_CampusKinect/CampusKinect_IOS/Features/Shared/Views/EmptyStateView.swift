@@ -55,7 +55,7 @@ struct EmptyStateView: View {
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
+                        .background(Color.campusPrimary)
                         .cornerRadius(8)
                 }
                 .padding(.horizontal, 40)
