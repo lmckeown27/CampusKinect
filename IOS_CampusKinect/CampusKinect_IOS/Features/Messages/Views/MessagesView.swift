@@ -19,6 +19,7 @@ struct MessagesView: View {
     @State private var pendingConversationPostTitle: String?
     @State private var pendingConversationPostType: String?
     @State private var pendingConversationPostImages: [String]?
+    @State private var pendingNavigationRequest: [AnyHashable: Any]? // Store navigation request until conversations load
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -92,6 +93,15 @@ struct MessagesView: View {
             viewModel.setCurrentUserId(authManager.currentUser?.id ?? 0)
             Task {
                 await viewModel.loadConversations()
+                
+                // Process any pending navigation request after conversations load
+                if let request = pendingNavigationRequest {
+                    print("📱 Processing pending navigation request after conversations loaded")
+                    await MainActor.run {
+                        handleNavigateToChat(request)
+                        pendingNavigationRequest = nil
+                    }
+                }
             }
             if let notification = pendingNotification {
                 handlePushNotification(notification)
@@ -109,7 +119,14 @@ struct MessagesView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .navigateToChat)) { notification in
             print("📱 MessagesView received navigateToChat notification: \(notification.userInfo ?? [:])")
-            handleNavigateToChat(notification.userInfo ?? [:])
+            
+            // If conversations are still loading, defer the request
+            if viewModel.isLoading && viewModel.conversations.isEmpty {
+                print("📱 Conversations still loading, deferring navigation request")
+                pendingNavigationRequest = notification.userInfo ?? [:]
+            } else {
+                handleNavigateToChat(notification.userInfo ?? [:])
+            }
         }
         .alert("Error", isPresented: Binding<Bool>(
             get: { viewModel.error != nil },
@@ -354,7 +371,10 @@ struct MessagesView: View {
         // Use provided images or retrieve from UserDefaults
         pendingConversationPostImages = postImages ?? (UserDefaults.standard.array(forKey: "postImages_\(postId)") as? [String])
         
-        showingConversationConfirmation = true
+        // Add slight delay to ensure view transition completes before showing dialog
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            showingConversationConfirmation = true
+        }
     }
     
     private func confirmConversationStart() {
