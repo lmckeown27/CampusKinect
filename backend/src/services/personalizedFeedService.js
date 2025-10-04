@@ -97,19 +97,24 @@ class PersonalizedFeedService {
         p.created_at, p.updated_at, p.review_count, p.average_rating, p.review_score_bonus,
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
-        COALESCE(
-          ARRAY_AGG(DISTINCT CASE 
-            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
-            THEN t.name 
-            ELSE NULL 
-          END),
-          ARRAY[]::text[]
-        ) || 
-        CASE 
-          WHEN p.post_type = 'offer' THEN ARRAY['Offer']
-          WHEN p.post_type = 'request' THEN ARRAY['Request']
-          ELSE ARRAY[]::text[]
-        END as tags,
+        (
+          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
+          FROM (
+            SELECT DISTINCT t.name as tag_name
+            FROM post_tags pt_inner
+            JOIN tags t ON pt_inner.tag_id = t.id
+            WHERE pt_inner.post_id = p.id
+              AND t.name IS NOT NULL 
+              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
+            UNION
+            SELECT CASE 
+              WHEN p.post_type = 'offer' THEN 'Offer'
+              WHEN p.post_type = 'request' THEN 'Request'
+            END as tag_name
+            WHERE p.post_type IN ('offer', 'request')
+          ) combined_tags
+          WHERE tag_name IS NOT NULL
+        ) as tags,
         -- Check if user has interacted with this post
         CASE WHEN ui.post_id IS NOT NULL THEN true ELSE false END as user_has_interacted,
         -- Get user's last interaction timestamp
@@ -485,19 +490,24 @@ class PersonalizedFeedService {
         p.relative_grade, p.market_size,
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
-        COALESCE(
-          ARRAY_AGG(DISTINCT CASE 
-            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
-            THEN t.name 
-            ELSE NULL 
-          END),
-          ARRAY[]::text[]
-        ) || 
-        CASE 
-          WHEN p.post_type = 'offer' THEN ARRAY['Offer']
-          WHEN p.post_type = 'request' THEN ARRAY['Request']
-          ELSE ARRAY[]::text[]
-        END as tags
+        (
+          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
+          FROM (
+            SELECT DISTINCT t.name as tag_name
+            FROM post_tags pt_inner
+            JOIN tags t ON pt_inner.tag_id = t.id
+            WHERE pt_inner.post_id = p.id
+              AND t.name IS NOT NULL 
+              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
+            UNION
+            SELECT CASE 
+              WHEN p.post_type = 'offer' THEN 'Offer'
+              WHEN p.post_type = 'request' THEN 'Request'
+            END as tag_name
+            WHERE p.post_type IN ('offer', 'request')
+          ) combined_tags
+          WHERE tag_name IS NOT NULL
+        ) as tags
       FROM posts p
       JOIN users u ON p.user_id = u.id
       JOIN universities un ON p.university_id = un.id
