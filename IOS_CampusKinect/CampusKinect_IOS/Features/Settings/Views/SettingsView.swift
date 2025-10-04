@@ -20,6 +20,10 @@ struct SettingsView: View {
     @State private var showingMyReports = false
     @State private var showingAdminDashboard = false
     @State private var showingRestoreTermsAlert = false
+    @State private var showingVerificationCode = false
+    @State private var showingSendVerificationAlert = false
+    @State private var isSendingVerification = false
+    @State private var showingVerificationSentSuccess = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -148,6 +152,22 @@ struct SettingsView: View {
                         ) {
                             showingRestoreTermsAlert = true
                         }
+                        
+                        SettingsRow(
+                            icon: "checkmark.shield",
+                            title: "Test Verification Code",
+                            subtitle: "Open verification code page (testing)"
+                        ) {
+                            showingVerificationCode = true
+                        }
+                        
+                        SettingsRow(
+                            icon: "envelope.badge",
+                            title: "Send Test Verification Email",
+                            subtitle: "Send verification code to admin email (testing)"
+                        ) {
+                            showingSendVerificationAlert = true
+                        }
                     }
                 }
                                 // Account Actions
@@ -228,6 +248,27 @@ struct SettingsView: View {
         } message: {
             Text("The Terms of Service popup will appear on your next login. This is useful for testing.")
         }
+        .sheet(isPresented: $showingVerificationCode) {
+            NavigationView {
+                VerificationView(email: "lmckeown@calpoly.edu")
+                    .environmentObject(authManager)
+            }
+        }
+        .alert("Send Test Verification Email", isPresented: $showingSendVerificationAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Send") {
+                Task {
+                    await sendTestVerificationCode()
+                }
+            }
+        } message: {
+            Text("This will send a verification code to lmckeown@calpoly.edu for testing purposes.")
+        }
+        .alert("Verification Email Sent", isPresented: $showingVerificationSentSuccess) {
+            Button("OK") { }
+        } message: {
+            Text("A test verification code has been sent to lmckeown@calpoly.edu. Check your email to test the verification flow.")
+        }
             .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
             .frame(maxHeight: .infinity)
             .clipped()
@@ -235,6 +276,21 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         }
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func sendTestVerificationCode() async {
+        isSendingVerification = true
+        
+        let success = await authManager.resendVerificationCode(email: "lmckeown@calpoly.edu")
+        
+        isSendingVerification = false
+        
+        if success {
+            showingVerificationSentSuccess = true
+        }
+        // Error will be displayed through authManager.authError if failed
     }
 }
 
