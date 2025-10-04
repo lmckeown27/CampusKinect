@@ -123,13 +123,17 @@ const HomeTab: React.FC = () => {
     <div className="min-h-screen" style={{ backgroundColor: '#525252', paddingBottom: '100px' }}>
       <div className="max-w-4xl mx-auto">
         {/* Header with Clear All Button and Offer/Request Toggle */}
-        <div className="sticky top-0 z-10 px-4 py-3" style={{ backgroundColor: '#525252', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="sticky top-0 z-10 px-4 py-5" style={{ backgroundColor: '#525252', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <div className="flex items-center justify-between">
             {selectedTags.length > 0 && (
               <button
                 onClick={handleClearAll}
-                className="text-sm font-medium"
-                style={{ color: '#708d81' }}
+                className="px-3 py-1 text-sm font-medium rounded-lg transition-all hover:bg-gray-100"
+                style={{ 
+                  backgroundColor: 'white',
+                  color: '#708d81',
+                  border: '1px solid #708d81'
+                }}
               >
                 Clear All
               </button>
