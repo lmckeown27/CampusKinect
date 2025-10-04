@@ -333,14 +333,13 @@ const PostCard: React.FC<PostCardProps> = ({
             className="min-w-0 flex items-start space-x-3"
             // onClick={handleProfileClick}  // TEMPORARILY DISABLED
             style={{ 
-              border: "2px solid #d1d5db",
+              border: "2px solid #525252",
               borderRadius: "12px",
               paddingTop: "8px",
               paddingBottom: "12px",
               paddingLeft: "12px",
               paddingRight: "12px",
-              backgroundColor: "#f9fafb",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+              backgroundColor: "transparent",
               width: "280px",
               flexShrink: 0,
               // cursor: "pointer",  // TEMPORARILY DISABLED
@@ -379,10 +378,11 @@ const PostCard: React.FC<PostCardProps> = ({
             {/* Display Name - Large and Bold */}
             <div className="flex items-center space-x-2 mb-0">
               <p 
-                className="font-bold text-gray-900 truncate"
+                className="font-bold truncate"
                   style={{
                     fontSize: "18px",
                     lineHeight: "20px",
+                    color: "white",
                   }}
               >
                 {post.poster?.firstName && post.poster?.lastName 
@@ -396,11 +396,12 @@ const PostCard: React.FC<PostCardProps> = ({
             {/* Username - Small and Separate */}
             {post.poster?.username && post.poster?.firstName && (
               <p 
-                className="text-gray-600 truncate"
+                className="truncate"
                   style={{
                     fontSize: "10px",
                     lineHeight: "12px",
                     marginTop: "-2px",
+                    color: "#9ca3af",
                   }}
               >
                 @{post.poster.username}
