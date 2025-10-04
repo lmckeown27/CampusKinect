@@ -283,14 +283,31 @@ struct SettingsView: View {
     private func sendTestVerificationCode() async {
         isSendingVerification = true
         
-        let success = await authManager.resendVerificationCode(email: "lmckeown@calpoly.edu")
-        
-        isSendingVerification = false
-        
-        if success {
-            showingVerificationSentSuccess = true
+        // Call admin-only test endpoint that bypasses verification checks
+        do {
+            guard let url = URL(string: "https://campuskinect.net/api/v1/auth/admin/test-verification-email") else {
+                isSendingVerification = false
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let body = ["email": "lmckeown@calpoly.edu"]
+            request.httpBody = try JSONEncoder().encode(body)
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            
+            isSendingVerification = false
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                showingVerificationSentSuccess = true
+            }
+        } catch {
+            print("❌ Failed to send test verification email:", error)
+            isSendingVerification = false
         }
-        // Error will be displayed through authManager.authError if failed
     }
 }
 

@@ -1502,6 +1502,68 @@ router.get('/admin/pending-stats', async (req, res) => {
   }
 });
 
+// @route   POST /api/v1/auth/admin/test-verification-email
+// @desc    Send test verification email (admin only, bypasses verification checks)
+// @access  Admin
+router.post('/admin/test-verification-email', [
+  body('email').isEmail().withMessage('Please provide a valid email address'),
+  validate
+], async (req, res) => {
+  try {
+    // Simple admin check - only allow specific admin email
+    const { email } = req.body;
+    
+    if (email !== 'lmckeown@calpoly.edu') {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'This endpoint is for admin testing only' }
+      });
+    }
+
+    console.log('🧪 ADMIN TEST: Sending verification code to:', email);
+    
+    // Generate a 6-digit verification code for testing
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    console.log('🧪 ADMIN TEST: Generated code:', verificationCode);
+    
+    // Send verification code email (firstname can be "Admin" for testing)
+    const emailSent = await sendVerificationCode(email, 'Admin', verificationCode);
+
+    if (!emailSent) {
+      console.log('❌ ADMIN TEST: Email service failed');
+      return res.status(500).json({
+        success: false,
+        error: {
+          message: 'Failed to send test verification email. Please check email service configuration.'
+        }
+      });
+    }
+
+    console.log('✅ ADMIN TEST: Verification email sent successfully');
+    console.log('🧪 ADMIN TEST: Code for testing:', verificationCode);
+
+    res.json({
+      success: true,
+      message: 'Test verification email sent successfully. Check your inbox!',
+      data: {
+        email: email,
+        // Include the code in response for easy testing (admin only)
+        testCode: verificationCode
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ ADMIN TEST: Error sending test email:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to send test verification email. Please try again.'
+      }
+    });
+  }
+});
+
 // @route   GET /api/v1/auth/socket-token
 // @desc    Get Socket.io authentication token for real-time messaging
 // @access  Private
