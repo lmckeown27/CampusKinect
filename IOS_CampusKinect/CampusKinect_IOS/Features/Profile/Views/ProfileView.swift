@@ -243,6 +243,7 @@ struct ProfileContent: View {
 struct PostsTabContent: View {
     @ObservedObject var viewModel: ProfileViewModel
     let currentUser: User?
+    @State private var showingCreatePost = false
     
     var body: some View {
         VStack {
@@ -256,7 +257,12 @@ struct PostsTabContent: View {
                     systemImage: "doc.text",
                     actionTitle: "Create Post"
                 ) {
-                    // Navigate to create post
+                    showingCreatePost = true
+                }
+                .sheet(isPresented: $showingCreatePost) {
+                    NavigationView {
+                        CreatePostView()
+                    }
                 }
             } else {
                 LazyVStack(spacing: 16) {
