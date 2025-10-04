@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum ProfileAction {
+enum ProfileAction: Equatable {
     case delete
     case removeRepost
     case removeBookmark
@@ -78,6 +78,7 @@ struct ProfilePostCard: View {
     @State private var isPerformingAction = false
     @State private var showingImageViewer = false
     @State private var selectedImageIndex = 0
+    @State private var showingEditPost = false
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
@@ -104,18 +105,36 @@ struct ProfilePostCard: View {
                 
                 Spacer()
                 
-                // Action button
-                Button(action: {
-                    showingActionConfirmation = true
-                }) {
-                    Image(systemName: action.icon)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(action.color)
-                        .padding(8)
-                        .background(action.color.opacity(0.1))
-                        .clipShape(Circle())
+                // Action buttons
+                HStack(spacing: 8) {
+                    // Edit button (only for delete action, which means it's user's own post)
+                    if action == .delete {
+                        Button(action: {
+                            showingEditPost = true
+                        }) {
+                            Image(systemName: "pencil")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.campusPrimary)
+                                .padding(8)
+                                .background(Color.campusPrimary.opacity(0.1))
+                                .clipShape(Circle())
+                        }
+                        .disabled(isPerformingAction)
+                    }
+                    
+                    // Delete/Remove button
+                    Button(action: {
+                        showingActionConfirmation = true
+                    }) {
+                        Image(systemName: action.icon)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(action.color)
+                            .padding(8)
+                            .background(action.color.opacity(0.1))
+                            .clipShape(Circle())
+                    }
+                    .disabled(isPerformingAction)
                 }
-                .disabled(isPerformingAction)
             }
             
             // Content
@@ -174,6 +193,11 @@ struct ProfilePostCard: View {
                 selectedIndex: selectedImageIndex,
                 
             )
+        }
+        .sheet(isPresented: $showingEditPost) {
+            NavigationView {
+                EditPostView(post: post)
+            }
         }
     }
     
