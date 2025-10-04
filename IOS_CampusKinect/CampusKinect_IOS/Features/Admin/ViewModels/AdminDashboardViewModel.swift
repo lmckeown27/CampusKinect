@@ -270,6 +270,7 @@ class AdminDashboardViewModel: ObservableObject {
             topUniversities: allUniversities,
             contentTrends: analytics.contentTrends,
             reportsByReason: analytics.reportsByReason,
+            userActivity: analytics.userActivity,
             userGrowth: analytics.userGrowth
         )
     }
