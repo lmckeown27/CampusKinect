@@ -19,7 +19,8 @@ struct VerificationView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 32) {
-                    Spacer(minLength: 60)
+                    // Reduced top spacing
+                    Spacer(minLength: 20)
                     
                     // Header Section
                     VStack(spacing: 16) {
@@ -76,26 +77,33 @@ struct VerificationView: View {
                     
                     // Verification Form Card
                     VStack(spacing: 24) {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(spacing: 12) {
+                            // Center the "Verification Code" label
                             Text("Verification Code")
                                 .font(.headline)
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity, alignment: .center)
                             
-                            TextField("Enter 6-digit code", text: $verificationCode)
+                            TextField("", text: $verificationCode)
                                 .keyboardType(.numberPad)
-                                .font(.system(size: 18, weight: .medium, design: .monospaced))
+                                .font(.system(size: 28, weight: .semibold, design: .monospaced))
+                                .tracking(verificationCode.isEmpty ? 0 : 20) // Add spacing between digits
+                                .multilineTextAlignment(.center)
                                 .textFieldStyle(PlainTextFieldStyle())
                                 .padding(.horizontal, 16)
-                                .padding(.vertical, 16)
+                                .padding(.vertical, 20)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("BrandPrimary").opacity(0.3), lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color("BrandPrimary").opacity(0.3), lineWidth: 2)
                                 )
                                 .onChange(of: verificationCode) { _, newValue in
-                                    // Limit to 6 digits
-                                    if newValue.count > 6 {
-                                        verificationCode = String(newValue.prefix(6))
+                                    // Limit to 6 digits and only allow numbers
+                                    let filtered = newValue.filter { $0.isNumber }
+                                    if filtered.count > 6 {
+                                        verificationCode = String(filtered.prefix(6))
+                                    } else {
+                                        verificationCode = filtered
                                     }
                                 }
                         }
@@ -160,6 +168,10 @@ struct VerificationView: View {
                     Spacer()
                 }
             }
+            .onTapGesture {
+                // Dismiss keyboard when tapping outside
+                hideKeyboard()
+            }
             .background(
                 LinearGradient(
                     gradient: Gradient(colors: [
@@ -188,6 +200,12 @@ struct VerificationView: View {
                 Text("A new verification code has been sent to your email.")
             }
         }
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
     
     private func verifyEmail() async {
