@@ -142,9 +142,9 @@ const HomeTab: React.FC = () => {
               <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid #708d81' }}>
                 <button
                   onClick={() => setSelectedOfferRequest(selectedOfferRequest === 'offer' ? null : 'offer')}
-                  className="px-3 py-1 text-xs font-medium transition-colors"
+                  className="px-3 py-1 text-xs font-medium transition-all hover:bg-gray-100"
                   style={{
-                    backgroundColor: selectedOfferRequest === 'offer' ? '#708d81' : 'transparent',
+                    backgroundColor: selectedOfferRequest === 'offer' ? '#708d81' : 'white',
                     color: selectedOfferRequest === 'offer' ? 'white' : '#708d81'
                   }}
                 >
@@ -152,9 +152,9 @@ const HomeTab: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setSelectedOfferRequest(selectedOfferRequest === 'request' ? null : 'request')}
-                  className="px-3 py-1 text-xs font-medium transition-colors"
+                  className="px-3 py-1 text-xs font-medium transition-all hover:bg-gray-100"
                   style={{
-                    backgroundColor: selectedOfferRequest === 'request' ? '#708d81' : 'transparent',
+                    backgroundColor: selectedOfferRequest === 'request' ? '#708d81' : 'white',
                     color: selectedOfferRequest === 'request' ? 'white' : '#708d81'
                   }}
                 >
