@@ -121,14 +121,16 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
-  const handleProfileClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    if (post.userId) {
-      router.push(`/user/${post.userId}`);
-    }
-  };
+  // TEMPORARILY DISABLED: User profile viewing functionality
+  // TODO: Re-enable when ready to allow users to view other profiles
+  // const handleProfileClick = (e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   e.preventDefault();
+  //   
+  //   if (post.userId) {
+  //     router.push(`/user/${post.userId}`);
+  //   }
+  // };
 
   // Content moderation functions
   const handleReportPost = () => {
@@ -332,9 +334,10 @@ const PostCard: React.FC<PostCardProps> = ({
         {/* Bottom Row: User Info and Post Title */}
         <div className="flex items-start" style={{ gap: "20px" }}>
           {/* User Info with Profile Picture Inside - Reduced Width */}
+          {/* PROFILE CLICK TEMPORARILY DISABLED - Re-enable onClick={handleProfileClick} when ready */}
           <div 
-                          className="min-w-0 flex items-start space-x-3 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
-            onClick={handleProfileClick}
+            className="min-w-0 flex items-start space-x-3"
+            // onClick={handleProfileClick}  // TEMPORARILY DISABLED
             style={{ 
               border: "2px solid #d1d5db",
               borderRadius: "12px",
@@ -346,49 +349,46 @@ const PostCard: React.FC<PostCardProps> = ({
               boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
               width: "280px",
               flexShrink: 0,
-              cursor: "pointer",
+              // cursor: "pointer",  // TEMPORARILY DISABLED
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.cursor = "pointer";
-              e.currentTarget.style.backgroundColor = "#f3f4f6";
-              e.currentTarget.style.borderColor = "#708d81";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.cursor = "pointer";
-              e.currentTarget.style.backgroundColor = "#f9fafb";
-              e.currentTarget.style.borderColor = "#d1d5db";
-            }}
+            // HOVER EFFECTS TEMPORARILY DISABLED
+            // onMouseEnter={(e) => {
+            //   e.currentTarget.style.cursor = "pointer";
+            //   e.currentTarget.style.backgroundColor = "#f3f4f6";
+            //   e.currentTarget.style.borderColor = "#708d81";
+            // }}
+            // onMouseLeave={(e) => {
+            //   e.currentTarget.style.cursor = "pointer";
+            //   e.currentTarget.style.backgroundColor = "#f9fafb";
+            //   e.currentTarget.style.borderColor = "#d1d5db";
+            // }}
           >
             {/* Profile Picture */}
             {post.poster?.profilePicture ? (
               <img
                 src={post.poster.profilePicture}
                 alt={post.poster?.firstName || "User"}
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer"
-                style={{ border: "2px solid #708d81", cursor: "pointer" }}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                style={{ border: "2px solid #708d81" }}
               />
             ) : (
               <div 
-                className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
-                style={{ border: "2px solid #708d81", cursor: "pointer" }}
+                className="w-10 h-10 bg-[#708d81] rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ border: "2px solid #708d81" }}
               >
                 <User size={20} className="text-white" />
               </div>
             )}
 
             {/* User Text Info */}
-            <div
-              className="flex-1 min-w-0 cursor-pointer"
-              style={{ cursor: "pointer" }}
-            >
+            <div className="flex-1 min-w-0">
             {/* Display Name - Large and Bold */}
             <div className="flex items-center space-x-2 mb-0">
               <p 
-                                    className="font-bold text-gray-900 truncate cursor-pointer"
+                className="font-bold text-gray-900 truncate"
                   style={{
                     fontSize: "18px",
                     lineHeight: "20px",
-                    cursor: "pointer",
                   }}
               >
                 {post.poster?.firstName && post.poster?.lastName 
@@ -402,12 +402,11 @@ const PostCard: React.FC<PostCardProps> = ({
             {/* Username - Small and Separate */}
             {post.poster?.username && post.poster?.firstName && (
               <p 
-                className="text-gray-600 truncate cursor-pointer"
+                className="text-gray-600 truncate"
                   style={{
                     fontSize: "10px",
                     lineHeight: "12px",
                     marginTop: "-2px",
-                    cursor: "pointer",
                   }}
               >
                 @{post.poster.username}
