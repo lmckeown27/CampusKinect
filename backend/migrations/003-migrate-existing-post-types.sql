@@ -8,6 +8,9 @@ FROM posts
 GROUP BY post_type 
 ORDER BY count DESC;
 
+-- IMPORTANT: Drop the old constraint FIRST before updating
+ALTER TABLE posts DROP CONSTRAINT IF EXISTS posts_post_type_check;
+
 -- Update all 'goods', 'services', and 'housing' posts to 'offer' (default choice)
 -- In the new system, these categories will be stored as tags instead
 UPDATE posts 
@@ -20,9 +23,7 @@ FROM posts
 GROUP BY post_type 
 ORDER BY count DESC;
 
--- Now we can safely apply the constraint
-ALTER TABLE posts DROP CONSTRAINT IF EXISTS posts_post_type_check;
-
+-- Now we can safely apply the new constraint
 ALTER TABLE posts ADD CONSTRAINT posts_post_type_check 
   CHECK (post_type IN ('offer', 'request', 'events'));
 
