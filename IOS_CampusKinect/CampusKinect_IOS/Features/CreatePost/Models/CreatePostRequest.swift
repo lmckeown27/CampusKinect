@@ -63,6 +63,30 @@ struct CreatePostData: Codable {
     let post: Post
 }
 
+// MARK: - Update Post Response
+struct UpdatePostResponse: Codable {
+    let success: Bool
+    let message: String
+    let data: UpdatePostData
+}
+
+struct UpdatePostData: Codable {
+    let post: PartialPost
+}
+
+// Simplified post model for update response
+struct PartialPost: Codable {
+    let id: Int
+    let title: String
+    let description: String
+    let postType: String
+    let durationType: String
+    let expiresAt: String?
+    let eventStart: String?
+    let eventEnd: String?
+    let updatedAt: String
+}
+
 // MARK: - API Response Models
 struct EmptyResponse: Codable {
     let success: Bool

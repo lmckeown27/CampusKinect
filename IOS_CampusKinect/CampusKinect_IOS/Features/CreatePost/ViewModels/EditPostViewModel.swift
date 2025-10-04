@@ -73,7 +73,7 @@ class EditPostViewModel: ObservableObject {
             print("   Location: \(location)")
             print("   Tags: \(tags)")
             
-            _ = try await apiService.updatePost(postId, updateRequest: updateRequest)
+            try await apiService.updatePost(postId, updateRequest: updateRequest)
             
             await MainActor.run {
                 isLoading = false
