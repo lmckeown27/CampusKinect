@@ -554,14 +554,9 @@ struct PostHeaderWithMenu: View {
             
             Spacer()
             
-            HStack(spacing: 8) {
-                // Offer/Request Badge (check tags for "Offer" or "Request", not durationType)
-                if let offerRequestTag = post.tags.first(where: { $0.lowercased() == "offer" || $0.lowercased() == "request" }) {
-                    OfferRequestBadge(durationType: offerRequestTag)
-                }
-                
-                // Category Badge (to the right)
-                CategoryBadge(category: post.categoryDisplayName)
+            // Offer/Request Badge (check tags for "Offer" or "Request", not durationType)
+            if let offerRequestTag = post.tags.first(where: { $0.lowercased() == "offer" || $0.lowercased() == "request" }) {
+                OfferRequestBadge(durationType: offerRequestTag)
             }
             
             // 3-Dot Menu Button
@@ -845,32 +840,17 @@ struct OfferRequestBadge: View {
         Text(displayText)
             .font(.caption)
             .fontWeight(.semibold)
-            .foregroundColor(badgeColor)
+            .foregroundColor(.white)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(Color.white)
+            .background(Color(red: 0.5, green: 0.55, blue: 0.35)) // Olive green
             .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(badgeColor.opacity(0.3), lineWidth: 1)
-            )
             .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private var displayText: String {
         // Capitalize first letter
         return durationType.prefix(1).uppercased() + durationType.dropFirst().lowercased()
-    }
-    
-    private var badgeColor: Color {
-        switch durationType.lowercased() {
-        case "offer":
-            return Color.blue
-        case "request":
-            return Color.orange
-        default:
-            return Color.gray
-        }
     }
 }
 
