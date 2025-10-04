@@ -175,9 +175,9 @@ const HomeTab: React.FC = () => {
                 onClick={() => handleCategoryClick(category.id)}
                 className="flex-1 max-w-[200px] px-4 py-3 rounded-xl font-medium transition-all"
                 style={{
-                  backgroundColor: selectedCategory === category.id ? '#708d81' : 'rgba(112, 141, 129, 0.2)',
+                  backgroundColor: selectedCategory === category.id ? '#708d81' : 'white',
                   color: selectedCategory === category.id ? 'white' : '#708d81',
-                  border: `2px solid ${selectedCategory === category.id ? '#708d81' : 'rgba(112, 141, 129, 0.3)'}`,
+                  border: `2px solid ${selectedCategory === category.id ? '#708d81' : '#708d81'}`,
                 }}
               >
                 <div className="text-center">
