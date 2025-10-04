@@ -146,7 +146,7 @@ struct SettingsView: View {
                         }
                         
                         SettingsRow(
-                            icon: "doc.text.badge.plus",
+                            icon: "arrow.clockwise.circle",
                             title: "Restore Terms Popup",
                             subtitle: "Force show Terms of Service on next login"
                         ) {
