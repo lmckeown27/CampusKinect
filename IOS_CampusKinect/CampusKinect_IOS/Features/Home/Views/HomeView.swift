@@ -85,6 +85,21 @@ struct HomeView: View {
         .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                // Clear All button on the left
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if !viewModel.selectedTags.isEmpty {
+                        Button(action: {
+                            viewModel.clearCategoryTagsOnly()
+                        }) {
+                            Text("Clear All")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(Color.campusPrimary)
+                        }
+                    }
+                }
+                
+                // Logo in the center
                 ToolbarItem(placement: .principal) {
                     if let universityName = universitySwitcher.currentViewingUniversityName {
                         // Admin is viewing a different university - show in toolbar
@@ -111,8 +126,8 @@ struct HomeView: View {
                         .buttonStyle(PlainButtonStyle())
                     }
                 }
-            }
-            .toolbar {
+                
+                // Offer/Request toggle on the right
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if viewModel.shouldShowOfferRequestToggle {
                         OfferRequestToggle()
@@ -166,20 +181,10 @@ struct SubcategoryTagsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("\(category.displayName) Tags")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-                
-                Button("Clear All") {
-                    viewModel.clearCategory()
-                }
-                .font(.caption2)
-                .foregroundColor(.campusError)
-            }
-            .padding(.horizontal)
+            Text("\(category.displayName) Tags")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.horizontal)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
                 ForEach(category.subcategories) { subcategory in
@@ -224,35 +229,27 @@ struct ActiveFilterBar: View {
     @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
-        HStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Array(viewModel.selectedTags), id: \.self) { tag in
-                        HStack(spacing: 4) {
-                            Text(tag)
-                                .font(.caption)
-                                .foregroundColor(Color("BrandPrimary"))
-                            
-                            Button("✕") {
-                                viewModel.hideFilterBar()
-                            }
-                            .font(.caption2)
-                            .foregroundColor(Color("BrandPrimary"))
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(Array(viewModel.selectedTags), id: \.self) { tag in
+                    HStack(spacing: 4) {
+                        Text(tag)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white)
+                        
+                        Button("✕") {
+                            viewModel.toggleTag(tag) // Deselect the tag
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.campusOlive100)
-                        .cornerRadius(12)
+                        .font(.caption2)
+                        .foregroundColor(.white)
                     }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.campusPrimary) // Olive green background
+                    .cornerRadius(12)
                 }
-                .padding(.horizontal)
             }
-            
-            Button("Clear All") {
-                viewModel.clearAllTags()
-            }
-            .font(.caption)
-            .foregroundColor(Color("BrandPrimary"))
         }
     }
 }
@@ -363,39 +360,35 @@ struct OfferRequestToggle: View {
         HStack(spacing: 0) {
             // Offers Button
             Button(action: {
-                if !viewModel.showingOffers {
-                    viewModel.togglePostType()
-                }
+                viewModel.selectOfferRequest("offer")
             }) {
                 Text("Offers")
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(viewModel.showingOffers ? .white : Color("BrandPrimary"))
+                    .foregroundColor(viewModel.selectedOfferRequest == "offer" ? .white : Color("BrandPrimary"))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(
-                        viewModel.showingOffers ? Color("BrandPrimary") : Color.clear
+                        viewModel.selectedOfferRequest == "offer" ? Color("BrandPrimary") : Color.clear
                     )
             }
             
             // Requests Button
             Button(action: {
-                if viewModel.showingOffers {
-                    viewModel.togglePostType()
-                }
+                viewModel.selectOfferRequest("request")
             }) {
                 Text("Requests")
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(!viewModel.showingOffers ? .white : Color("BrandPrimary"))
+                    .foregroundColor(viewModel.selectedOfferRequest == "request" ? .white : Color("BrandPrimary"))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(
-                        !viewModel.showingOffers ? Color("BrandPrimary") : Color.clear
+                        viewModel.selectedOfferRequest == "request" ? Color("BrandPrimary") : Color.clear
                     )
             }
         }
-                        .background(Color.campusBackgroundSecondary)
+        .background(Color.campusBackgroundSecondary)
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
@@ -471,6 +464,20 @@ struct CategoryToggleArrow: View {
                 .background(Color.campusBackgroundSecondary.opacity(0.5))
             }
             .buttonStyle(PlainButtonStyle())
+            .gesture(
+                DragGesture(minimumDistance: 20)
+                    .onEnded { value in
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            if value.translation.height < 0 {
+                                // Swipe up - collapse
+                                viewModel.isCategoryExpanded = false
+                            } else if value.translation.height > 0 {
+                                // Swipe down - expand
+                                viewModel.isCategoryExpanded = true
+                            }
+                        }
+                    }
+            )
         }
     }
 }

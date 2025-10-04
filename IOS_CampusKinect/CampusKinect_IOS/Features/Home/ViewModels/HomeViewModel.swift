@@ -33,9 +33,8 @@ class HomeViewModel: ObservableObject {
     // Filter bar visibility (separate from actual selection)
     @Published var showingFilterBar = true
     
-    // Post type toggle (Offers vs Requests)
-    @Published var showingOffers = true // Default to offers
-    @Published var selectedOfferRequest: String? = nil
+    // Post type toggle (Offers vs Requests) - nil means show both
+    @Published var selectedOfferRequest: String? = nil // nil = both, "offer" = offers only, "request" = requests only
     private var cancellables = Set<AnyCancellable>()
     private let apiService = APIService.shared
     
@@ -196,14 +195,10 @@ extension HomeViewModel {
             }
         }
         
-        // Apply offer/request filtering only if relevant categories are selected
-        if shouldShowOfferRequestToggle {
+        // Apply offer/request filtering only if a specific type is selected
+        if let offerRequestFilter = selectedOfferRequest {
             filtered = filtered.filter { post in
-                if showingOffers {
-                    return post.tags.contains { $0.lowercased() == "offer" }
-                } else {
-                    return post.tags.contains { $0.lowercased() == "request" }
-                }
+                return post.tags.contains { $0.lowercased() == offerRequestFilter.lowercased() }
             }
         }
         
@@ -267,6 +262,12 @@ extension HomeViewModel {
         showingFilterBar = true // Reset visibility when clearing
     }
     
+    func clearCategoryTagsOnly() {
+        // Clear only subcategory tags, keep main category selection
+        selectedTags.removeAll()
+        showingFilterBar = true
+    }
+    
     func toggleCategorySectionVisibility() {
         showingCategorySection.toggle()
     }
@@ -276,12 +277,13 @@ extension HomeViewModel {
     }
     
     // MARK: - Post Type Toggle Methods
-    func togglePostType() {
-        showingOffers.toggle()
-    }
-    
-    var currentPostTypeTitle: String {
-        return showingOffers ? "Offers" : "Requests"
+    func selectOfferRequest(_ type: String?) {
+        // Toggle behavior: tap selected = deselect (show both), tap unselected = select it
+        if selectedOfferRequest == type {
+            selectedOfferRequest = nil // Deselect to show both
+        } else {
+            selectedOfferRequest = type // Select this type
+        }
     }
 }
 
