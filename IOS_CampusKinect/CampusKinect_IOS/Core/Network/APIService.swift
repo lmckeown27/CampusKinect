@@ -273,6 +273,19 @@ class APIService: NSObject, ObservableObject {
         return response.data.post
     }
     
+    func updatePost(_ postId: Int, updateRequest: UpdatePostRequest) async throws -> Post {
+        let body = try encoder.encode(updateRequest)
+        
+        let response: CreatePostResponse = try await performRequest(
+            endpoint: "\(APIConstants.Endpoints.posts)/\(postId)",
+            method: .PUT,
+            body: body,
+            requiresAuth: true
+        )
+        
+        return response.data.post
+    }
+    
     func deletePost(_ postId: Int) async throws {
         let _: EmptyResponse = try await performRequest(
             endpoint: "\(APIConstants.Endpoints.posts)/\(postId)",

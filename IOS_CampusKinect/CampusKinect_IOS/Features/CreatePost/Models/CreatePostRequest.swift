@@ -33,6 +33,25 @@ struct CreatePostRequest: Codable {
     }
 }
 
+// MARK: - Update Post Request
+struct UpdatePostRequest: Codable {
+    let title: String
+    let description: String
+    let postType: String?
+    let durationType: String?
+    let location: String?
+    let tags: [String]?
+    
+    init(title: String, description: String, postType: String? = nil, durationType: String? = "recurring", location: String?, tags: [String]? = nil) {
+        self.title = title
+        self.description = description
+        self.postType = postType
+        self.durationType = durationType
+        self.location = location?.isEmpty == true ? nil : location
+        self.tags = tags
+    }
+}
+
 // MARK: - Create Post Response
 struct CreatePostResponse: Codable {
     let success: Bool

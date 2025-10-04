@@ -21,6 +21,7 @@ struct PostCardView: View {
     
     // Owner actions
     @State private var showingOwnerDeleteConfirmation = false
+    @State private var showingEditPost = false
     
     // Admin actions
     @State private var showingAdminDeleteConfirmation = false
@@ -134,6 +135,9 @@ struct PostCardView: View {
                 contentAuthor: post.poster.displayName
             )
         }
+        .sheet(isPresented: $showingEditPost) {
+            EditPostView(post: post)
+        }
         .actionSheet(isPresented: $showingThreeDotsMenu) {
             var buttons: [ActionSheet.Button] = []
             
@@ -149,6 +153,9 @@ struct PostCardView: View {
             
             // Owner actions (only show if user owns the post)
             if post.poster.id == authManager.currentUser?.id {
+                buttons.append(.default(Text("Edit Post")) {
+                    showingEditPost = true
+                })
                 buttons.append(.destructive(Text("Delete Post")) {
                     showingOwnerDeleteConfirmation = true
                 })
