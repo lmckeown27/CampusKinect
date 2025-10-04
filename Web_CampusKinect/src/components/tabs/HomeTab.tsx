@@ -173,7 +173,7 @@ const HomeTab: React.FC = () => {
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category.id)}
-                className="flex-1 max-w-[200px] px-4 py-3 rounded-xl font-medium transition-all"
+                className="flex-1 max-w-[200px] px-4 py-3 rounded-xl font-medium transition-all hover:scale-[1.02] hover:shadow-xl"
                 style={{
                   backgroundColor: selectedCategory === category.id ? '#708d81' : 'white',
                   color: selectedCategory === category.id ? 'white' : '#708d81',
