@@ -177,20 +177,17 @@ const PostCard: React.FC<PostCardProps> = ({
     if (post.tags && post.tags.includes("offer")) {
       return {
         label: "Offer",
-        icon: "💰",
-        className: "bg-green-100 text-green-800"
+        icon: "💰"
       };
     } else if (post.tags && post.tags.includes("request")) {
       return {
         label: "Request",
-        icon: "🔍",
-        className: "bg-blue-100 text-blue-800"
+        icon: "🔍"
       };
     } else if (post.postType === "events") {
       return {
         label: "Event",
-        icon: "📅",
-        className: "bg-purple-100 text-purple-800"
+        icon: "📅"
       };
     }
     return null;
@@ -212,9 +209,11 @@ const PostCard: React.FC<PostCardProps> = ({
             {/* Main Badge - Show Offer, Request, or Event */}
             {mainBadge && (
               <div 
-                className={`px-3 py-1 rounded-full text-sm font-medium ${mainBadge.className}`}
+                className="px-3 py-1 rounded-full text-sm font-medium"
                 style={{
-                  border: "2px solid #374151",
+                  backgroundColor: "#708d81",
+                  color: "white",
+                  border: "2px solid #708d81",
                   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
@@ -521,9 +520,13 @@ const PostCard: React.FC<PostCardProps> = ({
             {post.tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-1 bg-gray-800 text-gray-200 text-xs rounded-full"
+                className="px-2 py-1 text-xs rounded-full"
+                style={{
+                  backgroundColor: "#708d81",
+                  color: "white"
+                }}
               >
-                #{tag}
+                {tag}
               </span>
             ))}
           </div>
