@@ -176,22 +176,26 @@ const PostCard: React.FC<PostCardProps> = ({
   // Determine main badge to display (Offer, Request, or Event)
   const getMainBadge = () => {
     // Priority: Offer > Request > Event
-    if (post.tags && post.tags.includes("offer")) {
+    // Make tag checks case-insensitive
+    const lowerCaseTags = post.tags?.map(tag => tag.toLowerCase()) || [];
+    
+    if (lowerCaseTags.includes("offer")) {
       return {
         label: "Offer",
         icon: "💰"
       };
-    } else if (post.tags && post.tags.includes("request")) {
+    } else if (lowerCaseTags.includes("request")) {
       return {
         label: "Request",
         icon: "🔍"
       };
-    } else if (post.postType === "events") {
+    } else if (post.postType === "events" || post.postType === "event") {
       return {
         label: "Event",
         icon: "📅"
       };
     }
+    // If no offer/request/event, return null (no badge needed for regular category posts)
     return null;
   };
 
