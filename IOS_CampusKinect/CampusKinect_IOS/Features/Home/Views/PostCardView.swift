@@ -555,8 +555,10 @@ struct PostHeaderWithMenu: View {
             Spacer()
             
             HStack(spacing: 8) {
-                // Offer/Request Badge (to the left)
-                OfferRequestBadge(durationType: post.durationType)
+                // Offer/Request Badge (check tags for "Offer" or "Request", not durationType)
+                if let offerRequestTag = post.tags.first(where: { $0.lowercased() == "offer" || $0.lowercased() == "request" }) {
+                    OfferRequestBadge(durationType: offerRequestTag)
+                }
                 
                 // Category Badge (to the right)
                 CategoryBadge(category: post.categoryDisplayName)
