@@ -57,23 +57,29 @@ struct ChatView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                VStack(spacing: 0) {
-                    // POST HEADER (Like Instagram/X post)
-                    postHeaderSection
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
                     
-                    Divider()
+                    VStack(spacing: 0) {
+                        // POST HEADER (Like Instagram/X post)
+                        postHeaderSection
+                        
+                        Divider()
+                        
+                        // MESSAGES/COMMENTS SECTION
+                        messagesList
+                        
+                        Divider()
+                        
+                        // MESSAGE INPUT (Like comment input)
+                        messageInputSection
+                    }
+                    .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
                     
-                    // MESSAGES/COMMENTS SECTION
-                    messagesList
-                    
-                    Divider()
-                    
-                    // MESSAGE INPUT (Like comment input)
-                    messageInputSection
+                    Spacer(minLength: 0)
                 }
-                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
-                .frame(maxHeight: .infinity)
-                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)
