@@ -12,6 +12,9 @@ const pool = new Pool({
   query_timeout: 30000, // Add query timeout (30 seconds)
 });
 
+// Increase max listeners to prevent warning (we have multiple legitimate event listeners)
+pool.setMaxListeners(20);
+
 // Test initial connection (only log once)
 let connectionTested = false;
 pool.on('connect', (client) => {
