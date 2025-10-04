@@ -269,7 +269,6 @@ const HomeTab: React.FC = () => {
             </div>
           ) : filteredPosts.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">📝</div>
               <h3 className="text-xl font-bold text-white mb-2">No Posts Yet</h3>
               <p className="text-gray-400">Be the first to share something with your campus community!</p>
             </div>
