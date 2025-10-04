@@ -105,22 +105,12 @@ router.get('/organized', [
         un.state as university_state,
         COUNT(pi.id) as image_count,
         (
-          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
-          FROM (
-            SELECT DISTINCT t.name as tag_name
-            FROM post_tags pt_inner
-            JOIN tags t ON pt_inner.tag_id = t.id
-            WHERE pt_inner.post_id = p.id
-              AND t.name IS NOT NULL 
-              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
-            UNION
-            SELECT CASE 
-              WHEN p.post_type = 'offer' THEN 'Offer'
-              WHEN p.post_type = 'request' THEN 'Request'
-            END as tag_name
-            WHERE p.post_type IN ('offer', 'request')
-          ) combined_tags
-          WHERE tag_name IS NOT NULL
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
         ) as tags
       FROM posts p
       JOIN users u ON p.user_id = u.id
@@ -649,22 +639,12 @@ router.get('/tabbed', [
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
         (
-          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
-          FROM (
-            SELECT DISTINCT t.name as tag_name
-            FROM post_tags pt_inner
-            JOIN tags t ON pt_inner.tag_id = t.id
-            WHERE pt_inner.post_id = p.id
-              AND t.name IS NOT NULL 
-              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
-            UNION
-            SELECT CASE 
-              WHEN p.post_type = 'offer' THEN 'Offer'
-              WHEN p.post_type = 'request' THEN 'Request'
-            END as tag_name
-            WHERE p.post_type IN ('offer', 'request')
-          ) combined_tags
-          WHERE tag_name IS NOT NULL
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
         ) as tags
       FROM posts p
       JOIN users u ON p.user_id = u.id
@@ -1215,22 +1195,12 @@ router.get('/', [
         un.state as university_state,
         COUNT(pi.id) as image_count,
         (
-          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
-          FROM (
-            SELECT DISTINCT t.name as tag_name
-            FROM post_tags pt_inner
-            JOIN tags t ON pt_inner.tag_id = t.id
-            WHERE pt_inner.post_id = p.id
-              AND t.name IS NOT NULL 
-              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
-            UNION
-            SELECT CASE 
-              WHEN p.post_type = 'offer' THEN 'Offer'
-              WHEN p.post_type = 'request' THEN 'Request'
-            END as tag_name
-            WHERE p.post_type IN ('offer', 'request')
-          ) combined_tags
-          WHERE tag_name IS NOT NULL
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
         ) as tags,
         ARRAY_AGG(DISTINCT pi.image_url ORDER BY pi.image_url) FILTER (WHERE pi.image_url IS NOT NULL) as images
       FROM posts p
@@ -1474,22 +1444,12 @@ router.get('/:id', [
         un.city as university_city,
         un.state as university_state,
         (
-          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
-          FROM (
-            SELECT DISTINCT t.name as tag_name
-            FROM post_tags pt_inner
-            JOIN tags t ON pt_inner.tag_id = t.id
-            WHERE pt_inner.post_id = p.id
-              AND t.name IS NOT NULL 
-              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
-            UNION
-            SELECT CASE 
-              WHEN p.post_type = 'offer' THEN 'Offer'
-              WHEN p.post_type = 'request' THEN 'Request'
-            END as tag_name
-            WHERE p.post_type IN ('offer', 'request')
-          ) combined_tags
-          WHERE tag_name IS NOT NULL
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
         ) as tags,
         ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
       FROM posts p
@@ -1575,7 +1535,7 @@ router.post('/', [
   requireVerification,
   body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
   body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
-  body('postType').isIn(['offer', 'request', 'events']).withMessage('Post type must be offer, request, or events'),
+  body('postType').isIn(['goods', 'services', 'housing', 'events']).withMessage('Post type must be goods, services, housing, or events'),
         body('durationType').optional().isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
       body('location').optional().isLength({ max: 255 }).withMessage('Location must be less than 255 characters').trim(),
       body('repostFrequency').optional().isIn(['daily', 'weekly', 'monthly']).withMessage('Repost frequency must be daily, weekly, or monthly'),
@@ -1830,7 +1790,7 @@ router.put('/:id', [
   checkOwnership('post'),
   body('title').isLength({ min: 1, max: 255 }).withMessage('Title must be between 1 and 255 characters').trim(),
   body('description').isLength({ min: 10, max: 5000 }).withMessage('Description must be between 10 and 5000 characters').trim(),
-  body('postType').optional().isIn(['offer', 'request', 'events']).withMessage('Post type must be offer, request, or events'),
+  body('postType').optional().isIn(['goods', 'services', 'housing', 'events']).withMessage('Post type must be goods, services, housing, or events'),
   body('durationType').optional().isIn(['one-time', 'recurring', 'event']).withMessage('Duration type must be one-time, recurring, or event'),
   body('location').optional().isLength({ max: 255 }).withMessage('Location must be less than 255 characters').trim(),
   body('expiresAt').optional().isISO8601().withMessage('Expiration date must be a valid ISO 8601 date'),
@@ -2369,22 +2329,12 @@ router.post('/multi-university', auth, async (req, res) => {
         u.city as university_city,
         u.state as university_state,
         (
-          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
-          FROM (
-            SELECT DISTINCT t.name as tag_name
-            FROM post_tags pt_inner
-            JOIN tags t ON pt_inner.tag_id = t.id
-            WHERE pt_inner.post_id = p.id
-              AND t.name IS NOT NULL 
-              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
-            UNION
-            SELECT CASE 
-              WHEN p.post_type = 'offer' THEN 'Offer'
-              WHEN p.post_type = 'request' THEN 'Request'
-            END as tag_name
-            WHERE p.post_type IN ('offer', 'request')
-          ) combined_tags
-          WHERE tag_name IS NOT NULL
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
         ) as tags
       FROM posts p
       JOIN universities u ON p.university_id = u.id

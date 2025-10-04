@@ -45,30 +45,23 @@ class CreatePostViewModel: ObservableObject {
             // Build tags array
             var tags: [String] = []
             
-            // Add subcategory as primary tag
+            // Add category as a tag (Goods, Services, Housing)
+            if category.id != "events" && !tags.contains(category.displayName) {
+                tags.append(category.displayName)
+            }
+            
+            // Add subcategory as a tag
             if let subcategory = subcategory {
                 tags.append(subcategory.displayName)
             }
             
-            // Don't add offer/request to tags - it's now handled by postType
-            
-            // Determine postType based on category and offer/request selection
-            let finalPostType: String
-            if category.id == "events" {
-                // Events don't have offer/request
-                finalPostType = "events"
-            } else if let offerRequest = offerRequest, !offerRequest.isEmpty {
-                // For goods/services/housing, use offer or request as the postType
-                finalPostType = offerRequest // "offer" or "request"
-            } else {
-                // Fallback to category
-                finalPostType = category.id
+            // Add offer/request as a tag if selected (for goods/services/housing)
+            if let offerRequest = offerRequest, !offerRequest.isEmpty, category.id != "events" {
+                tags.append(offerRequest.capitalized) // "Offer" or "Request"
             }
             
-            // Add category as a tag for goods/services/housing posts
-            if category.id != "events" && !tags.contains(category.displayName) {
-                tags.append(category.displayName)
-            }
+            // postType is always the main category
+            let finalPostType = category.id // "goods", "services", "housing", or "events"
             
             // Prepare admin multi-university fields
             let universities = (postToAllUniversities || targetUniversities == nil || targetUniversities!.isEmpty) 

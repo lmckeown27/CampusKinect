@@ -98,22 +98,12 @@ class PersonalizedFeedService {
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
         (
-          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
-          FROM (
-            SELECT DISTINCT t.name as tag_name
-            FROM post_tags pt_inner
-            JOIN tags t ON pt_inner.tag_id = t.id
-            WHERE pt_inner.post_id = p.id
-              AND t.name IS NOT NULL 
-              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
-            UNION
-            SELECT CASE 
-              WHEN p.post_type = 'offer' THEN 'Offer'
-              WHEN p.post_type = 'request' THEN 'Request'
-            END as tag_name
-            WHERE p.post_type IN ('offer', 'request')
-          ) combined_tags
-          WHERE tag_name IS NOT NULL
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
         ) as tags,
         -- Check if user has interacted with this post
         CASE WHEN ui.post_id IS NOT NULL THEN true ELSE false END as user_has_interacted,
@@ -491,22 +481,12 @@ class PersonalizedFeedService {
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
         (
-          SELECT COALESCE(array_agg(tag_name), ARRAY[]::text[])
-          FROM (
-            SELECT DISTINCT t.name as tag_name
-            FROM post_tags pt_inner
-            JOIN tags t ON pt_inner.tag_id = t.id
-            WHERE pt_inner.post_id = p.id
-              AND t.name IS NOT NULL 
-              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')
-            UNION
-            SELECT CASE 
-              WHEN p.post_type = 'offer' THEN 'Offer'
-              WHEN p.post_type = 'request' THEN 'Request'
-            END as tag_name
-            WHERE p.post_type IN ('offer', 'request')
-          ) combined_tags
-          WHERE tag_name IS NOT NULL
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
         ) as tags
       FROM posts p
       JOIN users u ON p.user_id = u.id
