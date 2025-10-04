@@ -64,6 +64,9 @@ const PostCard: React.FC<PostCardProps> = ({
   
   // Check if this is the user's own post
   const isOwnPost = user && post.userId === String(user.id);
+  
+  // Check if user is admin
+  const isAdmin = user && (user.email === 'lmckeown@calpoly.edu' || user.username === 'liam_mckeown38');
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -152,6 +155,41 @@ const PostCard: React.FC<PostCardProps> = ({
     setIsUserBlocked(true);
     // Could show a toast notification here
     console.log("User blocked successfully");
+  };
+
+  // Admin actions
+  const handleAdminDeletePost = async () => {
+    if (!confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+      return;
+    }
+    
+    try {
+      await apiService.adminDeletePost(post.id);
+      setShowOptions(false);
+      alert("Post deleted successfully");
+      // Refresh the page or notify parent to refresh
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      alert("Failed to delete post. Please try again.");
+    }
+  };
+
+  const handleAdminBanUser = async () => {
+    if (!confirm(`Are you sure you want to ban ${post.poster?.displayName || post.poster?.firstName}? They will be unable to access the platform.`)) {
+      return;
+    }
+    
+    try {
+      await apiService.adminBanUser(post.userId, "Banned by admin from post");
+      setShowOptions(false);
+      alert("User banned successfully");
+      // Refresh the page or notify parent to refresh
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to ban user:", error);
+      alert("Failed to ban user. Please try again.");
+    }
   };
 
   // Check if user is blocked on component mount
@@ -269,12 +307,59 @@ const PostCard: React.FC<PostCardProps> = ({
                     gap: "8px",
                   }}
                 >
+                  {/* Show Admin actions first (only for admin users) */}
+                  {isAdmin && (
+                    <>
+                      <button 
+                        onClick={handleAdminDeletePost}
+                        className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                        style={{
+                          backgroundColor: "#dc2626",
+                          color: "white",
+                          border: "2px solid #dc2626",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "#ef4444";
+                          e.currentTarget.style.border = "2px solid #ef4444";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "#dc2626";
+                          e.currentTarget.style.border = "2px solid #dc2626";
+                        }}
+                      >
+                        <span>🗑️ Admin: Delete Post</span>
+                      </button>
+
+                      <button 
+                        onClick={handleAdminBanUser}
+                        className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                        style={{
+                          backgroundColor: "#dc2626",
+                          color: "white",
+                          border: "2px solid #dc2626",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "#ef4444";
+                          e.currentTarget.style.border = "2px solid #ef4444";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "#dc2626";
+                          e.currentTarget.style.border = "2px solid #dc2626";
+                        }}
+                      >
+                        <span>🚫 Admin: Ban User</span>
+                      </button>
+                    </>
+                  )}
+
                   {/* Show Edit/Delete if user owns the post */}
                   {isOwnPost && onEdit && (
                     <button 
                       onClick={() => {
                         setShowOptions(false);
-                        onEdit(post);
+                        onEdit(String(post.id), post);
                       }}
                       className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
                       style={{

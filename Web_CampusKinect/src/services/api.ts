@@ -1217,6 +1217,26 @@ class ApiService {
     }
   }
 
+  // Admin: Delete post
+  public async adminDeletePost(postId: number | string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.delete(`/admin/posts/${postId}`);
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to delete post');
+    }
+  }
+
+  // Admin: Ban user
+  public async adminBanUser(userId: number | string, reason: string): Promise<void> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.post(`/admin/users/${userId}/ban`, { reason });
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to ban user');
+    }
+  }
+
   // Upload image to conversation
   public async uploadImageToConversation(conversationId: string, imageFile: File): Promise<Message> {
     const formData = new FormData();
