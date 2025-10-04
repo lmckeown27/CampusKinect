@@ -428,11 +428,11 @@ struct AnalyticsCard: View {
                         AnalyticsData.UniversityStats(id: 3, name: "Stanford", userCount: 100)
                     ],
                     contentTrends: [],
-                    reportsByReason: [
-                        AnalyticsData.ReasonStats(reason: "spam", count: 15),
-                        AnalyticsData.ReasonStats(reason: "harassment", count: 8),
-                        AnalyticsData.ReasonStats(reason: "inappropriate_content", count: 5)
-                    ],
+                    reportsByReason: nil,
+                    userActivity: AnalyticsData.UserActivityStats(
+                        activeUsersLast7Days: 342,
+                        newSignupsLast7Days: 28
+                    ),
                     userGrowth: []
                 )
             )
