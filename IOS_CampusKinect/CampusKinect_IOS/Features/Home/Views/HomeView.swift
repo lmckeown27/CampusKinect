@@ -23,64 +23,70 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-            VStack(spacing: 0) {
-                // Category Button Section with collapse/expand arrow
-                VStack(spacing: 0) {
-                    // Main Category Buttons (always visible)
-                    MainCategoryButtons()
-                        .environmentObject(viewModel)
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
                     
-                    // Subcategory Tags (shown when category is selected and expanded)
-                    if let selectedCategoryId = viewModel.selectedCategory,
-                       viewModel.isCategoryExpanded,
-                       let category = PostCategory.allCategories.first(where: { $0.id == selectedCategoryId }) {
-                        SubcategoryTagsSection(category: category)
+                    VStack(spacing: 0) {
+                        // Category Button Section with collapse/expand arrow
+                        VStack(spacing: 0) {
+                            // Main Category Buttons (always visible)
+                            MainCategoryButtons()
+                                .environmentObject(viewModel)
+                            
+                            // Subcategory Tags (shown when category is selected and expanded)
+                            if let selectedCategoryId = viewModel.selectedCategory,
+                               viewModel.isCategoryExpanded,
+                               let category = PostCategory.allCategories.first(where: { $0.id == selectedCategoryId }) {
+                                SubcategoryTagsSection(category: category)
+                                    .environmentObject(viewModel)
+                            }
+                            
+                            // Collapse/Expand Arrow (only shows when main category is selected)
+                            CategoryToggleArrow()
+                                .environmentObject(viewModel)
+                        }
+                        
+                        // Active Filter Bar (only shows when tags are selected and filter bar is visible)
+                        if viewModel.hasTagsSelected {
+                            ActiveFilterBar()
+                                .environmentObject(viewModel)
+                                .padding(.horizontal)
+                                .padding(.top, 8)
+                        } else if viewModel.selectedCategory != nil && !viewModel.showingFilterBar {
+                            // Compact indicator when filters are active but hidden
+                            CompactFilterIndicator()
+                                .environmentObject(viewModel)
+                                .padding(.horizontal)
+                                .padding(.top, 8)
+                        
+                        }
+                        
+                        // Admin University Viewing Banner
+                        if let universityName = universitySwitcher.currentViewingUniversityName,
+                           let universityId = universitySwitcher.currentViewingUniversityId {
+                            AdminUniversityBanner(
+                                universityName: universityName,
+                                universityId: universityId,
+                                onReset: {
+                                    universitySwitcher.clearViewingUniversity()
+                                }
+                            )
+                            .padding(.horizontal)
+                            .padding(.top, 8)
+                        }
+                        
+                        // Posts List
+                        PostsList(scrollToTopTrigger: $scrollToTopTrigger)
                             .environmentObject(viewModel)
                     }
+                    .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
                     
-                    // Collapse/Expand Arrow (only shows when main category is selected)
-                    CategoryToggleArrow()
-                        .environmentObject(viewModel)
+                    Spacer(minLength: 0)
                 }
-                
-                // Active Filter Bar (only shows when tags are selected and filter bar is visible)
-                if viewModel.hasTagsSelected {
-                    ActiveFilterBar()
-                        .environmentObject(viewModel)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                } else if viewModel.selectedCategory != nil && !viewModel.showingFilterBar {
-                    // Compact indicator when filters are active but hidden
-                    CompactFilterIndicator()
-                        .environmentObject(viewModel)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                
-                }
-                
-                // Admin University Viewing Banner
-                if let universityName = universitySwitcher.currentViewingUniversityName,
-                   let universityId = universitySwitcher.currentViewingUniversityId {
-                    AdminUniversityBanner(
-                        universityName: universityName,
-                        universityId: universityId,
-                        onReset: {
-                            universitySwitcher.clearViewingUniversity()
-                        }
-                    )
-                    .padding(.horizontal)
-                    .padding(.top, 8)
-                }
-                
-                // Posts List
-                PostsList(scrollToTopTrigger: $scrollToTopTrigger)
-                    .environmentObject(viewModel)
             }
-            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
-            .frame(maxHeight: .infinity)
-            .clipped()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.campusBackground)
         .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)

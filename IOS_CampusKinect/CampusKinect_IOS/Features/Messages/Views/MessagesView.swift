@@ -31,13 +31,19 @@ struct MessagesView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                VStack(spacing: 0) {
-                    searchSection
-                    conversationsList
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    
+                    VStack(spacing: 0) {
+                        searchSection
+                        conversationsList
+                    }
+                    .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
+                    
+                    Spacer(minLength: 0)
                 }
-                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.85, 900) : .infinity)
-                .frame(maxHeight: .infinity)
-                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)

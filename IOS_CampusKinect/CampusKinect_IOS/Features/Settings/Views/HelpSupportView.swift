@@ -22,19 +22,25 @@ struct HelpSupportView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                ScrollView {
-                    VStack(spacing: 24) {
-                        headerSection
-                        searchSection
-                        helpSections
-                        contactSection
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            headerSection
+                            searchSection
+                            helpSections
+                            contactSection
+                        }
+                        .padding(.horizontal, isIPad ? 40 : 24)
+                        .padding(.vertical, 32)
                     }
-                    .padding(.horizontal, isIPad ? 40 : 24)
-                    .padding(.vertical, 32)
+                    .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
+                    
+                    Spacer(minLength: 0)
                 }
-                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
-                .frame(maxHeight: .infinity)
-                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))

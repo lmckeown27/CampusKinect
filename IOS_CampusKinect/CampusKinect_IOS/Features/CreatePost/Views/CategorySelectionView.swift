@@ -23,18 +23,24 @@ struct CategorySelectionView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                ScrollView {
-                    VStack(spacing: 24) {
-                        categorySection
-                        subcategorySection
-                        offerRequestSection
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            categorySection
+                            subcategorySection
+                            offerRequestSection
+                        }
+                        .padding(.horizontal, isIPad ? 40 : 24)
+                        .padding(.vertical, 32)
                     }
-                    .padding(.horizontal, isIPad ? 40 : 24)
-                    .padding(.vertical, 32)
+                    .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 700) : .infinity)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
+                    
+                    Spacer(minLength: 0)
                 }
-                .frame(maxWidth: isIPad ? min(geometry.size.width * 0.7, 700) : .infinity)
-                .frame(maxHeight: .infinity)
-                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
