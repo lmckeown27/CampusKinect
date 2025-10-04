@@ -29,59 +29,65 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                ScrollView {
-                VStack(spacing: 20) {
-                    // Profile Header
-                    ProfileHeader(user: authManager.currentUser)
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
                     
-                    // Tab Selection
-                    ProfileTabSelector(selectedTab: $selectedTab)
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            // Profile Header
+                            ProfileHeader(user: authManager.currentUser)
+                            
+                            // Tab Selection
+                            ProfileTabSelector(selectedTab: $selectedTab)
+                            
+                            // Content based on selected tab
+                            ProfileContent(selectedTab: selectedTab, viewModel: viewModel, currentUser: authManager.currentUser)
+                        }
+                        .padding()
+                    }
+                    .navigationTitle("Profile")
+                    .navigationBarTitleDisplayMode(.large)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: {
+                                showingSettings = true
+                            }) {
+                                Image(systemName: "gearshape")
+                            }
+                        }
+                    }
+                    .sheet(isPresented: $showingSettings) {
+                        SettingsView()
+                    }
+                    .task {
+                        // Load user data when view appears
+                        if let userId = authManager.currentUser?.id {
+                            await viewModel.loadUserPosts(userId: userId)
+                            await viewModel.loadUserReposts(userId: userId)
+                            await viewModel.loadUserBookmarks(userId: userId)
+                        }
+                    }
+                    .overlay(
+                        // Toast notification overlay
+                        ToastView(
+                            message: viewModel.toastMessage ?? "",
+                            isShowing: $viewModel.showingToast,
+                            onDismiss: {
+                                viewModel.dismissToast()
+                            }
+                        )
+                        .animation(.spring(), value: viewModel.showingToast),
+                        alignment: .bottom
+                    )
+                    .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
                     
-                    // Content based on selected tab
-                    ProfileContent(selectedTab: selectedTab, viewModel: viewModel, currentUser: authManager.currentUser)
-                }
-                .padding()
-            }
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingSettings = true
-                    }) {
-                        Image(systemName: "gearshape")
-                    }
+                    Spacer(minLength: 0)
                 }
             }
-            .sheet(isPresented: $showingSettings) {
-                SettingsView()
-            }
-            .task {
-                // Load user data when view appears
-                if let userId = authManager.currentUser?.id {
-                    await viewModel.loadUserPosts(userId: userId)
-                    await viewModel.loadUserReposts(userId: userId)
-                    await viewModel.loadUserBookmarks(userId: userId)
-                }
-            }
-            .overlay(
-                // Toast notification overlay
-                ToastView(
-                    message: viewModel.toastMessage ?? "",
-                    isShowing: $viewModel.showingToast,
-                    onDismiss: {
-                        viewModel.dismissToast()
-                    }
-                )
-                .animation(.spring(), value: viewModel.showingToast),
-                alignment: .bottom
-            )
-            .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
-            .frame(maxHeight: .infinity)
-            .clipped()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.campusBackground)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.campusBackground)
         }
     }
 }
