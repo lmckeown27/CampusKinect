@@ -1700,9 +1700,15 @@ router.post('/', [
           u.display_name,
           u.profile_picture,
           un.name as university_name,
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')) ||
-          ARRAY[CASE WHEN p.post_type = 'offer' THEN 'Offer' WHEN p.post_type = 'request' THEN 'Request' ELSE NULL END] FILTER (WHERE p.post_type IN ('offer', 'request')) as tags,
-          ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
+          (
+            SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+            FROM post_tags pt_inner
+            JOIN tags t ON pt_inner.tag_id = t.id
+            WHERE pt_inner.post_id = p.id
+              AND t.name IS NOT NULL 
+              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
+          ) as tags,
+          COALESCE(ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL), ARRAY[]::text[]) as images
         FROM posts p
         JOIN users u ON p.user_id = u.id
         JOIN universities un ON p.university_id = un.id
@@ -2459,8 +2465,14 @@ router.get('/scope/:scope', async (req, res) => {
           u.state as university_state,
           usr.username,
           usr.display_name,
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')) ||
-          ARRAY[CASE WHEN p.post_type = 'offer' THEN 'Offer' WHEN p.post_type = 'request' THEN 'Request' ELSE NULL END] FILTER (WHERE p.post_type IN ('offer', 'request')) as tags
+          (
+            SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+            FROM post_tags pt_inner
+            JOIN tags t ON pt_inner.tag_id = t.id
+            WHERE pt_inner.post_id = p.id
+              AND t.name IS NOT NULL 
+              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
+          ) as tags
         FROM posts p
         JOIN universities u ON p.university_id = u.id
         JOIN users usr ON p.user_id = usr.id
@@ -2487,8 +2499,14 @@ router.get('/scope/:scope', async (req, res) => {
           u.state as university_state,
           usr.username,
           usr.display_name,
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')) ||
-          ARRAY[CASE WHEN p.post_type = 'offer' THEN 'Offer' WHEN p.post_type = 'request' THEN 'Request' ELSE NULL END] FILTER (WHERE p.post_type IN ('offer', 'request')) as tags,
+          (
+            SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+            FROM post_tags pt_inner
+            JOIN tags t ON pt_inner.tag_id = t.id
+            WHERE pt_inner.post_id = p.id
+              AND t.name IS NOT NULL 
+              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
+          ) as tags,
           COUNT(pu.university_id) as total_targeted_universities
         FROM posts p
         JOIN universities u ON p.university_id = u.id
@@ -3004,8 +3022,15 @@ router.post('/create', [
           u.display_name,
           u.profile_picture,
           un.name as university_name,
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
-          ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL) as images
+          (
+            SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+            FROM post_tags pt_inner
+            JOIN tags t ON pt_inner.tag_id = t.id
+            WHERE pt_inner.post_id = p.id
+              AND t.name IS NOT NULL 
+              AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
+          ) as tags,
+          COALESCE(ARRAY_AGG(pi.image_url ORDER BY pi.image_order) FILTER (WHERE pi.image_url IS NOT NULL), ARRAY[]::text[]) as images
         FROM posts p
         JOIN users u ON p.user_id = u.id
         JOIN universities un ON p.university_id = un.id
@@ -4138,8 +4163,15 @@ router.get('/user/bookmarks', [
         uni.domain as university_domain,
         
         -- Get tags and images
-        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
-        ARRAY_AGG(pi_img.image_url ORDER BY pi_img.image_order) FILTER (WHERE pi_img.image_url IS NOT NULL) as images
+        (
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
+        ) as tags,
+        COALESCE(ARRAY_AGG(pi_img.image_url ORDER BY pi_img.image_order) FILTER (WHERE pi_img.image_url IS NOT NULL), ARRAY[]::text[]) as images
         
       FROM post_interactions pi
       JOIN posts p ON pi.post_id = p.id
@@ -4271,8 +4303,15 @@ router.get('/user/reposts', [
         uni.domain as university_domain,
         
         -- Get tags and images
-        ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) as tags,
-        ARRAY_AGG(pi_img.image_url ORDER BY pi_img.image_order) FILTER (WHERE pi_img.image_url IS NOT NULL) as images
+        (
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL 
+            AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent')
+        ) as tags,
+        COALESCE(ARRAY_AGG(pi_img.image_url ORDER BY pi_img.image_order) FILTER (WHERE pi_img.image_url IS NOT NULL), ARRAY[]::text[]) as images
         
       FROM post_interactions pi
       JOIN posts p ON pi.post_id = p.id
