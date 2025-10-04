@@ -274,12 +274,14 @@ struct PostsTabContent: View {
                     }
                     
                     // Load more posts if available
-                    if viewModel.hasMorePosts {
+                    if viewModel.hasMorePosts && !viewModel.isLoading {
                         ProgressView()
                             .frame(maxWidth: .infinity)
-                            .task {
+                            .onAppear {
                                 if let userId = currentUser?.id {
-                                    await viewModel.loadMoreUserPosts(userId: userId)
+                                    Task {
+                                        await viewModel.loadMoreUserPosts(userId: userId)
+                                    }
                                 }
                             }
                     }
