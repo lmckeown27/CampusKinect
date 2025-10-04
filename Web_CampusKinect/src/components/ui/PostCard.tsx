@@ -180,20 +180,11 @@ const PostCard: React.FC<PostCardProps> = ({
     const lowerCaseTags = post.tags?.map(tag => tag.toLowerCase()) || [];
     
     if (lowerCaseTags.includes("offer")) {
-      return {
-        label: "Offer",
-        icon: "💰"
-      };
+      return "Offer";
     } else if (lowerCaseTags.includes("request")) {
-      return {
-        label: "Request",
-        icon: "🔍"
-      };
+      return "Request";
     } else if (post.postType === "events" || post.postType === "event") {
-      return {
-        label: "Event",
-        icon: "📅"
-      };
+      return "Event";
     }
     // If no offer/request/event, return null (no badge needed for regular category posts)
     return null;
@@ -223,8 +214,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
-                <span className="mr-1">{mainBadge.icon}</span>
-                {mainBadge.label}
+                {mainBadge}
               </div>
             )}
             
