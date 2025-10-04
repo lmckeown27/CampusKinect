@@ -1625,9 +1625,9 @@ router.post('/', [
         const post = postResult.rows[0];
         createdPosts.push(post);
 
-        // Add tags if provided (filter out old duration-type tags)
+        // Add tags if provided (filter out old duration-type tags, but keep offer/request)
         if (tags && tags.length > 0) {
-          const excludedTags = ['recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request'];
+          const excludedTags = ['recurring', 'limited', 'one-time', 'onetime', 'permanent'];
           const validTags = tags.filter(tag => !excludedTags.includes(tag.toLowerCase()));
           
           for (const tagName of validTags) {
