@@ -510,18 +510,23 @@ const PostCard: React.FC<PostCardProps> = ({
         {/* Post Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
-            {post.tags.map((tag, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 text-xs rounded-full"
-                style={{
-                  backgroundColor: "#708d81",
-                  color: "white"
-                }}
-              >
-                {tag}
-              </span>
-            ))}
+            {post.tags
+              .filter(tag => {
+                const lowerTag = tag.toLowerCase();
+                return lowerTag !== 'offer' && lowerTag !== 'request' && lowerTag !== 'event';
+              })
+              .map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-1 text-xs rounded-full"
+                  style={{
+                    backgroundColor: "#708d81",
+                    color: "white"
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
           </div>
         )}
 
