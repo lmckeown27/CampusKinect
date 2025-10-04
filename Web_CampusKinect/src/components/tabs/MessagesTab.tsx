@@ -70,11 +70,11 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   // Get post type icon and color
   const getPostTypeIcon = () => {
     switch (conversation.postType.toLowerCase()) {
-      case 'goods': return <Package size={20} className="text-blue-600" />;
-      case 'services': return <Wrench size={20} className="text-green-600" />;
-      case 'housing': return <Home size={20} className="text-orange-600" />;
-      case 'events': return <Calendar size={20} className="text-purple-600" />;
-      default: return <FileText size={20} className="text-gray-600" />;
+      case 'goods': return <Package size={20} style={{ color: '#10B981' }} />;
+      case 'services': return <Wrench size={20} style={{ color: '#F59E0B' }} />;
+      case 'housing': return <Home size={20} style={{ color: '#3B82F6' }} />;
+      case 'events': return <Calendar size={20} style={{ color: '#8B5CF6' }} />;
+      default: return <FileText size={20} style={{ color: '#708d81' }} />;
     }
   };
 

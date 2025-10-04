@@ -524,18 +524,18 @@ const ProfileTab: React.FC = () => {
                 className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden transition-all duration-200"
                 onClick={() => fileInputRef.current?.click()}
                 style={{
-                  backgroundColor: '#737373', // white background
+                  backgroundColor: '#FFFFFF', // white background
                   cursor: 'pointer',
-                  border: '2px solid #e5e7eb' // add subtle border
+                  border: '3px solid #708d81' // brand color border
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#f9fafb'; // very light gray hover
-                  e.currentTarget.style.borderColor = '#d1d5db'; // darker border on hover
+                  e.currentTarget.style.borderColor = '#5a7268'; // darker brand color on hover
                   e.currentTarget.style.cursor = 'pointer';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = '#FFFFFF'; // return to white
-                  e.currentTarget.style.borderColor = '#e5e7eb'; // return to original border
+                  e.currentTarget.style.borderColor = '#708d81'; // return to brand color
                   e.currentTarget.style.cursor = 'pointer';
                 }}
               >
@@ -554,14 +554,14 @@ const ProfileTab: React.FC = () => {
                   />
                 ) : (
                   <Camera 
-                    size={24} 
-                    className="text-gray-400 transition-colors duration-200"
-                    style={{ color: '#9ca3af' }} // gray-400
+                    size={32} 
+                    className="transition-colors duration-200"
+                    style={{ color: '#708d81' }} // brand color
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#6b7280'; // darker grey (gray-500) on hover
+                      e.currentTarget.style.color = '#5a7268'; // darker brand color on hover
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = '#9ca3af'; // return to gray-400
+                      e.currentTarget.style.color = '#708d81'; // return to brand color
                     }}
                   />
                 )}
@@ -742,44 +742,25 @@ const ProfileTab: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation Buttons */}
-                  <div className="rounded-lg shadow-sm" style={{ backgroundColor: '#737373' }}>
-          <div className="p-6">
-            <nav className="flex justify-center" key="nav-buttons">
-              <div className="relative bg-[#708d81] rounded-lg p-1" style={{ backgroundColor: '#708d81' }}>
-                <div className="flex relative w-full gap-1">
-                  {['posts', 'reposts', 'bookmarks'].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab as any)}
-                      className="relative z-10 px-6 py-3 text-lg font-semibold transition-all duration-200 rounded-md cursor-pointer shadow-md hover:shadow-lg"
-                      style={{
-                        backgroundColor: activeTab === tab ? '#f0f2f0' : '#708d81',
-                        color: activeTab === tab ? '#708d81' : 'white',
-                        cursor: 'pointer',
-                        border: activeTab === tab ? '2px solid #708d81' : '2px solid transparent'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (activeTab !== tab) {
-                          e.currentTarget.style.backgroundColor = '#5a7268';
-                        } else {
-                          e.currentTarget.style.backgroundColor = '#e8ebe8';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (activeTab !== tab) {
-                          e.currentTarget.style.backgroundColor = '#708d81';
-                        } else {
-                          e.currentTarget.style.backgroundColor = '#f0f2f0';
-                        }
-                      }}
-                    >
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </nav>
+        {/* Navigation Buttons - iOS Style */}
+        <div className="rounded-lg shadow-sm mb-6" style={{ backgroundColor: '#737373' }}>
+          <div className="p-4">
+            <div className="flex rounded-lg overflow-hidden" style={{ backgroundColor: '#525252' }}>
+              {['posts', 'reposts', 'bookmarks'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab as any)}
+                  className="flex-1 py-3 text-base font-semibold transition-all duration-200"
+                  style={{
+                    backgroundColor: activeTab === tab ? 'transparent' : 'transparent',
+                    color: activeTab === tab ? '#708d81' : '#999999',
+                    borderBottom: activeTab === tab ? '3px solid #708d81' : '3px solid transparent',
+                  }}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Tab Content */}
