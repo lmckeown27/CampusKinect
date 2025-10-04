@@ -269,6 +269,59 @@ const PostCard: React.FC<PostCardProps> = ({
                     gap: "8px",
                   }}
                 >
+                  {/* Show Edit/Delete if user owns the post */}
+                  {isOwnPost && onEdit && (
+                    <button 
+                      onClick={() => {
+                        setShowOptions(false);
+                        onEdit(post);
+                      }}
+                      className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                      style={{
+                        backgroundColor: "#708d81",
+                        color: "white",
+                        border: "2px solid #708d81",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#a8c4a2";
+                        e.currentTarget.style.border = "2px solid #a8c4a2";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "#708d81";
+                        e.currentTarget.style.border = "2px solid #708d81";
+                      }}
+                    >
+                      <span>Edit Post</span>
+                    </button>
+                  )}
+                  
+                  {isOwnPost && onDelete && (
+                    <button 
+                      onClick={() => {
+                        setShowOptions(false);
+                        handleDelete();
+                      }}
+                      className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                      style={{
+                        backgroundColor: "#dc2626",
+                        color: "white",
+                        border: "2px solid #dc2626",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#ef4444";
+                        e.currentTarget.style.border = "2px solid #ef4444";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "#dc2626";
+                        e.currentTarget.style.border = "2px solid #dc2626";
+                      }}
+                    >
+                      <span>Delete Post</span>
+                    </button>
+                  )}
+
                   {/* Only show Report/Block buttons if not own post */}
                   {!isOwnPost && (
                     <>
