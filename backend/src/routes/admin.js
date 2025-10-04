@@ -612,16 +612,16 @@ router.get('/analytics', auth, adminAuth, async (req, res) => {
     const activeUsersLast7DaysResult = await query(`
       SELECT COUNT(DISTINCT user_id) as count 
       FROM (
-        SELECT user_id FROM posts WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' AND is_active = true
+        SELECT user_id FROM posts WHERE created_at >= NOW() - INTERVAL '7 days' AND is_active = true
         UNION
-        SELECT sender_id as user_id FROM messages WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' AND is_deleted = false
+        SELECT sender_id as user_id FROM messages WHERE created_at >= NOW() - INTERVAL '7 days' AND is_deleted = false
       ) active_users
     `);
 
     const newSignupsLast7DaysResult = await query(`
       SELECT COUNT(*) as count 
       FROM users 
-      WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' AND is_active = true
+      WHERE created_at >= NOW() - INTERVAL '7 days' AND is_active = true
     `);
 
     // Get user growth (last 30 days)

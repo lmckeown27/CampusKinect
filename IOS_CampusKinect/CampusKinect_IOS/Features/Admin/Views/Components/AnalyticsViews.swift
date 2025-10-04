@@ -303,59 +303,48 @@ struct UserActivityView: View {
                 .font(.title2)
                 .fontWeight(.bold)
             
-            if let activity = userActivity {
-                VStack(spacing: 12) {
-                    // Active Users
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Active Users")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            Text("\(activity.activeUsersLast7Days)")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundColor(.green)
-                        }
-                        
-                        Spacer()
-                        
-                        Image(systemName: "person.3.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.green.opacity(0.6))
-                    }
-                    .padding()
-                    .background(Color.green.opacity(0.1))
-                    .cornerRadius(8)
+            // Always show data, use 0 as default if no data available
+            let activeUsers = userActivity?.activeUsersLast7Days ?? 0
+            let newSignups = userActivity?.newSignupsLast7Days ?? 0
+            
+            VStack(spacing: 8) {
+                // Active Users
+                HStack {
+                    Text("Active Users")
+                        .font(.subheadline)
+                        .frame(width: 100, alignment: .leading)
                     
-                    // New Signups
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("New Signups")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            Text("\(activity.newSignupsLast7Days)")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundColor(.blue)
-                        }
+                        Rectangle()
+                            .fill(Color.green)
+                            .frame(width: max(CGFloat(activeUsers) * 20, 8), height: 20)
                         
-                        Spacer()
-                        
-                        Image(systemName: "person.badge.plus.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.blue.opacity(0.6))
+                        Text("\(activeUsers) active users")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
-                    .padding()
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(8)
+                    
+                    Spacer()
                 }
-            } else {
-                Text("No user activity data available")
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
+                
+                // New Signups
+                HStack {
+                    Text("New Signups")
+                        .font(.subheadline)
+                        .frame(width: 100, alignment: .leading)
+                    
+                    HStack {
+                        Rectangle()
+                            .fill(Color.blue)
+                            .frame(width: max(CGFloat(newSignups) * 20, 8), height: 20)
+                        
+                        Text("\(newSignups) new signups")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
             }
         }
         .padding()
