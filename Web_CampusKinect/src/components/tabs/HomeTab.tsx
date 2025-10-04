@@ -1,37 +1,37 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { Search, X, ChevronUp, ChevronDown, ShoppingBag, Wrench, Home, Calendar } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
 import { PostCard } from '../ui';
 
-// Category definitions matching iOS
+// Category definitions matching iOS - using Lucide icons similar to SF Symbols
 const categories = [
   {
     id: 'goods',
     name: 'Goods',
-    icon: '🛍️',
+    Icon: ShoppingBag,
     color: '#10B981',
     subcategories: ['Clothing', 'Parking Permits', 'Household Appliances', 'Electronics', 'Furniture', 'Concert Tickets', 'Kitchen Items', 'School Supplies', 'Sports Equipment', 'Automotive', 'Pets', 'Pet Supplies', 'Other']
   },
   {
     id: 'services',
     name: 'Services',
-    icon: '🔧',
+    Icon: Wrench,
     color: '#F59E0B',
     subcategories: ['Transportation', 'Tutoring', 'Fitness Training', 'Meal Delivery', 'Cleaning', 'Photography', 'Graphic Design', 'Tech Support', 'Web Development', 'Writing & Editing', 'Translation', 'Towing', 'Other']
   },
   {
     id: 'housing',
     name: 'Housing',
-    icon: '🏠',
+    Icon: Home,
     color: '#3B82F6',
     subcategories: ['Leasing', 'Subleasing', 'Roommate Search', 'Storage Space', 'Other']
   },
   {
     id: 'events',
     name: 'Events',
-    icon: '📅',
+    Icon: Calendar,
     color: '#8B5CF6',
     subcategories: ['Sports Events', 'Study Groups', 'Rush', 'Pickup Basketball', 'Philanthropy', 'Cultural Events', 'Workshops', 'Conferences', 'Meetups', 'Game Nights', 'Movie Nights', 'Hiking Trips', 'Volunteer Events', 'Career Fairs', 'Other']
   }
@@ -181,7 +181,9 @@ const HomeTab: React.FC = () => {
                 }}
               >
                 <div className="text-center">
-                  <div className="text-2xl mb-1">{category.icon}</div>
+                  <div className="mb-1 flex justify-center">
+                    <category.Icon size={28} strokeWidth={2} />
+                  </div>
                   <div className="text-sm">{category.name}</div>
                 </div>
               </button>
