@@ -286,7 +286,7 @@ struct PostCardView: View {
         
         // Check if conversation already exists using preloaded conversations
         let messagesViewModel = MessagesViewModel.shared
-        if let existingConversation = messagesViewModel.conversations.first(where: { 
+        if messagesViewModel.conversations.contains(where: { 
             $0.otherUser.id == post.poster.id && $0.postId == post.id 
         }) {
             // Conversation exists - navigate directly to chat
