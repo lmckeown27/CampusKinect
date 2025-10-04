@@ -107,6 +107,10 @@ struct LoginView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .background(Color.campusBackground)
+            .onTapGesture {
+                // Dismiss keyboard when tapping outside text fields
+                focusedField = nil
+            }
         }
         .navigationBarHidden(true)
         .alert(item: $activeAlert) { alertType in
