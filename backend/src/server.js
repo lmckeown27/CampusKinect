@@ -145,7 +145,7 @@ const limiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  trustProxy: true // Allow rate limiting to work behind proxy
+  validate: { trustProxy: false } // Disable trust proxy validation (we're behind nginx)
 });
 
 // Middleware
