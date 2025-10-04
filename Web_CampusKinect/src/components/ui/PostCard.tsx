@@ -171,6 +171,33 @@ const PostCard: React.FC<PostCardProps> = ({
     checkBlockStatus();
   }, [post.userId]);
 
+  // Determine main badge to display (Offer, Request, or Event)
+  const getMainBadge = () => {
+    // Priority: Offer > Request > Event
+    if (post.tags && post.tags.includes("offer")) {
+      return {
+        label: "Offer",
+        icon: "💰",
+        className: "bg-green-100 text-green-800"
+      };
+    } else if (post.tags && post.tags.includes("request")) {
+      return {
+        label: "Request",
+        icon: "🔍",
+        className: "bg-blue-100 text-blue-800"
+      };
+    } else if (post.postType === "events") {
+      return {
+        label: "Event",
+        icon: "📅",
+        className: "bg-purple-100 text-purple-800"
+      };
+    }
+    return null;
+  };
+
+  const mainBadge = getMainBadge();
+
   return (
     <div
               className="rounded-xl shadow-lg border-2 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8 max-w-2xl mx-auto"
@@ -178,46 +205,21 @@ const PostCard: React.FC<PostCardProps> = ({
     >
       {/* Post Header */}
       <div className="p-4 border-b" style={{ borderColor: '#525252' }}>
-        {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
+        {/* Top Row: Main Badge (left) and Action Icons (right) */}
         <div className="flex items-center justify-between mb-3">
-          {/* Left side: Post Type Badge + Timestamp */}
+          {/* Left side: Main Badge + Timestamp */}
           <div className="flex items-center space-x-3">
-            {/* Show Post Type Badge only for non-event posts */}
-            {post.postType && post.postType !== "event" && (
+            {/* Main Badge - Show Offer, Request, or Event */}
+            {mainBadge && (
               <div 
-                className={`px-3 py-1 rounded-full text-sm font-medium ${getPostTypeColor(post.postType)}`}
+                className={`px-3 py-1 rounded-full text-sm font-medium ${mainBadge.className}`}
                 style={{
                   border: "2px solid #374151",
                   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
-                <span className="mr-1">{getPostTypeIcon(post.postType)}</span>
-                {post.postType
-                  ? post.postType.charAt(0).toUpperCase() +
-                    post.postType.slice(1)
-                  : "Unknown"}
-              </div>
-            )}
-
-            {/* Offer/Request Badge */}
-            {post.tags &&
-              (post.tags.includes("offer") ||
-                post.tags.includes("request")) && (
-              <div 
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    post.tags.includes("offer")
-                      ? "bg-green-100 text-green-800"
-                      : "bg-blue-100 text-blue-800"
-                }`}
-                  style={{
-                    border: "2px solid #374151",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  }}
-              >
-                <span className="mr-1">
-                    {post.tags.includes("offer") ? "💰" : "🔍"}
-                </span>
-                  {post.tags.includes("offer") ? "Offer" : "Request"}
+                <span className="mr-1">{mainBadge.icon}</span>
+                {mainBadge.label}
               </div>
             )}
             
