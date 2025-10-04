@@ -554,9 +554,11 @@ struct PostHeaderWithMenu: View {
             
             Spacer()
             
-            // Offer/Request Badge (check tags for "Offer" or "Request", not durationType)
+            // Category Badge (Offer/Request for goods/services/housing, Events for events)
             if let offerRequestTag = post.tags.first(where: { $0.lowercased() == "offer" || $0.lowercased() == "request" }) {
-                OfferRequestBadge(durationType: offerRequestTag)
+                CategoryTypeBadge(text: offerRequestTag)
+            } else if post.postType.lowercased() == "events" {
+                CategoryTypeBadge(text: "Events")
             }
             
             // 3-Dot Menu Button
@@ -832,9 +834,9 @@ struct CategoryBadge: View {
     }
 }
 
-// MARK: - Offer/Request Badge
-struct OfferRequestBadge: View {
-    let durationType: String
+// MARK: - Category Type Badge (Offer/Request/Events)
+struct CategoryTypeBadge: View {
+    let text: String
     
     var body: some View {
         Text(displayText)
@@ -843,14 +845,14 @@ struct OfferRequestBadge: View {
             .foregroundColor(.white)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(Color(red: 0.5, green: 0.55, blue: 0.35)) // Olive green
+            .background(Color.campusPrimary) // Exact same olive green as tags
             .cornerRadius(12)
             .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private var displayText: String {
         // Capitalize first letter
-        return durationType.prefix(1).uppercased() + durationType.dropFirst().lowercased()
+        return text.prefix(1).uppercased() + text.dropFirst().lowercased()
     }
 }
 
