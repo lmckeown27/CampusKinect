@@ -202,11 +202,11 @@ const HomeTab: React.FC = () => {
                 <button
                   key={subcategory}
                   onClick={() => handleTagToggle(subcategory)}
-                  className="px-3 py-2 rounded-xl text-sm font-medium transition-all"
+                  className="px-3 py-2 rounded-xl text-sm font-medium transition-all hover:scale-[1.02] hover:shadow-xl"
                   style={{
-                    backgroundColor: selectedTags.includes(subcategory) ? '#708d81' : 'rgba(112, 141, 129, 0.15)',
+                    backgroundColor: selectedTags.includes(subcategory) ? '#708d81' : 'white',
                     color: selectedTags.includes(subcategory) ? 'white' : '#708d81',
-                    border: `1px solid ${selectedTags.includes(subcategory) ? '#708d81' : 'rgba(112, 141, 129, 0.3)'}`,
+                    border: `1px solid #708d81`,
                   }}
                 >
                   {subcategory}
