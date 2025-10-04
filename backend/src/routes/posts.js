@@ -1219,9 +1219,12 @@ router.get('/', [
     const queryParams = [];
     let paramCount = 0;
 
-    // Filter to target university (respects universityId query param for admin)
+    // Filter to target university - check both primary university_id AND post_universities junction table
     paramCount++;
-    baseQuery += ` AND p.university_id = $${paramCount}`;
+    baseQuery += ` AND (p.university_id = $${paramCount} OR EXISTS (
+      SELECT 1 FROM post_universities pu 
+      WHERE pu.post_id = p.id AND pu.university_id = $${paramCount}
+    ))`;
     queryParams.push(targetUniversityId);
 
     // Add post type filter - New system: Primary tag is the main category
@@ -1610,85 +1613,93 @@ router.post('/', [
     try {
       await client.query('BEGIN');
 
-      // Create posts for each target university
-      const createdPosts = [];
+      // Create ONE post with primary university (first in array)
+      const primaryUniversityId = universityIds[0];
+      console.log(`📍 Creating single post for primary university ${primaryUniversityId}, visible to ${universityIds.length} universities`);
       
+      const postResult = await client.query(`
+        INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, expires_at, event_start, event_end)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, created_at, university_id
+      `, [userId, primaryUniversityId, title, description, postType, finalDurationType, location, expiresAt, eventStart, eventEnd]);
+
+      const post = postResult.rows[0];
+      
+      // Link post to all target universities using post_universities junction table
       for (const universityId of universityIds) {
-        console.log(`📍 Creating post for university ${universityId}`);
+        const isPrimary = universityId === primaryUniversityId;
+        await client.query(`
+          INSERT INTO post_universities (post_id, university_id, is_primary)
+          VALUES ($1, $2, $3)
+        `, [post.id, universityId, isPrimary]);
+      }
+      
+      // Set target scope based on university count
+      const targetScope = universityIds.length > 1 ? 'multi' : 'single';
+      await client.query(`
+        UPDATE posts 
+        SET target_scope = $1
+        WHERE id = $2
+      `, [targetScope, post.id]);
+
+      // Add tags if provided (filter out old duration-type tags, but keep offer/request)
+      if (tags && tags.length > 0) {
+        const excludedTags = ['recurring', 'limited', 'one-time', 'onetime', 'permanent'];
+        const validTags = tags.filter(tag => !excludedTags.includes(tag.toLowerCase()));
         
-        const postResult = await client.query(`
-          INSERT INTO posts (user_id, university_id, title, description, post_type, duration_type, location, expires_at, event_start, event_end)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-          RETURNING id, title, description, post_type, duration_type, location, expires_at, event_start, event_end, created_at, university_id
-        `, [userId, universityId, title, description, postType, finalDurationType, location, expiresAt, eventStart, eventEnd]);
-
-        const post = postResult.rows[0];
-        createdPosts.push(post);
-
-        // Add tags if provided (filter out old duration-type tags, but keep offer/request)
-        if (tags && tags.length > 0) {
-          const excludedTags = ['recurring', 'limited', 'one-time', 'onetime', 'permanent'];
-          const validTags = tags.filter(tag => !excludedTags.includes(tag.toLowerCase()));
+        for (const tagName of validTags) {
+          // Get or create tag
+          let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
           
-          for (const tagName of validTags) {
-            // Get or create tag
-            let tagResult = await client.query('SELECT id FROM tags WHERE name = $1', [tagName]);
-            
-            let tagId;
-            if (tagResult.rows.length === 0) {
-              // Create new tag
-              const newTagResult = await client.query(`
-                INSERT INTO tags (name, category) 
-                VALUES ($1, 'custom') 
-                RETURNING id
-              `, [tagName]);
-              tagId = newTagResult.rows[0].id;
-            } else {
-              tagId = tagResult.rows[0].id;
-            }
-
-            // Link tag to post
-            await client.query(`
-              INSERT INTO post_tags (post_id, tag_id) 
-              VALUES ($1, $2)
-            `, [post.id, tagId]);
+          let tagId;
+          if (tagResult.rows.length === 0) {
+            // Create new tag
+            const newTagResult = await client.query(`
+              INSERT INTO tags (name, category) 
+              VALUES ($1, 'custom') 
+              RETURNING id
+            `, [tagName]);
+            tagId = newTagResult.rows[0].id;
+          } else {
+            tagId = tagResult.rows[0].id;
           }
+
+          // Link tag to post
+          await client.query(`
+            INSERT INTO post_tags (post_id, tag_id) 
+            VALUES ($1, $2)
+          `, [post.id, tagId]);
         }
+      }
 
-        // Add images if provided
-        if (images && images.length > 0) {
-          console.log(`💾 Saving ${images.length} images to post ${post.id}`);
-          for (let i = 0; i < images.length; i++) {
-            await client.query(`
-              INSERT INTO post_images (post_id, image_url, image_order)
-              VALUES ($1, $2, $3)
-            `, [post.id, images[i], i]);
-          }
+      // Add images if provided
+      if (images && images.length > 0) {
+        console.log(`💾 Saving ${images.length} images to post ${post.id}`);
+        for (let i = 0; i < images.length; i++) {
+          await client.query(`
+            INSERT INTO post_images (post_id, image_url, image_order)
+            VALUES ($1, $2, $3)
+          `, [post.id, images[i], i]);
         }
       }
       
-      console.log(`✅ Created ${createdPosts.length} post(s) across ${universityIds.length} university(ies)`);
+      console.log(`✅ Created 1 post (ID: ${post.id}) visible to ${universityIds.length} university(ies)`);
       
-      // Use the first created post as the primary one for response
-      const primaryPost = createdPosts[0];
+      const primaryPost = post;
 
       await client.query('COMMIT');
       
-      // Calculate and update scores for all created posts (AFTER commit so posts are visible)
-      for (const post of createdPosts) {
-        try {
-          await updatePostScores(post.id);
-        } catch (scoreError) {
-          console.error(`⚠️ Failed to update scores for post ${post.id}:`, scoreError.message);
-          // Continue even if scoring fails - post is already created
-        }
+      // Calculate and update scores for the post (AFTER commit so post is visible)
+      try {
+        await updatePostScores(primaryPost.id);
+      } catch (scoreError) {
+        console.error(`⚠️ Failed to update scores for post ${primaryPost.id}:`, scoreError.message);
+        // Continue even if scoring fails - post is already created
       }
 
-      // Clear cache for all created posts
-      for (const post of createdPosts) {
-        const cacheKey = generateCacheKey('post', post.id);
-        await redisDel(cacheKey);
-      }
+      // Clear cache for the post
+      const cacheKey = generateCacheKey('post', primaryPost.id);
+      await redisDel(cacheKey);
 
       // Get full post with tags and images (return the primary post)
       const fullPostResult = await query(`
@@ -1752,13 +1763,13 @@ router.post('/', [
 
       res.status(201).json({
         success: true,
-        message: createdPosts.length > 1 
-          ? `Post created successfully for ${createdPosts.length} universities`
+        message: universityIds.length > 1 
+          ? `Post created successfully and visible to ${universityIds.length} universities`
           : 'Post created successfully',
         data: {
           post: formattedPost,
-          universitiesCount: createdPosts.length,
-          postIds: createdPosts.map(p => p.id)
+          universitiesCount: universityIds.length,
+          targetedUniversityIds: universityIds
         }
       });
 
