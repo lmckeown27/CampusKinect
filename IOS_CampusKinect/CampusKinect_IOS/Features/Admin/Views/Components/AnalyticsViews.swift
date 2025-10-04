@@ -293,37 +293,69 @@ struct ContentTrendsView: View {
     }
 }
 
-// MARK: - Report Reasons
-struct ReportReasonsView: View {
-    let reasons: [AnalyticsData.ReasonStats]
+// MARK: - User Activity
+struct UserActivityView: View {
+    let userActivity: AnalyticsData.UserActivityStats?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Reports by Reason")
+            Text("User Activity (Last 7 Days)")
                 .font(.title2)
                 .fontWeight(.bold)
             
-            if reasons.isEmpty {
-                Text("No report data available")
+            if let activity = userActivity {
+                VStack(spacing: 12) {
+                    // Active Users
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Active Users")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            Text("\(activity.activeUsersLast7Days)")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.green)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "person.3.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.green.opacity(0.6))
+                    }
+                    .padding()
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(8)
+                    
+                    // New Signups
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("New Signups")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            Text("\(activity.newSignupsLast7Days)")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.blue)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "person.badge.plus.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.blue.opacity(0.6))
+                    }
+                    .padding()
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
+                }
+            } else {
+                Text("No user activity data available")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
-            } else {
-                VStack(spacing: 8) {
-                    ForEach(reasons.sorted { $0.count > $1.count }) { reason in
-                        HStack {
-                            Text(reason.reason.capitalized)
-                                .font(.subheadline)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Text("\(reason.count)")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.red)
-                        }
-                        .padding(.vertical, 2)
-                    }
-                }
             }
         }
         .padding()

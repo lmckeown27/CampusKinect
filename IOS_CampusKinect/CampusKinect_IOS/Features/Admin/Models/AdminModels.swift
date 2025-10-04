@@ -311,7 +311,8 @@ struct AnalyticsData: Codable {
     let messagesPerDay: Int
     let topUniversities: [UniversityStats]
     let contentTrends: [ContentTrend]
-    let reportsByReason: [ReasonStats]
+    let reportsByReason: [ReasonStats]? // Made optional for backwards compatibility
+    let userActivity: UserActivityStats? // New field for user activity tracking
     let userGrowth: [GrowthData]
     
     struct UniversityStats: Codable, Identifiable {
@@ -382,6 +383,11 @@ struct AnalyticsData: Codable {
         private enum CodingKeys: String, CodingKey {
             case date, users
         }
+    }
+    
+    struct UserActivityStats: Codable {
+        let activeUsersLast7Days: Int
+        let newSignupsLast7Days: Int
     }
 }
 

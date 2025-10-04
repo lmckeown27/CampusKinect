@@ -608,6 +608,22 @@ router.get('/analytics', auth, adminAuth, async (req, res) => {
       ORDER BY count DESC
     `);
 
+    // Get user activity stats (last 7 days)
+    const activeUsersLast7DaysResult = await query(`
+      SELECT COUNT(DISTINCT user_id) as count 
+      FROM (
+        SELECT user_id FROM posts WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' AND is_active = true
+        UNION
+        SELECT sender_id as user_id FROM messages WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' AND is_deleted = false
+      ) active_users
+    `);
+
+    const newSignupsLast7DaysResult = await query(`
+      SELECT COUNT(*) as count 
+      FROM users 
+      WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' AND is_active = true
+    `);
+
     // Get user growth (last 30 days)
     const userGrowthResult = await query(`
       SELECT 
@@ -647,6 +663,10 @@ router.get('/analytics', auth, adminAuth, async (req, res) => {
           reason: row.reason,
           count: parseInt(row.count)
         })),
+        userActivity: {
+          activeUsersLast7Days: parseInt(activeUsersLast7DaysResult.rows[0].count),
+          newSignupsLast7Days: parseInt(newSignupsLast7DaysResult.rows[0].count)
+        },
         userGrowth: userGrowthResult.rows.map(row => ({
           date: row.date,
           users: parseInt(row.users)

@@ -372,8 +372,8 @@ struct AnalyticsTabView: View {
                         ContentTrendsView(trends: analytics.contentTrends)
                             .padding(.horizontal)
                         
-                        // Reports by Reason
-                        ReportReasonsView(reasons: analytics.reportsByReason)
+                        // User Activity (Last 7 Days)
+                        UserActivityView(userActivity: analytics.userActivity)
                             .padding(.horizontal)
                     }
                     .padding(.vertical)
