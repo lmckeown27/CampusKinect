@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
 import { PostCard } from '../ui';
@@ -53,7 +53,6 @@ const HomeTab: React.FC = () => {
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedOfferRequest, setSelectedOfferRequest] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load initial posts
   useEffect(() => {
@@ -120,17 +119,10 @@ const HomeTab: React.FC = () => {
   const selectedCategoryData = categories.find(c => c.id === selectedCategory);
   const showOfferRequestToggle = selectedCategory && ['goods', 'services', 'housing'].includes(selectedCategory);
 
-  // Scroll to top function
-  const scrollToTop = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252', paddingBottom: '100px' }}>
       <div className="max-w-4xl mx-auto">
-        {/* Header with Logo and Clear All Button */}
+        {/* Header with Clear All Button and Offer/Request Toggle */}
         <div className="sticky top-0 z-10 px-4 py-3" style={{ backgroundColor: '#525252', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <div className="flex items-center justify-between">
             {selectedTags.length > 0 && (
@@ -144,10 +136,7 @@ const HomeTab: React.FC = () => {
             )}
             {selectedTags.length === 0 && <div />}
             
-            {/* Logo - tap to scroll to top */}
-            <button onClick={scrollToTop} className="flex-shrink-0">
-              <img src="/logo.png" alt="CampusKinect" className="h-8" />
-            </button>
+            <div />
             
             {showOfferRequestToggle && (
               <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid #708d81' }}>
@@ -266,7 +255,7 @@ const HomeTab: React.FC = () => {
         )}
 
         {/* Posts List */}
-        <div ref={scrollRef} className="px-4 pb-4">
+        <div className="px-4 pb-4">
           {isLoading && filteredPosts.length === 0 ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#708d81' }}></div>

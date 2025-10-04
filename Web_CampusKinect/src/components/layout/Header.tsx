@@ -67,7 +67,11 @@ const Header: React.FC = () => {
         </div>
 
         {/* Center - App Logo & Title */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="absolute left-1/2 transform -translate-x-1/2 flex items-center cursor-pointer transition-transform hover:scale-105"
+          style={{ background: 'none', border: 'none', padding: 0 }}
+        >
           <img 
             src={KinectLogo.src} 
             alt="Kinect Logo" 
@@ -79,7 +83,7 @@ const Header: React.FC = () => {
           >
             CampusKinect
           </h1>
-        </div>
+        </button>
 
         {/* Right Side - User Profile & Actions */}
         <div className="flex items-center space-x-4">

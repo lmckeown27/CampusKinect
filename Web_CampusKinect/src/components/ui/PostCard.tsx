@@ -173,11 +173,11 @@ const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <div
-              className="bg-black rounded-xl shadow-lg border-2 border-gray-600 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8 max-w-2xl mx-auto"
-      style={{ marginBottom: "2rem" }}
+              className="rounded-xl shadow-lg border-2 overflow-hidden hover:shadow-xl hover:border-[#708d81] hover:scale-[1.02] transition-all duration-200 mb-8 max-w-2xl mx-auto"
+      style={{ backgroundColor: '#737373', borderColor: '#525252', marginBottom: "2rem" }}
     >
       {/* Post Header */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="p-4 border-b" style={{ borderColor: '#525252' }}>
         {/* Top Row: Post Type Badge (left) and Action Icons (right) */}
         <div className="flex items-center justify-between mb-3">
           {/* Left side: Post Type Badge + Timestamp */}
