@@ -105,7 +105,11 @@ router.get('/organized', [
         un.state as university_state,
         COUNT(pi.id) as image_count,
         COALESCE(
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY_AGG(DISTINCT CASE 
+            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
+            THEN t.name 
+            ELSE NULL 
+          END),
           ARRAY[]::text[]
         ) || 
         CASE 
@@ -640,7 +644,11 @@ router.get('/tabbed', [
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
         COALESCE(
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY_AGG(DISTINCT CASE 
+            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
+            THEN t.name 
+            ELSE NULL 
+          END),
           ARRAY[]::text[]
         ) || 
         CASE 
@@ -1197,7 +1205,11 @@ router.get('/', [
         un.state as university_state,
         COUNT(pi.id) as image_count,
         COALESCE(
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY_AGG(DISTINCT CASE 
+            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
+            THEN t.name 
+            ELSE NULL 
+          END),
           ARRAY[]::text[]
         ) || 
         CASE 
@@ -1447,7 +1459,11 @@ router.get('/:id', [
         un.city as university_city,
         un.state as university_state,
         COALESCE(
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY_AGG(DISTINCT CASE 
+            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
+            THEN t.name 
+            ELSE NULL 
+          END),
           ARRAY[]::text[]
         ) || 
         CASE 
@@ -2333,7 +2349,11 @@ router.post('/multi-university', auth, async (req, res) => {
         u.city as university_city,
         u.state as university_state,
         COALESCE(
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY_AGG(DISTINCT CASE 
+            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
+            THEN t.name 
+            ELSE NULL 
+          END),
           ARRAY[]::text[]
         ) || 
         CASE 

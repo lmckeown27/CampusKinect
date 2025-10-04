@@ -98,7 +98,11 @@ class PersonalizedFeedService {
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
         COALESCE(
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY_AGG(DISTINCT CASE 
+            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
+            THEN t.name 
+            ELSE NULL 
+          END),
           ARRAY[]::text[]
         ) || 
         CASE 
@@ -482,7 +486,11 @@ class PersonalizedFeedService {
         u.username, u.first_name, u.last_name, u.display_name, u.profile_picture,
         un.name as university_name, un.city as university_city, un.state as university_state,
         COALESCE(
-          ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request')),
+          ARRAY_AGG(DISTINCT CASE 
+            WHEN t.name IS NOT NULL AND LOWER(t.name) NOT IN ('recurring', 'limited', 'one-time', 'onetime', 'permanent', 'offer', 'request') 
+            THEN t.name 
+            ELSE NULL 
+          END),
           ARRAY[]::text[]
         ) || 
         CASE 
