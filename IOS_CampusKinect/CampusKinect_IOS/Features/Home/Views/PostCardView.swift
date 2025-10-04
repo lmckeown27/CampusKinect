@@ -211,10 +211,13 @@ struct PostCardView: View {
         } message: {
             Text("Are you sure you want to ban \(post.poster.displayName)? They will be unable to access the platform.")
         }
-        .alert("Message Error", isPresented: $showingMessageConfirmation) {
-            Button("OK") { }
+        .alert("Start Conversation?", isPresented: $showingMessageConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Yes") {
+                confirmMessageAndNavigate()
+            }
         } message: {
-            Text("Unable to start conversation. Please try again.")
+            Text("Do you want to start a conversation with \(post.poster.displayName) about '\(post.title)'?")
         }
         .alert("Error", isPresented: $showingErrorAlert) {
             Button("OK") { }
@@ -281,19 +284,74 @@ struct PostCardView: View {
         // Store images persistently by postId for future access
         UserDefaults.standard.set(post.images, forKey: "postImages_\(post.id)")
         
-        // Navigate to chat with the post author (conversation will be created when first message is sent)
-        NotificationCenter.default.post(
-            name: .navigateToChat,
-            object: nil,
-            userInfo: [
-                "userId": post.poster.id,
-                "userName": post.poster.displayName,
-                "postId": post.id,
-                "postTitle": post.title,
-                "postImages": post.images,
-                "postType": post.postType
-            ]
-        )
+        // Check if conversation already exists using preloaded conversations
+        let messagesViewModel = MessagesViewModel.shared
+        if let existingConversation = messagesViewModel.conversations.first(where: { 
+            $0.otherUser.id == post.poster.id && $0.postId == post.id 
+        }) {
+            // Conversation exists - navigate directly to chat
+            print("📱 PostCardView: Existing conversation found - navigating directly to chat")
+            NotificationCenter.default.post(
+                name: .navigateToChat,
+                object: nil,
+                userInfo: [
+                    "userId": post.poster.id,
+                    "userName": post.poster.displayName,
+                    "postId": post.id,
+                    "postTitle": post.title,
+                    "postImages": post.images,
+                    "postType": post.postType
+                ]
+            )
+        } else {
+            // No existing conversation - show confirmation dialog on Home tab
+            print("📱 PostCardView: No existing conversation - showing confirmation dialog")
+            showingMessageConfirmation = true
+        }
+    }
+    
+    private func confirmMessageAndNavigate() {
+        print("📱 PostCardView: User confirmed - creating conversation and navigating to chat")
+        
+        // Create conversation via API
+        Task {
+            do {
+                let request = StartConversationRequest(
+                    otherUserId: post.poster.id,
+                    postId: post.id,
+                    initialMessage: nil // No initial message - just create conversation
+                )
+                
+                let response = try await apiService.startConversation(request)
+                print("✅ PostCardView: Conversation created successfully: \(response.data.conversation.id)")
+                
+                // Refresh conversations and wait for completion
+                await MessagesViewModel.shared.loadConversations()
+                print("📱 PostCardView: Conversations refreshed after creation")
+                
+                await MainActor.run {
+                    // Navigate to the chat after conversations are loaded
+                    NotificationCenter.default.post(
+                        name: .navigateToChat,
+                        object: nil,
+                        userInfo: [
+                            "userId": post.poster.id,
+                            "userName": post.poster.displayName,
+                            "postId": post.id,
+                            "postTitle": post.title,
+                            "postImages": post.images,
+                            "postType": post.postType
+                        ]
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Failed to start conversation. Please try again."
+                    showingErrorAlert = true
+                    print("❌ PostCardView: Failed to create conversation: \(error)")
+                }
+            }
+        }
     }
     
     private func handleRepost() {
