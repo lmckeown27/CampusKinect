@@ -656,7 +656,7 @@ const MessagesTab: React.FC = () => {
                     <div>
                       {/* POST TITLE (PRIMARY) */}
                       <div className="flex items-center space-x-2">
-                        <h3 className="font-medium text-[#708d81]">
+                        <h3 className="font-medium text-white">
                           {currentConversation.postTitle}
                         </h3>
                         {/* Real-time indicator */}
@@ -667,7 +667,7 @@ const MessagesTab: React.FC = () => {
                         )}
                       </div>
                       {/* USER INFO (SECONDARY) */}
-                      <p className="text-sm text-[#708d81] opacity-70">
+                      <p className="text-sm text-white opacity-70">
                         Discussion with @{currentConversation.otherUser.displayName}
                       </p>
                     </div>
