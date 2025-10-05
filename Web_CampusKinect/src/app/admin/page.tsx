@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, Flag, Users, TrendingUp, FileText, MessageSquare, 
   UserPlus, CheckCircle, RefreshCw, ShieldOff, AlertTriangle,
-  Ban, UserCheck, Clock, ChevronRight
+  Ban, UserCheck, Clock, ChevronRight, X
 } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { ContentReport } from '../../types';
@@ -47,6 +47,7 @@ export default function AdminDashboardPage() {
   const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<AdminTab>('analytics');
   const [refreshing, setRefreshing] = useState(false);
+  const [showAllUniversities, setShowAllUniversities] = useState(false);
 
   // Authorization check
   useEffect(() => {
@@ -284,8 +285,12 @@ export default function AdminDashboardPage() {
                   <div className="rounded-lg p-6" style={{ backgroundColor: '#1a1a1a' }}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-xl font-bold" style={{ color: '#ffffff' }}>Top Universities</h2>
-                      {analytics.topUniversities && analytics.topUniversities.length > 5 && (
-                        <button className="flex items-center space-x-1 text-sm font-medium" style={{ color: '#708d81' }}>
+                      {analytics.topUniversities && analytics.topUniversities.length > 0 && (
+                        <button 
+                          onClick={() => setShowAllUniversities(true)}
+                          className="flex items-center space-x-1 text-sm font-medium transition-colors hover:opacity-80" 
+                          style={{ color: '#708d81' }}
+                        >
                           <span>View All</span>
                           <ChevronRight size={16} />
                         </button>
@@ -597,6 +602,145 @@ export default function AdminDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* All Universities Modal */}
+      {showAllUniversities && analytics && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowAllUniversities(false)}
+        >
+          <div 
+            className="rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+            style={{ backgroundColor: '#1a1a1a' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: '#525252' }}>
+              <h2 className="text-2xl font-bold" style={{ color: '#ffffff' }}>All Universities</h2>
+              <button
+                onClick={() => setShowAllUniversities(false)}
+                className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <X size={24} style={{ color: '#ffffff' }} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                {/* Summary Card */}
+                <div className="grid grid-cols-2 gap-4 p-6 rounded-lg" style={{ backgroundColor: '#262626' }}>
+                  <div>
+                    <p className="text-sm mb-1" style={{ color: '#9ca3af' }}>Total Universities</p>
+                    <p className="text-3xl font-bold" style={{ color: '#ffffff' }}>
+                      {analytics.topUniversities.length}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm mb-1" style={{ color: '#9ca3af' }}>Total Users</p>
+                    <p className="text-3xl font-bold" style={{ color: '#ffffff' }}>
+                      {analytics.topUniversities.reduce((sum, u) => sum + u.userCount, 0)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* All Universities List */}
+                <div className="rounded-lg overflow-hidden" style={{ backgroundColor: '#262626' }}>
+                  {analytics.topUniversities
+                    .sort((a, b) => b.userCount - a.userCount)
+                    .map((university, index) => {
+                      const totalUsers = analytics.topUniversities.reduce((sum, u) => sum + u.userCount, 0);
+                      const percentage = totalUsers > 0 ? (university.userCount / totalUsers) * 100 : 0;
+                      
+                      const getRankColor = (rank: number) => {
+                        switch (rank) {
+                          case 1: return '#eab308'; // gold/yellow
+                          case 2: return '#9ca3af'; // silver/gray
+                          case 3: return '#f97316'; // bronze/orange
+                          default: return '#3b82f6'; // blue
+                        }
+                      };
+
+                      const rankColor = getRankColor(index + 1);
+
+                      return (
+                        <div key={university.id}>
+                          <div className="p-4 hover:bg-gray-700 transition-colors">
+                            <div className="flex items-center space-x-4">
+                              {/* Rank Badge */}
+                              <div
+                                className="flex items-center justify-center w-11 h-11 rounded-full font-bold"
+                                style={{
+                                  backgroundColor: `${rankColor}33`,
+                                  color: rankColor
+                                }}
+                              >
+                                #{index + 1}
+                              </div>
+
+                              {/* University Info */}
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-base mb-1" style={{ color: '#ffffff' }}>
+                                  {university.name}
+                                </h3>
+                                <div className="flex items-center space-x-2 text-xs">
+                                  <span 
+                                    className="px-2 py-0.5 rounded font-medium"
+                                    style={{ backgroundColor: '#3b82f620', color: '#3b82f6' }}
+                                  >
+                                    ID: {university.id}
+                                  </span>
+                                  <Users size={12} style={{ color: '#9ca3af' }} />
+                                  <span style={{ color: '#9ca3af' }}>
+                                    {university.userCount} {university.userCount === 1 ? 'user' : 'users'}
+                                  </span>
+                                  <span style={{ color: '#9ca3af' }}>•</span>
+                                  <span style={{ color: '#9ca3af' }}>
+                                    {percentage.toFixed(1)}%
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* User Count and Progress Bar */}
+                              <div className="flex flex-col items-end space-y-2">
+                                <p className="text-xl font-semibold" style={{ color: '#ffffff' }}>
+                                  {university.userCount}
+                                </p>
+                                <div className="w-20 h-1 rounded-full" style={{ backgroundColor: '#525252' }}>
+                                  <div
+                                    className="h-1 rounded-full transition-all"
+                                    style={{
+                                      width: `${percentage}%`,
+                                      backgroundColor: rankColor
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          {index < analytics.topUniversities.length - 1 && (
+                            <div className="h-px mx-4" style={{ backgroundColor: '#525252' }} />
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t" style={{ borderColor: '#525252' }}>
+              <button
+                onClick={() => setShowAllUniversities(false)}
+                className="w-full py-3 rounded-lg font-medium transition-colors"
+                style={{ backgroundColor: '#708d81', color: '#ffffff' }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 }
