@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, UserX, Shield, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Shield, AlertTriangle, UserCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { apiService } from '../../../services/api';
 import { BlockedUser } from '../../../types';
+import MainLayout from '../../../components/layout/MainLayout';
 
 const BlockedUsersPage: React.FC = () => {
   const router = useRouter();
@@ -71,60 +72,67 @@ const BlockedUsersPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200 font-medium"
-            >
-              <ArrowLeft size={20} />
-              <span>Back</span>
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Blocked Users</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage users you have blocked</p>
+    <MainLayout>
+      <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
+        {/* Header */}
+        <div className="border-b" style={{ backgroundColor: '#737373', borderColor: '#708d81' }}>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => router.back()}
+                className="flex items-center space-x-2 transition-colors duration-200 font-medium"
+                style={{ color: '#708d81' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#a8c4a2'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#708d81'}
+              >
+                <ArrowLeft size={20} />
+                <span>Back</span>
+              </button>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Blocked Users</h1>
+                <p className="text-sm text-gray-300 mt-1">Manage users you have blocked</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow">
+        {/* Content */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="rounded-lg shadow-lg" style={{ backgroundColor: '#737373' }}>
           {isLoading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-500">Loading blocked users...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-4" style={{ borderColor: '#708d81' }}></div>
+              <p className="text-gray-300">Loading blocked users...</p>
             </div>
           ) : error ? (
             <div className="p-8 text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-900 bg-opacity-20 mb-4">
+                <AlertTriangle className="h-6 w-6 text-red-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Blocked Users</h3>
-              <p className="text-sm text-gray-500 mb-4">{error}</p>
+              <h3 className="text-lg font-medium text-white mb-2">Error Loading Blocked Users</h3>
+              <p className="text-sm text-gray-300 mb-4">{error}</p>
               <button
                 onClick={loadBlockedUsers}
-                className="px-4 py-2 bg-[#708d81] text-white rounded-md hover:bg-[#5a7268] transition-colors"
+                className="px-4 py-2 rounded-md transition-colors"
+                style={{ backgroundColor: '#708d81', color: 'white' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7268'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#708d81'}
               >
                 Try Again
               </button>
             </div>
           ) : blockedUsers.length === 0 ? (
             <div className="p-8 text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                <Shield className="h-6 w-6 text-green-600" />
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-900 bg-opacity-20 mb-4">
+                <UserCheck className="h-8 w-8 text-green-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Blocked Users</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="text-xl font-semibold text-white mb-2">No Blocked Users</h3>
+              <p className="text-sm text-gray-300 max-w-md mx-auto">
                 You haven't blocked anyone yet. When you block users, they'll appear here and you can manage them.
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-700">
               {blockedUsers.map((user) => (
                 <div key={user.id} className="p-6 flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -133,25 +141,39 @@ const BlockedUsersPage: React.FC = () => {
                         src={user.profilePicture}
                         alt={user.displayName}
                         className="h-12 w-12 rounded-full object-cover"
+                        style={{ border: '2px solid #708d81' }}
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center">
+                      <div className="h-12 w-12 rounded-full flex items-center justify-center" style={{ backgroundColor: '#708d81', border: '2px solid #708d81' }}>
                         <span className="text-white font-semibold text-lg">
                           {user.displayName.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     )}
                     <div>
-                      <h3 className="text-lg font-medium text-gray-900">{user.displayName}</h3>
+                      <h3 className="text-lg font-medium text-white">{user.displayName}</h3>
                       {user.username && (
-                        <p className="text-sm text-gray-500">@{user.username}</p>
+                        <p className="text-sm text-gray-400">@{user.username}</p>
                       )}
-                      <p className="text-xs text-gray-400">Blocked {formatTimeAgo(user.blockedAt)}</p>
+                      <p className="text-xs text-gray-500">Blocked {formatTimeAgo(user.blockedAt)}</p>
                     </div>
                   </div>
                   <button
                     onClick={() => handleUnblock(user.id, user.displayName)}
-                    className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors"
+                    className="px-4 py-2 text-sm font-medium rounded-md transition-colors"
+                    style={{ 
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: '2px solid #3b82f6'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#60a5fa';
+                      e.currentTarget.style.borderColor = '#60a5fa';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#3b82f6';
+                      e.currentTarget.style.borderColor = '#3b82f6';
+                    }}
                   >
                     Unblock
                   </button>
@@ -162,12 +184,12 @@ const BlockedUsersPage: React.FC = () => {
         </div>
 
         {/* Info Section */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <div className="mt-8 rounded-lg p-6" style={{ backgroundColor: '#737373', border: '2px solid #708d81' }}>
           <div className="flex items-start space-x-3">
-            <Shield className="h-6 w-6 text-blue-600 mt-0.5" />
+            <Shield className="h-6 w-6 mt-0.5" style={{ color: '#708d81' }} />
             <div>
-              <h3 className="font-medium text-blue-900 mb-2">About Blocking Users</h3>
-              <div className="text-sm text-blue-700 space-y-2">
+              <h3 className="font-medium text-white mb-2">About Blocking Users</h3>
+              <div className="text-sm text-gray-300 space-y-2">
                 <p>When you block a user:</p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
                   <li>You won't see their posts or messages</li>
@@ -184,6 +206,7 @@ const BlockedUsersPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </MainLayout>
   );
 };
 

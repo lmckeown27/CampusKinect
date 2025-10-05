@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FileText, Cookie, ScrollText, ShieldCheck, HelpCircle, MessageCircle, Mail, Bug, User } from 'lucide-react';
+import { FileText, Cookie, ScrollText, ShieldCheck, HelpCircle, MessageCircle, Mail, Bug, User, Flag } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
 
@@ -41,6 +41,10 @@ const SettingsTab: React.FC = () => {
 
   const handleBlockedUsers = () => {
     router.push('/settings/blocked-users');
+  };
+
+  const handleMyReports = () => {
+    router.push('/settings/my-reports');
   };
 
   const handleFeedbackEmail = () => {
@@ -201,6 +205,33 @@ const SettingsTab: React.FC = () => {
                   <div>
                     <div className="text-white font-medium">Blocked Users</div>
                     <div className="text-gray-300 text-sm">Manage users you have blocked</div>
+                  </div>
+                </button>
+
+                {/* My Reports Button */}
+                <button
+                  onClick={handleMyReports}
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                  style={{ 
+                    backgroundColor: '#525252',
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252';
+                  }}
+                >
+                  <Flag size={18} className="text-white" />
+                  <div className="w-3"></div>
+                  <div>
+                    <div className="text-white font-medium">My Reports</div>
+                    <div className="text-gray-300 text-sm">View your submitted reports</div>
                   </div>
                 </button>
               </div>
