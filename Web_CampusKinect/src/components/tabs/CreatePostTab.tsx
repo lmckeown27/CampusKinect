@@ -655,63 +655,51 @@ const CreatePostTab: React.FC = () => {
 
                 {/* Offer/Request Buttons */}
                 {areOfferRequestTagsAvailable() && (
-                  <div className="flex gap-3">
+                  <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid #708d81' }}>
                     <button
-                              type="button"
-                              onClick={() => handleOfferRequestTagSelect('offer')}
-                              className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                                                                  offerRequestTags[formData.postType].includes('offer')
-                                  ? 'text-white'
-                                  : 'text-[#708d81] hover:text-[#5a7268]'
-                              }`}
-                              style={{
-                                                  backgroundColor: offerRequestTags[formData.postType].includes('offer') ? '#708d81' : '#f0f2f0',
-                  color: offerRequestTags[formData.postType].includes('offer') ? 'white' : '#708d81',
-                                cursor: 'pointer'
-                              }}
-                              onMouseEnter={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('offer')) {
-                                  e.currentTarget.style.backgroundColor = '#e8ebe8';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('offer')) {
-                                  e.currentTarget.style.backgroundColor = '#f0f2f0';
-                                }
-                              }}
-                            >
-                              Offer
-                            </button>
-                            
-                            {/* Spacer */}
-                            <div className="w-3"></div>
-                            
-                            <button
-                              type="button"
-                              onClick={() => handleOfferRequestTagSelect('request')}
-                              className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                                                                  offerRequestTags[formData.postType].includes('request')
-                                  ? 'text-white'
-                                  : 'text-[#708d81] hover:text-[#5a7268]'
-                              }`}
-                              style={{
-                                                  backgroundColor: offerRequestTags[formData.postType].includes('request') ? '#708d81' : '#f0f2f0',
-                  color: offerRequestTags[formData.postType].includes('request') ? 'white' : '#708d81',
-                                cursor: 'pointer'
-                              }}
-                              onMouseEnter={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('request')) {
-                                  e.currentTarget.style.backgroundColor = '#e8ebe8';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (!offerRequestTags[formData.postType].includes('request')) {
-                                  e.currentTarget.style.backgroundColor = '#f0f2f0';
-                                }
-                              }}
-                            >
-                              Request
-                            </button>
+                      type="button"
+                      onClick={() => handleOfferRequestTagSelect('offer')}
+                      className="px-3 py-1 text-xs font-medium transition-all"
+                      style={{
+                        backgroundColor: offerRequestTags[formData.postType].includes('offer') ? '#708d81' : 'white',
+                        color: offerRequestTags[formData.postType].includes('offer') ? 'white' : '#708d81',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!offerRequestTags[formData.postType].includes('offer')) {
+                          e.currentTarget.style.backgroundColor = '#f3f4f6';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!offerRequestTags[formData.postType].includes('offer')) {
+                          e.currentTarget.style.backgroundColor = 'white';
+                        }
+                      }}
+                    >
+                      Offer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOfferRequestTagSelect('request')}
+                      className="px-3 py-1 text-xs font-medium transition-all"
+                      style={{
+                        backgroundColor: offerRequestTags[formData.postType].includes('request') ? '#708d81' : 'white',
+                        color: offerRequestTags[formData.postType].includes('request') ? 'white' : '#708d81',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!offerRequestTags[formData.postType].includes('request')) {
+                          e.currentTarget.style.backgroundColor = '#f3f4f6';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!offerRequestTags[formData.postType].includes('request')) {
+                          e.currentTarget.style.backgroundColor = 'white';
+                        }
+                      }}
+                    >
+                      Request
+                    </button>
                   </div>
                 )}
 
