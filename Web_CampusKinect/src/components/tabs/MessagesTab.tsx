@@ -67,13 +67,13 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     }
   }, [showContextMenu]);
 
-  // Get post type icon and color - matching Home page exactly
+  // Get post type icon and color - matching Home page exactly (all olive green)
   const getPostTypeIcon = () => {
     switch (conversation.postType.toLowerCase()) {
-      case 'goods': return <ShoppingBag size={20} style={{ color: '#10B981' }} />;
-      case 'services': return <Wrench size={20} style={{ color: '#F59E0B' }} />;
-      case 'housing': return <House size={20} style={{ color: '#3B82F6' }} />;
-      case 'events': return <Calendar size={20} style={{ color: '#8B5CF6' }} />;
+      case 'goods': return <ShoppingBag size={20} style={{ color: '#708d81' }} />;
+      case 'services': return <Wrench size={20} style={{ color: '#708d81' }} />;
+      case 'housing': return <House size={20} style={{ color: '#708d81' }} />;
+      case 'events': return <Calendar size={20} style={{ color: '#708d81' }} />;
       default: return <FileText size={20} style={{ color: '#708d81' }} />;
     }
   };
@@ -646,10 +646,10 @@ const MessagesTab: React.FC = () => {
                     {/* POST ICON (PRIMARY) */}
                     <div className="w-10 h-10 flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                        {currentConversation.postType === 'goods' && <ShoppingBag size={16} style={{ color: '#10B981' }} />}
-                        {currentConversation.postType === 'services' && <Wrench size={16} style={{ color: '#F59E0B' }} />}
-                        {currentConversation.postType === 'housing' && <House size={16} style={{ color: '#3B82F6' }} />}
-                        {currentConversation.postType === 'events' && <Calendar size={16} style={{ color: '#8B5CF6' }} />}
+                        {currentConversation.postType === 'goods' && <ShoppingBag size={16} style={{ color: '#708d81' }} />}
+                        {currentConversation.postType === 'services' && <Wrench size={16} style={{ color: '#708d81' }} />}
+                        {currentConversation.postType === 'housing' && <House size={16} style={{ color: '#708d81' }} />}
+                        {currentConversation.postType === 'events' && <Calendar size={16} style={{ color: '#708d81' }} />}
                         {!['goods', 'services', 'housing', 'events'].includes(currentConversation.postType) && <FileText size={16} style={{ color: '#708d81' }} />}
                       </div>
                     </div>
