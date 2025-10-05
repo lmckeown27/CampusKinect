@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, Flag, Users, TrendingUp, FileText, MessageSquare, 
   UserPlus, CheckCircle, RefreshCw, ShieldOff, AlertTriangle,
-  Ban, UserCheck, Clock, ChevronRight, X
+  Ban, UserCheck, Clock, ChevronRight, X, Eye
 } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { ContentReport } from '../../types';
 import { useAuthStore } from '../../stores/authStore';
 import MainLayout from '../../components/layout/MainLayout';
+import { useRouter } from 'next/navigation';
 
 interface AnalyticsData {
   totalPosts: number;
@@ -38,6 +39,7 @@ interface BannedUser {
 type AdminTab = 'analytics' | 'reports' | 'users';
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const [reports, setReports] = useState<ContentReport[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
@@ -129,6 +131,18 @@ export default function AdminDashboardPage() {
     } catch (error) {
       console.error('Failed to load all universities:', error);
     }
+  };
+
+  const handleViewUniversity = (universityId: number, universityName: string) => {
+    // Store the viewing university in localStorage
+    localStorage.setItem('adminViewingUniversityId', String(universityId));
+    localStorage.setItem('adminViewingUniversityName', universityName);
+    
+    // Close the modal
+    setShowAllUniversities(false);
+    
+    // Navigate to home page
+    router.push('/home');
   };
 
   const handleRefresh = async () => {
@@ -730,6 +744,18 @@ export default function AdminDashboardPage() {
                                   />
                                 </div>
                               </div>
+                            </div>
+
+                            {/* View University Feed Button */}
+                            <div className="mt-3 px-4">
+                              <button
+                                onClick={() => handleViewUniversity(university.id, university.name)}
+                                className="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors"
+                                style={{ backgroundColor: '#708d81', color: '#ffffff' }}
+                              >
+                                <Eye size={16} />
+                                <span>View This University's Feed</span>
+                              </button>
                             </div>
                           </div>
                           {index < allUniversities.length - 1 && (

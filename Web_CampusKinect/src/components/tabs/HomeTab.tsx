@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, X, ChevronUp, ChevronDown, ShoppingBag, Wrench, Home, Calendar } from 'lucide-react';
+import { Search, X, ChevronUp, ChevronDown, ShoppingBag, Wrench, Home, Calendar, XCircle } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
+import { useAuthStore } from '../../stores/authStore';
 import { PostCard } from '../ui';
 import EditPostModal from '../ui/EditPostModal';
 import { Post, CreatePostForm } from '../../types';
@@ -40,6 +41,7 @@ const categories = [
 ];
 
 const HomeTab: React.FC = () => {
+  const { user } = useAuthStore();
   const { 
     filteredPosts, 
     isLoading, 
@@ -61,11 +63,26 @@ const HomeTab: React.FC = () => {
   // Edit modal state
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  // Admin university viewing
+  const [viewingUniversityId, setViewingUniversityId] = useState<number | null>(null);
+  const [viewingUniversityName, setViewingUniversityName] = useState<string | null>(null);
 
   // Load initial posts
   useEffect(() => {
     fetchPosts(1, true);
   }, [fetchPosts]);
+
+  // Check for admin viewing university on mount
+  useEffect(() => {
+    const viewingId = localStorage.getItem('adminViewingUniversityId');
+    const viewingName = localStorage.getItem('adminViewingUniversityName');
+    
+    if (viewingId && viewingName) {
+      setViewingUniversityId(parseInt(viewingId));
+      setViewingUniversityName(viewingName);
+    }
+  }, []);
 
   // Apply filters when category or tags change
   useEffect(() => {
@@ -124,6 +141,13 @@ const HomeTab: React.FC = () => {
     clearFilters();
   };
 
+  const handleClearUniversityView = () => {
+    localStorage.removeItem('adminViewingUniversityId');
+    localStorage.removeItem('adminViewingUniversityName');
+    setViewingUniversityId(null);
+    setViewingUniversityName(null);
+  };
+
   // Handle post deletion
   const handleDeletePost = async (postId: string) => {
     try {
@@ -155,11 +179,41 @@ const HomeTab: React.FC = () => {
   const selectedCategoryData = categories.find(c => c.id === selectedCategory);
   const showOfferRequestToggle = selectedCategory && ['goods', 'services', 'housing'].includes(selectedCategory);
 
+  // Filter posts by university if admin is viewing a specific one
+  const displayPosts = viewingUniversityId 
+    ? filteredPosts.filter(post => post.universityId === String(viewingUniversityId))
+    : filteredPosts;
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252', paddingBottom: '100px' }}>
       <div className="max-w-4xl mx-auto">
+        {/* Admin University Viewing Banner */}
+        {viewingUniversityId && viewingUniversityName && (
+          <div className="sticky top-0 z-20 px-4 py-3" style={{ backgroundColor: '#708d81', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-white">
+                  Admin Mode: Viewing {viewingUniversityName}
+                </span>
+              </div>
+              <button
+                onClick={handleClearUniversityView}
+                className="flex items-center space-x-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors hover:bg-white hover:bg-opacity-20"
+                style={{ color: 'white' }}
+              >
+                <XCircle size={16} />
+                <span>View All Universities</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Header with Clear All Button and Offer/Request Toggle */}
-        <div className="sticky top-0 z-10 px-4 py-5" style={{ backgroundColor: '#525252', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="sticky z-10 px-4 py-5" style={{ 
+          backgroundColor: '#525252', 
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          top: viewingUniversityId ? '52px' : '0'
+        }}>
           <div className="flex items-center justify-between">
             {selectedTags.length > 0 && (
               <button
@@ -298,19 +352,23 @@ const HomeTab: React.FC = () => {
 
         {/* Posts List */}
         <div className="px-4 pb-4">
-          {isLoading && filteredPosts.length === 0 ? (
+          {isLoading && displayPosts.length === 0 ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#708d81' }}></div>
               <p style={{ color: '#708d81' }}>Loading posts...</p>
             </div>
-          ) : filteredPosts.length === 0 ? (
+          ) : displayPosts.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-xl font-bold text-white mb-2">No Posts Yet</h3>
-              <p className="text-gray-400">Be the first to share something with your campus community!</p>
+              <p className="text-gray-400">
+                {viewingUniversityId 
+                  ? `No posts found for ${viewingUniversityName}.`
+                  : 'Be the first to share something with your campus community!'}
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredPosts.map((post) => (
+              {displayPosts.map((post) => (
                 <PostCard 
                   key={post.id} 
                   post={post}
