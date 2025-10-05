@@ -659,7 +659,7 @@ const CreatePostTab: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleOfferRequestTagSelect('offer')}
-                      className="px-3 py-1 text-xs font-medium transition-all"
+                      className="px-6 py-2 text-sm font-medium transition-all"
                       style={{
                         backgroundColor: offerRequestTags[formData.postType].includes('offer') ? '#708d81' : 'white',
                         color: offerRequestTags[formData.postType].includes('offer') ? 'white' : '#708d81',
@@ -681,7 +681,7 @@ const CreatePostTab: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleOfferRequestTagSelect('request')}
-                      className="px-3 py-1 text-xs font-medium transition-all"
+                      className="px-6 py-2 text-sm font-medium transition-all"
                       style={{
                         backgroundColor: offerRequestTags[formData.postType].includes('request') ? '#708d81' : 'white',
                         color: offerRequestTags[formData.postType].includes('request') ? 'white' : '#708d81',
