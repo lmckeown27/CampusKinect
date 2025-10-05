@@ -301,44 +301,6 @@ export default function SettingsHelpCenterPage() {
                   </button>
                 </div>
               </div>
-
-              {/* Community */}
-              <div className="rounded-lg border flex flex-col flex-shrink-0 overflow-hidden p-5 m-4 mx-auto"
-                   style={{ 
-                     backgroundColor: '#737373',
-                     borderColor: '#708d81',
-                     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', 
-                     width: '400px', 
-                     height: '200px', 
-                     minWidth: '400px', 
-                     minHeight: '200px', 
-                     maxWidth: '400px', 
-                     maxHeight: '200px' 
-                   }}>
-                <div className="flex flex-col items-center mb-2 text-center">
-                  <h3 className="text-white font-medium text-sm mb-1">Community</h3>
-                  <p className="text-gray-300 text-xs">
-                    Connect with other users
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => window.open('mailto:campuskinect01@gmail.com', '_blank')}
-                    className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
-                    style={{ cursor: 'pointer' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#99afa7';
-                      e.currentTarget.style.color = 'white';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '';
-                      e.currentTarget.style.color = '';
-                    }}
-                  >
-                    <h4 className="text-white font-medium text-sm">Send Feedback</h4>
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
