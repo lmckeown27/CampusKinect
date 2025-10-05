@@ -874,7 +874,7 @@ const CreatePostTab: React.FC = () => {
                   
                   {/* Category Box for selected Post Type */}
                   {formData.postType && (
-                    <div className="bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" style={{ width: '100%', height: '350px' }}>
+                    <div className="bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" style={{ width: '100%', height: '200px' }}>
                       {/* Header */}
                       <div className="flex items-center justify-center p-3 border-b border-gray-200">
                         <h3 className="text-base font-semibold text-[#708d81]">
