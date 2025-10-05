@@ -915,8 +915,12 @@ const CreatePostTab: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isLoading || !canSubmitForm()}
-                    className="py-4 px-8 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer text-lg"
-                    style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
+                    className="py-4 px-8 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg"
+                    style={{ 
+                      backgroundColor: '#708d81', 
+                      color: 'white', 
+                      cursor: (isLoading || !canSubmitForm()) ? 'not-allowed' : 'pointer' 
+                    }}
                     onMouseEnter={(e) => {
                       if (!isLoading && canSubmitForm()) {
                         e.currentTarget.style.backgroundColor = '#5a7268';
