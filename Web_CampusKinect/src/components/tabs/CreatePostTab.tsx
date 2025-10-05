@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { usePostsStore } from '../../stores/postsStore';
 import { apiService } from '../../services/api';
 import TagSelector from '../ui/TagSelector';
-import { ImageIcon, X, Tag, Calendar, Repeat, Clock, Hash } from 'lucide-react';
+import { ImageIcon, X, Tag, Calendar, Repeat, Clock, Hash, ShoppingBag, Wrench, Home } from 'lucide-react';
 
 interface FormData {
   title: string;
@@ -111,10 +111,10 @@ const CreatePostTab: React.FC = () => {
   };
 
   const postTypes = [
-    { value: 'goods', label: 'Good', icon: '🛍️' },
-    { value: 'services', label: 'Service', icon: '🔧' },
-    { value: 'housing', label: 'Housing', icon: '🏠' },
-    { value: 'events', label: 'Event', icon: '📅' },
+    { value: 'goods', label: 'Good', Icon: ShoppingBag },
+    { value: 'services', label: 'Service', Icon: Wrench },
+    { value: 'housing', label: 'Housing', Icon: Home },
+    { value: 'events', label: 'Event', Icon: Calendar },
   ];
 
 
@@ -546,7 +546,9 @@ const CreatePostTab: React.FC = () => {
                   }}
                 >
                   <div className="text-center">
-                    <div className="text-2xl mb-1">{type.icon}</div>
+                    <div className="mb-1 flex justify-center">
+                      <type.Icon size={28} strokeWidth={2} />
+                    </div>
                     <div className="text-sm font-medium">{type.label}</div>
                   </div>
                 </button>
