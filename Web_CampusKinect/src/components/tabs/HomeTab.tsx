@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, X, ChevronUp, ChevronDown, ShoppingBag, Wrench, Home, Calendar } from 'lucide-react';
 import { usePostsStore } from '../../stores/postsStore';
 import { PostCard } from '../ui';
+import EditPostModal from '../ui/EditPostModal';
+import { Post, CreatePostForm } from '../../types';
 
 // Category definitions matching iOS - using Lucide icons similar to SF Symbols
 const categories = [
@@ -46,13 +48,19 @@ const HomeTab: React.FC = () => {
     fetchPosts, 
     setFilters,
     clearFilters,
-    filters 
+    filters,
+    deletePost,
+    updatePost
   } = usePostsStore();
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedOfferRequest, setSelectedOfferRequest] = useState<string | null>(null);
+  
+  // Edit modal state
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Load initial posts
   useEffect(() => {
@@ -114,6 +122,34 @@ const HomeTab: React.FC = () => {
     setSelectedTags([]);
     setSelectedOfferRequest(null);
     clearFilters();
+  };
+
+  // Handle post deletion
+  const handleDeletePost = async (postId: string) => {
+    try {
+      await deletePost(postId);
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('Failed to delete post. Please try again.');
+    }
+  };
+
+  // Handle post edit
+  const handleEditPost = (postId: string, post: Post) => {
+    setEditingPost(post);
+    setIsEditModalOpen(true);
+  };
+
+  // Handle save edited post
+  const handleSaveEditedPost = async (postId: string, formData: Partial<CreatePostForm>) => {
+    try {
+      await updatePost(postId, formData);
+      setIsEditModalOpen(false);
+      setEditingPost(null);
+    } catch (error) {
+      console.error('Failed to update post:', error);
+      alert('Failed to update post. Please try again.');
+    }
   };
 
   const selectedCategoryData = categories.find(c => c.id === selectedCategory);
@@ -275,7 +311,12 @@ const HomeTab: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {filteredPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard 
+                  key={post.id} 
+                  post={post}
+                  onEdit={handleEditPost}
+                  onDelete={handleDeletePost}
+                />
               ))}
               
               {/* Load more indicator */}
@@ -301,6 +342,19 @@ const HomeTab: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Post Modal */}
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingPost(null);
+          }}
+          onSave={handleSaveEditedPost}
+        />
+      )}
     </div>
   );
 };
