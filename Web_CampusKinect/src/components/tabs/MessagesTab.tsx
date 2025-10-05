@@ -752,11 +752,46 @@ const MessagesTab: React.FC = () => {
                           }}
                         >
                           {/* Comment Header */}
-                          <div className="flex items-baseline space-x-2 mb-1">
-                            <span className="font-semibold text-sm" style={{ color: isCurrentUser ? '#a8c4a2' : '#708d81' }}>
-                              @{isCurrentUser ? 'you' : (message.sender?.displayName || currentConversation?.otherUser.displayName)}
+                          <div className="flex items-center space-x-2 mb-1">
+                            {/* Profile Picture */}
+                            <div className="flex-shrink-0">
+                              {isCurrentUser ? (
+                                currentUser?.profilePicture ? (
+                                  <img
+                                    src={currentUser.profilePicture}
+                                    alt="You"
+                                    className="w-6 h-6 rounded-full object-cover"
+                                    style={{ border: '1px solid #708d81' }}
+                                  />
+                                ) : (
+                                  <div className="w-6 h-6 bg-[#708d81] rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs font-bold">
+                                      {currentUser?.firstName?.charAt(0) || 'Y'}
+                                    </span>
+                                  </div>
+                                )
+                              ) : (
+                                message.sender?.profilePicture ? (
+                                  <img
+                                    src={message.sender.profilePicture}
+                                    alt={message.sender?.displayName || currentConversation?.otherUser.displayName}
+                                    className="w-6 h-6 rounded-full object-cover"
+                                    style={{ border: '1px solid #708d81' }}
+                                  />
+                                ) : (
+                                  <div className="w-6 h-6 bg-[#708d81] rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs font-bold">
+                                      {(message.sender?.firstName?.charAt(0) || '?')}
+                                    </span>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                            {/* Name and Time */}
+                            <span className="font-semibold text-sm text-black">
+                              {isCurrentUser ? 'You' : (message.sender?.displayName || currentConversation?.otherUser.displayName)}
                             </span>
-                            <span className="text-xs opacity-60" style={{ color: '#e5e7eb' }}>
+                            <span className="text-xs opacity-60 text-black">
                               {formatTimeAgo(message.createdAt)}
                             </span>
                           </div>
