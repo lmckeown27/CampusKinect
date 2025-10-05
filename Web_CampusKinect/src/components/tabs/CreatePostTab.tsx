@@ -731,7 +731,7 @@ const CreatePostTab: React.FC = () => {
                     />
                     <label 
                       htmlFor="image-upload-top"
-                      className={`relative p-3 hover:bg-grey-medium rounded-lg transition-all duration-200 inline-block ${
+                      className={`relative p-3 bg-white hover:bg-grey-medium rounded-lg transition-all duration-200 inline-block ${
                         isUploadingImages ? 'cursor-wait opacity-50' : 'cursor-pointer hover:shadow-md'
                       }`}
                       title={isUploadingImages ? "Processing images..." : `Upload images (${imageFiles.length}/4)`}
@@ -744,7 +744,7 @@ const CreatePostTab: React.FC = () => {
                       }}
                       onMouseLeave={(e) => {
                         if (!isUploadingImages) {
-                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.backgroundColor = 'white';
                         }
                       }}
                     >
