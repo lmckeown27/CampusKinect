@@ -20,7 +20,10 @@ interface AnalyticsData {
   messagesPerDay: number;
   topUniversities: Array<{ id: number; name: string; userCount: number }>;
   contentTrends: Array<{ date: string; posts: number; messages: number }>;
-  userActivity: Array<{ date: string; activeUsers: number }>;
+  userActivity: {
+    activeUsersLast7Days: number;
+    newSignupsLast7Days: number;
+  } | null;
 }
 
 interface BannedUser {
@@ -332,6 +335,105 @@ export default function AdminDashboardPage() {
                     ) : (
                       <p className="text-center py-8" style={{ color: '#9ca3af' }}>No university data available</p>
                     )}
+                  </div>
+
+                  {/* Content Trends (Last 7 Days) */}
+                  <div className="rounded-lg p-6" style={{ backgroundColor: '#1a1a1a' }}>
+                    <h2 className="text-xl font-bold mb-4" style={{ color: '#ffffff' }}>Content Trends (Last 7 Days)</h2>
+                    
+                    {analytics.contentTrends && analytics.contentTrends.length > 0 ? (
+                      <div className="space-y-4">
+                        {analytics.contentTrends.slice(-7).map((trend, index) => {
+                          const date = new Date(trend.date);
+                          const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`;
+                          
+                          return (
+                            <div key={index} className="space-y-2">
+                              <div className="flex items-center space-x-4">
+                                <span className="text-xs font-medium w-12" style={{ color: '#9ca3af' }}>
+                                  {formattedDate}
+                                </span>
+                                <div className="flex-1 space-y-1">
+                                  {/* Posts bar */}
+                                  <div className="flex items-center space-x-2">
+                                    <div
+                                      className="h-2 rounded transition-all"
+                                      style={{
+                                        width: `${Math.max(trend.posts * 2, 8)}px`,
+                                        backgroundColor: '#3b82f6'
+                                      }}
+                                    />
+                                    <span className="text-xs" style={{ color: '#9ca3af' }}>
+                                      {trend.posts} posts
+                                    </span>
+                                  </div>
+                                  {/* Messages bar */}
+                                  <div className="flex items-center space-x-2">
+                                    <div
+                                      className="h-2 rounded transition-all"
+                                      style={{
+                                        width: `${Math.max(trend.messages * 0.5, 8)}px`,
+                                        backgroundColor: '#8b5cf6'
+                                      }}
+                                    />
+                                    <span className="text-xs" style={{ color: '#9ca3af' }}>
+                                      {trend.messages} messages
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-center py-8" style={{ color: '#9ca3af' }}>No trend data available</p>
+                    )}
+                  </div>
+
+                  {/* User Activity (Last 7 Days) */}
+                  <div className="rounded-lg p-6" style={{ backgroundColor: '#1a1a1a' }}>
+                    <h2 className="text-xl font-bold mb-4" style={{ color: '#ffffff' }}>User Activity (Last 7 Days)</h2>
+                    
+                    <div className="space-y-4">
+                      {/* Active Users */}
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm font-medium w-24" style={{ color: '#ffffff' }}>
+                          Active Users
+                        </span>
+                        <div className="flex items-center space-x-2 flex-1">
+                          <div
+                            className="h-5 rounded transition-all"
+                            style={{
+                              width: `${Math.max((analytics.userActivity?.activeUsersLast7Days || 0) * 20, 8)}px`,
+                              backgroundColor: '#10b981'
+                            }}
+                          />
+                          <span className="text-xs" style={{ color: '#9ca3af' }}>
+                            {analytics.userActivity?.activeUsersLast7Days || 0} active users
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* New Signups */}
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm font-medium w-24" style={{ color: '#ffffff' }}>
+                          New Signups
+                        </span>
+                        <div className="flex items-center space-x-2 flex-1">
+                          <div
+                            className="h-5 rounded transition-all"
+                            style={{
+                              width: `${Math.max((analytics.userActivity?.newSignupsLast7Days || 0) * 20, 8)}px`,
+                              backgroundColor: '#3b82f6'
+                            }}
+                          />
+                          <span className="text-xs" style={{ color: '#9ca3af' }}>
+                            {analytics.userActivity?.newSignupsLast7Days || 0} new signups
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
