@@ -748,7 +748,7 @@ const CreatePostTab: React.FC = () => {
                         }
                       }}
                     >
-                      <ImageIcon className="h-6 w-6 text-[#708d81] hover:text-white transition-colors" />
+                      <ImageIcon className="h-6 w-6 text-[#708d81] hover:text-gray-400 transition-colors" />
                       {isUploadingImages && (
                         <div className="absolute -top-1 -right-1 w-3 h-3">
                           <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-[#708d81]"></div>
