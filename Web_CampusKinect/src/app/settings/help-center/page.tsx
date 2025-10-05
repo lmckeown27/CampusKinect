@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   User, 
@@ -29,15 +29,6 @@ interface Category {
 
 export default function SettingsHelpCenterPage() {
   const router = useRouter();
-
-  const [showContactForm, setShowContactForm] = useState(false);
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    campus: '',
-    issueType: '',
-    description: ''
-  });
 
   const categories: Category[] = [
     {
@@ -82,14 +73,6 @@ export default function SettingsHelpCenterPage() {
     { title: 'iOS Guide', path: '/support/guides/ios' },
     { title: 'Web Guide', path: '/support/guides/web' }
   ];
-
-  const handleContactFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    alert('Thank you for your message. We\'ll get back to you within 24-48 hours.');
-    setShowContactForm(false);
-    setContactForm({ name: '', email: '', campus: '', issueType: '', description: '' });
-  };
 
   return (
     <MainLayout>
@@ -302,7 +285,7 @@ export default function SettingsHelpCenterPage() {
                 </div>
                 <div className="space-y-2">
                   <button
-                    onClick={() => setShowContactForm(!showContactForm)}
+                    onClick={() => window.location.href = 'mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request - Bug Report'}
                     className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {
@@ -317,109 +300,6 @@ export default function SettingsHelpCenterPage() {
                     <h4 className="text-white font-medium text-sm">Contact Support</h4>
                   </button>
                 </div>
-                
-                {/* Contact Form Dropdown */}
-                {showContactForm && (
-                  <div className="mt-6 rounded-xl p-6 border" style={{ backgroundColor: '#525252', borderColor: '#708d81' }}>
-                    <h4 className="text-xl font-bold text-white mb-4" style={{ textAlign: 'center' }}>
-                      Contact Support
-                    </h4>
-                    
-                    <form onSubmit={handleContactFormSubmit} className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-white font-medium mb-2">Name</label>
-                          <input
-                            type="text"
-                            required
-                            value={contactForm.name}
-                            onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                            className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2"
-                            style={{ focusRingColor: '#708d81' }}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-white font-medium mb-2">Email</label>
-                          <input
-                            type="email"
-                            required
-                            value={contactForm.email}
-                            onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                            className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2"
-                            style={{ focusRingColor: '#708d81' }}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-white font-medium mb-2">Campus</label>
-                        <input
-                          type="text"
-                          required
-                          value={contactForm.campus}
-                          onChange={(e) => setContactForm({...contactForm, campus: e.target.value})}
-                          className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2"
-                          style={{ focusRingColor: '#708d81' }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-white font-medium mb-2">Issue Type</label>
-                        <select
-                          required
-                          value={contactForm.issueType}
-                          onChange={(e) => setContactForm({...contactForm, issueType: e.target.value})}
-                          className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2"
-                          style={{ focusRingColor: '#708d81' }}
-                        >
-                          <option value="">Select an issue type</option>
-                          <option value="account">Account Issues</option>
-                          <option value="marketplace">Marketplace Problems</option>
-                          <option value="safety">Safety Concerns</option>
-                          <option value="bug">Bug Report</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-white font-medium mb-2">Description</label>
-                        <textarea
-                          required
-                          rows={4}
-                          value={contactForm.description}
-                          onChange={(e) => setContactForm({...contactForm, description: e.target.value})}
-                          className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 resize-none"
-                          style={{ focusRingColor: '#708d81' }}
-                          placeholder="Please describe your issue in detail..."
-                        />
-                      </div>
-                      
-                      <div className="flex justify-end space-x-4">
-                        <button
-                          type="button"
-                          onClick={() => setShowContactForm(false)}
-                          className="px-6 py-3 text-gray-300 hover:text-white transition-colors"
-                          style={{ cursor: 'pointer' }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="py-3 px-6 text-white font-medium rounded-lg transition-colors cursor-pointer"
-                          style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#5a7268';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#708d81';
-                          }}
-                        >
-                          Send Message
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
               </div>
 
               {/* Community */}
