@@ -778,6 +778,7 @@ const MessagesTab: React.FC = () => {
                             <>
                               <div 
                                 className="fixed inset-0 z-40"
+                                style={{ backgroundColor: 'transparent' }}
                                 onClick={() => setOpenMessageMenuId(null)}
                               />
                               <div 
