@@ -241,6 +241,11 @@ const MessagesTab: React.FC = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
+  // Resizable panel state
+  const [leftPanelWidth, setLeftPanelWidth] = useState(320); // Default 320px (20rem)
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   // Image upload state
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -584,11 +589,63 @@ const MessagesTab: React.FC = () => {
     return `${weeks}w ago`;
   };
 
+  // Handle resizing
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleMouseMove = React.useCallback((e: MouseEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const newWidth = e.clientX - containerRect.left;
+    
+    // Set min and max widths (200px to 600px)
+    const clampedWidth = Math.min(Math.max(newWidth, 200), 600);
+    setLeftPanelWidth(clampedWidth);
+  }, [isDragging]);
+
+  const handleMouseUp = React.useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Add/remove mouse event listeners
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
-      <div className="flex min-h-screen">
+      <div ref={containerRef} className="flex min-h-screen">
         {/* Left Sidebar - Conversations */}
-        <div className="w-full sm:w-80 lg:w-96 xl:w-80 border-r border-[#708d81] flex flex-col rounded-lg overflow-y-hidden" style={{ backgroundColor: '#737373' }}>
+        <div 
+          className="border-r border-[#708d81] flex flex-col rounded-lg overflow-y-hidden" 
+          style={{ 
+            backgroundColor: '#737373',
+            width: `${leftPanelWidth}px`,
+            minWidth: '200px',
+            maxWidth: '600px',
+            flexShrink: 0
+          }}
+        >
           {/* Header */}
           <div className="p-4 border-b border-[#708d81] rounded-t-lg">
             <h2 className="text-xl font-bold text-[#708d81] mb-4">Active Discussions</h2>
@@ -868,6 +925,22 @@ const MessagesTab: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Resizable Divider */}
+        <div
+          onMouseDown={handleMouseDown}
+          className="w-1 hover:w-2 transition-all cursor-col-resize flex-shrink-0 relative group"
+          style={{
+            backgroundColor: isDragging ? '#708d81' : '#525252',
+            cursor: 'col-resize'
+          }}
+        >
+          {/* Visual indicator */}
+          <div 
+            className="absolute inset-y-0 left-1/2 transform -translate-x-1/2 w-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{ backgroundColor: '#708d81' }}
+          />
         </div>
 
         {/* Right Side - Chat */}
