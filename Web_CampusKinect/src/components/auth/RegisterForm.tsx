@@ -184,7 +184,7 @@ const RegisterForm: React.FC = () => {
             <span className="text-primary">CampusKinect</span>
           </h1>
           <p 
-            className="text-neutral-600 w-full"
+            className="text-white w-full"
             style={{ textAlign: 'center' }}
           >
             Create your account to get started
