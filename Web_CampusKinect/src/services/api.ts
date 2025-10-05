@@ -1256,6 +1256,22 @@ class ApiService {
 
     throw new Error(response.data.message || 'Failed to upload image');
   }
+
+  // Get all universities with user counts
+  public async getAllUniversities(): Promise<Array<{ id: number; name: string; userCount: number }>> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get('/search/universities');
+    
+    if (response.data.success && response.data.data?.universities) {
+      return response.data.data.universities.map((u: any) => ({
+        id: u.id,
+        name: u.name,
+        userCount: parseInt(u.user_count) || 0
+      }));
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch universities');
+  }
 }
 
 export const apiService = new ApiService();

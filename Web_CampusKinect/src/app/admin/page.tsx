@@ -48,6 +48,7 @@ export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('analytics');
   const [refreshing, setRefreshing] = useState(false);
   const [showAllUniversities, setShowAllUniversities] = useState(false);
+  const [allUniversities, setAllUniversities] = useState<Array<{ id: number; name: string; userCount: number }>>([]);
 
   // Authorization check
   useEffect(() => {
@@ -118,6 +119,15 @@ export default function AdminDashboardPage() {
       setBannedUsers(response.data || []);
     } catch (error) {
       console.error('Failed to load banned users:', error);
+    }
+  };
+
+  const loadAllUniversities = async () => {
+    try {
+      const universities = await apiService.getAllUniversities();
+      setAllUniversities(universities);
+    } catch (error) {
+      console.error('Failed to load all universities:', error);
     }
   };
 
@@ -287,7 +297,10 @@ export default function AdminDashboardPage() {
                       <h2 className="text-xl font-bold" style={{ color: '#ffffff' }}>Top Universities</h2>
                       {analytics.topUniversities && analytics.topUniversities.length > 0 && (
                         <button 
-                          onClick={() => setShowAllUniversities(true)}
+                          onClick={() => {
+                            setShowAllUniversities(true);
+                            loadAllUniversities();
+                          }}
                           className="flex items-center space-x-1 text-sm font-medium transition-colors hover:opacity-80" 
                           style={{ color: '#708d81' }}
                         >
@@ -604,7 +617,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* All Universities Modal */}
-      {showAllUniversities && analytics && (
+      {showAllUniversities && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
           onClick={() => setShowAllUniversities(false)}
@@ -633,24 +646,25 @@ export default function AdminDashboardPage() {
                   <div>
                     <p className="text-sm mb-1" style={{ color: '#9ca3af' }}>Total Universities</p>
                     <p className="text-3xl font-bold" style={{ color: '#ffffff' }}>
-                      {analytics.topUniversities.length}
+                      {allUniversities.length}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm mb-1" style={{ color: '#9ca3af' }}>Total Users</p>
                     <p className="text-3xl font-bold" style={{ color: '#ffffff' }}>
-                      {analytics.topUniversities.reduce((sum, u) => sum + u.userCount, 0)}
+                      {allUniversities.reduce((sum, u) => sum + u.userCount, 0)}
                     </p>
                   </div>
                 </div>
 
                 {/* All Universities List */}
                 <div className="rounded-lg overflow-hidden" style={{ backgroundColor: '#262626' }}>
-                  {analytics.topUniversities
-                    .sort((a, b) => b.userCount - a.userCount)
-                    .map((university, index) => {
-                      const totalUsers = analytics.topUniversities.reduce((sum, u) => sum + u.userCount, 0);
-                      const percentage = totalUsers > 0 ? (university.userCount / totalUsers) * 100 : 0;
+                  {allUniversities.length > 0 ? (
+                    allUniversities
+                      .sort((a, b) => b.userCount - a.userCount)
+                      .map((university, index) => {
+                        const totalUsers = allUniversities.reduce((sum, u) => sum + u.userCount, 0);
+                        const percentage = totalUsers > 0 ? (university.userCount / totalUsers) * 100 : 0;
                       
                       const getRankColor = (rank: number) => {
                         switch (rank) {
@@ -718,12 +732,17 @@ export default function AdminDashboardPage() {
                               </div>
                             </div>
                           </div>
-                          {index < analytics.topUniversities.length - 1 && (
+                          {index < allUniversities.length - 1 && (
                             <div className="h-px mx-4" style={{ backgroundColor: '#525252' }} />
                           )}
                         </div>
                       );
-                    })}
+                    })
+                  ) : (
+                    <div className="p-8 text-center" style={{ color: '#9ca3af' }}>
+                      <p>Loading universities...</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
