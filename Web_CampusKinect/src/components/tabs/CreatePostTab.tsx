@@ -839,8 +839,35 @@ const CreatePostTab: React.FC = () => {
             </p>
           </div>
 
+              {/* Clear All Tags Button */}
+              {formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length > 0 && (
+                <div className="flex justify-start mt-4 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Clear tags for this specific post type only
+                      const tagsToRemove = getSubTagsForPostType(formData.postType);
+                      setFormData(prev => ({
+                        ...prev,
+                        tags: prev.tags.filter(tag => !tagsToRemove.includes(tag))
+                      }));
+                    }}
+                    className="px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer"
+                    style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#e8ebe8';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f0f2f0';
+                    }}
+                  >
+                    Clear All ({formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length})
+                  </button>
+                </div>
+              )}
+
               {/* Bottom Section: Category Tags and Post Button */}
-              <div className="flex items-start justify-between mt-8">
+              <div className="flex items-start justify-between mt-4">
                 {/* Category Tags Section - Expanded Width */}
                 <div className="flex-1 p-4 bg-grey-medium rounded-lg border mr-6">
 
@@ -885,34 +912,6 @@ const CreatePostTab: React.FC = () => {
                           </button>
                         ))}
                       </div>
-
-                      {/* Footer with actions for this post type - only show when there are tags */}
-                      {formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length > 0 && (
-                        <div className="p-3 border-t border-gray-200 bg-grey-medium">
-                          <div className="flex justify-center space-x-2">
-                            <button
-                              onClick={() => {
-                                // Clear tags for this specific post type only
-                                const tagsToRemove = getSubTagsForPostType(formData.postType);
-                                setFormData(prev => ({
-                                  ...prev,
-                                  tags: prev.tags.filter(tag => !tagsToRemove.includes(tag))
-                                }));
-                              }}
-                              className="px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer"
-                              style={{ backgroundColor: '#f0f2f0', color: '#708d81', cursor: 'pointer' }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#e8ebe8';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#f0f2f0';
-                              }}
-                            >
-                              Clear All ({formData.tags.filter(tag => getSubTagsForPostType(formData.postType).includes(tag)).length})
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
                   
