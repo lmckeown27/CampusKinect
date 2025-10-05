@@ -88,6 +88,7 @@ const ProfileTab: React.FC = () => {
           setEditForm({
             firstName: updatedUser.firstName || '',
             lastName: updatedUser.lastName || '',
+            username: updatedUser.username || '',
             major: updatedUser.major || '',
             year: updatedUser.year || 1,
             hometown: updatedUser.hometown || '',
@@ -99,6 +100,7 @@ const ProfileTab: React.FC = () => {
           setEditForm({
             firstName: authUser.firstName || '',
             lastName: authUser.lastName || '',
+            username: authUser.username || '',
             major: authUser.major || '',
             year: authUser.year || 1,
             hometown: authUser.hometown || '',
@@ -111,6 +113,7 @@ const ProfileTab: React.FC = () => {
         setEditForm({
           firstName: authUser.firstName || '',
           lastName: authUser.lastName || '',
+          username: authUser.username || '',
           major: authUser.major || '',
           year: authUser.year || 1,
           hometown: authUser.hometown || '',
@@ -135,6 +138,7 @@ const ProfileTab: React.FC = () => {
   const [editForm, setEditForm] = useState({
     firstName: '',
     lastName: '',
+    username: '',
     major: '',
     year: 1,
     hometown: '',
@@ -298,6 +302,11 @@ const ProfileTab: React.FC = () => {
         return;
       }
 
+      if (!editForm.username?.trim()) {
+        alert('Username is required.');
+        return;
+      }
+
       // Validate field lengths (matching backend validation)
       if (editForm.firstName.length > 100) {
         alert('First name cannot exceed 100 characters.');
@@ -306,6 +315,11 @@ const ProfileTab: React.FC = () => {
 
       if (editForm.lastName.length > 100) {
         alert('Last name cannot exceed 100 characters.');
+        return;
+      }
+
+      if (editForm.username.length > 50) {
+        alert('Username cannot exceed 50 characters.');
         return;
       }
 
@@ -341,10 +355,18 @@ const ProfileTab: React.FC = () => {
         return;
       }
 
+      // Validate username format (letters, numbers, underscores)
+      const usernameRegex = /^[A-Za-z0-9_]+$/;
+      if (!usernameRegex.test(editForm.username.trim())) {
+        alert('Username can only contain letters, numbers, and underscores.');
+        return;
+      }
+
       // Transform editForm to match API expectations
       const updateData = {
         firstName: editForm.firstName.trim(),
         lastName: editForm.lastName.trim(),
+        username: editForm.username.trim(),
         year: parseInt(editForm.year.toString()), // Ensure it's a number
         major: editForm.major?.trim() || undefined,
         hometown: editForm.hometown?.trim() || undefined,
@@ -370,6 +392,7 @@ const ProfileTab: React.FC = () => {
           ...prevUser,
           firstName: updateData.firstName,
           lastName: updateData.lastName,
+          username: updateData.username,
           major: updateData.major || prevUser.major,
           year: updateData.year,
           hometown: updateData.hometown || prevUser.hometown,
@@ -596,6 +619,22 @@ const ProfileTab: React.FC = () => {
                     />
                   </div>
                   
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.username}
+                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                      placeholder="Username"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                    />
+                    <p className="text-xs text-gray-300 mt-1">
+                      Choose a unique username (letters, numbers, and underscores only)
+                    </p>
+                  </div>
+                  
                   <input
                     type="text"
                     value={editForm.major}
@@ -683,8 +722,6 @@ const ProfileTab: React.FC = () => {
                     <h1 className="text-2xl font-bold text-gray-900">
                       {user?.firstName} {user?.lastName}
                     </h1>
-                    {/* EDIT PROFILE BUTTON COMMENTED OUT - User will fix locally */}
-                    {/*
                     <button
                       onClick={() => setIsEditing(true)}
                       className="p-2 rounded-lg transition-all duration-200"
@@ -707,7 +744,6 @@ const ProfileTab: React.FC = () => {
                     >
                       <Edit2 size={20} />
                     </button>
-                    */}
                   </div>
                   
                   <p className="text-white mb-1">@{user?.username || 'username'}</p>

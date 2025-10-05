@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { User, FileText, Save, Cookie, ScrollText, ShieldCheck, HelpCircle, MessageCircle, Mail, Bug } from 'lucide-react';
+import { FileText, Cookie, ScrollText, ShieldCheck, HelpCircle, MessageCircle, Mail, Bug, User } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
 
@@ -11,15 +11,6 @@ const SettingsTab: React.FC = () => {
   
   // Use real user data from auth store
   const user = authUser;
-  
-  // Add username state for editing
-  const [username, setUsername] = useState(user?.username || '');
-
-  const handleSave = () => {
-    // Save settings logic here (username)
-    console.log('Settings saved:', { username });
-    // You could add a toast notification here
-  };
 
   const handleCookieSettings = () => {
     router.push('/cookie-settings');
@@ -62,49 +53,7 @@ const SettingsTab: React.FC = () => {
         <div className="space-y-6">
           {/* Settings Sections - Horizontal Layout with spacing */}
           <div className="flex space-x-6 justify-center">
-            {/* Account Settings - 1st Section */}
-            <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center">
-                  <User size={20} className="text-[#708d81]" />
-                  <div className="w-3"></div>
-                  <h2 className="text-lg font-semibold text-white">Account</h2>
-                </div>
-              </div>
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Display Name
-                  </label>
-                  <input
-                    type="text"
-                    value={user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'Loading...'}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-grey-medium text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your username"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent text-gray-900"
-                  />
-                  <div className="mt-2">
-                    <p className="text-sm text-white">
-                      <span className="font-medium">Email:</span> {user?.email || 'Loading...'}
-                    </p>
-                    <p className="text-xs text-gray-300 mt-1">Email cannot be changed for security reasons</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Legal & Documents - 2nd Section */}
+            {/* Legal & Documents - 1st Section */}
             <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
@@ -218,7 +167,7 @@ const SettingsTab: React.FC = () => {
               </div>
             </div>
 
-            {/* Privacy & Safety - 3rd Section */}
+            {/* Privacy & Safety - 2nd Section */}
             <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
@@ -257,7 +206,7 @@ const SettingsTab: React.FC = () => {
               </div>
             </div>
 
-            {/* Support & Help - 4th Section */}            {/* Support & Help - 3rd Section */}
+            {/* Support & Help - 3rd Section */}
             <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
@@ -404,35 +353,6 @@ const SettingsTab: React.FC = () => {
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* Save Button */}
-          <div className="flex justify-center mt-8">
-            <button
-              onClick={handleSave}
-              className="flex items-center px-6 py-3 rounded-lg transition-all duration-200 cursor-pointer transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
-              style={{ 
-                backgroundColor: '#708d81',
-                color: 'white',
-                border: '2px solid #708d81',
-                cursor: 'pointer',
-                WebkitTapHighlightColor: 'transparent',
-                WebkitTouchCallout: 'none',
-                WebkitUserSelect: 'none',
-                userSelect: 'none'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#5a7268';
-                e.currentTarget.style.borderColor = '#5a7268';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#708d81';
-                e.currentTarget.style.borderColor = '#708d81';
-              }}
-            >
-              <Save size={18} className="mr-2" />
-              Save Settings
-            </button>
           </div>
         </div>
       </div>
