@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, Plus, X, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle, Image as ImageIcon, Flag } from 'lucide-react';
+import { Send, User, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle, Image as ImageIcon, Flag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -238,7 +238,6 @@ const MessagesTab: React.FC = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
-  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [conversationMessages, setConversationMessages] = useState<any[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -253,12 +252,6 @@ const MessagesTab: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // New Message Modal state
-  const [userSearchQuery, setUserSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<UserType[]>([]);
-  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
   
   // Report and Block modals state
   const [showReportUserModal, setShowReportUserModal] = useState(false);
@@ -339,73 +332,6 @@ const MessagesTab: React.FC = () => {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [conversationMessages]);
-
-  // Search users with debouncing
-  useEffect(() => {
-    if (!userSearchQuery.trim()) {
-      setSearchResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    const timeoutId = setTimeout(async () => {
-      try {
-        setIsSearching(true);
-        const users = await apiService.searchUsers(userSearchQuery);
-        // Filter out the current user from search results
-        const filteredUsers = users.filter(user => currentUser && user.id !== currentUser.id);
-        setSearchResults(filteredUsers);
-      } catch (error) {
-        console.error('Failed to search users:', error);
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 150); // 150ms debounce
-
-    return () => clearTimeout(timeoutId);
-  }, [userSearchQuery, currentUser]);
-
-  const handleUserSelect = (user: UserType) => {
-    // Prevent selecting self
-    if (currentUser && user.id === currentUser.id) {
-      return;
-    }
-    
-    setSelectedUser(user);
-    setUserSearchQuery('');
-    setSearchResults([]);
-  };
-
-  const handleStartChat = async () => {
-    if (!selectedUser || !currentUser) return;
-    
-    // Double-check to prevent self-messaging
-    if (selectedUser.id === currentUser.id) {
-      console.warn('Cannot start a chat with yourself');
-      return;
-    }
-    
-    try {
-      // Navigate to the universal messaging page
-      router.push(`/chat/${selectedUser.id}`);
-      
-      // Reset modal state
-      setShowNewMessageModal(false);
-      setSelectedUser(null);
-      setUserSearchQuery('');
-      setSearchResults([]);
-    } catch (error) {
-      console.error('Failed to start chat:', error);
-    }
-  };
-
-  const handleCloseNewMessageModal = () => {
-    setShowNewMessageModal(false);
-    setSelectedUser(null);
-    setUserSearchQuery('');
-    setSearchResults([]);
-  };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentConversation || !currentUser) return;
@@ -653,254 +579,17 @@ const MessagesTab: React.FC = () => {
           <div className="p-4 border-b border-[#708d81] rounded-t-lg">
             <h2 className="text-xl font-bold text-[#708d81] mb-4">Active Discussions</h2>
             
-            {/* Search and Plus Button */}
+            {/* Search */}
             <div className="mt-4 px-2">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  placeholder="Search discussions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 px-4 py-2 text-sm border border-[#708d81] rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
-                />
-                <button
-                  onClick={() => setShowNewMessageModal(true)}
-                  className="px-4 py-2 text-[#708d81] border border-[#708d81] rounded-md transition-colors cursor-pointer"
-                  style={{ 
-                    backgroundColor: '#525252', 
-                    cursor: 'pointer',
-                    color: '#708d81',
-                    WebkitTapHighlightColor: 'transparent',
-                    WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'none',
-                    userSelect: 'none'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f2f0'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#525252'}
-                >
-                  <Plus size={20} />
-                </button>
-              </div>
+              <input
+                type="text"
+                placeholder="Search discussions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 text-sm border border-[#708d81] rounded-md focus:ring-2 focus:ring-[#708d81] focus:border-transparent"
+              />
             </div>
           </div>
-
-          {/* New Message Modal */}
-          {showNewMessageModal && (
-            <div className="px-4 pb-4 flex justify-center">
-              <div className="rounded-lg p-4 border-2 border-[#708d81] shadow-lg w-72" style={{ backgroundColor: '#525252' }}>
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-[#708d81]">New Message</h3>
-                  <button
-                    onClick={handleCloseNewMessageModal}
-                    className="p-2 rounded-lg transition-all duration-200"
-                    style={{ 
-                      backgroundColor: '#708d81', 
-                      color: 'white', 
-                      border: '2px solid #708d81', 
-                      cursor: 'pointer' 
-                    }}
-                    onMouseEnter={(e) => { 
-                      e.currentTarget.style.backgroundColor = '#a8c4a2'; 
-                      e.currentTarget.style.border = '2px solid #a8c4a2'; 
-                      e.currentTarget.style.cursor = 'pointer'; 
-                    }}
-                    onMouseLeave={(e) => { 
-                      e.currentTarget.style.backgroundColor = '#708d81'; 
-                      e.currentTarget.style.border = '2px solid #708d81'; 
-                      e.currentTarget.style.cursor = 'pointer'; 
-                    }}
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Selected User Display */}
-                  {selectedUser ? (
-                    <div className="flex items-center justify-between py-2 px-3 rounded-lg border-2" style={{ backgroundColor: '#525252', borderColor: '#708d81' }}>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-[#708d81] rounded-full flex items-center justify-center">
-                          {selectedUser.profilePicture ? (
-                            <img 
-                              src={selectedUser.profilePicture} 
-                              alt={selectedUser.firstName}
-                              className="w-8 h-8 rounded-full object-cover"
-                            />
-                          ) : (
-                            <User size={16} className="text-white" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium" style={{ color: '#708d81' }}>
-                            {selectedUser.displayName || `${selectedUser.firstName} ${selectedUser.lastName}`}
-                          </p>
-                          <p className="text-xs" style={{ color: '#5a7268' }}>@{selectedUser.username}</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => setSelectedUser(null)}
-                        className="p-1 rounded-lg transition-all duration-200"
-                        style={{ 
-                          backgroundColor: '#708d81', 
-                          color: 'white', 
-                          border: '2px solid #708d81', 
-                          cursor: 'pointer' 
-                        }}
-                        onMouseEnter={(e) => { 
-                          e.currentTarget.style.backgroundColor = '#a8c4a2'; 
-                          e.currentTarget.style.border = '2px solid #a8c4a2'; 
-                          e.currentTarget.style.cursor = 'pointer'; 
-                        }}
-                        onMouseLeave={(e) => { 
-                          e.currentTarget.style.backgroundColor = '#708d81'; 
-                          e.currentTarget.style.border = '2px solid #708d81'; 
-                          e.currentTarget.style.cursor = 'pointer'; 
-                        }}
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Search Input */}
-                      <div className="mb-6">
-                        <input
-                          type="text"
-                          placeholder="Search users..."
-                          value={userSearchQuery}
-                          onChange={(e) => setUserSearchQuery(e.target.value)}
-                          autoFocus
-                          className="w-full px-4 py-3 border-2 border-[#708d81] rounded-lg focus:ring-2 focus:ring-[#708d81] focus:border-[#708d81] text-sm transition-all duration-200"
-                          style={{ 
-                            backgroundColor: '#525252',
-                            color: '#708d81'
-                          }}
-                        />
-                      </div>
-
-                      {/* Search Results */}
-                      {userSearchQuery.trim() && (
-                        <div 
-                          className="border border-[#708d81] rounded-lg mb-6" 
-                          style={{ 
-                            backgroundColor: '#525252',
-                            maxHeight: searchResults.length > 3 ? '210px' : 'auto',
-                            overflowY: searchResults.length > 3 ? 'auto' : 'visible'
-                          }}
-                        >
-                          {isSearching ? (
-                            <div className="p-3 text-center text-sm text-[#708d81]">
-                              Searching...
-                            </div>
-                          ) : searchResults.length > 0 ? (
-                            <div className="p-2">
-                              {searchResults.map((user, index) => (
-                                <button
-                                  key={user.id}
-                                  onClick={() => handleUserSelect(user)}
-                                  className="w-full py-2 px-3 text-left flex items-center space-x-3 rounded-lg transition-all duration-200"
-                                  style={{ 
-                                    backgroundColor: '#737373',
-                                    border: '1px solid #e5e7eb',
-                                    cursor: 'pointer',
-                                    marginBottom: index === searchResults.length - 1 ? '0' : '16px'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = '#708d81';
-                                    e.currentTarget.style.borderColor = '#708d81';
-                                    e.currentTarget.style.transform = 'translateY(-1px)';
-                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(112, 141, 129, 0.3)';
-                                    e.currentTarget.style.cursor = 'pointer';
-                                    // Change text colors on hover
-                                    const nameEl = e.currentTarget.querySelector('.user-name') as HTMLElement;
-                                    const usernameEl = e.currentTarget.querySelector('.user-username') as HTMLElement;
-                                    if (nameEl) nameEl.style.color = 'white';
-                                    if (usernameEl) usernameEl.style.color = '#f3f4f6';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'white';
-                                    e.currentTarget.style.borderColor = '#e5e7eb';
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                    e.currentTarget.style.cursor = 'pointer';
-                                    // Reset text colors
-                                    const nameEl = e.currentTarget.querySelector('.user-name') as HTMLElement;
-                                    const usernameEl = e.currentTarget.querySelector('.user-username') as HTMLElement;
-                                    if (nameEl) nameEl.style.color = '#111827';
-                                    if (usernameEl) usernameEl.style.color = '#6b7280';
-                                  }}
-                                >
-                                  <div className="w-8 h-8 bg-[#708d81] rounded-full flex items-center justify-center">
-                                    {user.profilePicture ? (
-                                      <img 
-                                        src={user.profilePicture} 
-                                        alt={user.firstName}
-                                        className="w-8 h-8 rounded-full object-cover"
-                                      />
-                                    ) : (
-                                      <User size={16} className="text-white" />
-                                    )}
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className="text-sm font-medium user-name" style={{ color: '#111827' }}>
-                                      {user.displayName || `${user.firstName} ${user.lastName}`}
-                                    </p>
-                                    <p className="text-xs user-username" style={{ color: '#6b7280' }}>@{user.username}</p>
-                                  </div>
-                                </button>
-                              ))}
-                              {searchResults.length > 3 && (
-                                <div className="mt-2 py-2 text-center border-t border-[#708d81] bg-[#525252]">
-                                  <p className="text-xs text-[#5a7268] font-medium">
-                                    ↓ Scroll to see all {searchResults.length} users ↓
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          ) : !isSearching ? (
-                            <div className="p-3 text-center text-sm text-[#708d81]">
-                              No other users found
-                            </div>
-                          ) : null}
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  {/* Start Chat Button */}
-                  <div className="mt-16">
-                    <button 
-                      onClick={handleStartChat}
-                      disabled={!selectedUser}
-                      className="w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200"
-                      style={{ 
-                        backgroundColor: selectedUser ? '#708d81' : '#d1d5db',
-                        color: 'white',
-                        border: selectedUser ? '2px solid #708d81' : '2px solid #d1d5db',
-                        cursor: selectedUser ? 'pointer' : 'not-allowed'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (selectedUser) {
-                          e.currentTarget.style.backgroundColor = '#a8c4a2';
-                          e.currentTarget.style.border = '2px solid #a8c4a2';
-                          e.currentTarget.style.cursor = 'pointer';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (selectedUser) {
-                          e.currentTarget.style.backgroundColor = '#708d81';
-                          e.currentTarget.style.border = '2px solid #708d81';
-                          e.currentTarget.style.cursor = 'pointer';
-                        }
-                      }}
-                    >
-                      Start Chat
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto overflow-x-visible" style={{ backgroundColor: '#525252' }}>
