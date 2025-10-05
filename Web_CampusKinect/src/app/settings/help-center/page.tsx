@@ -285,7 +285,7 @@ export default function SettingsHelpCenterPage() {
                 </div>
                 <div className="space-y-2">
                   <button
-                    onClick={() => window.location.href = 'mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request - Bug Report'}
+                    onClick={() => window.open('mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request - Bug Report', '_blank')}
                     className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {

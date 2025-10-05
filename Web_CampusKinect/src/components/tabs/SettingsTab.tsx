@@ -29,7 +29,7 @@ const SettingsTab: React.FC = () => {
   };
 
   const handleContactUs = () => {
-    window.location.href = 'mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request - Bug Report';
+    window.open('mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request - Bug Report', '_blank');
   };
 
   const handleBlockedUsers = () => {
