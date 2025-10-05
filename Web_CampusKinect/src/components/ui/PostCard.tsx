@@ -331,26 +331,29 @@ const PostCard: React.FC<PostCardProps> = ({
                         <span>🗑️ Admin: Delete Post</span>
                       </button>
 
-                      <button 
-                        onClick={handleAdminBanUser}
-                        className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
-                        style={{
-                          backgroundColor: "#dc2626",
-                          color: "white",
-                          border: "2px solid #dc2626",
-                          cursor: "pointer",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = "#ef4444";
-                          e.currentTarget.style.border = "2px solid #ef4444";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = "#dc2626";
-                          e.currentTarget.style.border = "2px solid #dc2626";
-                        }}
-                      >
-                        <span>🚫 Admin: Ban User</span>
-                      </button>
+                      {/* Only show Ban User if NOT own post (admin can't ban themselves) */}
+                      {!isOwnPost && (
+                        <button 
+                          onClick={handleAdminBanUser}
+                          className="w-44 flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                          style={{
+                            backgroundColor: "#dc2626",
+                            color: "white",
+                            border: "2px solid #dc2626",
+                            cursor: "pointer",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "#ef4444";
+                            e.currentTarget.style.border = "2px solid #ef4444";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "#dc2626";
+                            e.currentTarget.style.border = "2px solid #dc2626";
+                          }}
+                        >
+                          <span>🚫 Admin: Ban User</span>
+                        </button>
+                      )}
                     </>
                   )}
 
