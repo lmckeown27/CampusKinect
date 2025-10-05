@@ -168,22 +168,22 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           </div>
         )}
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3 flex-1">
+        <div className="flex items-center justify-between min-w-0">
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
             {/* POST ICON (PRIMARY) */}
             <div className="w-12 h-12 flex-shrink-0">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
                 {getPostTypeIcon()}
               </div>
             </div>
-            <div className="flex-1 min-w-0 overflow-hidden">
+            <div className="flex-1 min-w-0">
               {/* POST TITLE (PRIMARY) */}
-              <div className="flex items-center justify-between">
-                <p className="text-lg font-semibold text-black truncate">
+              <div className="flex items-center space-x-2">
+                <p className="text-lg font-semibold text-black truncate flex-1 min-w-0">
                   {conversation.postTitle}
                 </p>
                 {conversation.unreadCount > 0 && (
-                  <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="flex-shrink-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
                   </span>
                 )}
@@ -196,7 +196,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
               {/* LAST MESSAGE (TERTIARY) */}
               {conversation.lastMessage && (
                 <p 
-                  className="text-base mt-1 truncate max-w-full" 
+                  className="text-base mt-1 truncate" 
                   style={{ 
                     color: '#e5e7eb',
                     overflow: 'hidden',
@@ -204,7 +204,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  "{truncateMessage(conversation.lastMessage, 40)}"
+                  "{conversation.lastMessage}"
                 </p>
               )}
               {/* TIME AGO */}
