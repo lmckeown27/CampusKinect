@@ -63,7 +63,11 @@ const PostCard: React.FC<PostCardProps> = ({
   const [isLoadingBlockStatus, setIsLoadingBlockStatus] = useState(false);
   
   // Check if this is the user's own post
-  const isOwnPost = user && post.userId === String(user.id);
+  // Need to check both post.userId and post.poster.id as they might differ in data structure
+  const isOwnPost = user && (
+    String(post.userId) === String(user.id) || 
+    (post.poster && String(post.poster.id) === String(user.id))
+  );
   
   // Check if user is admin
   const isAdmin = user && (user.email === 'lmckeown@calpoly.edu' || user.username === 'liam_mckeown38');
