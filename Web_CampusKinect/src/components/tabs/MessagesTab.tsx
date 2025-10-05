@@ -797,7 +797,7 @@ const MessagesTab: React.FC = () => {
                                   className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center space-x-2"
                                 >
                                   <Flag size={16} className="text-red-500" />
-                                  <span>Report Message</span>
+                                  <span className="text-black">Report Message</span>
                                 </button>
                               </div>
                             </>
