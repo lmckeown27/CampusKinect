@@ -543,14 +543,14 @@ const ProfileTab: React.FC = () => {
                       value={editForm.firstName}
                       onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
                       placeholder="First Name"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81] text-gray-900"
                     />
                     <input
                       type="text"
                       value={editForm.lastName}
                       onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
                       placeholder="Last Name"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81] text-gray-900"
                     />
                   </div>
                   
@@ -563,7 +563,7 @@ const ProfileTab: React.FC = () => {
                       value={editForm.username}
                       onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
                       placeholder="Username"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81] text-gray-900"
                     />
                     <p className="text-xs text-gray-300 mt-1">
                       Choose a unique username (letters, numbers, and underscores only)
