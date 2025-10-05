@@ -8,19 +8,6 @@ import { Post, CreatePostForm, User } from '../../types';
 import PostCard from '../ui/PostCard';
 import EditPostModal from '../ui/EditPostModal';
 
-// Helper function to get year label
-const getYearLabel = (year: number): string => {
-  const yearLabels: { [key: number]: string } = {
-    1: 'Freshman',
-    2: 'Sophomore', 
-    3: 'Junior',
-    4: 'Senior',
-    5: 'Super Senior'
-  };
-
-  return yearLabels[year] || `Year ${year}`;
-};
-
 const ProfileTab: React.FC = () => {
   const authStore = useAuthStore();
   const { user: authUser, updateUser } = authStore;
@@ -88,11 +75,7 @@ const ProfileTab: React.FC = () => {
           setEditForm({
             firstName: updatedUser.firstName || '',
             lastName: updatedUser.lastName || '',
-            username: updatedUser.username || '',
-            major: updatedUser.major || '',
-            year: updatedUser.year || 1,
-            hometown: updatedUser.hometown || '',
-            biography: updatedUser.bio || '',
+            username: updatedUser.username || ''
           });
         } catch (error) {
           console.error('Failed to parse saved profile:', error);
@@ -100,11 +83,7 @@ const ProfileTab: React.FC = () => {
           setEditForm({
             firstName: authUser.firstName || '',
             lastName: authUser.lastName || '',
-            username: authUser.username || '',
-            major: authUser.major || '',
-            year: authUser.year || 1,
-            hometown: authUser.hometown || '',
-            biography: authUser.bio || '',
+            username: authUser.username || ''
           });
         }
       } else {
@@ -113,11 +92,7 @@ const ProfileTab: React.FC = () => {
         setEditForm({
           firstName: authUser.firstName || '',
           lastName: authUser.lastName || '',
-          username: authUser.username || '',
-          major: authUser.major || '',
-          year: authUser.year || 1,
-          hometown: authUser.hometown || '',
-          biography: authUser.bio || '',
+          username: authUser.username || ''
         });
       }
     }
@@ -138,20 +113,8 @@ const ProfileTab: React.FC = () => {
   const [editForm, setEditForm] = useState({
     firstName: '',
     lastName: '',
-    username: '',
-    major: '',
-    year: 1,
-    hometown: '',
-    biography: '',
+    username: ''
   });
-  
-  const years = [
-    { value: 1, label: 'Freshman' },
-    { value: 2, label: 'Sophomore' },
-    { value: 3, label: 'Junior' },
-    { value: 4, label: 'Senior' },
-    { value: 5, label: 'Super Senior' }
-  ];
 
   // Function to fetch user's posts
   const fetchUserPosts = async () => {
@@ -323,26 +286,6 @@ const ProfileTab: React.FC = () => {
         return;
       }
 
-      if (editForm.major && editForm.major.length > 200) {
-        alert('Major cannot exceed 200 characters.');
-        return;
-      }
-
-      if (editForm.hometown && editForm.hometown.length > 200) {
-        alert('Hometown cannot exceed 200 characters.');
-        return;
-      }
-
-      if (editForm.biography && editForm.biography.length > 500) {
-        alert('Bio cannot exceed 500 characters.');
-        return;
-      }
-
-      if (editForm.year < 1 || editForm.year > 10) {
-        alert('Year must be between 1 and 10.');
-        return;
-      }
-
       // Validate names contain only letters (matching backend validation)
       const nameRegex = /^[A-Za-z]+$/;
       if (!nameRegex.test(editForm.firstName.trim())) {
@@ -366,11 +309,7 @@ const ProfileTab: React.FC = () => {
       const updateData = {
         firstName: editForm.firstName.trim(),
         lastName: editForm.lastName.trim(),
-        username: editForm.username.trim(),
-        year: parseInt(editForm.year.toString()), // Ensure it's a number
-        major: editForm.major?.trim() || undefined,
-        hometown: editForm.hometown?.trim() || undefined,
-        bio: editForm.biography?.trim() || undefined // Map biography to bio
+        username: editForm.username.trim()
       };
 
       // Remove undefined values to avoid sending empty strings
@@ -392,11 +331,7 @@ const ProfileTab: React.FC = () => {
           ...prevUser,
           firstName: updateData.firstName,
           lastName: updateData.lastName,
-          username: updateData.username,
-          major: updateData.major || prevUser.major,
-          year: updateData.year,
-          hometown: updateData.hometown || prevUser.hometown,
-          bio: updateData.bio || prevUser.bio
+          username: updateData.username
         };
       });
       
@@ -635,40 +570,6 @@ const ProfileTab: React.FC = () => {
                     </p>
                   </div>
                   
-                  <input
-                    type="text"
-                    value={editForm.major}
-                    onChange={(e) => setEditForm({ ...editForm, major: e.target.value })}
-                    placeholder="Major"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
-                  />
-                  
-                  <select
-                    value={editForm.year}
-                    onChange={(e) => setEditForm({ ...editForm, year: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
-                  >
-                    {years.map(year => (
-                      <option key={year.value} value={year.value}>{year.label}</option>
-                    ))}
-                  </select>
-                  
-                  <input
-                    type="text"
-                    value={editForm.hometown}
-                    onChange={(e) => setEditForm({ ...editForm, hometown: e.target.value })}
-                    placeholder="Hometown"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
-                  />
-                  
-                  <textarea
-                    value={editForm.biography}
-                    onChange={(e) => setEditForm({ ...editForm, biography: e.target.value })}
-                    placeholder="Tell us about yourself..."
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#708d81]"
-                  />
-                  
                   <div className="flex space-x-2">
                     <button
                       onClick={handleSaveProfile}
@@ -748,30 +649,6 @@ const ProfileTab: React.FC = () => {
                   
                   <p className="text-white mb-1">@{user?.username || 'username'}</p>
                   <p className="text-white mb-1">{user?.email}</p>
-                  
-                  {user?.major && (
-                    <p className="text-white mb-1">
-                      <strong>Major:</strong> {user?.major}
-                    </p>
-                  )}
-                  
-                  {user?.year && (
-                    <p className="text-white mb-1">
-                      <strong>Year:</strong> {getYearLabel(user.year)}
-                    </p>
-                  )}
-                  
-                  {user?.hometown && (
-                    <p className="text-white mb-1">
-                      <strong>Hometown:</strong> {user?.hometown}
-                    </p>
-                  )}
-                  
-                  {user?.bio && (
-                    <p className="text-gray-700 mt-3">
-                      {user.bio}
-                    </p>
-                  )}
                 </div>
               )}
             </div>
