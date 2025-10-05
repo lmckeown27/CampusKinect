@@ -101,7 +101,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   };
 
   return (
-    <div className="relative" style={{ width: '100%', maxWidth: '380px', margin: index === 0 ? '0 auto' : '16px auto 0 auto' }}>
+    <div className="relative" style={{ width: 'fit-content', maxWidth: '100%', margin: index === 0 ? '0 auto' : '16px auto 0 auto' }}>
       <div
         className={`p-4 transition-all duration-200 rounded-lg group ${
           isSelected ? 'bg-[#e8f5e8]' : 'hover:bg-[#525252]'
@@ -109,7 +109,10 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         style={{ 
           backgroundColor: isSelected ? '#5a7268' : '#708d81',
           cursor: 'pointer',
-          border: '2px solid #000000'
+          border: '2px solid #000000',
+          width: 'fit-content',
+          minWidth: '280px',
+          maxWidth: '100%'
         }}
         onMouseEnter={(e) => {
           if (!isSelected) {
@@ -168,18 +171,18 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           </div>
         )}
         
-        <div className="flex items-center justify-between min-w-0">
-          <div className="flex items-center space-x-3 flex-1 min-w-0">
+        <div className="flex items-center justify-between" style={{ minWidth: '0' }}>
+          <div className="flex items-center space-x-3" style={{ flex: '1 1 auto', minWidth: '0' }}>
             {/* POST ICON (PRIMARY) */}
             <div className="w-12 h-12 flex-shrink-0">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
                 {getPostTypeIcon()}
               </div>
             </div>
-            <div className="flex-1 min-w-0">
+            <div style={{ flex: '1 1 auto', minWidth: '0' }}>
               {/* POST TITLE (PRIMARY) */}
               <div className="flex items-center space-x-2">
-                <p className="text-lg font-semibold text-black truncate flex-1 min-w-0">
+                <p className="text-lg font-semibold text-black truncate" style={{ flex: '1 1 auto', minWidth: '0' }}>
                   {conversation.postTitle}
                 </p>
                 {conversation.unreadCount > 0 && (
