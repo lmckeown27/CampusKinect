@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { usePostsStore } from '../../stores/postsStore';
+import { useAuthStore } from '../../stores/authStore';
 import { apiService } from '../../services/api';
 import TagSelector from '../ui/TagSelector';
-import { ImageIcon, X, Tag, Calendar, Repeat, Clock, Hash, ShoppingBag, Wrench, Home } from 'lucide-react';
+import { ImageIcon, X, Tag, Calendar, Repeat, Clock, Hash, ShoppingBag, Wrench, Home, Globe, ChevronDown, Check } from 'lucide-react';
 
 interface FormData {
   title: string;
@@ -25,6 +26,7 @@ interface ValidationErrors {
 }
 
 const CreatePostTab: React.FC = () => {
+  const { user } = useAuthStore();
   const { createPost } = usePostsStore();
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -34,6 +36,12 @@ const CreatePostTab: React.FC = () => {
     location: '',
     duration: 'ongoing', // Set default duration to ongoing
   });
+  
+  // Admin university targeting
+  const [allUniversities, setAllUniversities] = useState<Array<{ id: number; name: string; userCount: number }>>([]);
+  const [selectedUniversities, setSelectedUniversities] = useState<number[]>([]);
+  const [showUniversityModal, setShowUniversityModal] = useState(false);
+  const isAdmin = user && (user.email === 'lmckeown@calpoly.edu' || user.username === 'liam_mckeown38');
 
   // Load saved post type from localStorage on component mount
   useEffect(() => {
@@ -117,7 +125,36 @@ const CreatePostTab: React.FC = () => {
     { value: 'events', label: 'Event', Icon: Calendar },
   ];
 
+  // Load universities for admin
+  useEffect(() => {
+    if (isAdmin) {
+      const loadUniversities = async () => {
+        try {
+          const universities = await apiService.getAllUniversities();
+          setAllUniversities(universities);
+        } catch (error) {
+          console.error('Failed to load universities:', error);
+        }
+      };
+      loadUniversities();
+    }
+  }, [isAdmin]);
 
+  const handleUniversityToggle = (universityId: number) => {
+    setSelectedUniversities(prev => 
+      prev.includes(universityId)
+        ? prev.filter(id => id !== universityId)
+        : [...prev, universityId]
+    );
+  };
+
+  const handleSelectAllUniversities = () => {
+    if (selectedUniversities.length === allUniversities.length) {
+      setSelectedUniversities([]);
+    } else {
+      setSelectedUniversities(allUniversities.map(u => u.id));
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -438,11 +475,16 @@ const CreatePostTab: React.FC = () => {
         ...offerRequestTags[formData.postType as keyof typeof offerRequestTags]
       ];
 
-      const postData = {
+      const postData: any = {
         ...formData,
         tags: combinedTags,
         images: imageFiles, // Include the actual image files
       };
+
+      // Add target universities for admin posts
+      if (isAdmin && selectedUniversities.length > 0) {
+        postData.targetUniversities = selectedUniversities;
+      }
 
       console.log('🚀 CreatePostTab sending to store:', {
         ...postData,
@@ -485,6 +527,11 @@ const CreatePostTab: React.FC = () => {
       setImageFiles([]);
       setValidationErrors({});
       
+      // Reset target universities for admin
+      if (isAdmin) {
+        setSelectedUniversities([]);
+      }
+      
       // Show success message or redirect
       alert('Post created successfully!');
       
@@ -517,8 +564,8 @@ const CreatePostTab: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         {/* Post Type Buttons - Same row space as Search bar */}
         <div className="sticky top-0 bg-grey-medium border-b border-[#708d81] pr-8 pl-0 py-4 z-30">
-          <div className="flex justify-start">
-                                  <div className="flex gap-6" style={{ marginLeft: '16px' }}>
+          <div className="flex justify-between items-center">
+            <div className="flex gap-6" style={{ marginLeft: '16px' }}>
               {postTypes.map((type, index) => (
                 <button
                   key={type.value}
@@ -554,6 +601,29 @@ const CreatePostTab: React.FC = () => {
                 </button>
               ))}
             </div>
+            
+            {/* Admin Target Universities Button */}
+            {isAdmin && (
+              <div className="mr-4">
+                <button
+                  type="button"
+                  onClick={() => setShowUniversityModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors"
+                  style={{ backgroundColor: '#708d81', color: 'white' }}
+                >
+                  <Globe size={18} />
+                  <span>Target Universities</span>
+                  {selectedUniversities.length > 0 && (
+                    <span className="ml-1 px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: 'white', color: '#708d81' }}>
+                      {selectedUniversities.length === allUniversities.length 
+                        ? 'All' 
+                        : selectedUniversities.length}
+                    </span>
+                  )}
+                  <ChevronDown size={16} />
+                </button>
+              </div>
+            )}
           </div>
           </div>
 
@@ -886,8 +956,99 @@ const CreatePostTab: React.FC = () => {
           </div>
         </div>
 
+        {/* Target Universities Modal */}
+        {showUniversityModal && isAdmin && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowUniversityModal(false)}
+          >
+            <div 
+              className="rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+              style={{ backgroundColor: '#1a1a1a' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: '#525252' }}>
+                <h2 className="text-xl font-bold" style={{ color: '#ffffff' }}>Select Target Universities</h2>
+                <button
+                  onClick={() => setShowUniversityModal(false)}
+                  className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  <X size={24} style={{ color: '#ffffff' }} />
+                </button>
+              </div>
 
+              {/* Modal Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-4">
+                  {/* Select All Button */}
+                  <button
+                    onClick={handleSelectAllUniversities}
+                    className="w-full flex items-center justify-between p-4 rounded-lg transition-colors"
+                    style={{ 
+                      backgroundColor: selectedUniversities.length === allUniversities.length ? '#708d81' : '#262626',
+                      border: '1px solid #525252'
+                    }}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Globe size={20} style={{ color: '#ffffff' }} />
+                      <span className="font-semibold" style={{ color: '#ffffff' }}>All Universities</span>
+                    </div>
+                    {selectedUniversities.length === allUniversities.length && (
+                      <Check size={20} style={{ color: '#ffffff' }} />
+                    )}
+                  </button>
 
+                  {/* University List */}
+                  <div className="space-y-2">
+                    {allUniversities.map((university) => (
+                      <button
+                        key={university.id}
+                        onClick={() => handleUniversityToggle(university.id)}
+                        className="w-full flex items-center justify-between p-4 rounded-lg transition-colors hover:bg-gray-700"
+                        style={{ 
+                          backgroundColor: selectedUniversities.includes(university.id) ? '#708d81' : '#262626',
+                          border: '1px solid #525252'
+                        }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="font-medium" style={{ color: '#ffffff' }}>{university.name}</span>
+                          <span 
+                            className="px-2 py-0.5 rounded text-xs"
+                            style={{ backgroundColor: '#3b82f620', color: '#3b82f6' }}
+                          >
+                            {university.userCount} {university.userCount === 1 ? 'user' : 'users'}
+                          </span>
+                        </div>
+                        {selectedUniversities.includes(university.id) && (
+                          <Check size={20} style={{ color: '#ffffff' }} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-6 border-t" style={{ borderColor: '#525252' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <span style={{ color: '#9ca3af' }}>
+                    {selectedUniversities.length === allUniversities.length 
+                      ? 'All universities selected'
+                      : `${selectedUniversities.length} of ${allUniversities.length} universities selected`}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowUniversityModal(false)}
+                  className="w-full py-3 rounded-lg font-medium transition-colors"
+                  style={{ backgroundColor: '#708d81', color: '#ffffff' }}
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
     </div>
   );
