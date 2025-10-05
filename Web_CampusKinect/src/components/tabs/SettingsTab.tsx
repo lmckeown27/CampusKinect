@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FileText, Cookie, ScrollText, ShieldCheck, HelpCircle, MessageCircle, Mail, Bug, User, Flag } from 'lucide-react';
+import { FileText, Cookie, ScrollText, ShieldCheck, HelpCircle, Mail, User, Flag } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,7 @@ const SettingsTab: React.FC = () => {
   const user = authUser;
 
   const handleCookieSettings = () => {
-    router.push('/cookie-settings');
+    router.push('/settings/cookie-settings');
   };
 
   const handleTermsAndConditions = () => {
@@ -25,18 +25,11 @@ const SettingsTab: React.FC = () => {
   };
 
   const handleSupport = () => {
-    router.push('/support');
+    router.push('/settings/help-center');
   };
 
   const handleContactUs = () => {
-    window.location.href = 'mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request';
-  };
-
-  const handleReportBug = () => {
-    window.location.href = 'mailto:campuskinect01@gmail.com?subject=Bug Report - CampusKinect Web';
-  };
-
-  const handleFeedback = () => {
+    window.location.href = 'mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request - Bug Report';
   };
 
   const handleBlockedUsers = () => {
@@ -45,10 +38,6 @@ const SettingsTab: React.FC = () => {
 
   const handleMyReports = () => {
     router.push('/settings/my-reports');
-  };
-
-  const handleFeedbackEmail = () => {
-    window.location.href = 'mailto:campuskinect01@gmail.com?subject=Feedback - CampusKinect';
   };
 
   return (
@@ -312,74 +301,6 @@ const SettingsTab: React.FC = () => {
                   <div>
                     <h3 className="text-sm font-medium text-white">Contact Us</h3>
                     <p className="text-sm text-gray-300">Get direct support</p>
-                  </div>
-                </button>
-
-                {/* Report Bug Button */}
-                <button
-                  onClick={handleReportBug}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
-                  style={{ 
-                    backgroundColor: '#525252',
-                    cursor: 'pointer',
-                    WebkitTapHighlightColor: 'transparent',
-                    WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'none',
-                    userSelect: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#708d81';
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#525252';
-                    e.currentTarget.style.transform = 'scale(1)';
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.98)';
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                  }}
-                >
-                  <Bug size={18} className="text-white mr-3" />
-                  <div>
-                    <h3 className="text-sm font-medium text-white">Report Bug</h3>
-                    <p className="text-sm text-gray-300">Report technical issues</p>
-                  </div>
-                </button>
-
-                {/* Send Feedback Button */}
-                <button
-                  onClick={handleFeedback}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
-                  style={{ 
-                    backgroundColor: '#525252',
-                    cursor: 'pointer',
-                    WebkitTapHighlightColor: 'transparent',
-                    WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'none',
-                    userSelect: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#708d81';
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#525252';
-                    e.currentTarget.style.transform = 'scale(1)';
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.98)';
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                  }}
-                >
-                  <MessageCircle size={18} className="text-white mr-3" />
-                  <div>
-                    <h3 className="text-sm font-medium text-white">Send Feedback</h3>
-                    <p className="text-sm text-gray-300">Share your thoughts</p>
                   </div>
                 </button>
               </div>
