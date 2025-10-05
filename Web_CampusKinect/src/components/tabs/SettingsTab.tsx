@@ -49,10 +49,10 @@ const SettingsTab: React.FC = () => {
 
   return (
     <div className="flex-1 p-6 min-h-screen" style={{ backgroundColor: '#525252' }}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-full mx-auto px-4">
         <div className="space-y-6">
-          {/* Settings Sections - Horizontal Layout with spacing */}
-          <div className="flex space-x-6 justify-center">
+          {/* Settings Sections - Responsive Layout with spacing */}
+          <div className="flex flex-wrap gap-6 justify-center">
             {/* Legal & Documents - 1st Section */}
             <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #708d81', overflow: 'hidden' }}>
               <div className="px-6 py-4 border-b border-gray-200">
