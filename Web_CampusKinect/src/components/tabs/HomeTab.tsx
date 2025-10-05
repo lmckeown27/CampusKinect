@@ -180,8 +180,13 @@ const HomeTab: React.FC = () => {
   const showOfferRequestToggle = selectedCategory && ['goods', 'services', 'housing'].includes(selectedCategory);
 
   // Filter posts by university if admin is viewing a specific one
+  // Include posts sent to all universities (universityId is null or '0')
   const displayPosts = viewingUniversityId 
-    ? filteredPosts.filter(post => post.universityId === String(viewingUniversityId))
+    ? filteredPosts.filter(post => 
+        post.universityId === String(viewingUniversityId) || 
+        !post.universityId || 
+        post.universityId === '0'
+      )
     : filteredPosts;
 
   return (
@@ -189,7 +194,7 @@ const HomeTab: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Admin University Viewing Banner */}
         {viewingUniversityId && viewingUniversityName && (
-          <div className="sticky top-0 z-20 px-4 py-3" style={{ backgroundColor: '#708d81', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+          <div className="sticky z-20 px-4 py-3" style={{ backgroundColor: '#708d81', borderBottom: '1px solid rgba(255,255,255,0.2)', top: '80px' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-white">
@@ -212,7 +217,7 @@ const HomeTab: React.FC = () => {
         <div className="sticky z-10 px-4 py-5" style={{ 
           backgroundColor: '#525252', 
           borderBottom: '1px solid rgba(255,255,255,0.1)',
-          top: viewingUniversityId ? '52px' : '0'
+          top: viewingUniversityId ? '132px' : '80px'
         }}>
           <div className="flex items-center justify-between">
             {selectedTags.length > 0 && (
