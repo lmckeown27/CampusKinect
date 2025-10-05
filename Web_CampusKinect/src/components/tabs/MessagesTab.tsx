@@ -101,7 +101,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   };
 
   return (
-    <div className="relative" style={{ width: '100%', maxWidth: '450px', margin: index === 0 ? '0 auto' : '16px auto 0 auto' }}>
+    <div className="relative" style={{ width: '100%', maxWidth: '380px', margin: index === 0 ? '0 auto' : '16px auto 0 auto' }}>
       <div
         className={`p-4 transition-all duration-200 rounded-lg group ${
           isSelected ? 'bg-[#e8f5e8]' : 'hover:bg-[#525252]'
