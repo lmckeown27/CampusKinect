@@ -332,7 +332,7 @@ const PostCard: React.FC<PostCardProps> = ({
                           e.currentTarget.style.border = "2px solid #dc2626";
                         }}
                       >
-                        <span>🗑️ Admin: Delete Post</span>
+                        <span>Admin: Delete Post</span>
                       </button>
 
                       {/* Only show Ban User if NOT own post (admin can't ban themselves) */}
@@ -355,7 +355,7 @@ const PostCard: React.FC<PostCardProps> = ({
                             e.currentTarget.style.border = "2px solid #dc2626";
                           }}
                         >
-                          <span>🚫 Admin: Ban User</span>
+                          <span>Admin: Ban User</span>
                         </button>
                       )}
                     </>
