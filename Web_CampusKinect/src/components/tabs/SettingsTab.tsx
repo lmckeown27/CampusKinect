@@ -17,11 +17,11 @@ const SettingsTab: React.FC = () => {
   };
 
   const handleTermsAndConditions = () => {
-    router.push('/terms');
+    router.push('/settings/terms');
   };
 
   const handlePrivacyPolicy = () => {
-    router.push('/privacy');
+    router.push('/settings/privacy');
   };
 
   const handleSupport = () => {
