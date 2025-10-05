@@ -38,8 +38,21 @@ export default function SettingsWebGuide() {
           <div className="mb-6">
             <button
               onClick={() => router.push('/settings/help-center')}
-              className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
-              style={{ color: '#708d81', cursor: 'pointer' }}
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium border-2"
+              style={{ 
+                backgroundColor: 'white',
+                borderColor: 'white',
+                color: '#708d81',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f3f4f6';
+                e.currentTarget.style.borderColor = '#f3f4f6';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'white';
+                e.currentTarget.style.borderColor = 'white';
+              }}
             >
               <ArrowLeft size={20} />
               <span>Back to Help Center</span>

@@ -72,20 +72,29 @@ export default function SettingsCookieSettingsPage() {
         {/* Header */}
         <div className="border-b" style={{ backgroundColor: '#737373', borderColor: '#708d81' }}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between relative">
               <button
                 onClick={() => router.push('/settings')}
-                className="flex items-center space-x-2 transition-colors duration-200 font-medium"
-                style={{ color: '#708d81' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#a8c4a2'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#708d81'}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium border-2"
+                style={{ 
+                  backgroundColor: '#708d81',
+                  borderColor: '#708d81',
+                  color: 'white'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#a8c4a2';
+                  e.currentTarget.style.borderColor = '#a8c4a2';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#708d81';
+                  e.currentTarget.style.borderColor = '#708d81';
+                }}
               >
                 <ArrowLeft size={20} />
                 <span>Settings</span>
               </button>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Cookies</h1>
-              </div>
+              <h1 className="text-2xl font-bold text-white absolute left-1/2 transform -translate-x-1/2">Cookies</h1>
+              <div></div>
             </div>
           </div>
         </div>
