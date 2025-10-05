@@ -72,7 +72,7 @@ const LoginForm: React.FC = () => {
             <span className="text-primary">Welcome Back</span>
           </h1>
           <p 
-            className="text-neutral-600 w-full"
+            className="text-white w-full"
             style={{ textAlign: 'center' }}
           >
             Sign in to your CampusKinect account
