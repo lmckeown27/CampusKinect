@@ -127,24 +127,24 @@ export default function SettingsHelpCenterPage() {
             
             {/* Quick Link Buttons */}
             <div className="flex flex-wrap justify-center gap-8">
-              {quickLinks.map((link, index) => (
-                <button
-                  key={index}
-                  onClick={() => router.push(link.path)}
-                  className="px-6 py-3 bg-white rounded-lg font-semibold transition-all duration-200 mx-4"
-                  style={{ cursor: 'pointer', color: '#708d81' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#99afa7';
-                    e.currentTarget.style.color = 'white';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'white';
-                    e.currentTarget.style.color = '#708d81';
-                  }}
-                >
-                  {link.title}
-                </button>
-              ))}
+            {quickLinks.map((link, index) => (
+              <button
+                key={index}
+                onClick={() => router.push('/settings/help-center' + link.path.replace('/support', ''))}
+                className="px-6 py-3 bg-white rounded-lg font-semibold transition-all duration-200 mx-4"
+                style={{ cursor: 'pointer', color: '#708d81' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#99afa7';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.color = '#708d81';
+                }}
+              >
+                {link.title}
+              </button>
+            ))}
             </div>
           </div>
         </div>
@@ -187,12 +187,12 @@ export default function SettingsHelpCenterPage() {
                           <button
                             key={article.id}
                             onClick={() => {
-                              const guideMap: { [key: string]: string } = {
-                                'verify-email': '/support/guides/verify-email',
-                                'post-item-detailed': '/support/guides/post-item',
-                                'message-users': '/support/guides/messaging',
-                                'safe-trading': '/support/guides/safety'
-                              };
+                          const guideMap: { [key: string]: string } = {
+                            'verify-email': '/settings/help-center/guides/verify-email',
+                            'post-item-detailed': '/settings/help-center/guides/post-item',
+                            'message-users': '/settings/help-center/guides/messaging',
+                            'safe-trading': '/settings/help-center/guides/safety'
+                          };
                               const guidePath = guideMap[article.id];
                               if (guidePath) {
                                 router.push(guidePath);
@@ -245,12 +245,12 @@ export default function SettingsHelpCenterPage() {
                           <button
                             key={article.id}
                             onClick={() => {
-                              const guideMap: { [key: string]: string } = {
-                                'verify-email': '/support/guides/verify-email',
-                                'post-item-detailed': '/support/guides/post-item',
-                                'message-users': '/support/guides/messaging',
-                                'safe-trading': '/support/guides/safety'
-                              };
+                          const guideMap: { [key: string]: string } = {
+                            'verify-email': '/settings/help-center/guides/verify-email',
+                            'post-item-detailed': '/settings/help-center/guides/post-item',
+                            'message-users': '/settings/help-center/guides/messaging',
+                            'safe-trading': '/settings/help-center/guides/safety'
+                          };
                               const guidePath = guideMap[article.id];
                               if (guidePath) {
                                 router.push(guidePath);
