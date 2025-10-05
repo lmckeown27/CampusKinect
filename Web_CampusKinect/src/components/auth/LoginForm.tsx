@@ -207,6 +207,12 @@ const LoginForm: React.FC = () => {
                 Create Account
               </Link>
             </p>
+            <p className="font-semibold mb-2">
+              Need help?{' '}
+              <Link href="/support" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">
+                Visit Support Center
+              </Link>
+            </p>
             <p className="mb-2">
               By signing in, you agree to our{' '}
               <Link href="/terms" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">

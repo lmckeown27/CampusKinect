@@ -1,26 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  Mail, 
   User, 
   ShoppingBag, 
   MessageCircle, 
-  Shield, 
-  Settings,
-  ChevronRight,
-  ChevronDown,
-  Clock,
-  Send,
-  CheckCircle,
-  AlertTriangle,
-  Users,
-  Lock,
-  ArrowLeft,
-  ExternalLink
+  Shield
 } from 'lucide-react';
-import KinectLogo from '@/assets/logos/KinectLogo.png';
+import SupportHeader from '@/components/layout/SupportHeader';
 
 interface Article {
   id: string;
@@ -40,23 +28,6 @@ interface Category {
 
 export default function SupportPage() {
   const router = useRouter();
-
-  const [showContactForm, setShowContactForm] = useState(false);
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    campus: '',
-    issueType: '',
-    description: ''
-  });
-
-  // Existing data structure - keeping all current content
-  const popularArticles: Article[] = [
-    { id: 'verify-email', title: 'Verify Your University Email', category: 'Getting Started', description: 'Step-by-step guide to verify your .edu email address', popular: true },
-    { id: 'post-item', title: 'Post an Item for Sale', category: 'Marketplace Basics', description: 'Create your first listing with photos and pricing', popular: true },
-    { id: 'messaging', title: 'Message a Buyer or Seller', category: 'Messaging & Connections', description: 'Start conversations and manage your messages', popular: true },
-    { id: 'safety', title: 'Staying Safe on CampusKinect', category: 'Safety & Trust', description: 'Essential safety tips for campus trading', popular: true }
-  ];
 
   const categories: Category[] = [
     {
@@ -102,51 +73,11 @@ export default function SupportPage() {
     { title: 'Web Guide', path: '/support/guides/web' }
   ];
 
-  const handleContactFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    alert('Thank you for your message. We\'ll get back to you within 24-48 hours.');
-    setShowContactForm(false);
-    setContactForm({ name: '', email: '', campus: '', issueType: '', description: '' });
-  };
-
 
 
   return (
     <div className="min-h-screen bg-grey-medium">
-      {/* 1. Global Header / Navigation */}
-      <div className="bg-grey-light border-b border-gray-600">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-center md:justify-between">
-            {/* Center: Logo (mobile) / Left: Logo (desktop) */}
-            <div className="flex items-center">
-              <button
-                onClick={() => router.push('/auth/login')}
-                className="hover:opacity-80 transition-opacity"
-                style={{ cursor: 'pointer', backgroundColor: 'transparent', border: 'none' }}
-              >
-                <img
-                  src={KinectLogo.src}
-                  alt="CampusKinect"
-                  className="h-12 w-12 object-cover rounded-md"
-                  style={{ backgroundColor: '#708d81' }}
-                />
-              </button>
-            </div>
-            
-            {/* Right: Top-level navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              <button
-                onClick={() => setShowContactForm(true)}
-                className="px-4 py-2 bg-[#708d81] text-white rounded-lg hover:bg-[#5a7268] transition-colors"
-                style={{ cursor: 'pointer' }}
-              >
-                Contact Support
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SupportHeader />
 
       {/* 2. Hero Section */}
       <div className="py-16" style={{ backgroundColor: '#708d81' }}>
@@ -311,7 +242,7 @@ export default function SupportPage() {
               </div>
               <div className="space-y-2">
                 <button
-                  onClick={() => setShowContactForm(!showContactForm)}
+                  onClick={() => window.open('mailto:campuskinect01@gmail.com?subject=CampusKinect Support Request - Bug Report', '_blank')}
                   className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={(e) => {
@@ -324,132 +255,6 @@ export default function SupportPage() {
                   }}
                 >
                   <h4 className="text-white font-medium text-sm">Contact Support</h4>
-                </button>
-              </div>
-              
-              {/* Contact Form Dropdown */}
-              {showContactForm && (
-                <div className="mt-6 bg-grey-medium rounded-xl p-6 border border-gray-600">
-                  <h4 className="text-xl font-bold text-white mb-4" style={{ textAlign: 'center' }}>
-                    Contact Support
-                  </h4>
-                  
-                  <form onSubmit={handleContactFormSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-white font-medium mb-2">Name</label>
-                        <input
-                          type="text"
-                          required
-                          value={contactForm.name}
-                          onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                          className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-white font-medium mb-2">Email</label>
-                        <input
-                          type="email"
-                          required
-                          value={contactForm.email}
-                          onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                          className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-white font-medium mb-2">Campus</label>
-                      <input
-                        type="text"
-                        required
-                        value={contactForm.campus}
-                        onChange={(e) => setContactForm({...contactForm, campus: e.target.value})}
-                        className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-white font-medium mb-2">Issue Type</label>
-                      <select
-                        required
-                        value={contactForm.issueType}
-                        onChange={(e) => setContactForm({...contactForm, issueType: e.target.value})}
-                        className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                      >
-                        <option value="">Select an issue type</option>
-                        <option value="account">Account Issues</option>
-                        <option value="marketplace">Marketplace Problems</option>
-                        <option value="safety">Safety Concerns</option>
-                        <option value="bug">Bug Report</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-white font-medium mb-2">Description</label>
-                      <textarea
-                        required
-                        rows={4}
-                        value={contactForm.description}
-                        onChange={(e) => setContactForm({...contactForm, description: e.target.value})}
-                        className="w-full px-4 py-3 rounded-lg border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white resize-none"
-                        placeholder="Please describe your issue in detail..."
-                      />
-                    </div>
-                    
-                    <div className="flex justify-end space-x-4">
-                      <button
-                        type="button"
-                        onClick={() => setShowContactForm(false)}
-                        className="px-6 py-3 text-gray-300 hover:text-white transition-colors"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="py-3 px-6 text-white font-medium rounded-lg transition-colors cursor-pointer"
-                        style={{ backgroundColor: '#708d81', color: 'white', cursor: 'pointer' }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#5a7268';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#708d81';
-                        }}
-                      >
-                        Send Message
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )}
-            </div>
-
-            {/* Right Column: Community */}
-            <div className="bg-grey-light rounded-lg border border-gray-600 flex flex-col flex-shrink-0 overflow-hidden p-5 m-4 mx-auto"
-                 style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)', width: '400px', height: '200px', minWidth: '400px', minHeight: '200px', maxWidth: '400px', maxHeight: '200px' }}>
-              <div className="flex flex-col items-center mb-2 text-center">
-                <h3 className="text-white font-medium text-sm mb-1">Community</h3>
-                <p className="text-gray-300 text-xs">
-                  Connect with other users
-                </p>
-              </div>
-              <div className="space-y-2">
-                <button
-                  onClick={() => window.open('mailto:campuskinect01@gmail.com', '_blank')}
-                  className="w-full h-12 mx-auto flex flex-col items-center justify-center p-2 rounded transition-colors text-center"
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#99afa7';
-                    e.currentTarget.style.color = 'white';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '';
-                    e.currentTarget.style.color = '';
-                  }}
-                >
-                  <h4 className="text-white font-medium text-sm">Send Feedback</h4>
                 </button>
               </div>
             </div>
