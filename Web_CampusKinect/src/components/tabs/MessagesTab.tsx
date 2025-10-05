@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, Trash2, Package, Wrench, Home, Calendar, FileText, MessageCircle, Image as ImageIcon, Flag } from 'lucide-react';
+import { Send, User, Trash2, ShoppingBag, Wrench, Home, Calendar, FileText, MessageCircle, Image as ImageIcon, Flag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMessagesStore } from '../../stores/messagesStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -67,10 +67,10 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     }
   }, [showContextMenu]);
 
-  // Get post type icon and color
+  // Get post type icon and color - matching Home page exactly
   const getPostTypeIcon = () => {
     switch (conversation.postType.toLowerCase()) {
-      case 'goods': return <Package size={20} style={{ color: '#10B981' }} />;
+      case 'goods': return <ShoppingBag size={20} style={{ color: '#10B981' }} />;
       case 'services': return <Wrench size={20} style={{ color: '#F59E0B' }} />;
       case 'housing': return <Home size={20} style={{ color: '#3B82F6' }} />;
       case 'events': return <Calendar size={20} style={{ color: '#8B5CF6' }} />;
@@ -646,11 +646,11 @@ const MessagesTab: React.FC = () => {
                     {/* POST ICON (PRIMARY) */}
                     <div className="w-10 h-10 flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center" style={{ border: '2px solid #708d81' }}>
-                        {currentConversation.postType === 'goods' && <Package size={16} className="text-blue-600" />}
-                        {currentConversation.postType === 'services' && <Wrench size={16} className="text-green-600" />}
-                        {currentConversation.postType === 'housing' && <Home size={16} className="text-orange-600" />}
-                        {currentConversation.postType === 'events' && <Calendar size={16} className="text-purple-600" />}
-                        {!['goods', 'services', 'housing', 'events'].includes(currentConversation.postType) && <FileText size={16} className="text-gray-600" />}
+                        {currentConversation.postType === 'goods' && <ShoppingBag size={16} style={{ color: '#10B981' }} />}
+                        {currentConversation.postType === 'services' && <Wrench size={16} style={{ color: '#F59E0B' }} />}
+                        {currentConversation.postType === 'housing' && <Home size={16} style={{ color: '#3B82F6' }} />}
+                        {currentConversation.postType === 'events' && <Calendar size={16} style={{ color: '#8B5CF6' }} />}
+                        {!['goods', 'services', 'housing', 'events'].includes(currentConversation.postType) && <FileText size={16} style={{ color: '#708d81' }} />}
                       </div>
                     </div>
                     <div>
