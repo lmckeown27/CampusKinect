@@ -777,15 +777,15 @@ router.get('/profile/export', auth, async (req, res) => {
     // Get user's bookmarks
     const bookmarksResult = await query(`
       SELECT post_id, created_at
-      FROM user_bookmarks 
-      WHERE user_id = $1
+      FROM post_interactions 
+      WHERE user_id = $1 AND interaction_type = 'bookmark'
       ORDER BY created_at DESC
     `, [userId]);
 
     // Get blocked users
     const blockedUsersResult = await query(`
       SELECT blocked_id as user_id, created_at
-      FROM blocked_users 
+      FROM user_blocks 
       WHERE blocker_id = $1
       ORDER BY created_at DESC
     `, [userId]);
@@ -793,9 +793,9 @@ router.get('/profile/export', auth, async (req, res) => {
     // Get reports submitted
     const reportsResult = await query(`
       SELECT 
-        id, content_type, content_id, reason, description,
+        id, content_type, content_id, reason, details,
         status, created_at
-      FROM reports 
+      FROM content_reports 
       WHERE reporter_id = $1
       ORDER BY created_at DESC
     `, [userId]);
@@ -847,13 +847,12 @@ router.get('/profile/export', auth, async (req, res) => {
         contentType: report.content_type,
         contentId: report.content_id,
         reason: report.reason,
-        description: report.description,
+        details: report.details,
         status: report.status,
         createdAt: report.created_at
       })),
       statistics: {
         totalPosts: postsResult.rows.length,
-        totalComments: commentsResult.rows.length,
         totalBookmarks: bookmarksResult.rows.length,
         totalBlockedUsers: blockedUsersResult.rows.length,
         totalReports: reportsResult.rows.length
