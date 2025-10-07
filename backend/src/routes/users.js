@@ -633,28 +633,19 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     // 4. Delete conversations
     await query('DELETE FROM conversations WHERE user1_id = $1 OR user2_id = $1', [userId]);
     
-    // 5. Delete bookmarks
-    await query('DELETE FROM user_bookmarks WHERE user_id = $1', [userId]);
-    
-    // 6. Delete post views
-    await query('DELETE FROM post_views WHERE user_id = $1', [userId]);
-    
-    // 7. Delete comments
-    await query('DELETE FROM comments WHERE user_id = $1', [userId]);
-    
-    // 8. Delete reports submitted by user
+    // 5. Delete reports submitted by user
     await query('DELETE FROM reports WHERE reporter_id = $1', [userId]);
     
-    // 9. Delete user's posts (this will cascade to post_tags, post_images, etc.)
+    // 6. Delete user's posts (this will cascade to post_tags, post_images, etc.)
     await query('DELETE FROM posts WHERE user_id = $1', [userId]);
     
-    // 10. Delete blocked users relationships
+    // 7. Delete blocked users relationships
     await query('DELETE FROM blocked_users WHERE blocker_id = $1 OR blocked_id = $1', [userId]);
     
-    // 11. Delete device tokens
+    // 8. Delete device tokens
     await query('DELETE FROM device_tokens WHERE user_id = $1', [userId]);
     
-    // 12. Finally, delete the user account
+    // 9. Finally, delete the user account
     const deleteResult = await query(`
       DELETE FROM users 
       WHERE id = $1
