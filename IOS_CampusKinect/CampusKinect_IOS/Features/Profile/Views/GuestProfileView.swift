@@ -84,7 +84,7 @@ struct GuestProfileView: View {
                             HStack(alignment: .top, spacing: 12) {
                                 Image(systemName: "graduationcap.fill")
                                     .font(.system(size: 24))
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(Color(hex: "708d81") ?? Color.green)
                                 
                                 VStack(alignment: .leading, spacing: 6) {
                                     Text("Join Your Campus Community")
@@ -101,10 +101,10 @@ struct GuestProfileView: View {
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.blue.opacity(0.15))
+                                .fill((Color(hex: "708d81") ?? Color.green).opacity(0.15))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.blue.opacity(0.5), lineWidth: 1)
+                                        .stroke((Color(hex: "708d81") ?? Color.green).opacity(0.5), lineWidth: 1)
                                 )
                         )
                         .padding(.horizontal)

@@ -48,9 +48,9 @@ export default function GuestProfilePage() {
             </div>
 
             {/* Message Box */}
-            <div className="bg-blue-900 bg-opacity-20 border border-blue-500 rounded-lg p-6 mb-6">
+            <div className="bg-[#708d81] bg-opacity-20 border border-[#708d81] rounded-lg p-6 mb-6">
               <div className="flex items-start">
-                <GraduationCap className="text-blue-400 mr-3 mt-1 flex-shrink-0" size={24} />
+                <GraduationCap className="text-[#708d81] mr-3 mt-1 flex-shrink-0" size={24} />
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-2">
                     Join Your Campus Community

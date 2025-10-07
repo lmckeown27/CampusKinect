@@ -50,11 +50,11 @@ export default function GuestUniversityBanner() {
   return (
     <>
       {/* Banner */}
-      <div className="bg-blue-900 bg-opacity-20 border-2 border-blue-500 rounded-lg px-4 py-3 mb-4">
+      <div className="bg-[#708d81] bg-opacity-20 border-2 border-[#708d81] rounded-lg px-4 py-3 mb-4">
         <div className="flex items-center justify-between">
           {/* Left Side - Status */}
           <div className="flex items-center">
-            <Eye size={20} className="text-blue-400 mr-3" />
+            <Eye size={20} className="text-[#708d81] mr-3" />
             <div>
               <p className="text-xs text-gray-400 font-medium">Browsing as Guest</p>
               <p className="text-sm text-white font-semibold">{guestUniversityName}</p>
@@ -64,7 +64,7 @@ export default function GuestUniversityBanner() {
           {/* Right Side - Switch Button */}
           <button
             onClick={() => setShowSwitcher(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#708d81] hover:bg-[#5a7166] text-white text-sm font-medium rounded-lg transition-colors"
           >
             <RefreshCw size={16} />
             <span>Switch</span>

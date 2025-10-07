@@ -18,7 +18,7 @@ struct GuestUniversityBanner: View {
             // Eye icon to indicate guest view
             Image(systemName: "eye.fill")
                 .font(.system(size: 16))
-                .foregroundColor(.blue)
+                .foregroundColor(Color(hex: "708d81") ?? Color.green)
             
             // University info
             VStack(alignment: .leading, spacing: 2) {
@@ -46,12 +46,12 @@ struct GuestUniversityBanner: View {
                     Image(systemName: "arrow.triangle.2.circlepath")
                         .font(.system(size: 14))
                 }
-                .foregroundColor(.blue)
+                .foregroundColor(Color(hex: "708d81") ?? Color.green)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.blue.opacity(0.1))
+                        .fill((Color(hex: "708d81") ?? Color.green).opacity(0.1))
                 )
             }
         }
@@ -59,10 +59,10 @@ struct GuestUniversityBanner: View {
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.blue.opacity(0.05))
+                .fill((Color(hex: "708d81") ?? Color.green).opacity(0.05))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                        .stroke((Color(hex: "708d81") ?? Color.green).opacity(0.3), lineWidth: 1)
                 )
         )
         .sheet(isPresented: $showingUniversitySelector) {

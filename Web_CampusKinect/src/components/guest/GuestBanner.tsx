@@ -12,11 +12,11 @@ export default function GuestBanner({ universityName }: GuestBannerProps) {
   const router = useRouter();
 
   return (
-    <div className="bg-blue-900 bg-opacity-30 border-b-2 border-blue-500 px-4 py-3">
+    <div className="bg-[#708d81] bg-opacity-30 border-b-2 border-[#708d81] px-4 py-3">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         {/* Left Side - Status */}
         <div className="flex items-center text-white text-sm">
-          <Eye size={18} className="mr-2 text-blue-300" />
+          <Eye size={18} className="mr-2 text-[#708d81]" />
           <span className="font-medium">Browsing as Guest</span>
           <span className="mx-2 text-gray-400">|</span>
           <span className="text-gray-300">Viewing: <span className="font-semibold">{universityName}</span></span>
