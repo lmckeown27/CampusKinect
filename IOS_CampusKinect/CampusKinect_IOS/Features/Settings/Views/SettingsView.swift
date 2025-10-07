@@ -426,7 +426,7 @@ struct SettingsView: View {
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 200 {
                     // Account successfully deleted - clear all local data and return to login
-                    await authManager.keychainManager.clearAll()
+                    await authManager.keychainManager.clearAllTokens()
                     await MainActor.run {
                         authManager.isAuthenticated = false
                         authManager.currentUser = nil
