@@ -616,36 +616,56 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     // Delete all user-related data (cascade relationships should handle most of this)
     // But we'll explicitly delete to ensure compliance with data deletion policies
     
-    // 1. Delete user sessions
-    await query('DELETE FROM user_sessions WHERE user_id = $1', [userId]);
+    console.log('🗑️  Step 1: Deleting user sessions...');
+    const sessions = await query('DELETE FROM user_sessions WHERE user_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${sessions.rows.length} session(s)`);
     
-    // 2. Delete message requests
-    await query('DELETE FROM message_requests WHERE from_user_id = $1 OR to_user_id = $1', [userId]);
+    console.log('🗑️  Step 2: Deleting post interactions (bookmarks, reposts, shares)...');
+    const interactions = await query('DELETE FROM post_interactions WHERE user_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${interactions.rows.length} interaction(s)`);
     
-    // 3. Delete messages (cascade should handle via conversations)
-    await query(`
+    console.log('🗑️  Step 3: Deleting reviews and review responses...');
+    const reviewResponses = await query('DELETE FROM review_responses WHERE responder_id = $1 RETURNING id', [userId]);
+    const reviews = await query('DELETE FROM reviews WHERE reviewer_id = $1 RETURNING id', [userId]);
+    const deletedReviews = await query('DELETE FROM deleted_reviews WHERE reviewer_id = $1 OR deleted_by = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${reviewResponses.rows.length} review response(s), ${reviews.rows.length} review(s), ${deletedReviews.rows.length} deleted review(s)`);
+    
+    console.log('🗑️  Step 4: Deleting message requests...');
+    const messageRequests = await query('DELETE FROM message_requests WHERE from_user_id = $1 OR to_user_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${messageRequests.rows.length} message request(s)`);
+    
+    console.log('🗑️  Step 5: Deleting messages...');
+    const messages = await query(`
       DELETE FROM messages 
       WHERE conversation_id IN (
         SELECT id FROM conversations WHERE user1_id = $1 OR user2_id = $1
       )
+      RETURNING id
     `, [userId]);
+    console.log(`   ✓ Deleted ${messages.rows.length} message(s)`);
     
-    // 4. Delete conversations
-    await query('DELETE FROM conversations WHERE user1_id = $1 OR user2_id = $1', [userId]);
+    console.log('🗑️  Step 6: Deleting conversations...');
+    const conversations = await query('DELETE FROM conversations WHERE user1_id = $1 OR user2_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${conversations.rows.length} conversation(s)`);
     
-    // 5. Delete reports submitted by user
-    await query('DELETE FROM reports WHERE reporter_id = $1', [userId]);
+    console.log('🗑️  Step 7: Deleting reports...');
+    const reports = await query('DELETE FROM reports WHERE reporter_id = $1 RETURNING id', [userId]);
+    const contentReports = await query('DELETE FROM content_reports WHERE reporter_id = $1 OR content_author_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${reports.rows.length} report(s) and ${contentReports.rows.length} content report(s)`);
     
-    // 6. Delete user's posts (this will cascade to post_tags, post_images, etc.)
-    await query('DELETE FROM posts WHERE user_id = $1', [userId]);
+    console.log('🗑️  Step 8: Deleting posts (will cascade to post_tags, post_images, etc.)...');
+    const posts = await query('DELETE FROM posts WHERE user_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${posts.rows.length} post(s)`);
     
-    // 7. Delete blocked users relationships
-    await query('DELETE FROM blocked_users WHERE blocker_id = $1 OR blocked_id = $1', [userId]);
+    console.log('🗑️  Step 9: Deleting blocked users relationships...');
+    const blockedUsers = await query('DELETE FROM blocked_users WHERE blocker_id = $1 OR blocked_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${blockedUsers.rows.length} block relationship(s)`);
     
-    // 8. Delete device tokens
-    await query('DELETE FROM device_tokens WHERE user_id = $1', [userId]);
+    console.log('🗑️  Step 10: Deleting device tokens...');
+    const deviceTokens = await query('DELETE FROM device_tokens WHERE user_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${deviceTokens.rows.length} device token(s)`);
     
-    // 9. Finally, delete the user account
+    console.log('🗑️  Step 11: Finally, deleting the user account...');
     const deleteResult = await query(`
       DELETE FROM users 
       WHERE id = $1
@@ -660,7 +680,25 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     const cacheKey = generateCacheKey('user', userId);
     await redisDel(cacheKey);
 
+    // Log comprehensive deletion summary
     console.log(`✅ Successfully deleted account for: ${user.email}`);
+    console.log(`📊 Deletion Summary:
+   - ${sessions.rows.length} session(s)
+   - ${interactions.rows.length} interaction(s) (bookmarks, reposts, shares)
+   - ${reviewResponses.rows.length} review response(s)
+   - ${reviews.rows.length} review(s)
+   - ${deletedReviews.rows.length} deleted review(s)
+   - ${messageRequests.rows.length} message request(s)
+   - ${messages.rows.length} message(s)
+   - ${conversations.rows.length} conversation(s)
+   - ${reports.rows.length} report(s)
+   - ${contentReports.rows.length} content report(s)
+   - ${posts.rows.length} post(s) (including tags, images, etc.)
+   - ${blockedUsers.rows.length} block relationship(s)
+   - ${deviceTokens.rows.length} device token(s)
+   - User account and credentials
+   
+   Total: Complete data wipe for user ${userId}`);
 
     res.json({
       success: true,
