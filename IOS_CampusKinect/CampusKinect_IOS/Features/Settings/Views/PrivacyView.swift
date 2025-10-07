@@ -15,16 +15,90 @@ struct PrivacyView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     // Introduction
-                    PrivacySection(
-                        title: "1. Information We Collect",
-                        content: "We collect information you provide directly to us, such as when you create an account, post content, or contact us for support. This includes your name, email address, university affiliation, and any content you choose to share on our platform."
-                    )
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Introduction")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("At CampusKinect, protecting your privacy is paramount. This Privacy Policy explains what data we collect, how we use it, who we share it with, and your rights regarding your personal information. Last updated: October 2024")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    // Data Collection
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("1. Information We Collect")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("Personal Information:")
+                            .font(.body)
+                            .fontWeight(.medium)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            DataCollectionPoint("Name (first and last name)")
+                            DataCollectionPoint("Educational email address (for verification)")
+                            DataCollectionPoint("Username (chosen by you)")
+                            DataCollectionPoint("University and major")
+                            DataCollectionPoint("Academic year")
+                            DataCollectionPoint("Hometown (optional)")
+                            DataCollectionPoint("Profile picture (optional)")
+                            DataCollectionPoint("Bio and profile information (optional)")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("Content You Create:")
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .padding(.top, 8)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            DataCollectionPoint("Posts, photos, and descriptions")
+                            DataCollectionPoint("Comments and messages")
+                            DataCollectionPoint("Bookmarks and saved content")
+                            DataCollectionPoint("Reports of content or users")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("Usage Information:")
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .padding(.top, 8)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            DataCollectionPoint("Device information (device type, OS version)")
+                            DataCollectionPoint("Log data (access times, features used)")
+                            DataCollectionPoint("Push notification tokens (if enabled)")
+                        }
+                        .padding(.leading, 16)
+                    }
                     
                     // How We Use Information
-                    PrivacySection(
-                        title: "2. How We Use Your Information",
-                        content: "We use the information we collect to provide, maintain, and improve our services, communicate with you, ensure platform safety through content moderation, and comply with legal obligations."
-                    )
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("2. How We Use Your Information")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("We only use your data for the following purposes:")
+                            .font(.body)
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            DataUsePoint("Provide and maintain our campus community services")
+                            DataUsePoint("Verify your university affiliation")
+                            DataUsePoint("Enable communication with other verified students")
+                            DataUsePoint("Ensure platform safety through content moderation")
+                            DataUsePoint("Send important service notifications")
+                            DataUsePoint("Respond to your support requests")
+                            DataUsePoint("Comply with legal obligations")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("We do NOT use your data for advertising or marketing purposes.")
+                            .font(.body)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.blue)
+                            .padding(.top, 4)
+                    }
                     
                     // Content Moderation and Safety
                     VStack(alignment: .leading, spacing: 12) {
@@ -68,62 +142,178 @@ struct PrivacyView: View {
                         )
                     }
                     
-                    // Information Sharing
-                    PrivacySection(
-                        title: "4. Information Sharing",
-                        content: "We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy. We may share information when required by law or to protect our rights and the safety of our users."
-                    )
-                    
-                    // Data Security
-                    PrivacySection(
-                        title: "5. Data Security",
-                        content: "We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure."
-                    )
-                    
-                    // Your Rights
+                    // Information Sharing and Third Parties
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("6. Your Privacy Rights")
+                        Text("4. Data Sharing and Third Parties")
                             .font(.title3)
                             .fontWeight(.semibold)
                         
-                        Text("You have the right to access, update, or delete your personal information. You can also control your privacy settings and manage who can see your content.")
+                        Text("We do NOT sell your personal information to anyone.")
+                            .font(.body)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.blue)
+                        
+                        Text("We may share your information only in these limited circumstances:")
+                            .font(.body)
+                            .padding(.top, 4)
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            DataSharingPoint("With your consent: When you explicitly agree to share")
+                            DataSharingPoint("Service Providers: Hosting infrastructure (AWS), push notifications (Apple)")
+                            DataSharingPoint("Legal Requirements: When required by law, court order, or to protect rights and safety")
+                            DataSharingPoint("University Officials: Only when legally required for student safety concerns")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("Third-Party Services:")
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .padding(.top, 8)
+                        
+                        Text("Any third parties we work with are required to provide the same level of data protection as described in this policy. They may only use your data to provide services to us, not for their own purposes.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    // Data Security
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("5. Data Security")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("We implement industry-standard security measures:")
                             .font(.body)
                         
-                        VStack(alignment: .leading, spacing: 8) {
-                            PrivacyRight("Access and download your data")
-                            PrivacyRight("Update or correct your information")
-                            PrivacyRight("Delete your account and data")
-                            PrivacyRight("Control content visibility settings")
-                            PrivacyRight("Manage notification preferences")
+                        VStack(alignment: .leading, spacing: 6) {
+                            SecurityPoint("Encrypted data transmission (HTTPS/TLS)")
+                            SecurityPoint("Secure password storage (bcrypt hashing)")
+                            SecurityPoint("Access tokens stored securely in Keychain")
+                            SecurityPoint("Regular security audits and updates")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("However, no method of transmission over the internet is 100% secure. While we strive to protect your data, we cannot guarantee absolute security.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                    }
+                    
+                    // Data Retention and Deletion
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("6. Data Retention and Deletion")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("Retention Policy:")
+                            .font(.body)
+                            .fontWeight(.medium)
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            RetentionPoint("Account data: Retained while your account is active")
+                            RetentionPoint("Posts and messages: Retained until you delete them or close your account")
+                            RetentionPoint("Logs and analytics: Retained for 90 days for security and debugging")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("Account Deletion:")
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .padding(.top, 8)
+                        
+                        Text("You can permanently delete your account at any time from Settings > Account > Delete Account. Upon deletion:")
+                            .font(.body)
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            DeletionPoint("All your personal information is permanently removed")
+                            DeletionPoint("Your posts, comments, and messages are deleted")
+                            DeletionPoint("Your profile becomes inaccessible immediately")
+                            DeletionPoint("This action cannot be undone")
                         }
                         .padding(.leading, 16)
                     }
                     
-                    // Cookies and Tracking
-                    PrivacySection(
-                        title: "7. Cookies and Tracking",
-                        content: "We use cookies and similar technologies to enhance your experience, analyze usage patterns, and improve our services. You can control cookie settings through your browser preferences."
-                    )
+                    // Your Privacy Rights
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("7. Your Privacy Rights")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("You have the following rights regarding your personal data:")
+                            .font(.body)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            PrivacyRight("Access: View all data we have about you")
+                            PrivacyRight("Download: Export your data in a portable format")
+                            PrivacyRight("Correct: Update or correct inaccurate information")
+                            PrivacyRight("Delete: Permanently remove your account and all data")
+                            PrivacyRight("Withdraw Consent: Revoke permissions at any time")
+                            PrivacyRight("Object: Opt out of certain data processing activities")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("To exercise these rights, visit Settings > Privacy & Data or contact us at privacy@campuskinect.com")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                    }
+                    
+                    // Permissions and Consent
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("8. Permissions and Consent")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("We request your permission before accessing:")
+                            .font(.body)
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            PermissionPoint("Camera: To take photos for posts")
+                            PermissionPoint("Photo Library: To select photos for posts")
+                            PermissionPoint("Push Notifications: To send you important updates")
+                        }
+                        .padding(.leading, 16)
+                        
+                        Text("You can revoke these permissions at any time through iOS Settings. Denying permissions will limit some features but won't prevent you from using the core app functionality.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                    }
+                    
+                    // Tracking and Analytics
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("9. Tracking and Analytics")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text("We do NOT track you across other apps or websites for advertising purposes.")
+                            .font(.body)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.blue)
+                        
+                        Text("We only collect basic usage analytics within our app to improve service quality and fix bugs. This data is never shared with third parties for advertising.")
+                            .font(.body)
+                            .padding(.top, 4)
+                    }
                     
                     // Children's Privacy
                     PrivacySection(
-                        title: "8. Children's Privacy",
+                        title: "10. Children's Privacy",
                         content: "Our service is intended for university students who are typically 18 years or older. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately."
                     )
                     
                     // Changes to Privacy Policy
                     PrivacySection(
-                        title: "9. Changes to This Policy",
-                        content: "We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the 'Last Updated' date."
+                        title: "11. Changes to This Policy",
+                        content: "We may update this Privacy Policy from time to time. We will notify you of any material changes through the app or via email, and update the 'Last Updated' date below."
                     )
                     
                     // Contact Information
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("10. Contact Us")
+                        Text("12. Contact Us")
                             .font(.title3)
                             .fontWeight(.semibold)
                         
-                        Text("If you have any questions about this Privacy Policy, please contact us at:")
+                        Text("If you have any questions about this Privacy Policy or want to exercise your privacy rights, please contact us:")
                             .font(.body)
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -131,12 +321,16 @@ struct PrivacyView: View {
                                 .font(.body)
                                 .fontWeight(.medium)
                             
+                            Text("Support: campuskinect01@gmail.com")
+                                .font(.body)
+                            
                             Text("Address: CampusKinect, Inc.")
                                 .font(.body)
                             
-                            Text("Last updated: September 2024")
+                            Text("Last updated: October 2024")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
                                 .padding(.top, 8)
                         }
                     }
@@ -204,6 +398,146 @@ struct SafetyPoint: View {
             Text(text)
                 .font(.caption)
                 .foregroundColor(.primary)
+        }
+    }
+}
+
+struct DataCollectionPoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Text("•")
+                .font(.body)
+                .foregroundColor(.blue)
+            
+            Text(text)
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct DataUsePoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Text("✓")
+                .font(.body)
+                .foregroundColor(.green)
+            
+            Text(text)
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct DataSharingPoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Text("→")
+                .font(.body)
+                .foregroundColor(.orange)
+            
+            Text(text)
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct SecurityPoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "lock.fill")
+                .font(.caption)
+                .foregroundColor(.blue)
+            
+            Text(text)
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct RetentionPoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "clock.fill")
+                .font(.caption)
+                .foregroundColor(.orange)
+            
+            Text(text)
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct DeletionPoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "trash.fill")
+                .font(.caption)
+                .foregroundColor(.red)
+            
+            Text(text)
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct PermissionPoint: View {
+    let text: String
+    
+    init(_ text: String) {
+        self.text = text
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "hand.raised.fill")
+                .font(.caption)
+                .foregroundColor(.blue)
+            
+            Text(text)
+                .font(.body)
+                .foregroundColor(.secondary)
         }
     }
 }

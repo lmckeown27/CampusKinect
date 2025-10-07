@@ -37,6 +37,12 @@ struct PostCardView: View {
     @State private var showingErrorAlert = false
     @State private var errorMessage = ""
     
+    // Guest restriction
+    @State private var showingGuestRestriction = false
+    @State private var guestRestrictionAction = ""
+    @State private var showingLoginView = false
+    @State private var showingRegisterView = false
+    
     @EnvironmentObject var authManager: AuthenticationManager
     
     private let apiService = APIService.shared
@@ -224,6 +230,25 @@ struct PostCardView: View {
         } message: {
             Text(errorMessage)
         }
+        .alert("Account Required", isPresented: $showingGuestRestriction) {
+            Button("Create Account") {
+                showingRegisterView = true
+            }
+            Button("Sign In") {
+                showingLoginView = true
+            }
+            Button("Continue Browsing", role: .cancel) { }
+        } message: {
+            Text("You need to create an account or sign in to \(guestRestrictionAction) posts.")
+        }
+        .sheet(isPresented: $showingLoginView) {
+            LoginView()
+                .environmentObject(authManager)
+        }
+        .sheet(isPresented: $showingRegisterView) {
+            RegisterView()
+                .environmentObject(authManager)
+        }
         .overlay(
             // Success message overlay
             VStack {
@@ -260,6 +285,13 @@ struct PostCardView: View {
     // MARK: - Action Handlers
     
     private func handleMessage() {
+        // Check for guest restriction
+        if authManager.isGuest {
+            guestRestrictionAction = "message"
+            showingGuestRestriction = true
+            return
+        }
+        
         guard let currentUser = authManager.currentUser else {
             print("❌ No current user - cannot message about post")
             return
@@ -355,6 +387,13 @@ struct PostCardView: View {
     }
     
     private func handleRepost() {
+        // Check for guest restriction
+        if authManager.isGuest {
+            guestRestrictionAction = "repost"
+            showingGuestRestriction = true
+            return
+        }
+        
         // Prevent multiple simultaneous requests
         guard !isRepostLoading else { return }
         
@@ -405,6 +444,13 @@ struct PostCardView: View {
     }
     
     private func handleBookmark() {
+        // Check for guest restriction
+        if authManager.isGuest {
+            guestRestrictionAction = "bookmark"
+            showingGuestRestriction = true
+            return
+        }
+        
         // Prevent multiple simultaneous requests
         guard !isBookmarkLoading else { return }
         

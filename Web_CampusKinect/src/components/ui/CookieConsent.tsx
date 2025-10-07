@@ -13,11 +13,8 @@ export default function CookieConsent() {
       const hasUserConsented = localStorage.getItem('cookie-consent') !== null;
       const hasUserPreferences = localStorage.getItem('cookie-preferences') !== null;
       
-      // TEMPORARILY FORCE VISIBILITY FOR DEBUGGING
-      setIsVisible(true);
-      
       if (hasUserConsented || hasUserPreferences) {
-        // setIsVisible(false); // Commented out temporarily
+        setIsVisible(false);
       }
     }
   }, []);

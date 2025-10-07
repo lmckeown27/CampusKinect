@@ -32,7 +32,8 @@ const marketSizeRoutes = require('./routes/marketSize');
 const notificationsRoutes = require('./routes/notifications');
 const reportsRoutes = require('./routes/reports');
 const userBlockingRoutes = require('./routes/userBlocking');
-const adminRoutes = require('./routes/admin');// Optional mobile routes - only load if dependencies are available
+const adminRoutes = require('./routes/admin');
+const guestRoutes = require('./routes/guest');// Optional mobile routes - only load if dependencies are available
 let mobileRoutes;
 try {
   mobileRoutes = require('./routes/mobile');
@@ -210,6 +211,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // API routes
+app.use(`/api/${process.env.API_VERSION || 'v1'}/guest`, guestRoutes); // Guest routes (unauthenticated)
 app.use(`/api/${process.env.API_VERSION || 'v1'}/auth`, authRoutes);
 // Register userBlocking routes BEFORE userRoutes so /users/blocked matches before /users/:id
 app.use(`/api/${process.env.API_VERSION || 'v1'}/users`, userBlockingRoutes);

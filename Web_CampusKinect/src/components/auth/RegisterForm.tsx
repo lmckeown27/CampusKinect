@@ -10,7 +10,7 @@ import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 const RegisterForm: React.FC = () => {
   const router = useRouter();
-  const { register, isLoading, error, isAuthenticated } = useAuthStore();
+  const { register, isLoading, error, isAuthenticated, isGuest } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -527,6 +527,19 @@ const RegisterForm: React.FC = () => {
               Privacy Policy
             </Link>
           </p>
+          
+          {/* Continue as Guest button (only show if in guest mode) */}
+          {isGuest && (
+            <p className="font-semibold mb-2 mt-2">
+              <button
+                onClick={() => router.push('/home')}
+                className="text-neutral-600 hover:text-neutral-800 font-medium underline decoration-2 underline-offset-2"
+              >
+                Continue Browsing as Guest
+              </button>
+            </p>
+          )}
+          
           <p className="mt-2">
             Need help?{' '}
             <Link href="/support" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">

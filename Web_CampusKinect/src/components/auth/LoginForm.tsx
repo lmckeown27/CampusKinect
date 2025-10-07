@@ -10,7 +10,7 @@ import KinectLogo from '@/assets/logos/KinectLogo.png';
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
-  const { login } = useAuthStore();
+  const { login, isGuest } = useAuthStore();
   const [formData, setFormData] = useState<LoginFormType>({
     usernameOrEmail: '',
     password: ''
@@ -207,6 +207,19 @@ const LoginForm: React.FC = () => {
                 Create Account
               </Link>
             </p>
+            
+            {/* Continue as Guest button (only show if in guest mode) */}
+            {isGuest && (
+              <p className="font-semibold mb-2">
+                <button
+                  onClick={() => router.push('/home')}
+                  className="text-neutral-600 hover:text-neutral-800 font-medium underline decoration-2 underline-offset-2"
+                >
+                  Continue Browsing as Guest
+                </button>
+              </p>
+            )}
+            
             <p className="font-semibold mb-2">
               Need help?{' '}
               <Link href="/support" className="text-primary hover:text-primary-600 font-medium underline decoration-2 underline-offset-2">

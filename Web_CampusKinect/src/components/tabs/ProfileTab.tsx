@@ -7,10 +7,16 @@ import { apiService } from '../../services/api';
 import { Post, CreatePostForm, User } from '../../types';
 import PostCard from '../ui/PostCard';
 import EditPostModal from '../ui/EditPostModal';
+import GuestProfilePage from '../guest/GuestProfilePage';
 
 const ProfileTab: React.FC = () => {
   const authStore = useAuthStore();
-  const { user: authUser, updateUser } = authStore;
+  const { user: authUser, updateUser, isGuest } = authStore;
+  
+  // Show guest profile if in guest mode
+  if (isGuest) {
+    return <GuestProfilePage />;
+  }
   const [activeTab, setActiveTab] = useState<'posts' | 'reposts' | 'bookmarks'>('posts');
   const [posts, setPosts] = useState<Post[]>([]);
   const [reposts, setReposts] = useState<Post[]>([]);

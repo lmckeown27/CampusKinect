@@ -19,6 +19,7 @@ import {
 import { useRouter } from "next/navigation";
 import ReportModal from "./ReportModal";
 import BlockUserModal from "./BlockUserModal";
+import GuestRestrictionModal from "../guest/GuestRestrictionModal";
 import { apiService } from "../../services/api";
 import { useAuthStore } from "../../stores/authStore";
 
@@ -51,6 +52,7 @@ const PostCard: React.FC<PostCardProps> = ({
 }) => {
   const router = useRouter();
   const user = useAuthStore(state => state.user);
+  const isGuest = useAuthStore(state => state.isGuest);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -61,6 +63,10 @@ const PostCard: React.FC<PostCardProps> = ({
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [isUserBlocked, setIsUserBlocked] = useState(false);
   const [isLoadingBlockStatus, setIsLoadingBlockStatus] = useState(false);
+  
+  // Guest restriction states
+  const [showGuestRestriction, setShowGuestRestriction] = useState(false);
+  const [guestAction, setGuestAction] = useState('');
   
   // Check if this is the user's own post
   // Need to check both post.userId and post.poster.id as they might differ in data structure
@@ -94,10 +100,20 @@ const PostCard: React.FC<PostCardProps> = ({
   }, [showOptions]);
 
   const handleBookmark = () => {
+    if (isGuest) {
+      setGuestAction('bookmark');
+      setShowGuestRestriction(true);
+      return;
+    }
     setIsBookmarked(!isBookmarked);
   };
 
   const handleMessage = () => {
+    if (isGuest) {
+      setGuestAction('message');
+      setShowGuestRestriction(true);
+      return;
+    }
     // POST-CENTRIC MESSAGING: Navigate with post context
     console.log("Message about POST:", post.title, "with user:", post.userId);
     
@@ -106,6 +122,11 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleRepost = () => {
+    if (isGuest) {
+      setGuestAction('repost');
+      setShowGuestRestriction(true);
+      return;
+    }
     // Implement repost functionality
     console.log("Repost:", post.id);
     // This would typically create a new post that references the original
@@ -846,6 +867,12 @@ const PostCard: React.FC<PostCardProps> = ({
           onUserBlocked={handleUserBlocked}
         />
       )}
+      
+      <GuestRestrictionModal
+        isOpen={showGuestRestriction}
+        onClose={() => setShowGuestRestriction(false)}
+        action={guestAction}
+      />
     </div>
   );
 };

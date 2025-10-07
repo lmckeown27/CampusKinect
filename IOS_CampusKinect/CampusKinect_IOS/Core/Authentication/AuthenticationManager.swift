@@ -16,16 +16,27 @@ class AuthenticationManager: ObservableObject {
     @Published var currentUser: User?
     @Published var authError: APIError?
     
+    // Guest Mode
+    @Published var isGuest = false
+    @Published var guestUniversityId: Int?
+    @Published var guestUniversityName: String?
+    
     private let apiService = APIService.shared
-    private let keychainManager = KeychainManager.shared
+    let keychainManager = KeychainManager.shared
     private var cancellables = Set<AnyCancellable>()
     
+    private let guestStateKey = "campuskinect_guest_state"
+    
     init() {
+        // Load guest state from UserDefaults
+        loadGuestState()
+        
         // Listen for authentication notifications
         NotificationCenter.default.publisher(for: .userDidLogin)
             .sink { [weak self] _ in
                 Task { @MainActor in
                     self?.isAuthenticated = true
+                    self?.exitGuestMode() // Exit guest mode when logging in
                 }
             }
             .store(in: &cancellables)
@@ -260,6 +271,10 @@ class AuthenticationManager: ObservableObject {
     func logout() async {
         isLoading = true
         
+        // Save current guest university if exists (to preserve selection)
+        let savedUniversityId = guestUniversityId
+        let savedUniversityName = guestUniversityName
+        
         // Clear tokens from keychain
         let tokensCleared = await keychainManager.clearAllTokens()
         if !tokensCleared {
@@ -267,16 +282,31 @@ class AuthenticationManager: ObservableObject {
             print("Warning: Failed to clear tokens from keychain")
         }
         
-        // Clear state
+        // Clear authentication state
         isAuthenticated = false
         currentUser = nil
         authError = nil
+        
+        // Enter guest mode with preserved university or current user's university
+        if let universityId = savedUniversityId, let universityName = savedUniversityName {
+            // Restore previous guest university selection
+            enterGuestMode(universityId: universityId, universityName: universityName)
+            print("👤 Logout: Re-entered guest mode with saved university: \(universityName)")
+        } else {
+            // Try to use current user's university before logout
+            // If no university available, user will see university selector
+            isGuest = false
+            guestUniversityId = nil
+            guestUniversityName = nil
+            saveGuestState()
+            print("👤 Logout: No guest university - will show selector")
+        }
         
         NotificationCenter.default.post(name: .userDidLogout, object: nil)
         
         // Small delay to ensure all UI updates and notifications complete
         try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
-                isLoading = false
+        isLoading = false
     }
     
     // MARK: - Update Profile
@@ -327,9 +357,51 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
+    // MARK: - Guest Mode
+    func enterGuestMode(universityId: Int, universityName: String) {
+        isGuest = true
+        guestUniversityId = universityId
+        guestUniversityName = universityName
+        saveGuestState()
+    }
+    
+    func exitGuestMode() {
+        isGuest = false
+        guestUniversityId = nil
+        guestUniversityName = nil
+        saveGuestState()
+    }
+    
+    private func loadGuestState() {
+        if let data = UserDefaults.standard.data(forKey: guestStateKey),
+           let state = try? JSONDecoder().decode(GuestState.self, from: data) {
+            isGuest = state.isGuest
+            guestUniversityId = state.universityId
+            guestUniversityName = state.universityName
+        }
+    }
+    
+    private func saveGuestState() {
+        let state = GuestState(
+            isGuest: isGuest,
+            universityId: guestUniversityId,
+            universityName: guestUniversityName
+        )
+        if let data = try? JSONEncoder().encode(state) {
+            UserDefaults.standard.set(data, forKey: guestStateKey)
+        }
+    }
+    
     // MARK: - Clear Error
     func clearError() {
         authError = nil
     }
+}
+
+// MARK: - Guest State
+private struct GuestState: Codable {
+    let isGuest: Bool
+    let universityId: Int?
+    let universityName: String?
 }
 

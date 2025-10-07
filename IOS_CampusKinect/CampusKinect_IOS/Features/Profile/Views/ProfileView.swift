@@ -27,7 +27,12 @@ struct ProfileView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        // Show guest profile if in guest mode
+        if authManager.isGuest {
+            return AnyView(GuestProfileView())
+        }
+        
+        return AnyView(NavigationStack {
             GeometryReader { geometry in
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
@@ -88,7 +93,7 @@ struct ProfileView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)
-        }
+        })
     }
 }
 

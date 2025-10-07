@@ -24,6 +24,9 @@ struct SettingsView: View {
     @State private var showingSendVerificationAlert = false
     @State private var isSendingVerification = false
     @State private var showingVerificationSentSuccess = false
+    @State private var showingPrivacyPolicy = false
+    @State private var showingDataManagement = false
+    @State private var showingDeleteAccount = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -116,6 +119,22 @@ struct SettingsView: View {
                 
                 // Privacy & Safety
                 Section("Privacy & Safety") {
+                    SettingsRow(
+                        icon: "hand.raised.fill",
+                        title: "Privacy Policy",
+                        subtitle: "View our privacy practices"
+                    ) {
+                        showingPrivacyPolicy = true
+                    }
+                    
+                    SettingsRow(
+                        icon: "folder.fill.badge.person.crop",
+                        title: "Privacy & Data",
+                        subtitle: "Manage your data and privacy settings"
+                    ) {
+                        showingDataManagement = true
+                    }
+                    
                     SettingsRow(
                         icon: "person.crop.circle.badge.xmark",
                         title: "Blocked Users",
@@ -234,6 +253,12 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingMyReports) {
             MyReportsView()
+        }
+        .sheet(isPresented: $showingPrivacyPolicy) {
+            PrivacyView()
+        }
+        .sheet(isPresented: $showingDataManagement) {
+            DataManagementView()
         }
         .sheet(isPresented: $showingAdminDashboard) {
             AdminDashboardView()

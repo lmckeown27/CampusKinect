@@ -75,6 +75,18 @@ struct HomeView: View {
                             .padding(.top, 8)
                         }
                         
+                        // Guest University Banner
+                        if authManager.isGuest,
+                           let universityName = authManager.guestUniversityName,
+                           let universityId = authManager.guestUniversityId {
+                            GuestUniversityBanner(
+                                universityName: universityName,
+                                universityId: universityId
+                            )
+                            .padding(.horizontal)
+                            .padding(.top, 8)
+                        }
+                        
                         // Posts List
                         PostsList(scrollToTopTrigger: $scrollToTopTrigger)
                             .environmentObject(viewModel)

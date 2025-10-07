@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var authManager: AuthenticationManager
+    @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var password = ""
     @State private var isPasswordVisible = false
@@ -264,6 +265,23 @@ struct LoginView: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(Color("BrandPrimary"))
+            }
+            
+            // Continue as Guest button (only show if in guest mode)
+            if authManager.isGuest {
+                Button(action: {
+                    dismiss()
+                }) {
+                    HStack {
+                        Image(systemName: "eye.fill")
+                            .font(.system(size: 14))
+                        Text("Continue Browsing as Guest")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                }
+                .padding(.top, 8)
             }
             
             Spacer()

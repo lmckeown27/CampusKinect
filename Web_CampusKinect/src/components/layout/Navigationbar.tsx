@@ -1,12 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, Plus, MessageCircle } from 'lucide-react';
+import { useAuthStore } from '../../stores/authStore';
+import GuestRestrictionModal from '../guest/GuestRestrictionModal';
 
 const Navigationbar: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isGuest } = useAuthStore();
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [guestAction, setGuestAction] = useState('');
 
   // Debug logging removed to prevent console spam
 
@@ -44,10 +50,21 @@ const Navigationbar: React.FC = () => {
       <div className="flex-1 px-4">
         {navigationItems.map((item) => {
           const Icon = item.icon;
+          const isRestricted = isGuest && (item.name === 'Create Post' || item.name === 'Messages');
+          
+          const handleClick = (e: React.MouseEvent) => {
+            if (isRestricted) {
+              e.preventDefault();
+              setGuestAction(item.name === 'Create Post' ? 'post' : 'message');
+              setShowGuestModal(true);
+            }
+          };
+          
           return (
             <Link
               key={item.name}
               href={item.href}
+              onClick={handleClick}
               className={`flex items-center space-x-4 w-full px-4 py-3 rounded-lg transition-all duration-200 ease-in-out cursor-pointer transform hover:scale-[1.02] hover:shadow-md ${
                 item.current
                   ? 'text-white font-semibold'
@@ -109,6 +126,13 @@ const Navigationbar: React.FC = () => {
           {/* Settings button moved to profile sidebar */}
         </div>
       </div>
+      
+      {/* Guest Restriction Modal */}
+      <GuestRestrictionModal
+        isOpen={showGuestModal}
+        onClose={() => setShowGuestModal(false)}
+        action={guestAction}
+      />
     </nav>
   );
 };

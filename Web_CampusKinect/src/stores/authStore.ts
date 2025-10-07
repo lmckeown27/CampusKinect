@@ -8,6 +8,10 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  // Guest mode state
+  isGuest: boolean;
+  guestUniversityId: number | null;
+  guestUniversityName: string | null;
 }
 
 interface AuthActions {
@@ -23,6 +27,9 @@ interface AuthActions {
   attemptTokenRefresh: () => Promise<boolean>;
   debugUserData: () => void;
   forceLogout: () => void;
+  // Guest mode actions
+  enterGuestMode: (universityId: number, universityName: string) => void;
+  exitGuestMode: () => void;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -35,6 +42,9 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      isGuest: false,
+      guestUniversityId: null,
+      guestUniversityName: null,
 
       // Actions
       login: async (credentials: LoginForm) => {
@@ -89,16 +99,40 @@ export const useAuthStore = create<AuthStore>()(
 
       logout: (redirectCallback?: () => void) => {
         try {
+          // Save current guest university selection to preserve it
+          const currentState = get();
+          const savedUniversityId = currentState.guestUniversityId;
+          const savedUniversityName = currentState.guestUniversityName;
+          
           // Call API logout
           apiService.logout();
           
-          // Clear state
-          set({ 
-            user: null, 
-            isAuthenticated: false, 
-            error: null,
-            isLoading: false
-          });
+          // Clear authentication state but enter guest mode
+          if (savedUniversityId && savedUniversityName) {
+            // Restore previous guest university selection
+            set({ 
+              user: null, 
+              isAuthenticated: false, 
+              error: null,
+              isLoading: false,
+              isGuest: true,
+              guestUniversityId: savedUniversityId,
+              guestUniversityName: savedUniversityName
+            });
+            console.log('👤 Logout: Re-entered guest mode with saved university:', savedUniversityName);
+          } else {
+            // No saved university - will show selector
+            set({ 
+              user: null, 
+              isAuthenticated: false, 
+              error: null,
+              isLoading: false,
+              isGuest: false,
+              guestUniversityId: null,
+              guestUniversityName: null
+            });
+            console.log('👤 Logout: No guest university - will show selector');
+          }
           
           // Execute callback if provided
           if (redirectCallback) {
@@ -107,12 +141,31 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error) {
           console.error('Logout error:', error);
           // Still clear state even if API call fails
-          set({ 
-            user: null, 
-            isAuthenticated: false, 
-            error: null,
-            isLoading: false
-          });
+          const currentState = get();
+          const savedUniversityId = currentState.guestUniversityId;
+          const savedUniversityName = currentState.guestUniversityName;
+          
+          if (savedUniversityId && savedUniversityName) {
+            set({ 
+              user: null, 
+              isAuthenticated: false, 
+              error: null,
+              isLoading: false,
+              isGuest: true,
+              guestUniversityId: savedUniversityId,
+              guestUniversityName: savedUniversityName
+            });
+          } else {
+            set({ 
+              user: null, 
+              isAuthenticated: false, 
+              error: null,
+              isLoading: false,
+              isGuest: false,
+              guestUniversityId: null,
+              guestUniversityName: null
+            });
+          }
           
           if (redirectCallback) {
             redirectCallback();
@@ -276,6 +329,27 @@ export const useAuthStore = create<AuthStore>()(
           error: null,
           isLoading: false
         });
+      },
+
+      // Guest Mode Actions
+      enterGuestMode: (universityId: number, universityName: string) => {
+        console.log(`👤 Entering guest mode for ${universityName}`);
+        set({
+          isGuest: true,
+          guestUniversityId: universityId,
+          guestUniversityName: universityName,
+          isAuthenticated: false,
+          user: null
+        });
+      },
+
+      exitGuestMode: () => {
+        console.log('👤 Exiting guest mode');
+        set({
+          isGuest: false,
+          guestUniversityId: null,
+          guestUniversityName: null
+        });
       }
     }),
     {
@@ -297,7 +371,10 @@ export const useAuthStore = create<AuthStore>()(
       },
       partialize: (state) => ({ 
         user: state.user, 
-        isAuthenticated: state.isAuthenticated 
+        isAuthenticated: state.isAuthenticated,
+        isGuest: state.isGuest,
+        guestUniversityId: state.guestUniversityId,
+        guestUniversityName: state.guestUniversityName
       }),
     }
   )

@@ -21,7 +21,11 @@ const SettingsTab: React.FC = () => {
   };
 
   const handlePrivacyPolicy = () => {
-    router.push('/settings/privacy');
+    router.push('/privacy');
+  };
+
+  const handlePrivacyData = () => {
+    router.push('/settings/privacy-data');
   };
 
   const handleSupport = () => {
@@ -170,6 +174,33 @@ const SettingsTab: React.FC = () => {
                 </div>
               </div>
               <div className="p-6 space-y-4">
+                {/* Privacy & Data Management Button */}
+                <button
+                  onClick={handlePrivacyData}
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-[#708d81] transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                  style={{ 
+                    backgroundColor: '#525252',
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#708d81';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252';
+                  }}
+                >
+                  <ShieldCheck size={18} className="text-white" />
+                  <div className="w-3"></div>
+                  <div>
+                    <div className="text-white font-medium">Privacy & Data</div>
+                    <div className="text-gray-300 text-sm">Manage your data and privacy settings</div>
+                  </div>
+                </button>
+
                 {/* Blocked Users Button */}
                 <button
                   onClick={handleBlockedUsers}

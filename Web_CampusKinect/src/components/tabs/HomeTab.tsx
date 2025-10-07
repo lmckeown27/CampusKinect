@@ -6,6 +6,7 @@ import { usePostsStore } from '../../stores/postsStore';
 import { useAuthStore } from '../../stores/authStore';
 import { PostCard } from '../ui';
 import EditPostModal from '../ui/EditPostModal';
+import GuestUniversityBanner from '../guest/GuestUniversityBanner';
 import { Post, CreatePostForm } from '../../types';
 
 // Category definitions matching iOS - using Lucide icons similar to SF Symbols
@@ -41,7 +42,7 @@ const categories = [
 ];
 
 const HomeTab: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, isGuest, guestUniversityName, guestUniversityId } = useAuthStore();
   const { 
     filteredPosts, 
     isLoading, 
@@ -210,6 +211,13 @@ const HomeTab: React.FC = () => {
                 <span>View All Universities</span>
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Guest University Banner */}
+        {isGuest && guestUniversityName && guestUniversityId && (
+          <div className="px-4 pt-4">
+            <GuestUniversityBanner />
           </div>
         )}
 

@@ -36,15 +36,24 @@ router.get('/organized', [
     const {
       page = 1,
       limit = 20,
-      postType
+      postType,
+      universityId // Guest mode: allow selection of university
     } = req.query;
 
-    // Get user's university ID for filtering (if authenticated)
+    // Get user's university ID for filtering
     let userUniversityId = UNIVERSITY_CONFIG.primaryUniversityId; // Default to Cal Poly
+    
     if (req.user && req.user.id) {
+      // Authenticated user - use their university
       const userResult = await query('SELECT university_id FROM users WHERE id = $1', [req.user.id]);
       if (userResult.rows.length > 0) {
         userUniversityId = userResult.rows[0].university_id;
+      }
+    } else if (req.isGuest && universityId) {
+      // Guest mode - use provided university ID
+      const universityCheck = await query('SELECT id FROM universities WHERE id = $1', [universityId]);
+      if (universityCheck.rows.length > 0) {
+        userUniversityId = parseInt(universityId);
       }
     }
 

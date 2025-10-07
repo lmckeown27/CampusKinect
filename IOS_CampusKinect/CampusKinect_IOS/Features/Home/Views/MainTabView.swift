@@ -4,6 +4,7 @@ import UIKit
 struct MainTabView: View {
     @State private var selectedTab: Tab = .home
     @State private var isMessagesPreloaded = false
+    @EnvironmentObject var authManager: AuthenticationManager
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -47,7 +48,7 @@ struct MainTabView: View {
                 }
                 
                 // Main TabView with custom tab bar controller
-                CustomTabBarController(selectedTab: $selectedTab, isIPad: isIPad)
+                CustomTabBarController(selectedTab: $selectedTab, isIPad: isIPad, authManager: authManager)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.campusBackground)
@@ -74,6 +75,7 @@ struct MainTabView: View {
 struct CustomTabBarController: UIViewControllerRepresentable {
     @Binding var selectedTab: MainTabView.Tab
     let isIPad: Bool
+    @ObservedObject var authManager: AuthenticationManager
     
     func makeUIViewController(context: Context) -> UITabBarController {
         let tabBarController = TabBarControllerWithDelegate()
@@ -126,6 +128,14 @@ struct CustomTabBarController: UIViewControllerRepresentable {
                 return true
             }
             
+            // Check if guest user is trying to access restricted features
+            if parent.authManager.isGuest {
+                if tab == .createPost || tab == .messages {
+                    showGuestRestrictionAlert(for: tab, on: tabBarController)
+                    return false
+                }
+            }
+            
             // Check if tapping the already-selected tab
             if tab.rawValue == tabBarController.selectedIndex {
                 // Tapping same tab
@@ -143,6 +153,40 @@ struct CustomTabBarController: UIViewControllerRepresentable {
                 }
                 return true
             }
+        }
+        
+        private func showGuestRestrictionAlert(for tab: MainTabView.Tab, on tabBarController: UITabBarController) {
+            let featureName = tab == .createPost ? "create posts" : "send messages"
+            let action = tab == .createPost ? "post" : "message"
+            
+            let alert = UIAlertController(
+                title: "Account Required",
+                message: "You need to create an account or sign in to \(featureName).",
+                preferredStyle: .alert
+            )
+            
+            alert.addAction(UIAlertAction(title: "Create Account", style: .default) { _ in
+                // Navigate to register view
+                self.presentAuthView(isRegister: true, on: tabBarController)
+            })
+            
+            alert.addAction(UIAlertAction(title: "Sign In", style: .default) { _ in
+                // Navigate to login view
+                self.presentAuthView(isRegister: false, on: tabBarController)
+            })
+            
+            alert.addAction(UIAlertAction(title: "Continue Browsing", style: .cancel))
+            
+            tabBarController.present(alert, animated: true)
+        }
+        
+        private func presentAuthView(isRegister: Bool, on tabBarController: UITabBarController) {
+            let authView = isRegister ? 
+                AnyView(RegisterView().environmentObject(parent.authManager)) :
+                AnyView(LoginView().environmentObject(parent.authManager))
+            
+            let hostingController = UIHostingController(rootView: authView)
+            tabBarController.present(hostingController, animated: true)
         }
     }
 }

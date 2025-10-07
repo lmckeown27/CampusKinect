@@ -48,8 +48,15 @@ struct ContentView: View {
                             checkTermsWithDelay()
                         }
                 }
+            } else if authManager.isGuest && authManager.guestUniversityId != nil {
+                // Guest mode with university selected - show main feed with limited features
+                MainTabView()
+                    .onAppear {
+                        print("👤 Guest Mode: Browsing \(authManager.guestUniversityName ?? "university") feed")
+                    }
             } else {
-                LoginView()
+                // Not authenticated and not in guest mode - show university selector
+                UniversitySelectView()
             }
         }
         // CRITICAL: Terms sheet has ABSOLUTE PRIORITY - no other presentations can interfere

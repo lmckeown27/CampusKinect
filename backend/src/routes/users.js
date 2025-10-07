@@ -574,4 +574,279 @@ router.delete('/profile', auth, async (req, res) => {
   }
 });
 
+// @route   DELETE /api/v1/users/profile/permanent
+// @desc    Permanently delete current user account and all associated data (Apple Guideline 5.1.1.v)
+// @access  Private
+router.delete('/profile/permanent', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { confirmation } = req.body;
+
+    // Require explicit confirmation
+    if (confirmation !== 'DELETE_MY_ACCOUNT') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Please confirm account deletion by providing the correct confirmation phrase'
+        }
+      });
+    }
+
+    console.log(`🗑️  Starting permanent account deletion for user ${userId}`);
+
+    // Get user info before deletion for logging
+    const userInfo = await query(`
+      SELECT id, email, username, first_name, last_name
+      FROM users 
+      WHERE id = $1
+    `, [userId]);
+
+    if (userInfo.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'User not found'
+        }
+      });
+    }
+
+    const user = userInfo.rows[0];
+    console.log(`🗑️  Deleting account for: ${user.email} (${user.username})`);
+
+    // Delete all user-related data (cascade relationships should handle most of this)
+    // But we'll explicitly delete to ensure compliance with data deletion policies
+    
+    // 1. Delete user sessions
+    await query('DELETE FROM user_sessions WHERE user_id = $1', [userId]);
+    
+    // 2. Delete message requests
+    await query('DELETE FROM message_requests WHERE from_user_id = $1 OR to_user_id = $1', [userId]);
+    
+    // 3. Delete messages (cascade should handle via conversations)
+    await query(`
+      DELETE FROM messages 
+      WHERE conversation_id IN (
+        SELECT id FROM conversations WHERE user1_id = $1 OR user2_id = $1
+      )
+    `, [userId]);
+    
+    // 4. Delete conversations
+    await query('DELETE FROM conversations WHERE user1_id = $1 OR user2_id = $1', [userId]);
+    
+    // 5. Delete bookmarks
+    await query('DELETE FROM user_bookmarks WHERE user_id = $1', [userId]);
+    
+    // 6. Delete post views
+    await query('DELETE FROM post_views WHERE user_id = $1', [userId]);
+    
+    // 7. Delete comments
+    await query('DELETE FROM comments WHERE user_id = $1', [userId]);
+    
+    // 8. Delete reports submitted by user
+    await query('DELETE FROM reports WHERE reporter_id = $1', [userId]);
+    
+    // 9. Delete user's posts (this will cascade to post_tags, post_images, etc.)
+    await query('DELETE FROM posts WHERE user_id = $1', [userId]);
+    
+    // 10. Delete blocked users relationships
+    await query('DELETE FROM blocked_users WHERE blocker_id = $1 OR blocked_id = $1', [userId]);
+    
+    // 11. Delete device tokens
+    await query('DELETE FROM device_tokens WHERE user_id = $1', [userId]);
+    
+    // 12. Finally, delete the user account
+    const deleteResult = await query(`
+      DELETE FROM users 
+      WHERE id = $1
+      RETURNING id, email, username
+    `, [userId]);
+
+    if (deleteResult.rows.length === 0) {
+      throw new Error('Failed to delete user account');
+    }
+
+    // Clear cache
+    const cacheKey = generateCacheKey('user', userId);
+    await redisDel(cacheKey);
+
+    console.log(`✅ Successfully deleted account for: ${user.email}`);
+
+    res.json({
+      success: true,
+      message: 'Account permanently deleted. All your data has been removed from our systems.'
+    });
+
+  } catch (error) {
+    console.error('Permanent account deletion error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to delete account. Please try again or contact support.'
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/users/profile/export
+// @desc    Export all user data (Apple Guideline 5.1.1.i - data access rights)
+// @access  Private
+router.get('/profile/export', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    console.log(`📦 Exporting data for user ${userId}`);
+
+    // Get user profile data
+    const userResult = await query(`
+      SELECT 
+        id, username, email, first_name, last_name, display_name,
+        profile_picture, year, major, hometown, bio,
+        university_id, is_verified, is_active, created_at, updated_at
+      FROM users 
+      WHERE id = $1
+    `, [userId]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'User not found'
+        }
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    // Get user's posts
+    const postsResult = await query(`
+      SELECT 
+        id, title, description, post_type, duration_type,
+        location, expires_at, event_start, event_end,
+        created_at, updated_at
+      FROM posts 
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+    `, [userId]);
+
+    // Get user's comments
+    const commentsResult = await query(`
+      SELECT 
+        id, post_id, content, created_at, updated_at
+      FROM comments 
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+    `, [userId]);
+
+    // Get user's bookmarks
+    const bookmarksResult = await query(`
+      SELECT post_id, created_at
+      FROM user_bookmarks 
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+    `, [userId]);
+
+    // Get blocked users
+    const blockedUsersResult = await query(`
+      SELECT blocked_id as user_id, created_at
+      FROM blocked_users 
+      WHERE blocker_id = $1
+      ORDER BY created_at DESC
+    `, [userId]);
+
+    // Get reports submitted
+    const reportsResult = await query(`
+      SELECT 
+        id, content_type, content_id, reason, description,
+        status, created_at
+      FROM reports 
+      WHERE reporter_id = $1
+      ORDER BY created_at DESC
+    `, [userId]);
+
+    // Compile all data
+    const exportData = {
+      exportDate: new Date().toISOString(),
+      profile: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        displayName: user.display_name,
+        profilePicture: user.profile_picture,
+        year: user.year,
+        major: user.major,
+        hometown: user.hometown,
+        bio: user.bio,
+        universityId: user.university_id,
+        isVerified: user.is_verified,
+        isActive: user.is_active,
+        accountCreated: user.created_at,
+        lastUpdated: user.updated_at
+      },
+      posts: postsResult.rows.map(post => ({
+        id: post.id,
+        title: post.title,
+        description: post.description,
+        postType: post.post_type,
+        durationType: post.duration_type,
+        location: post.location,
+        expiresAt: post.expires_at,
+        eventStart: post.event_start,
+        eventEnd: post.event_end,
+        createdAt: post.created_at,
+        updatedAt: post.updated_at
+      })),
+      comments: commentsResult.rows.map(comment => ({
+        id: comment.id,
+        postId: comment.post_id,
+        content: comment.content,
+        createdAt: comment.created_at,
+        updatedAt: comment.updated_at
+      })),
+      bookmarks: bookmarksResult.rows.map(bookmark => ({
+        postId: bookmark.post_id,
+        createdAt: bookmark.created_at
+      })),
+      blockedUsers: blockedUsersResult.rows.map(blocked => ({
+        userId: blocked.user_id,
+        createdAt: blocked.created_at
+      })),
+      reports: reportsResult.rows.map(report => ({
+        id: report.id,
+        contentType: report.content_type,
+        contentId: report.content_id,
+        reason: report.reason,
+        description: report.description,
+        status: report.status,
+        createdAt: report.created_at
+      })),
+      statistics: {
+        totalPosts: postsResult.rows.length,
+        totalComments: commentsResult.rows.length,
+        totalBookmarks: bookmarksResult.rows.length,
+        totalBlockedUsers: blockedUsersResult.rows.length,
+        totalReports: reportsResult.rows.length
+      }
+    };
+
+    console.log(`✅ Successfully exported data for user ${userId}`);
+
+    res.json({
+      success: true,
+      message: 'Data exported successfully',
+      data: exportData
+    });
+
+  } catch (error) {
+    console.error('Data export error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to export data. Please try again.'
+      }
+    });
+  }
+});
+
 module.exports = router; 

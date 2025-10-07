@@ -323,6 +323,23 @@ struct RegisterView: View {
                     .foregroundColor(Color("BrandPrimary"))
             }
             
+            // Continue as Guest button (only show if in guest mode)
+            if authManager.isGuest {
+                Button(action: {
+                    dismiss()
+                }) {
+                    HStack {
+                        Image(systemName: "eye.fill")
+                            .font(.system(size: 14))
+                        Text("Continue Browsing as Guest")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                }
+                .padding(.top, 8)
+            }
+            
             Spacer()
                 .frame(height: isIPad ? 40 : 20)
         }
