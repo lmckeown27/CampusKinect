@@ -434,7 +434,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "CampusKinect_IOS/Supporting Files/CampusKinect_IOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 2MAGWNY7VS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -445,7 +445,6 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "CampusKinect needs camera access to take photos for your posts. This allows you to capture and share moments with your campus community.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "CampusKinect needs permission to save photos to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CampusKinect needs photo library access to select images for your posts. This allows you to share photos from your gallery with your campus community.";
-				INFOPLIST_KEY_NSUserTrackingUsageDescription = "CampusKinect respects your privacy. We only use basic analytics to improve app quality and fix bugs. We do NOT track you across other apps or sell your data.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -479,7 +478,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "CampusKinect_IOS/Supporting Files/CampusKinect_IOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 2MAGWNY7VS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -490,7 +489,6 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "CampusKinect needs camera access to take photos for your posts. This allows you to capture and share moments with your campus community.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "CampusKinect needs permission to save photos to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CampusKinect needs photo library access to select images for your posts. This allows you to share photos from your gallery with your campus community.";
-				INFOPLIST_KEY_NSUserTrackingUsageDescription = "CampusKinect respects your privacy. We only use basic analytics to improve app quality and fix bugs. We do NOT track you across other apps or sell your data.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
