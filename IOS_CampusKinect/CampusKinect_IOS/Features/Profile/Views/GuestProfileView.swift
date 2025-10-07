@@ -19,8 +19,8 @@ struct GuestProfileView: View {
                     // Header Background
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            Color(hex: "708d81"),
-                            Color(hex: "5a7166")
+                            Color(hex: "708d81") ?? Color.green,
+                            Color(hex: "5a7166") ?? Color.green
                         ]),
                         startPoint: .leading,
                         endPoint: .trailing
@@ -31,7 +31,7 @@ struct GuestProfileView: View {
                         VStack {
                             Spacer()
                             Circle()
-                                .fill(Color(hex: "2d2d2d"))
+                                .fill(Color(hex: "2d2d2d") ?? Color.gray)
                                 .frame(width: 120, height: 120)
                                 .overlay(
                                     Image(systemName: "person.fill")
@@ -40,7 +40,7 @@ struct GuestProfileView: View {
                                 )
                                 .overlay(
                                     Circle()
-                                        .stroke(Color(hex: "1a1a1a"), lineWidth: 4)
+                                        .stroke(Color(hex: "1a1a1a") ?? Color.black, lineWidth: 4)
                                 )
                                 .offset(y: 60)
                         }
@@ -66,14 +66,14 @@ struct GuestProfileView: View {
                                 HStack {
                                     Image(systemName: "mappin.circle.fill")
                                         .font(.system(size: 14))
-                                        .foregroundColor(Color(hex: "708d81"))
+                                        .foregroundColor(Color(hex: "708d81") ?? Color.green)
                                     Text("Viewing: \(universityName)")
                                         .font(.subheadline)
                                         .foregroundColor(.gray)
                                 }
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
-                                .background(Color(hex: "2d2d2d"))
+                                .background(Color(hex: "2d2d2d") ?? Color.gray)
                                 .cornerRadius(8)
                             }
                         }
@@ -122,7 +122,7 @@ struct GuestProfileView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(hex: "708d81"))
+                                .background(Color(hex: "708d81") ?? Color.green)
                                 .foregroundColor(.white)
                                 .cornerRadius(12)
                             }
@@ -138,12 +138,12 @@ struct GuestProfileView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(hex: "2d2d2d"))
+                                .background(Color(hex: "2d2d2d") ?? Color.gray)
                                 .foregroundColor(.white)
                                 .cornerRadius(12)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color(hex: "708d81"), lineWidth: 2)
+                                        .stroke(Color(hex: "708d81") ?? Color.green, lineWidth: 2)
                                 )
                             }
                         }
@@ -190,30 +190,30 @@ struct GuestProfileView: View {
                                 GuestCapabilityRow(
                                     icon: "circle.fill",
                                     text: "Post, comment, and like content",
-                                    color: Color(hex: "708d81")
+                                    color: Color(hex: "708d81") ?? Color.green
                                 )
                                 
                                 GuestCapabilityRow(
                                     icon: "circle.fill",
                                     text: "Message other students",
-                                    color: Color(hex: "708d81")
+                                    color: Color(hex: "708d81") ?? Color.green
                                 )
                                 
                                 GuestCapabilityRow(
                                     icon: "circle.fill",
                                     text: "Bookmark and save posts",
-                                    color: Color(hex: "708d81")
+                                    color: Color(hex: "708d81") ?? Color.green
                                 )
                                 
                                 GuestCapabilityRow(
                                     icon: "circle.fill",
                                     text: "Build your campus network",
-                                    color: Color(hex: "708d81")
+                                    color: Color(hex: "708d81") ?? Color.green
                                 )
                             }
                         }
                         .padding()
-                        .background(Color(hex: "2d2d2d"))
+                        .background(Color(hex: "2d2d2d") ?? Color.gray)
                         .cornerRadius(12)
                         .padding(.horizontal)
                         
@@ -221,7 +221,7 @@ struct GuestProfileView: View {
                     }
                 }
             }
-            .background(Color(hex: "1a1a1a").edgesIgnoringSafeArea(.all))
+            .background((Color(hex: "1a1a1a") ?? Color.black).edgesIgnoringSafeArea(.all))
             .navigationBarHidden(true)
         }
         .sheet(isPresented: $showingLogin) {
