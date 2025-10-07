@@ -664,7 +664,18 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     const mobileDevices = await query('DELETE FROM mobile_devices WHERE user_id = $1 RETURNING id', [userId]);
     console.log(`   ✓ Deleted ${mobileDevices.rows.length} mobile device(s)`);
     
-    console.log('🗑️  Step 11: Finally, deleting the user account...');
+    console.log('🗑️  Step 11: Deleting mobile-related data...');
+    const notificationLogs = await query('DELETE FROM notification_logs WHERE user_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    const offlineSyncQueue = await query('DELETE FROM offline_sync_queue WHERE user_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    const mobileAnalytics = await query('DELETE FROM mobile_analytics WHERE user_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    const cameraUploads = await query('DELETE FROM camera_uploads WHERE user_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    const mobilePreferences = await query('DELETE FROM mobile_preferences WHERE user_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    const biometricTokens = await query('DELETE FROM biometric_tokens WHERE user_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    const biometricAuditLog = await query('DELETE FROM biometric_audit_log WHERE user_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    const userReferrals = await query('DELETE FROM user_referrals WHERE referrer_id = $1 OR referred_id = $1 RETURNING id', [userId]).catch(() => ({ rows: [] }));
+    console.log(`   ✓ Deleted ${notificationLogs.rows.length} notification log(s), ${offlineSyncQueue.rows.length} sync queue item(s), ${mobileAnalytics.rows.length} analytics event(s), ${cameraUploads.rows.length} camera upload(s), ${mobilePreferences.rows.length} preference(s), ${biometricTokens.rows.length} biometric token(s), ${biometricAuditLog.rows.length} audit log(s), ${userReferrals.rows.length} referral(s)`);
+    
+    console.log('🗑️  Step 12: Finally, deleting the user account...');
     const deleteResult = await query(`
       DELETE FROM users 
       WHERE id = $1
@@ -694,6 +705,14 @@ router.delete('/profile/permanent', auth, async (req, res) => {
    - ${posts.rows.length} post(s) (including tags, images, etc.)
    - ${userBlocks.rows.length} block relationship(s)
    - ${mobileDevices.rows.length} mobile device(s)
+   - ${notificationLogs.rows.length} notification log(s)
+   - ${offlineSyncQueue.rows.length} offline sync queue item(s)
+   - ${mobileAnalytics.rows.length} mobile analytics event(s)
+   - ${cameraUploads.rows.length} camera upload(s)
+   - ${mobilePreferences.rows.length} mobile preference(s)
+   - ${biometricTokens.rows.length} biometric token(s)
+   - ${biometricAuditLog.rows.length} biometric audit log(s)
+   - ${userReferrals.rows.length} referral(s)
    - User account and credentials
    
    Total: Complete data wipe for user ${userId}`);
