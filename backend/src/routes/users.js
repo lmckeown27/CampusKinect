@@ -648,10 +648,9 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     const conversations = await query('DELETE FROM conversations WHERE user1_id = $1 OR user2_id = $1 RETURNING id', [userId]);
     console.log(`   ✓ Deleted ${conversations.rows.length} conversation(s)`);
     
-    console.log('🗑️  Step 7: Deleting reports...');
-    const reports = await query('DELETE FROM reports WHERE reporter_id = $1 RETURNING id', [userId]);
+    console.log('🗑️  Step 7: Deleting content reports...');
     const contentReports = await query('DELETE FROM content_reports WHERE reporter_id = $1 OR content_author_id = $1 RETURNING id', [userId]);
-    console.log(`   ✓ Deleted ${reports.rows.length} report(s) and ${contentReports.rows.length} content report(s)`);
+    console.log(`   ✓ Deleted ${contentReports.rows.length} content report(s)`);
     
     console.log('🗑️  Step 8: Deleting posts (will cascade to post_tags, post_images, etc.)...');
     const posts = await query('DELETE FROM posts WHERE user_id = $1 RETURNING id', [userId]);
@@ -691,7 +690,6 @@ router.delete('/profile/permanent', auth, async (req, res) => {
    - ${messageRequests.rows.length} message request(s)
    - ${messages.rows.length} message(s)
    - ${conversations.rows.length} conversation(s)
-   - ${reports.rows.length} report(s)
    - ${contentReports.rows.length} content report(s)
    - ${posts.rows.length} post(s) (including tags, images, etc.)
    - ${blockedUsers.rows.length} block relationship(s)
