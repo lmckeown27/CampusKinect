@@ -728,15 +728,6 @@ router.get('/profile/export', auth, async (req, res) => {
       ORDER BY created_at DESC
     `, [userId]);
 
-    // Get user's comments
-    const commentsResult = await query(`
-      SELECT 
-        id, post_id, content, created_at, updated_at
-      FROM comments 
-      WHERE user_id = $1
-      ORDER BY created_at DESC
-    `, [userId]);
-
     // Get user's bookmarks
     const bookmarksResult = await query(`
       SELECT post_id, created_at
@@ -796,13 +787,6 @@ router.get('/profile/export', auth, async (req, res) => {
         eventEnd: post.event_end,
         createdAt: post.created_at,
         updatedAt: post.updated_at
-      })),
-      comments: commentsResult.rows.map(comment => ({
-        id: comment.id,
-        postId: comment.post_id,
-        content: comment.content,
-        createdAt: comment.created_at,
-        updatedAt: comment.updated_at
       })),
       bookmarks: bookmarksResult.rows.map(bookmark => ({
         postId: bookmark.post_id,
