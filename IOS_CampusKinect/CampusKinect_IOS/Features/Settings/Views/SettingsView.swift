@@ -425,11 +425,12 @@ struct SettingsView: View {
             
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 200 {
-                    // Account successfully deleted - clear all local data and return to login
+                    // Account successfully deleted - clear all local data and return to guest university selection
                     _ = await authManager.keychainManager.clearAllTokens()
                     await MainActor.run {
                         authManager.isAuthenticated = false
                         authManager.currentUser = nil
+                        authManager.exitGuestMode() // Clear guest state to force university selection
                         deleteConfirmationText = ""
                         isDeletingAccount = false
                         dismiss()

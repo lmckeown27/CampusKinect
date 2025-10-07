@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { apiService } from '../../services/api';
 
 const SettingsTab: React.FC = () => {
-  const { user: authUser, logout } = useAuthStore();
+  const { user: authUser, logout, exitGuestMode } = useAuthStore();
   const router = useRouter();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
@@ -62,9 +62,10 @@ const SettingsTab: React.FC = () => {
       const response = await apiService.deleteAccount();
       
       if (response.success) {
-        // Account deleted successfully - logout and redirect
+        // Account deleted successfully - logout, clear guest state, and redirect to university selection
         logout();
-        router.push('/auth/login');
+        exitGuestMode(); // Clear guest state to force university selection
+        router.push('/'); // Redirect to home which will show university selector for guests
       } else {
         setDeleteError('Failed to delete account. Please try again.');
       }
