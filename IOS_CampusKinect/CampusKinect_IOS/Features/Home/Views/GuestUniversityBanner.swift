@@ -76,17 +76,17 @@ struct GuestUniversityBanner: View {
 struct UniversitySwitcherView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var authManager: AuthenticationManager
-    @State private var universities: [University] = []
+    @State private var universities: [UniversitySearchResult] = []
     @State private var searchText = ""
     @State private var isLoading = true
     
-    var filteredUniversities: [University] {
+    var filteredUniversities: [UniversitySearchResult] {
         if searchText.isEmpty {
             return universities
         } else {
             return universities.filter { university in
                 university.name.localizedCaseInsensitiveContains(searchText) ||
-                university.domain.localizedCaseInsensitiveContains(searchText)
+                (university.domain?.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
     }
@@ -139,7 +139,7 @@ struct UniversitySwitcherView: View {
                     if isLoading {
                         Spacer()
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "708d81")))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "708d81") ?? Color.green))
                             .scaleEffect(1.5)
                         Spacer()
                     } else if filteredUniversities.isEmpty {
@@ -194,9 +194,9 @@ struct UniversitySwitcherView: View {
     private func loadUniversities() async {
         isLoading = true
         do {
-            let fetchedUniversities = try await APIService.shared.fetchUniversities()
+            let response = try await APIService.shared.fetchAllUniversities()
             await MainActor.run {
-                self.universities = fetchedUniversities
+                self.universities = response.data.universities
                 self.isLoading = false
             }
         } catch {
@@ -207,7 +207,7 @@ struct UniversitySwitcherView: View {
         }
     }
     
-    private func selectUniversity(_ university: University) {
+    private func selectUniversity(_ university: UniversitySearchResult) {
         authManager.enterGuestMode(universityId: university.id, universityName: university.name)
         dismiss()
     }
@@ -215,7 +215,7 @@ struct UniversitySwitcherView: View {
 
 // MARK: - University Switcher Row
 struct UniversitySwitcherRow: View {
-    let university: University
+    let university: UniversitySearchResult
     let isSelected: Bool
     
     var body: some View {
@@ -223,12 +223,12 @@ struct UniversitySwitcherRow: View {
             // University Icon
             ZStack {
                 Circle()
-                    .fill(isSelected ? Color(hex: "708d81") : Color(hex: "708d81").opacity(0.2))
+                    .fill(isSelected ? (Color(hex: "708d81") ?? Color.green) : (Color(hex: "708d81") ?? Color.green).opacity(0.2))
                     .frame(width: 50, height: 50)
                 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "building.columns.fill")
                     .font(.system(size: 24))
-                    .foregroundColor(isSelected ? .white : Color(hex: "708d81"))
+                    .foregroundColor(isSelected ? .white : (Color(hex: "708d81") ?? Color.green))
             }
             
             // University Info
@@ -237,9 +237,11 @@ struct UniversitySwitcherRow: View {
                     .font(.headline)
                     .foregroundColor(.white)
                 
-                Text(university.domain)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                if let domain = university.domain {
+                    Text(domain)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
             }
             
             Spacer()
@@ -248,12 +250,12 @@ struct UniversitySwitcherRow: View {
                 Text("Current")
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(Color(hex: "708d81"))
+                    .foregroundColor(Color(hex: "708d81") ?? Color.green)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(hex: "708d81").opacity(0.2))
+                            .fill((Color(hex: "708d81") ?? Color.green).opacity(0.2))
                     )
             } else {
                 Image(systemName: "chevron.right")
@@ -262,11 +264,11 @@ struct UniversitySwitcherRow: View {
             }
         }
         .padding()
-        .background(isSelected ? Color(hex: "708d81").opacity(0.1) : Color(hex: "2d2d2d"))
+        .background(isSelected ? (Color(hex: "708d81") ?? Color.green).opacity(0.1) : (Color(hex: "2d2d2d") ?? Color.gray))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(isSelected ? Color(hex: "708d81") : Color.clear, lineWidth: 2)
+                .stroke(isSelected ? (Color(hex: "708d81") ?? Color.green) : Color.clear, lineWidth: 2)
         )
     }
 }
