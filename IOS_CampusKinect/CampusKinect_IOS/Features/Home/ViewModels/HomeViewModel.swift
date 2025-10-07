@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 // MARK: - Home View Model
+@MainActor
 class HomeViewModel: ObservableObject {
     @Published var posts: [Post] = []
     @Published var isLoading = false
