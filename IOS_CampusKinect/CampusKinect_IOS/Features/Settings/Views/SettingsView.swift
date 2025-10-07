@@ -452,16 +452,6 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Error Response Model
-struct ErrorResponse: Codable {
-    let success: Bool
-    let error: ErrorDetail
-    
-    struct ErrorDetail: Codable {
-        let message: String
-    }
-}
-
 // MARK: - Settings Row
 struct SettingsRow: View {
     let icon: String
