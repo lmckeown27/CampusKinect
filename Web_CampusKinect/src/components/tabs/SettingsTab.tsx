@@ -400,7 +400,7 @@ const SettingsTab: React.FC = () => {
                 >
                   <Trash2 size={18} className="text-red-500 mr-3" />
                   <div>
-                    <h3 className="text-sm font-medium text-red-500 font-semibold">Delete Account</h3>
+                    <h3 className="text-sm font-semibold text-red-500">Delete Account</h3>
                     <p className="text-sm text-gray-300">Permanently delete your account and all data</p>
                   </div>
                 </button>
@@ -429,8 +429,17 @@ const SettingsTab: React.FC = () => {
             <div className="p-6 space-y-4">
               <div className="bg-red-900 bg-opacity-20 border border-red-500 rounded-lg p-4">
                 <p className="text-white text-sm font-medium mb-2">⚠️ Warning: This action is permanent</p>
+                <p className="text-gray-300 text-sm mb-3">
+                  This will permanently delete your account and all associated data including:
+                </p>
+                <ul className="text-gray-300 text-sm space-y-1 mb-3 ml-4">
+                  <li>• All your posts</li>
+                  <li>• All messages and conversations</li>
+                  <li>• Your profile information</li>
+                  <li>• Your reports and blocked users</li>
+                </ul>
                 <p className="text-gray-300 text-sm">
-                  All your data including posts, messages, and account information will be permanently deleted. This cannot be undone.
+                  You may create a new account with the same email address, but it will be a completely fresh start with none of your previous data.
                 </p>
               </div>
 

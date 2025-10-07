@@ -328,7 +328,7 @@ struct SettingsView: View {
                 showingDeleteConfirmation = true
             }
         } message: {
-            Text("Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be permanently removed.")
+            Text("This will permanently delete your account and all associated data including:\n\n• All your posts\n• All messages and conversations\n• Your profile information\n• Your reports and blocked users\n\nYou may create a new account with the same email address, but it will be a completely fresh start with none of your previous data.")
         }
         .alert("Confirm Deletion", isPresented: $showingDeleteConfirmation) {
             TextField("Type DELETE to confirm", text: $deleteConfirmationText)
@@ -344,7 +344,7 @@ struct SettingsView: View {
             }
             .disabled(deleteConfirmationText.uppercased() != "DELETE")
         } message: {
-            Text("Type DELETE in capital letters to confirm permanent account deletion.")
+            Text("Type DELETE in capital letters to permanently delete your account. This cannot be undone.")
         }
         .alert("Error", isPresented: .constant(deleteError != nil)) {
             Button("OK") {
