@@ -78,7 +78,7 @@ struct UniversitySelectView: View {
                     if isLoading {
                         Spacer()
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "708d81")))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "708d81") ?? Color.green))
                             .scaleEffect(1.5)
                         Spacer()
                     } else if filteredUniversities.isEmpty {
@@ -121,9 +121,9 @@ struct UniversitySelectView: View {
     private func loadUniversities() async {
         isLoading = true
         do {
-            let fetchedUniversities = try await APIService.shared.fetchUniversities()
+            let response = try await APIService.shared.fetchAllUniversities()
             await MainActor.run {
-                self.universities = fetchedUniversities
+                self.universities = response.data
                 self.isLoading = false
             }
         } catch {
@@ -148,12 +148,12 @@ struct UniversityRow: View {
             // University Icon
             ZStack {
                 Circle()
-                    .fill(Color(hex: "708d81").opacity(0.2))
+                    .fill((Color(hex: "708d81") ?? Color.green).opacity(0.2))
                     .frame(width: 50, height: 50)
                 
                 Image(systemName: "building.columns.fill")
                     .font(.system(size: 24))
-                    .foregroundColor(Color(hex: "708d81"))
+                    .foregroundColor(Color(hex: "708d81") ?? Color.green)
             }
             
             // University Info
