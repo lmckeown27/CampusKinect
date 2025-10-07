@@ -656,9 +656,9 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     const posts = await query('DELETE FROM posts WHERE user_id = $1 RETURNING id', [userId]);
     console.log(`   ✓ Deleted ${posts.rows.length} post(s)`);
     
-    console.log('🗑️  Step 9: Deleting blocked users relationships...');
-    const blockedUsers = await query('DELETE FROM blocked_users WHERE blocker_id = $1 OR blocked_id = $1 RETURNING id', [userId]);
-    console.log(`   ✓ Deleted ${blockedUsers.rows.length} block relationship(s)`);
+    console.log('🗑️  Step 9: Deleting user block relationships...');
+    const userBlocks = await query('DELETE FROM user_blocks WHERE blocker_id = $1 OR blocked_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${userBlocks.rows.length} block relationship(s)`);
     
     console.log('🗑️  Step 10: Deleting device tokens...');
     const deviceTokens = await query('DELETE FROM device_tokens WHERE user_id = $1 RETURNING id', [userId]);
@@ -692,7 +692,7 @@ router.delete('/profile/permanent', auth, async (req, res) => {
    - ${conversations.rows.length} conversation(s)
    - ${contentReports.rows.length} content report(s)
    - ${posts.rows.length} post(s) (including tags, images, etc.)
-   - ${blockedUsers.rows.length} block relationship(s)
+   - ${userBlocks.rows.length} block relationship(s)
    - ${deviceTokens.rows.length} device token(s)
    - User account and credentials
    
