@@ -660,9 +660,9 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     const userBlocks = await query('DELETE FROM user_blocks WHERE blocker_id = $1 OR blocked_id = $1 RETURNING id', [userId]);
     console.log(`   ✓ Deleted ${userBlocks.rows.length} block relationship(s)`);
     
-    console.log('🗑️  Step 10: Deleting device tokens...');
-    const deviceTokens = await query('DELETE FROM device_tokens WHERE user_id = $1 RETURNING id', [userId]);
-    console.log(`   ✓ Deleted ${deviceTokens.rows.length} device token(s)`);
+    console.log('🗑️  Step 10: Deleting mobile devices...');
+    const mobileDevices = await query('DELETE FROM mobile_devices WHERE user_id = $1 RETURNING id', [userId]);
+    console.log(`   ✓ Deleted ${mobileDevices.rows.length} mobile device(s)`);
     
     console.log('🗑️  Step 11: Finally, deleting the user account...');
     const deleteResult = await query(`
@@ -693,7 +693,7 @@ router.delete('/profile/permanent', auth, async (req, res) => {
    - ${contentReports.rows.length} content report(s)
    - ${posts.rows.length} post(s) (including tags, images, etc.)
    - ${userBlocks.rows.length} block relationship(s)
-   - ${deviceTokens.rows.length} device token(s)
+   - ${mobileDevices.rows.length} mobile device(s)
    - User account and credentials
    
    Total: Complete data wipe for user ${userId}`);
