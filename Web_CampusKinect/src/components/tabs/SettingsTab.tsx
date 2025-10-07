@@ -1,13 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FileText, Cookie, ScrollText, ShieldCheck, HelpCircle, Mail, User, Flag } from 'lucide-react';
+import { FileText, Cookie, ScrollText, ShieldCheck, HelpCircle, Mail, User, Flag, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'next/navigation';
+import { apiService } from '../../services/api';
 
 const SettingsTab: React.FC = () => {
-  const { user: authUser } = useAuthStore();
+  const { user: authUser, logout } = useAuthStore();
   const router = useRouter();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
   
   // Use real user data from auth store
   const user = authUser;
@@ -42,6 +47,33 @@ const SettingsTab: React.FC = () => {
 
   const handleMyReports = () => {
     router.push('/settings/my-reports');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmation.toUpperCase() !== 'DELETE') {
+      setDeleteError('Please type DELETE to confirm');
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError('');
+
+    try {
+      const response = await apiService.deleteAccount();
+      
+      if (response.success) {
+        // Account deleted successfully - logout and redirect
+        logout();
+        router.push('/auth/login');
+      } else {
+        setDeleteError('Failed to delete account. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Delete account error:', error);
+      setDeleteError(error.message || 'Network error. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -336,9 +368,117 @@ const SettingsTab: React.FC = () => {
                 </button>
               </div>
             </div>
+
+            {/* Account Actions - 4th Section (Delete Account) */}
+            <div className="shadow-lg border-2 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 w-80" style={{ backgroundColor: '#737373', borderRadius: '24px', border: '2px solid #dc2626', overflow: 'hidden' }}>
+              <div className="px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center">
+                  <Trash2 size={20} className="text-red-500" />
+                  <div className="w-3"></div>
+                  <h2 className="text-lg font-semibold text-white">Account Actions</h2>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                {/* Delete Account Button */}
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200 cursor-pointer border-2 border-red-500 transform hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                  style={{ 
+                    backgroundColor: '#525252',
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#dc2626';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252';
+                  }}
+                >
+                  <Trash2 size={18} className="text-red-500 mr-3" />
+                  <div>
+                    <h3 className="text-sm font-medium text-red-500 font-semibold">Delete Account</h3>
+                    <p className="text-sm text-gray-300">Permanently delete your account and all data</p>
+                  </div>
+                </button>
+                <p className="text-xs text-gray-400 mt-2">
+                  This action cannot be undone. All your data will be permanently removed from our systems.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 px-4">
+          <div className="bg-gray-800 rounded-xl shadow-2xl w-full max-w-md border-2 border-red-500">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-700">
+              <div className="flex items-center">
+                <Trash2 size={24} className="text-red-500 mr-3" />
+                <h2 className="text-xl font-bold text-white">Delete Account</h2>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <div className="bg-red-900 bg-opacity-20 border border-red-500 rounded-lg p-4">
+                <p className="text-white text-sm font-medium mb-2">⚠️ Warning: This action is permanent</p>
+                <p className="text-gray-300 text-sm">
+                  All your data including posts, messages, and account information will be permanently deleted. This cannot be undone.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-white text-sm font-medium mb-2">
+                  Type <span className="font-bold">DELETE</span> to confirm:
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmation}
+                  onChange={(e) => setDeleteConfirmation(e.target.value)}
+                  placeholder="Type DELETE in capital letters"
+                  className="w-full px-4 py-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  disabled={isDeleting}
+                />
+              </div>
+
+              {deleteError && (
+                <div className="bg-red-900 bg-opacity-30 border border-red-600 rounded-lg p-3">
+                  <p className="text-red-400 text-sm">{deleteError}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="px-6 py-4 border-t border-gray-700 flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteConfirmation('');
+                  setDeleteError('');
+                }}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-3 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeleting || deleteConfirmation.toUpperCase() !== 'DELETE'}
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Forever'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -27,6 +27,10 @@ struct SettingsView: View {
     @State private var showingPrivacyPolicy = false
     @State private var showingDataManagement = false
     @State private var showingDeleteAccount = false
+    @State private var showingDeleteConfirmation = false
+    @State private var deleteConfirmationText = ""
+    @State private var isDeletingAccount = false
+    @State private var deleteError: String?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
@@ -205,6 +209,28 @@ struct SettingsView: View {
                         }
                     }
                 }
+                
+                // Delete Account Section
+                Section {
+                    Button(action: {
+                        showingDeleteAccount = true
+                    }) {
+                        HStack {
+                            Image(systemName: "trash.fill")
+                                .foregroundColor(.red)
+                            
+                            Text("Delete Account")
+                                .foregroundColor(.red)
+                                .fontWeight(.semibold)
+                            
+                            Spacer()
+                        }
+                    }
+                } footer: {
+                    Text("Permanently delete your account and all associated data. This action cannot be undone.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
@@ -294,6 +320,41 @@ struct SettingsView: View {
         } message: {
             Text("A test verification code has been sent to lmckeown@calpoly.edu. Check your email to test the verification flow.")
         }
+        .alert("Delete Account", isPresented: $showingDeleteAccount) {
+            Button("Cancel", role: .cancel) {
+                deleteConfirmationText = ""
+            }
+            Button("Continue", role: .destructive) {
+                showingDeleteConfirmation = true
+            }
+        } message: {
+            Text("Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be permanently removed.")
+        }
+        .alert("Confirm Deletion", isPresented: $showingDeleteConfirmation) {
+            TextField("Type DELETE to confirm", text: $deleteConfirmationText)
+            Button("Cancel", role: .cancel) {
+                deleteConfirmationText = ""
+            }
+            Button("Delete Forever", role: .destructive) {
+                if deleteConfirmationText.uppercased() == "DELETE" {
+                    Task {
+                        await deleteAccount()
+                    }
+                }
+            }
+            .disabled(deleteConfirmationText.uppercased() != "DELETE")
+        } message: {
+            Text("Type DELETE in capital letters to confirm permanent account deletion.")
+        }
+        .alert("Error", isPresented: .constant(deleteError != nil)) {
+            Button("OK") {
+                deleteError = nil
+            }
+        } message: {
+            if let error = deleteError {
+                Text(error)
+            }
+        }
             .frame(maxWidth: isIPad ? min(geometry.size.width * 0.8, 800) : .infinity)
             .frame(maxHeight: .infinity)
             .clipped()
@@ -333,6 +394,71 @@ struct SettingsView: View {
             print("❌ Failed to send test verification email:", error)
             isSendingVerification = false
         }
+    }
+    
+    private func deleteAccount() async {
+        isDeletingAccount = true
+        deleteError = nil
+        
+        do {
+            // Call the delete endpoint
+            guard let url = URL(string: "https://campuskinect.net/api/v1/users/profile/permanent") else {
+                deleteError = "Invalid URL"
+                isDeletingAccount = false
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "DELETE"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            // Add auth token
+            if let token = await authManager.keychainManager.getAccessToken() {
+                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            }
+            
+            // Add confirmation phrase
+            let body = ["confirmation": "DELETE_MY_ACCOUNT"]
+            request.httpBody = try JSONEncoder().encode(body)
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode == 200 {
+                    // Account successfully deleted - clear all local data and return to login
+                    await authManager.keychainManager.clearAll()
+                    await MainActor.run {
+                        authManager.isAuthenticated = false
+                        authManager.currentUser = nil
+                        deleteConfirmationText = ""
+                        isDeletingAccount = false
+                        dismiss()
+                    }
+                } else {
+                    // Parse error response
+                    if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                        deleteError = errorResponse.error.message
+                    } else {
+                        deleteError = "Failed to delete account. Please try again."
+                    }
+                    isDeletingAccount = false
+                }
+            }
+        } catch {
+            print("❌ Failed to delete account:", error)
+            deleteError = "Network error. Please check your connection and try again."
+            isDeletingAccount = false
+        }
+    }
+}
+
+// MARK: - Error Response Model
+struct ErrorResponse: Codable {
+    let success: Bool
+    let error: ErrorDetail
+    
+    struct ErrorDetail: Codable {
+        let message: String
     }
 }
 

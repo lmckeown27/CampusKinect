@@ -857,6 +857,16 @@ class ApiService {
     throw new Error(response.data.message || 'Failed to update profile picture');
   }
 
+  // Delete account permanently
+  public async deleteAccount(): Promise<{ success: boolean; message: string }> {
+    const response: AxiosResponse<{ success: boolean; message: string }> = 
+      await this.api.delete('/users/profile/permanent', {
+        data: { confirmation: 'DELETE_MY_ACCOUNT' }
+      });
+    
+    return response.data;
+  }
+
   // Upload images to existing post
   public async uploadPostImages(postId: string, files: File[]): Promise<{ url: string; id: string; filename: string; order: number }[]> {
     const formData = new FormData();
