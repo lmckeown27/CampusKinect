@@ -41,9 +41,13 @@ class HomeViewModel: ObservableObject {
     // Admin university switcher (for viewing different universities)
     private let universitySwitcher = AdminUniversitySwitcher.shared
     
+    // Authentication manager to check guest status
+    private let authManager = AuthenticationManager.shared
+    
     init() {
         // No need for search debouncing in tag-based system
         setupUniversitySwitcherObserver()
+        setupGuestUniversityObserver()
         setupPostDeletedObserver()
     }
     
@@ -53,10 +57,27 @@ class HomeViewModel: ObservableObject {
         universitySwitcher.$currentViewingUniversityId
             .dropFirst() // Skip initial value
             .sink { [weak self] newId in
-                print("🏠 HomeViewModel: University ID changed to \(newId?.description ?? "nil")")
+                guard let self = self, !self.authManager.isGuest else { return }
+                print("🏠 HomeViewModel: Admin university ID changed to \(newId?.description ?? "nil")")
                 Task { @MainActor in
                     print("🏠 HomeViewModel: Reloading posts for university ID \(newId?.description ?? "nil")")
-                    await self?.loadPosts()
+                    await self.loadPosts()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Guest University Observer
+    private func setupGuestUniversityObserver() {
+        // Reload posts when guest switches universities
+        authManager.$guestUniversityId
+            .dropFirst() // Skip initial value
+            .sink { [weak self] newId in
+                guard let self = self, self.authManager.isGuest else { return }
+                print("🏠 HomeViewModel: Guest university ID changed to \(newId?.description ?? "nil")")
+                Task { @MainActor in
+                    print("🏠 HomeViewModel: Reloading posts for guest university ID \(newId?.description ?? "nil")")
+                    await self.loadPosts()
                 }
             }
             .store(in: &cancellables)
@@ -78,8 +99,16 @@ class HomeViewModel: ObservableObject {
     
     // Get the current university ID to use for API calls
     private var currentUniversityId: Int? {
+        // For guests, use their selected university
+        if authManager.isGuest {
+            let id = authManager.guestUniversityId
+            print("🏠 HomeViewModel: Guest currentUniversityId = \(id?.description ?? "nil")")
+            return id
+        }
+        
+        // For admins/authenticated users, use admin switcher
         let id = universitySwitcher.currentViewingUniversityId
-        print("🏠 HomeViewModel: currentUniversityId = \(id?.description ?? "nil")")
+        print("🏠 HomeViewModel: Admin currentUniversityId = \(id?.description ?? "nil")")
         return id
     }
     

@@ -242,7 +242,7 @@ class APIService: NSObject, ObservableObject {
     func fetchPosts(page: Int = 1, limit: Int = 20, universityId: Int? = nil) async throws -> PostsResponse {
         var endpoint = "\(APIConstants.Endpoints.posts)?page=\(page)&limit=\(limit)"
         
-        // Add universityId parameter if provided (for admin viewing different universities)
+        // Add universityId parameter if provided (for admin/guest viewing different universities)
         if let universityId = universityId {
             endpoint += "&universityId=\(universityId)"
             print("🌐 APIService: Fetching posts for university ID \(universityId)")
@@ -256,7 +256,7 @@ class APIService: NSObject, ObservableObject {
             endpoint: endpoint,
             method: .GET,
             body: nil,
-            requiresAuth: true
+            requiresAuth: false // Allow guests to view posts
         )
     }
     
