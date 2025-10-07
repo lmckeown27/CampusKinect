@@ -29,6 +29,10 @@ struct UniversitySelectView: View {
         NavigationView {
             ZStack {
                 Color(hex: "1a1a1a").edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        // Dismiss keyboard when tapping background
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
                 
                 VStack(spacing: 0) {
                     // Header
@@ -101,6 +105,8 @@ struct UniversitySelectView: View {
                                 ForEach(filteredUniversities) { university in
                                     UniversityRow(university: university)
                                         .onTapGesture {
+                                            // Dismiss keyboard before selecting
+                                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                             selectUniversity(university)
                                         }
                                 }
@@ -144,38 +150,18 @@ struct UniversityRow: View {
     let university: UniversitySearchResult
     
     var body: some View {
-        HStack(spacing: 16) {
-            // University Icon
-            ZStack {
-                Circle()
-                    .fill((Color(hex: "708d81") ?? Color.green).opacity(0.2))
-                    .frame(width: 50, height: 50)
-                
-                Image(systemName: "building.columns.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(Color(hex: "708d81") ?? Color.green)
+        VStack(alignment: .leading, spacing: 4) {
+            Text(university.name)
+                .font(.headline)
+                .foregroundColor(.white)
+            
+            if let domain = university.domain {
+                Text(domain)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
             }
-            
-            // University Info
-            VStack(alignment: .leading, spacing: 4) {
-                Text(university.name)
-                    .font(.headline)
-                    .foregroundColor(.white)
-                
-                if let domain = university.domain {
-                    Text(domain)
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            Spacer()
-            
-            // Arrow
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14))
-                .foregroundColor(.gray)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color(hex: "2d2d2d"))
         .cornerRadius(12)
