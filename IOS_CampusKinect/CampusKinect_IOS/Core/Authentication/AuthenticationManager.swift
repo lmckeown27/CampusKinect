@@ -11,6 +11,8 @@ import Combine
 // MARK: - Authentication Manager
 @MainActor
 class AuthenticationManager: ObservableObject {
+    static let shared = AuthenticationManager()
+    
     @Published var isAuthenticated = false
     @Published var isLoading = false
     @Published var currentUser: User?
