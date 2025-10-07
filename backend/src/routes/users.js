@@ -649,7 +649,7 @@ router.delete('/profile/permanent', auth, async (req, res) => {
     console.log(`   ✓ Deleted ${conversations.rows.length} conversation(s)`);
     
     console.log('🗑️  Step 7: Deleting content reports...');
-    const contentReports = await query('DELETE FROM content_reports WHERE reporter_id = $1 OR content_author_id = $1 RETURNING id', [userId]);
+    const contentReports = await query('DELETE FROM content_reports WHERE reporter_id = $1 OR reported_user_id = $1 RETURNING id', [userId]);
     console.log(`   ✓ Deleted ${contentReports.rows.length} content report(s)`);
     
     console.log('🗑️  Step 8: Deleting posts (will cascade to post_tags, post_images, etc.)...');
