@@ -157,7 +157,6 @@ struct CustomTabBarController: UIViewControllerRepresentable {
         
         private func showGuestRestrictionAlert(for tab: MainTabView.Tab, on tabBarController: UITabBarController) {
             let featureName = tab == .createPost ? "create posts" : "send messages"
-            let action = tab == .createPost ? "post" : "message"
             
             let alert = UIAlertController(
                 title: "Account Required",
