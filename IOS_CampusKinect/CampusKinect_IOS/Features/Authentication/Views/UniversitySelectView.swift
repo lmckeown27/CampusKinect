@@ -9,18 +9,18 @@ import SwiftUI
 
 struct UniversitySelectView: View {
     @EnvironmentObject var authManager: AuthenticationManager
-    @State private var universities: [University] = []
+    @State private var universities: [UniversitySearchResult] = []
     @State private var searchText = ""
     @State private var isLoading = true
-    @State private var selectedUniversity: University?
+    @State private var selectedUniversity: UniversitySearchResult?
     
-    var filteredUniversities: [University] {
+    var filteredUniversities: [UniversitySearchResult] {
         if searchText.isEmpty {
             return universities
         } else {
             return universities.filter { university in
                 university.name.localizedCaseInsensitiveContains(searchText) ||
-                university.domain.localizedCaseInsensitiveContains(searchText)
+                (university.domain?.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
     }
@@ -123,7 +123,7 @@ struct UniversitySelectView: View {
         do {
             let response = try await APIService.shared.fetchAllUniversities()
             await MainActor.run {
-                self.universities = response.data
+                self.universities = response.data.universities
                 self.isLoading = false
             }
         } catch {
@@ -134,14 +134,14 @@ struct UniversitySelectView: View {
         }
     }
     
-    private func selectUniversity(_ university: University) {
+    private func selectUniversity(_ university: UniversitySearchResult) {
         authManager.enterGuestMode(universityId: university.id, universityName: university.name)
     }
 }
 
 // MARK: - University Row
 struct UniversityRow: View {
-    let university: University
+    let university: UniversitySearchResult
     
     var body: some View {
         HStack(spacing: 16) {
@@ -162,9 +162,11 @@ struct UniversityRow: View {
                     .font(.headline)
                     .foregroundColor(.white)
                 
-                Text(university.domain)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                if let domain = university.domain {
+                    Text(domain)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
             }
             
             Spacer()
