@@ -376,11 +376,16 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Guest Mode
     func enterGuestMode(universityId: Int, universityName: String) {
         print("👤 AuthManager.enterGuestMode() called with ID: \(universityId), Name: \(universityName)")
+        print("👤 AuthManager: BEFORE - isGuest=\(isGuest), guestUniversityId=\(guestUniversityId?.description ?? "nil")")
         isGuest = true
         guestUniversityId = universityId
         guestUniversityName = universityName
+        print("👤 AuthManager: AFTER assignment - isGuest=\(isGuest), guestUniversityId=\(guestUniversityId?.description ?? "nil")")
         saveGuestState()
-        print("👤 AuthManager: Guest state saved. isGuest=\(isGuest), ID=\(guestUniversityId?.description ?? "nil")")
+        print("👤 AuthManager: AFTER save - guestUniversityId=\(guestUniversityId?.description ?? "nil")")
+        
+        // Force objectWillChange to fire
+        objectWillChange.send()
     }
     
     func exitGuestMode() {

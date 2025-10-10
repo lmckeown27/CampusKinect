@@ -47,6 +47,8 @@ class HomeViewModel: ObservableObject {
     
     init() {
         // No need for search debouncing in tag-based system
+        print("🏠 HomeViewModel: Initializing with authManager instance: \(ObjectIdentifier(authManager))")
+        print("🏠 HomeViewModel: Initial guest state - isGuest=\(authManager.isGuest), ID=\(authManager.guestUniversityId?.description ?? "nil")")
         setupUniversitySwitcherObserver()
         setupGuestUniversityObserver()
         setupPostDeletedObserver()
@@ -72,13 +74,18 @@ class HomeViewModel: ObservableObject {
     private func setupGuestUniversityObserver() {
         // Reload posts when guest switches universities
         authManager.$guestUniversityId
+            .receive(on: DispatchQueue.main)
             .dropFirst() // Skip initial value
             .sink { [weak self] newId in
-                guard let self = self, self.authManager.isGuest else { return }
-                print("🏠 HomeViewModel: Guest university ID changed to \(newId?.description ?? "nil")")
-                Task { @MainActor in
+                guard let self = self else { return }
+                print("🏠 HomeViewModel: Guest university ID published value changed to \(newId?.description ?? "nil")")
+                print("🏠 HomeViewModel: Current isGuest = \(self.authManager.isGuest)")
+                
+                if self.authManager.isGuest {
                     print("🏠 HomeViewModel: Reloading posts for guest university ID \(newId?.description ?? "nil")")
-                    await self.loadPosts()
+                    Task { @MainActor in
+                        await self.loadPosts()
+                    }
                 }
             }
             .store(in: &cancellables)
