@@ -199,11 +199,26 @@ class HomeViewModel: ObservableObject {
                     print("📚 Loaded posts with NO university ID (using backend default)")
                 }
             }
+        } catch let apiError as APIError {
+            // Check if this is a "cancelled" error - if so, ignore it
+            if case .networkError(let message) = apiError, message.contains("cancelled") {
+                print("⚠️ Request was cancelled (view transition) - ignoring error")
+                self.isLoading = false
+                return
+            }
+            
+            // For other errors, show them to the user
+            await MainActor.run {
+                self.error = apiError
+                self.isLoading = false
+                print("❌ Failed to load posts: \(apiError)")
+            }
         } catch {
+            // Unknown error type
             await MainActor.run {
                 self.error = error as? APIError
                 self.isLoading = false
-                print("❌ Failed to load posts: \(error)")
+                print("❌ Failed to load posts (unknown error): \(error)")
             }
         }
     }
@@ -215,6 +230,18 @@ class HomeViewModel: ObservableObject {
             let response = try await apiService.fetchPosts(universityId: currentUniversityId)
             await MainActor.run {
                 self.posts = response.data.posts
+                self.isRefreshing = false
+            }
+        } catch let apiError as APIError {
+            // Ignore cancelled errors during refresh
+            if case .networkError(let message) = apiError, message.contains("cancelled") {
+                print("⚠️ Refresh was cancelled - ignoring error")
+                self.isRefreshing = false
+                return
+            }
+            
+            await MainActor.run {
+                self.error = apiError
                 self.isRefreshing = false
             }
         } catch {

@@ -132,8 +132,20 @@ struct UniversitySelectView: View {
                 self.universities = response.data.universities
                 self.isLoading = false
             }
+        } catch let apiError as APIError {
+            // Ignore cancelled errors (view transition)
+            if case .networkError(let message) = apiError, message.contains("cancelled") {
+                print("⚠️ University loading was cancelled (view transition) - ignoring error")
+                self.isLoading = false
+                return
+            }
+            
+            print("Failed to load universities: \(apiError)")
+            await MainActor.run {
+                self.isLoading = false
+            }
         } catch {
-            print("Failed to load universities: \(error)")
+            print("Failed to load universities (unknown error): \(error)")
             await MainActor.run {
                 self.isLoading = false
             }

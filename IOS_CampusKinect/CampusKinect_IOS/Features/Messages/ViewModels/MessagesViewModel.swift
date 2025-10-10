@@ -56,6 +56,13 @@ class MessagesViewModel: ObservableObject {
     
     // MARK: - Public Methods
     func loadConversations() async {
+        // Don't load conversations if user is not authenticated
+        let isAuthenticated = await KeychainManager.shared.getAccessToken() != nil
+        guard isAuthenticated else {
+            print("⚠️ Skipping conversation load - user not authenticated")
+            return
+        }
+        
         isLoading = true
         error = nil
         
@@ -204,6 +211,14 @@ class MessagesViewModel: ObservableObject {
         // Only poll if we're not already loading and have been initialized
         guard !isLoading && !conversations.isEmpty else { return }
         
+        // CRITICAL: Don't poll if user is in guest mode or not authenticated
+        // This prevents "unauthorized" errors for guest users
+        let isAuthenticated = await KeychainManager.shared.getAccessToken() != nil
+        guard isAuthenticated else {
+            print("⚠️ Skipping conversation polling - user not authenticated")
+            return
+        }
+        
         do {
             let response = try await apiService.fetchConversations()
             let newConversations = response.data.conversations
@@ -213,9 +228,15 @@ class MessagesViewModel: ObservableObject {
                newConversations.first?.lastMessageTime != conversations.first?.lastMessageTime {
                 conversations = sortConversationsByPriority(newConversations)
             }
+        } catch let apiError as APIError {
+            // Only log non-auth errors to avoid spamming
+            if case .unauthorized = apiError {
+                print("⚠️ Conversation polling skipped - user not authenticated")
+            } else {
+                print("⚠️ Conversation polling failed: \(apiError)")
+            }
         } catch {
-            // Silently fail polling to avoid spamming errors
-            print("⚠️ Conversation polling failed: \(error)")
+            print("⚠️ Conversation polling failed (unknown error): \(error)")
         }
     }
     

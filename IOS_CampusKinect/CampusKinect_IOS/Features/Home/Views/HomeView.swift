@@ -157,6 +157,12 @@ struct HomeView: View {
                 await viewModel.refreshPosts()
             }
             .task {
+                // Add a small delay when entering guest mode to ensure view hierarchy is stable
+                // This prevents "cancelled" errors during view transitions
+                if authManager.isGuest {
+                    print("🏠 HomeView: Guest mode detected, adding stability delay before loading posts")
+                    try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
+                }
                 await viewModel.loadPosts()
             }
             .onReceive(NotificationCenter.default.publisher(for: .scrollToTopHome)) { _ in
