@@ -424,6 +424,8 @@ class AuthenticationManager: ObservableObject {
         )
         if let data = try? JSONEncoder().encode(state) {
             UserDefaults.standard.set(data, forKey: guestStateKey)
+            UserDefaults.standard.synchronize() // Force immediate persistence
+            print("👤 AuthManager: Forced UserDefaults synchronization for guest state")
         }
     }
     

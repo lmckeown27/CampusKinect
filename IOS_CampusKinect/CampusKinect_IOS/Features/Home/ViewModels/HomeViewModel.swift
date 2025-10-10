@@ -126,16 +126,17 @@ class HomeViewModel: ObservableObject {
                 let universityId = notification.object as? Int
                 print("🔔 HomeViewModel: ✅ Received guestUniversityChanged notification for ID \(universityId?.description ?? "nil")")
                 print("🔔 HomeViewModel: Current isGuest = \(self.authManager.isGuest)")
-                print("🔔 HomeViewModel: Current guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
+                print("🔔 HomeViewModel: AuthManager's guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
                 
                 if self.authManager.isGuest {
                     print("🔔 HomeViewModel: ✅ Guest mode confirmed, triggering post reload")
-                    print("🔔 HomeViewModel: About to read currentUniversityId...")
-                    let currentId = self.currentUniversityId
-                    print("🔔 HomeViewModel: currentUniversityId = \(currentId?.description ?? "nil")")
-                    print("🔔 HomeViewModel: Direct read - authManager.guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
-                    Task { @MainActor in
-                        await self.loadPosts()
+                    
+                    // Wait a moment for the @Published property to propagate
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        print("🔔 HomeViewModel: After 0.1s delay - authManager.guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
+                        Task { @MainActor in
+                            await self.loadPosts()
+                        }
                     }
                 } else {
                     print("🔔 HomeViewModel: ⚠️ Not in guest mode, ignoring notification")
