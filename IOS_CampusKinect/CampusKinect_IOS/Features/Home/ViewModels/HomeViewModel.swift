@@ -132,6 +132,12 @@ class HomeViewModel: ObservableObject {
                     print("🔔 HomeViewModel: ✅ Guest mode confirmed, triggering post reload")
                     print("🔔 HomeViewModel: Current guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
                     
+                    // Clear posts IMMEDIATELY to show loading state
+                    self.posts = []
+                    self.currentPage = 1
+                    self.hasMorePosts = true
+                    print("🔔 HomeViewModel: Cleared old posts and reset pagination")
+                    
                     // Properties are set synchronously now, reload immediately
                     Task { @MainActor in
                         await self.loadPosts()
