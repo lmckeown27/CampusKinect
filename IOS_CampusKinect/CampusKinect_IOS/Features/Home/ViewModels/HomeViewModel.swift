@@ -75,17 +75,21 @@ class HomeViewModel: ObservableObject {
         // Reload posts when guest switches universities
         authManager.$guestUniversityId
             .receive(on: DispatchQueue.main)
+            .removeDuplicates() // Only fire when value actually changes
             .dropFirst() // Skip initial value
             .sink { [weak self] newId in
                 guard let self = self else { return }
                 print("🏠 HomeViewModel: Guest university ID published value changed to \(newId?.description ?? "nil")")
                 print("🏠 HomeViewModel: Current isGuest = \(self.authManager.isGuest)")
+                print("🏠 HomeViewModel: Will reload posts now")
                 
                 if self.authManager.isGuest {
-                    print("🏠 HomeViewModel: Reloading posts for guest university ID \(newId?.description ?? "nil")")
+                    print("🏠 HomeViewModel: ✅ Reloading posts for guest university ID \(newId?.description ?? "nil")")
                     Task { @MainActor in
                         await self.loadPosts()
                     }
+                } else {
+                    print("🏠 HomeViewModel: ❌ Not reloading - user is not in guest mode")
                 }
             }
             .store(in: &cancellables)
