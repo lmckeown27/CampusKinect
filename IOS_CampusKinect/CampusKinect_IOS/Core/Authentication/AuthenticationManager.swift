@@ -298,12 +298,8 @@ class AuthenticationManager: ObservableObject {
             print("Warning: Failed to clear tokens from keychain")
         }
         
-        // Clear authentication state
-        isAuthenticated = false
-        currentUser = nil
-        authError = nil
-        
-        // Enter guest mode with preserved university or current user's university
+        // CRITICAL: Set guest state BEFORE clearing authentication
+        // This prevents race conditions where HomeViewModel loads with nil university
         if let universityId = savedUniversityId, let universityName = savedUniversityName {
             // Restore previous guest university selection
             enterGuestMode(universityId: universityId, universityName: universityName)
@@ -317,6 +313,11 @@ class AuthenticationManager: ObservableObject {
             saveGuestState()
             print("👤 Logout: No guest university - will show selector")
         }
+        
+        // Clear authentication state AFTER setting guest mode
+        isAuthenticated = false
+        currentUser = nil
+        authError = nil
         
         NotificationCenter.default.post(name: .userDidLogout, object: nil)
         

@@ -132,6 +132,14 @@ class HomeViewModel: ObservableObject {
         print("🏠   guestUniversityName: \(authManager.guestUniversityName ?? "nil")")
         print("🏠   currentUniversityId: \(currentUniversityId?.description ?? "nil")")
         
+        // Safety check: If in guest mode but no university selected, skip loading
+        if authManager.isGuest && currentUniversityId == nil {
+            print("⚠️ HomeViewModel: Skipping post load - guest mode requires university selection")
+            self.posts = []
+            self.isLoading = false
+            return
+        }
+        
         do {
             let response = try await apiService.fetchPosts(universityId: currentUniversityId)
             await MainActor.run {
