@@ -77,5 +77,8 @@ extension Notification.Name {
     // Admin actions
     static let postDeleted = Notification.Name("postDeleted")
     static let userBanned = Notification.Name("userBanned")
+    
+    // Guest mode
+    static let guestUniversityChanged = Notification.Name("guestUniversityChanged")
 }
 

@@ -52,6 +52,7 @@ class HomeViewModel: ObservableObject {
         setupUniversitySwitcherObserver()
         setupGuestUniversityObserver()
         setupPostDeletedObserver()
+        setupGuestUniversityChangedObserver()
     }
     
     // MARK: - University Switcher
@@ -104,6 +105,28 @@ class HomeViewModel: ObservableObject {
                 Task { @MainActor in
                     self?.posts.removeAll { $0.id == postId }
                     print("🗑️ Removed deleted post \(postId) from feed")
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Guest University Changed Observer (Notification-based fallback)
+    private func setupGuestUniversityChangedObserver() {
+        // This is a fallback observer using NotificationCenter
+        // to ensure posts reload when guest switches universities
+        NotificationCenter.default.publisher(for: .guestUniversityChanged)
+            .sink { [weak self] notification in
+                guard let self = self else { return }
+                let universityId = notification.object as? Int
+                print("🔔 HomeViewModel: Received guestUniversityChanged notification for ID \(universityId?.description ?? "nil")")
+                
+                if self.authManager.isGuest {
+                    print("🔔 HomeViewModel: ✅ Guest mode confirmed, reloading posts")
+                    Task { @MainActor in
+                        await self.loadPosts()
+                    }
+                } else {
+                    print("🔔 HomeViewModel: ⚠️ Not in guest mode, ignoring notification")
                 }
             }
             .store(in: &cancellables)

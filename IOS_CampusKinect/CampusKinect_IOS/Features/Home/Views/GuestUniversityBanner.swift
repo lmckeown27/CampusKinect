@@ -214,7 +214,14 @@ struct UniversitySwitcherView: View {
     }
     
     private func selectUniversity(_ university: UniversitySearchResult) {
+        print("🔄 UniversitySwitcherView: Selecting university ID \(university.id) (\(university.name))")
         authManager.enterGuestMode(universityId: university.id, universityName: university.name)
+        
+        // Force reload posts by posting notification
+        // This is a workaround for the Combine observer not firing reliably
+        NotificationCenter.default.post(name: .guestUniversityChanged, object: university.id)
+        print("🔄 UniversitySwitcherView: Posted guestUniversityChanged notification")
+        
         dismiss()
     }
 }
