@@ -280,6 +280,7 @@ struct PostsList: View {
     var body: some View {
         content
             .overlay(errorOverlay)
+            .id(viewModel.currentUniversityId) // Force rebuild when university changes
     }
     
     @ViewBuilder
