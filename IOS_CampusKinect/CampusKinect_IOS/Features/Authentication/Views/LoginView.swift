@@ -300,7 +300,13 @@ struct LoginView: View {
     private func performLogin() async {
         let success = await authManager.login(email: email, password: password)
         
-        if !success {
+        if success {
+            // Login successful - auto-dismiss the modal
+            await MainActor.run {
+                print("🔐 LoginView: Login successful, auto-dismissing modal")
+                dismiss()
+            }
+        } else {
             // Check if it's NOT a banned account error - show alert for other failures
             if case .accountBanned = authManager.authError {
                 // isBanned computed property will automatically return true

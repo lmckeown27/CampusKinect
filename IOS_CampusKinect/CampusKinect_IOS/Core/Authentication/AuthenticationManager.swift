@@ -69,14 +69,28 @@ class AuthenticationManager: ObservableObject {
                 isAuthenticated = true
                 
                 NotificationCenter.default.post(name: .userDidLogin, object: nil)
+            } catch let error as APIError {
+                // Only logout on actual authentication failures, not network errors
+                switch error {
+                case .unauthorized, .accountBanned:
+                    // Token is invalid or account is banned - logout required
+                    print("Authentication failed with invalid token: \(error)")
+                    await logout()
+                default:
+                    // Network error or other temporary issue - keep user logged in
+                    // They can try again when network is restored
+                    print("Failed to fetch user details but keeping session: \(error)")
+                    // Set authenticated to false but don't clear tokens
+                    isAuthenticated = false
+                }
             } catch {
-                // If we can't get user details, the token might be invalid
-                print("Failed to get user details: \(error)")
-                await logout()
+                // Unknown error - keep session but mark as not authenticated temporarily
+                print("Unknown error fetching user details, keeping session: \(error)")
+                isAuthenticated = false
             }
         } else {
-            // No valid credentials found
-            await logout()
+            // No valid credentials found - show guest mode
+            isAuthenticated = false
         }
         
         isLoading = false

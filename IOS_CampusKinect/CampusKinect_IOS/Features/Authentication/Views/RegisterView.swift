@@ -69,6 +69,13 @@ struct RegisterView: View {
                 .foregroundColor(Color("BrandPrimary"))
             }
         }
+        .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
+            // Auto-dismiss when user successfully completes registration and verification
+            if isAuthenticated {
+                print("🔐 RegisterView: User authenticated after verification, auto-dismissing")
+                dismiss()
+            }
+        }
         .onTapGesture {
             focusedField = nil
         }
