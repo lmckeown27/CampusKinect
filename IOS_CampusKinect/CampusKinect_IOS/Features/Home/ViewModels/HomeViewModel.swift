@@ -114,14 +114,22 @@ class HomeViewModel: ObservableObject {
     private func setupGuestUniversityChangedObserver() {
         // This is a fallback observer using NotificationCenter
         // to ensure posts reload when guest switches universities
+        print("🔔 HomeViewModel: Setting up guestUniversityChanged observer")
+        
         NotificationCenter.default.publisher(for: .guestUniversityChanged)
+            .receive(on: DispatchQueue.main) // Ensure we're on main thread
             .sink { [weak self] notification in
-                guard let self = self else { return }
+                guard let self = self else { 
+                    print("🔔 HomeViewModel: Self is nil, cannot handle notification")
+                    return 
+                }
                 let universityId = notification.object as? Int
-                print("🔔 HomeViewModel: Received guestUniversityChanged notification for ID \(universityId?.description ?? "nil")")
+                print("🔔 HomeViewModel: ✅ Received guestUniversityChanged notification for ID \(universityId?.description ?? "nil")")
+                print("🔔 HomeViewModel: Current isGuest = \(self.authManager.isGuest)")
+                print("🔔 HomeViewModel: Current guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
                 
                 if self.authManager.isGuest {
-                    print("🔔 HomeViewModel: ✅ Guest mode confirmed, reloading posts")
+                    print("🔔 HomeViewModel: ✅ Guest mode confirmed, triggering post reload")
                     Task { @MainActor in
                         await self.loadPosts()
                     }
@@ -130,6 +138,8 @@ class HomeViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+        
+        print("🔔 HomeViewModel: guestUniversityChanged observer setup complete")
     }
     
     // Get the current university ID to use for API calls

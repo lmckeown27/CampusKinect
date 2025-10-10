@@ -217,12 +217,16 @@ struct UniversitySwitcherView: View {
         print("🔄 UniversitySwitcherView: Selecting university ID \(university.id) (\(university.name))")
         authManager.enterGuestMode(universityId: university.id, universityName: university.name)
         
-        // Force reload posts by posting notification
-        // This is a workaround for the Combine observer not firing reliably
-        NotificationCenter.default.post(name: .guestUniversityChanged, object: university.id)
-        print("🔄 UniversitySwitcherView: Posted guestUniversityChanged notification")
-        
+        // Dismiss first, then post notification after a small delay
+        // This ensures the HomeView is active and ready to receive the notification
         dismiss()
+        
+        // Post notification after modal dismissal completes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            print("🔄 UniversitySwitcherView: Posting guestUniversityChanged notification for ID \(university.id)")
+            NotificationCenter.default.post(name: .guestUniversityChanged, object: university.id)
+            print("🔄 UniversitySwitcherView: Notification posted")
+        }
     }
 }
 
