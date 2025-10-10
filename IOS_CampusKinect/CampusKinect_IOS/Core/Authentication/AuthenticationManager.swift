@@ -381,12 +381,20 @@ class AuthenticationManager: ObservableObject {
         isGuest = true
         guestUniversityId = universityId
         guestUniversityName = universityName
-        print("👤 AuthManager: AFTER assignment - isGuest=\(isGuest), guestUniversityId=\(guestUniversityId?.description ?? "nil")")
+        print("👤 AuthManager: AFTER assignment - isGuest=\(isGuest), guestUniversityId=\(self.guestUniversityId?.description ?? "nil")")
         saveGuestState()
-        print("👤 AuthManager: AFTER save - guestUniversityId=\(guestUniversityId?.description ?? "nil")")
+        print("👤 AuthManager: AFTER save - guestUniversityId=\(self.guestUniversityId?.description ?? "nil")")
+        
+        // Verify it's actually saved to UserDefaults
+        if let data = UserDefaults.standard.data(forKey: guestStateKey),
+           let state = try? JSONDecoder().decode(GuestState.self, from: data) {
+            print("👤 AuthManager: VERIFIED UserDefaults - saved ID=\(state.universityId?.description ?? "nil")")
+        }
         
         // Force objectWillChange to fire
         objectWillChange.send()
+        
+        print("👤 AuthManager: enterGuestMode() COMPLETE - final guestUniversityId=\(self.guestUniversityId?.description ?? "nil")")
     }
     
     func exitGuestMode() {

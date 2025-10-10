@@ -130,6 +130,10 @@ class HomeViewModel: ObservableObject {
                 
                 if self.authManager.isGuest {
                     print("🔔 HomeViewModel: ✅ Guest mode confirmed, triggering post reload")
+                    print("🔔 HomeViewModel: About to read currentUniversityId...")
+                    let currentId = self.currentUniversityId
+                    print("🔔 HomeViewModel: currentUniversityId = \(currentId?.description ?? "nil")")
+                    print("🔔 HomeViewModel: Direct read - authManager.guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
                     Task { @MainActor in
                         await self.loadPosts()
                     }
