@@ -130,13 +130,11 @@ class HomeViewModel: ObservableObject {
                 
                 if self.authManager.isGuest {
                     print("🔔 HomeViewModel: ✅ Guest mode confirmed, triggering post reload")
+                    print("🔔 HomeViewModel: Current guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
                     
-                    // Wait for the @Published property to fully propagate through Combine
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        print("🔔 HomeViewModel: After 0.2s delay - authManager.guestUniversityId = \(self.authManager.guestUniversityId?.description ?? "nil")")
-                        Task { @MainActor in
-                            await self.loadPosts()
-                        }
+                    // Properties are set synchronously now, reload immediately
+                    Task { @MainActor in
+                        await self.loadPosts()
                     }
                 } else {
                     print("🔔 HomeViewModel: ⚠️ Not in guest mode, ignoring notification")

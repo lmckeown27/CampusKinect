@@ -218,11 +218,11 @@ struct UniversitySwitcherView: View {
         authManager.enterGuestMode(universityId: university.id, universityName: university.name)
         
         // Dismiss first, then post notification after a delay
-        // This ensures the HomeView is active and the @Published property has propagated
+        // This ensures the HomeView is active to receive the notification
         dismiss()
         
-        // Post notification after modal dismissal completes and @Published propagates
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+        // Post notification after modal dismissal completes (0.4s is enough for animation)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             print("🔄 UniversitySwitcherView: Posting guestUniversityChanged notification for ID \(university.id)")
             print("🔄 UniversitySwitcherView: Verifying AuthManager.shared.guestUniversityId = \(AuthenticationManager.shared.guestUniversityId?.description ?? "nil")")
             NotificationCenter.default.post(name: .guestUniversityChanged, object: university.id)

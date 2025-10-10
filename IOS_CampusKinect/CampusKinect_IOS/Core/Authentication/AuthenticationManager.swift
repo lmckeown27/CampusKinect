@@ -379,24 +379,21 @@ class AuthenticationManager: ObservableObject {
         print("👤 AuthManager.enterGuestMode() called with ID: \(universityId), Name: \(universityName)")
         print("👤 AuthManager: BEFORE - isGuest=\(isGuest), guestUniversityId=\(guestUniversityId?.description ?? "nil")")
         
-        // Set values on main thread to ensure immediate propagation
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.isGuest = true
-            self.guestUniversityId = universityId
-            self.guestUniversityName = universityName
-            print("👤 AuthManager: AFTER assignment (main thread) - guestUniversityId=\(self.guestUniversityId?.description ?? "nil")")
-            
-            // Save to UserDefaults in background (for app restarts only)
-            DispatchQueue.global(qos: .utility).async {
-                self.saveGuestState()
-                print("👤 AuthManager: Saved to UserDefaults in background")
-            }
-            
-            // Force objectWillChange to fire on main thread
-            self.objectWillChange.send()
-            print("👤 AuthManager: enterGuestMode() COMPLETE - final guestUniversityId=\(self.guestUniversityId?.description ?? "nil")")
+        // Set values synchronously (we're already on @MainActor)
+        isGuest = true
+        guestUniversityId = universityId
+        guestUniversityName = universityName
+        print("👤 AuthManager: AFTER assignment - guestUniversityId=\(self.guestUniversityId?.description ?? "nil")")
+        
+        // Save to UserDefaults in background (for app restarts only)
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            self?.saveGuestState()
+            print("👤 AuthManager: Saved to UserDefaults in background")
         }
+        
+        // Force objectWillChange to fire
+        objectWillChange.send()
+        print("👤 AuthManager: enterGuestMode() COMPLETE - final guestUniversityId=\(self.guestUniversityId?.description ?? "nil")")
     }
     
     func exitGuestMode() {
