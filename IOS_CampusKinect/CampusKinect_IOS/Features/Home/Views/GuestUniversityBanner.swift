@@ -222,7 +222,7 @@ struct UniversitySwitcherView: View {
         dismiss()
         
         // Post notification after modal dismissal completes and @Published propagates
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             print("🔄 UniversitySwitcherView: Posting guestUniversityChanged notification for ID \(university.id)")
             print("🔄 UniversitySwitcherView: Verifying AuthManager.shared.guestUniversityId = \(AuthenticationManager.shared.guestUniversityId?.description ?? "nil")")
             NotificationCenter.default.post(name: .guestUniversityChanged, object: university.id)
