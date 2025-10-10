@@ -117,6 +117,14 @@ class HomeViewModel: ObservableObject {
     @MainActor
     func loadPosts() async {
         isLoading = true
+        
+        // Extensive debugging for guest mode
+        print("🏠 HomeViewModel.loadPosts() START")
+        print("🏠   isGuest: \(authManager.isGuest)")
+        print("🏠   guestUniversityId: \(authManager.guestUniversityId?.description ?? "nil")")
+        print("🏠   guestUniversityName: \(authManager.guestUniversityName ?? "nil")")
+        print("🏠   currentUniversityId: \(currentUniversityId?.description ?? "nil")")
+        
         do {
             let response = try await apiService.fetchPosts(universityId: currentUniversityId)
             await MainActor.run {
@@ -126,12 +134,15 @@ class HomeViewModel: ObservableObject {
                 // Log if viewing a different university
                 if let universityId = self.currentUniversityId {
                     print("📚 Loaded posts for university ID: \(universityId)")
+                } else {
+                    print("📚 Loaded posts with NO university ID (using backend default)")
                 }
             }
         } catch {
             await MainActor.run {
                 self.error = error as? APIError
                 self.isLoading = false
+                print("❌ Failed to load posts: \(error)")
             }
         }
     }

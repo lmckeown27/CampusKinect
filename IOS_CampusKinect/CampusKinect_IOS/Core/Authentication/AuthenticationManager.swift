@@ -375,10 +375,12 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Guest Mode
     func enterGuestMode(universityId: Int, universityName: String) {
+        print("👤 AuthManager.enterGuestMode() called with ID: \(universityId), Name: \(universityName)")
         isGuest = true
         guestUniversityId = universityId
         guestUniversityName = universityName
         saveGuestState()
+        print("👤 AuthManager: Guest state saved. isGuest=\(isGuest), ID=\(guestUniversityId?.description ?? "nil")")
     }
     
     func exitGuestMode() {
@@ -394,6 +396,9 @@ class AuthenticationManager: ObservableObject {
             isGuest = state.isGuest
             guestUniversityId = state.universityId
             guestUniversityName = state.universityName
+            print("👤 AuthManager.loadGuestState(): Loaded guest state - isGuest=\(isGuest), ID=\(guestUniversityId?.description ?? "nil"), Name=\(guestUniversityName ?? "nil")")
+        } else {
+            print("👤 AuthManager.loadGuestState(): No guest state found in UserDefaults")
         }
     }
     
