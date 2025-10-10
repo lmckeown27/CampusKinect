@@ -1235,6 +1235,8 @@ router.get('/', [
       WHERE pu.post_id = p.id AND pu.university_id = $${paramCount}
     ))`;
     queryParams.push(targetUniversityId);
+    
+    console.log(`📍 Posts: Filtering for universityId=${targetUniversityId}`);
 
     // Add post type filter - New system: Primary tag is the main category
     if (postTypes && postTypes.length > 0) {
@@ -1363,6 +1365,12 @@ router.get('/', [
 
     const countResult = await query(countQuery, countParams);
     const total = parseInt(countResult.rows[0].total);
+
+    // Log which posts were returned for this university
+    console.log(`📍 Posts: Query returned ${result.rows.length} posts for university ${targetUniversityId}:`);
+    result.rows.forEach(post => {
+      console.log(`  - Post ${post.id}: "${post.title}" (university_id=${post.university_id}, university=${post.university_name})`);
+    });
 
     // Format posts
     const posts = result.rows.map(post => ({
