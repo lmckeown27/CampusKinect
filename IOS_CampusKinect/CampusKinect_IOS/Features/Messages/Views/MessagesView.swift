@@ -143,7 +143,12 @@ struct MessagesView: View {
         }
         .alert("Error", isPresented: Binding<Bool>(
             get: { viewModel.error != nil },
-            set: { _ in viewModel.error = nil }
+            set: { _ in
+                // Defer state modification to avoid publishing during view update
+                DispatchQueue.main.async {
+                    viewModel.error = nil
+                }
+            }
         )) {
             Button("OK") {
                 viewModel.error = nil
