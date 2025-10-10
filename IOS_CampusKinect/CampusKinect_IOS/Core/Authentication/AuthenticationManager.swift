@@ -406,28 +406,32 @@ class AuthenticationManager: ObservableObject {
         saveGuestState()
     }
     
-    private func loadGuestState() {
+    nonisolated private func loadGuestState() {
         if let data = UserDefaults.standard.data(forKey: guestStateKey),
            let state = try? JSONDecoder().decode(GuestState.self, from: data) {
-            isGuest = state.isGuest
-            guestUniversityId = state.universityId
-            guestUniversityName = state.universityName
-            print("👤 AuthManager.loadGuestState(): Loaded guest state - isGuest=\(isGuest), ID=\(guestUniversityId?.description ?? "nil"), Name=\(guestUniversityName ?? "nil")")
+            Task { @MainActor in
+                isGuest = state.isGuest
+                guestUniversityId = state.universityId
+                guestUniversityName = state.universityName
+                print("👤 AuthManager.loadGuestState(): Loaded guest state - isGuest=\(isGuest), ID=\(guestUniversityId?.description ?? "nil"), Name=\(guestUniversityName ?? "nil")")
+            }
         } else {
             print("👤 AuthManager.loadGuestState(): No guest state found in UserDefaults")
         }
     }
     
-    private func saveGuestState() {
-        let state = GuestState(
-            isGuest: isGuest,
-            universityId: guestUniversityId,
-            universityName: guestUniversityName
-        )
-        if let data = try? JSONEncoder().encode(state) {
-            UserDefaults.standard.set(data, forKey: guestStateKey)
-            UserDefaults.standard.synchronize() // Force immediate persistence
-            print("👤 AuthManager: Forced UserDefaults synchronization for guest state")
+    nonisolated private func saveGuestState() {
+        Task { @MainActor in
+            let state = GuestState(
+                isGuest: isGuest,
+                universityId: guestUniversityId,
+                universityName: guestUniversityName
+            )
+            if let data = try? JSONEncoder().encode(state) {
+                UserDefaults.standard.set(data, forKey: guestStateKey)
+                UserDefaults.standard.synchronize() // Force immediate persistence
+                print("👤 AuthManager: Forced UserDefaults synchronization for guest state")
+            }
         }
     }
     
