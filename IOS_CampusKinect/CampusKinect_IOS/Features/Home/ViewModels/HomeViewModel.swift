@@ -152,7 +152,7 @@ class HomeViewModel: ObservableObject {
     }
     
     // Get the current university ID to use for API calls
-    private var currentUniversityId: Int? {
+    var currentUniversityId: Int? {
         // For guests, use their selected university
         if authManager.isGuest {
             let id = authManager.guestUniversityId
