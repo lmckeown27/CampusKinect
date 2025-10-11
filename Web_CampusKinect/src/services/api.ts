@@ -1247,6 +1247,64 @@ class ApiService {
     }
   }
 
+  // Admin: Get all universities with detailed info
+  public async adminGetAllUniversities(): Promise<Array<{ 
+    id: number; 
+    name: string; 
+    domain: string;
+    location: string;
+    userCount: number 
+  }>> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get('/admin/universities/all');
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch universities');
+  }
+
+  // Admin: Get all users in a university
+  public async adminGetUniversityUsers(
+    universityId: number, 
+    page: number = 1, 
+    limit: number = 50
+  ): Promise<PaginatedResponse<any>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    const response: AxiosResponse<ApiResponse<{ users: any[], pagination: any }>> = 
+      await this.api.get(`/admin/universities/${universityId}/users?${params}`);
+    
+    if (response.data.success && response.data.data) {
+      return {
+        data: response.data.data.users,
+        pagination: response.data.data.pagination
+      };
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch university users');
+  }
+
+  // Admin: Get user profile with all posts
+  public async adminGetUserProfile(userId: string): Promise<{
+    user: any;
+    statistics: any;
+    posts: any[];
+  }> {
+    const response: AxiosResponse<ApiResponse<any>> = 
+      await this.api.get(`/admin/users/${userId}/profile`);
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.message || 'Failed to fetch user profile');
+  }
+
   // Upload image to conversation
   public async uploadImageToConversation(conversationId: string, imageFile: File): Promise<Message> {
     const formData = new FormData();

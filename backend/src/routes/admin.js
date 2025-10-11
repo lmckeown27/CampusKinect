@@ -869,4 +869,284 @@ router.delete('/posts/:postId', auth, adminAuth, async (req, res) => {
   }
 });
 
+// @route   GET /api/v1/admin/universities/all
+// @desc    Get all universities with user counts
+// @access  Admin only
+router.get('/universities/all', auth, adminAuth, async (req, res) => {
+  try {
+    const universitiesResult = await query(`
+      SELECT 
+        u.id,
+        u.name,
+        u.domain,
+        u.location,
+        COUNT(us.id) as user_count
+      FROM universities u
+      LEFT JOIN users us ON u.id = us.university_id AND us.is_active = true
+      GROUP BY u.id, u.name, u.domain, u.location
+      ORDER BY user_count DESC, u.name ASC
+    `);
+
+    res.json({
+      success: true,
+      data: universitiesResult.rows.map(uni => ({
+        id: uni.id,
+        name: uni.name,
+        domain: uni.domain,
+        location: uni.location,
+        userCount: parseInt(uni.user_count)
+      }))
+    });
+
+  } catch (error) {
+    console.error('Error fetching all universities:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to fetch universities'
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/admin/universities/:universityId/users
+// @desc    Get all users in a specific university
+// @access  Admin only
+router.get('/universities/:universityId/users', auth, adminAuth, async (req, res) => {
+  try {
+    const { universityId } = req.params;
+    const { page = 1, limit = 50 } = req.query;
+    const offset = (page - 1) * limit;
+
+    // Get users for this university
+    const usersResult = await query(`
+      SELECT 
+        u.id,
+        u.username,
+        u.display_name,
+        u.email,
+        u.profile_picture,
+        u.year,
+        u.major,
+        u.hometown,
+        u.bio,
+        u.is_active,
+        u.is_verified,
+        u.banned_at,
+        u.ban_reason,
+        u.created_at,
+        COUNT(DISTINCT p.id) as post_count,
+        COUNT(DISTINCT m.id) as message_count
+      FROM users u
+      LEFT JOIN posts p ON u.id = p.user_id AND p.is_active = true
+      LEFT JOIN messages m ON u.id = m.sender_id AND m.is_deleted = false
+      WHERE u.university_id = $1
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
+      LIMIT $2 OFFSET $3
+    `, [universityId, limit, offset]);
+
+    // Get total count
+    const countResult = await query(`
+      SELECT COUNT(*) as total 
+      FROM users 
+      WHERE university_id = $1
+    `, [universityId]);
+
+    const total = parseInt(countResult.rows[0].total);
+
+    res.json({
+      success: true,
+      data: {
+        users: usersResult.rows.map(user => ({
+          id: user.id,
+          username: user.username,
+          displayName: user.display_name,
+          email: user.email,
+          profilePicture: user.profile_picture,
+          year: user.year,
+          major: user.major,
+          hometown: user.hometown,
+          bio: user.bio,
+          isActive: user.is_active,
+          isVerified: user.is_verified,
+          isBanned: !!user.banned_at,
+          banReason: user.ban_reason,
+          createdAt: user.created_at,
+          postCount: parseInt(user.post_count),
+          messageCount: parseInt(user.message_count)
+        })),
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / limit)
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching university users:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to fetch university users'
+      }
+    });
+  }
+});
+
+// @route   GET /api/v1/admin/users/:userId/profile
+// @desc    Get detailed user profile with all posts
+// @access  Admin only
+router.get('/users/:userId/profile', auth, adminAuth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Get user details
+    const userResult = await query(`
+      SELECT 
+        u.id,
+        u.username,
+        u.display_name,
+        u.email,
+        u.profile_picture,
+        u.year,
+        u.major,
+        u.hometown,
+        u.bio,
+        u.is_active,
+        u.is_verified,
+        u.banned_at,
+        u.ban_until,
+        u.ban_reason,
+        u.created_at,
+        un.name as university_name,
+        un.id as university_id
+      FROM users u
+      LEFT JOIN universities un ON u.university_id = un.id
+      WHERE u.id = $1
+    `, [userId]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'User not found'
+        }
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    // Get all user's posts with images
+    const postsResult = await query(`
+      SELECT 
+        p.id,
+        p.title,
+        p.description,
+        p.category,
+        p.price,
+        p.location,
+        p.is_active,
+        p.is_flagged,
+        p.flag_reason,
+        p.created_at,
+        p.updated_at,
+        ARRAY_AGG(
+          CASE 
+            WHEN pi.image_url IS NOT NULL 
+            THEN json_build_object(
+              'url', pi.image_url,
+              'order', pi.image_order
+            )
+            ELSE NULL
+          END
+          ORDER BY pi.image_order
+        ) FILTER (WHERE pi.image_url IS NOT NULL) as images,
+        (
+          SELECT COUNT(*) 
+          FROM conversations c 
+          WHERE c.post_id = p.id
+        ) as conversation_count
+      FROM posts p
+      LEFT JOIN post_images pi ON p.id = pi.post_id
+      WHERE p.user_id = $1
+      GROUP BY p.id
+      ORDER BY p.created_at DESC
+    `, [userId]);
+
+    // Get user statistics
+    const statsResult = await query(`
+      SELECT 
+        (SELECT COUNT(*) FROM posts WHERE user_id = $1 AND is_active = true) as active_posts,
+        (SELECT COUNT(*) FROM posts WHERE user_id = $1) as total_posts,
+        (SELECT COUNT(*) FROM messages WHERE sender_id = $1 AND is_deleted = false) as messages_sent,
+        (SELECT COUNT(*) FROM content_reports WHERE reported_user_id = $1) as reports_received,
+        (SELECT COUNT(*) FROM content_reports WHERE reporter_id = $1) as reports_made
+    `, [userId]);
+
+    const stats = statsResult.rows[0];
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          username: user.username,
+          displayName: user.display_name,
+          email: user.email,
+          profilePicture: user.profile_picture,
+          year: user.year,
+          major: user.major,
+          hometown: user.hometown,
+          bio: user.bio,
+          isActive: user.is_active,
+          isVerified: user.is_verified,
+          isBanned: !!user.banned_at,
+          bannedAt: user.banned_at,
+          banUntil: user.ban_until,
+          banReason: user.ban_reason,
+          createdAt: user.created_at,
+          university: {
+            id: user.university_id,
+            name: user.university_name
+          }
+        },
+        statistics: {
+          activePosts: parseInt(stats.active_posts),
+          totalPosts: parseInt(stats.total_posts),
+          messagesSent: parseInt(stats.messages_sent),
+          reportsReceived: parseInt(stats.reports_received),
+          reportsMade: parseInt(stats.reports_made)
+        },
+        posts: postsResult.rows.map(post => ({
+          id: post.id,
+          title: post.title,
+          description: post.description,
+          category: post.category,
+          price: post.price,
+          location: post.location,
+          isActive: post.is_active,
+          isFlagged: post.is_flagged,
+          flagReason: post.flag_reason,
+          createdAt: post.created_at,
+          updatedAt: post.updated_at,
+          images: post.images || [],
+          conversationCount: parseInt(post.conversation_count)
+        }))
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to fetch user profile'
+      }
+    });
+  }
+});
+
 module.exports = router; 

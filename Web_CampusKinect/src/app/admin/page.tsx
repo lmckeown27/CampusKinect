@@ -575,6 +575,23 @@ export default function AdminDashboardPage() {
               {/* Users Tab - THIRD (matches iOS) */}
               {activeTab === 'users' && (
                 <div className="space-y-4">
+                  {/* User Management Card */}
+                  <div className="rounded-lg p-6" style={{ backgroundColor: '#1a1a1a' }}>
+                    <h2 className="text-xl font-bold mb-2" style={{ color: '#ffffff' }}>User Management</h2>
+                    <p className="text-sm mb-4" style={{ color: '#9ca3af' }}>
+                      View all users by university and access their profiles
+                    </p>
+                    <button
+                      onClick={() => router.push('/admin/users')}
+                      className="flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all hover:opacity-80"
+                      style={{ backgroundColor: '#708d81', color: '#ffffff' }}
+                    >
+                      <Users size={20} />
+                      <span>View All Users by University</span>
+                    </button>
+                  </div>
+
+                  {/* Banned Users Section */}
                   <div className="rounded-lg p-6" style={{ backgroundColor: '#1a1a1a' }}>
                     <h2 className="text-xl font-bold mb-2" style={{ color: '#ffffff' }}>Banned Users</h2>
                     <p className="text-sm mb-4" style={{ color: '#9ca3af' }}>
