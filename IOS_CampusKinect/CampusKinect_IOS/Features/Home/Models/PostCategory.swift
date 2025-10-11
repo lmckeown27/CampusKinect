@@ -149,6 +149,113 @@ extension PostCategory {
     ]
 }
 
+// MARK: - Server-Driven Categories
+extension PostCategory {
+    /// Load categories from server configuration
+    /// Falls back to hardcoded defaults if server config unavailable
+    static func loadFromServer() -> [PostCategory] {
+        guard let config = ConfigurationService.shared.configuration,
+              let categories = config.categories else {
+            print("⚠️ Server config unavailable, using hardcoded categories")
+            return allCategories
+        }
+        
+        var serverCategories: [PostCategory] = []
+        
+        // Convert Goods/Services category
+        let goodsServicesSubcats = categories.goodsServices.subCategories.map { (key, subcat) in
+            PostSubcategory(
+                id: subcat.id,
+                name: subcat.name,
+                categoryId: categories.goodsServices.id,
+                isActive: true
+            )
+        }.sorted { $0.name < $1.name }
+        
+        if !goodsServicesSubcats.isEmpty {
+            // Split into Goods, Services, and Housing based on subcategory names
+            let servicesSubcats = goodsServicesSubcats.filter { subcat in
+                ["services", "haircut", "transportation", "tutoring", "fitness", "cleaning", "tech"].contains { subcat.id.lowercased().contains($0) }
+            }
+            
+            let housingSubcats = goodsServicesSubcats.filter { subcat in
+                ["housing", "leasing", "roommate", "sublet", "apartment"].contains { subcat.id.lowercased().contains($0) }
+            }
+            
+            let goodsSubcats = goodsServicesSubcats.filter { subcat in
+                !servicesSubcats.contains(where: { $0.id == subcat.id }) &&
+                !housingSubcats.contains(where: { $0.id == subcat.id })
+            }
+            
+            // Create Services category with server data
+            if !servicesSubcats.isEmpty {
+                serverCategories.append(PostCategory(
+                    id: "services",
+                    name: "Services",
+                    icon: "wrench.and.screwdriver.fill",
+                    color: "#F59E0B",
+                    subcategories: servicesSubcats.isEmpty ? services.subcategories : servicesSubcats,
+                    isActive: true
+                ))
+            }
+            
+            // Create Goods category with server data
+            if !goodsSubcats.isEmpty {
+                serverCategories.append(PostCategory(
+                    id: "goods",
+                    name: "Goods",
+                    icon: "bag.fill",
+                    color: "#10B981",
+                    subcategories: goodsSubcats.isEmpty ? goods.subcategories : goodsSubcats,
+                    isActive: true
+                ))
+            }
+            
+            // Create Housing category with server data
+            if !housingSubcats.isEmpty {
+                serverCategories.append(PostCategory(
+                    id: "housing",
+                    name: "Housing",
+                    icon: "house.fill",
+                    color: "#3B82F6",
+                    subcategories: housingSubcats.isEmpty ? housing.subcategories : housingSubcats,
+                    isActive: true
+                ))
+            }
+        }
+        
+        // Convert Events category
+        let eventsSubcats = categories.events.subCategories.map { (key, subcat) in
+            PostSubcategory(
+                id: subcat.id,
+                name: subcat.name,
+                categoryId: categories.events.id,
+                isActive: true
+            )
+        }.sorted { $0.name < $1.name }
+        
+        if !eventsSubcats.isEmpty {
+            serverCategories.append(PostCategory(
+                id: "events",
+                name: "Events",
+                icon: "calendar",
+                color: "#8B5CF6",
+                subcategories: eventsSubcats,
+                isActive: true
+            ))
+        }
+        
+        // If we got server categories, use them; otherwise fall back
+        if serverCategories.isEmpty {
+            print("⚠️ No server categories loaded, using hardcoded defaults")
+            return allCategories
+        }
+        
+        print("✅ Loaded \(serverCategories.count) categories from server config")
+        return serverCategories
+    }
+}
+
 // MARK: - Category Extensions
 extension PostCategory {
     func subcategory(withId id: String) -> PostSubcategory? {

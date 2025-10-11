@@ -15,6 +15,9 @@ struct CategorySelectionView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
+    // Load categories from server (with fallback to hardcoded)
+    @State private var categories: [PostCategory] = PostCategory.loadFromServer()
+    
     // iPad detection
     private var isIPad: Bool {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
@@ -77,7 +80,7 @@ struct CategorySelectionView: View {
                 .fontWeight(.bold)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: isIPad ? 3 : 2), spacing: 12) {
-                ForEach(PostCategory.allCategories, id: \.id) { category in
+                ForEach(categories, id: \.id) { category in
                     CategoryButton(
                         category: category,
                         isSelected: selectedCategory?.id == category.id
@@ -88,6 +91,10 @@ struct CategorySelectionView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            // Refresh categories from server when view appears
+            categories = PostCategory.loadFromServer()
         }
     }
     

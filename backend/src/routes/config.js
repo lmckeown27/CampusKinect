@@ -144,19 +144,85 @@ router.get('/app', async (req, res) => {
           description: 'Posts for goods, services, and general campus needs',
           icon: '🛍️',
           subCategories: {
-            leasing: {
-              id: 'leasing',
-              name: 'Leasing',
-              description: 'Housing and apartment related posts',
-              icon: '🏠',
-              tags: ['housing', 'apartment', 'lease', 'roommate', 'sublet', 'furniture']
+            // SERVICES SUBCATEGORIES (these map to Services category in iOS)
+            haircut: {
+              id: 'haircut',
+              name: 'Haircut & Grooming',
+              description: 'Haircut, barber, and grooming services',
+              icon: '✂️',
+              tags: ['haircut', 'barber', 'salon', 'grooming', 'hairstyling']
+            },
+            transportation: {
+              id: 'transportation',
+              name: 'Transportation',
+              description: 'Rides, carpooling, and transportation services',
+              icon: '🚗',
+              tags: ['ride', 'carpool', 'transport', 'drive', 'travel', 'uber', 'lyft']
             },
             tutoring: {
               id: 'tutoring',
               name: 'Tutoring',
               description: 'Academic help and tutoring services',
               icon: '📚',
-              tags: ['tutoring', 'homework', 'study', 'academic', 'math', 'science', 'english', 'writing', 'language', 'computer science']
+              tags: ['tutoring', 'homework', 'study', 'academic', 'math', 'science', 'english', 'writing']
+            },
+            fitness_training: {
+              id: 'fitness_training',
+              name: 'Fitness Training',
+              description: 'Personal training and fitness coaching',
+              icon: '💪',
+              tags: ['fitness', 'training', 'gym', 'workout', 'exercise', 'coaching']
+            },
+            cleaning: {
+              id: 'cleaning',
+              name: 'Cleaning',
+              description: 'Cleaning and maintenance services',
+              icon: '🧹',
+              tags: ['cleaning', 'laundry', 'maintenance', 'housekeeping']
+            },
+            tech_support: {
+              id: 'tech_support',
+              name: 'Tech Support',
+              description: 'Technology and IT support services',
+              icon: '💻',
+              tags: ['tech support', 'IT', 'computer', 'repair', 'software', 'hardware']
+            },
+            // HOUSING SUBCATEGORIES
+            leasing: {
+              id: 'leasing',
+              name: 'Leasing',
+              description: 'Housing and apartment leasing',
+              icon: '🏠',
+              tags: ['housing', 'apartment', 'lease', 'rent']
+            },
+            roommate_search: {
+              id: 'roommate_search',
+              name: 'Roommate Search',
+              description: 'Find roommates and shared housing',
+              icon: '👥',
+              tags: ['roommate', 'shared', 'housing']
+            },
+            subleasing: {
+              id: 'subleasing',
+              name: 'Subleasing',
+              description: 'Sublet and short-term housing',
+              icon: '🔑',
+              tags: ['sublet', 'sublease', 'short-term']
+            },
+            // GOODS SUBCATEGORIES
+            furniture: {
+              id: 'furniture',
+              name: 'Furniture',
+              description: 'Furniture and home items',
+              icon: '🛋️',
+              tags: ['furniture', 'couch', 'desk', 'chair', 'table']
+            },
+            electronics: {
+              id: 'electronics',
+              name: 'Electronics',
+              description: 'Electronics and tech gadgets',
+              icon: '📱',
+              tags: ['electronics', 'phone', 'laptop', 'tablet', 'gadget']
             },
             books: {
               id: 'books',
@@ -164,27 +230,6 @@ router.get('/app', async (req, res) => {
               description: 'Textbooks and reading materials',
               icon: '📖',
               tags: ['textbook', 'book', 'reading', 'course', 'education']
-            },
-            rides: {
-              id: 'rides',
-              name: 'Rides',
-              description: 'Transportation and carpooling',
-              icon: '🚗',
-              tags: ['ride', 'carpool', 'transport', 'drive', 'travel', 'uber', 'lyft']
-            },
-            food: {
-              id: 'food',
-              name: 'Food',
-              description: 'Food sharing and dining',
-              icon: '🍕',
-              tags: ['food', 'dining', 'meal', 'cooking', 'restaurant', 'delivery']
-            },
-            services: {
-              id: 'services',
-              name: 'Services',
-              description: 'Personal and professional services',
-              icon: '✂️',
-              tags: ['haircut', 'barber', 'salon', 'grooming', 'cleaning', 'laundry', 'repair', 'maintenance', 'moving', 'tech support']
             },
             other: {
               id: 'other',
