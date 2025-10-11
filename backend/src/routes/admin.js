@@ -879,11 +879,13 @@ router.get('/universities/all', auth, adminAuth, async (req, res) => {
         u.id,
         u.name,
         u.domain,
-        u.location,
+        u.city,
+        u.state,
+        u.country,
         COUNT(us.id) as user_count
       FROM universities u
       LEFT JOIN users us ON u.id = us.university_id AND us.is_active = true
-      GROUP BY u.id, u.name, u.domain, u.location
+      GROUP BY u.id, u.name, u.domain, u.city, u.state, u.country
       ORDER BY user_count DESC, u.name ASC
     `);
 
@@ -893,7 +895,7 @@ router.get('/universities/all', auth, adminAuth, async (req, res) => {
         id: uni.id,
         name: uni.name,
         domain: uni.domain,
-        location: uni.location,
+        location: uni.city && uni.state ? `${uni.city}, ${uni.state}` : (uni.city || uni.state || 'Unknown'),
         userCount: parseInt(uni.user_count)
       }))
     });
