@@ -353,23 +353,15 @@ export default function AdminUsersManagementPage() {
                         border: '2px solid #525252'
                       }}
                     >
-                      <div className="flex items-start space-x-4 mb-4">
-                        <div 
-                          className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: '#708d81' }}
-                        >
-                          <Building2 size={24} style={{ color: '#ffffff' }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-lg mb-1" style={{ color: '#ffffff' }}>
-                            {university.name}
-                          </h3>
-                          <div className="flex items-center space-x-2 text-sm">
-                            <MapPin size={14} style={{ color: '#9ca3af' }} />
-                            <span className="truncate" style={{ color: '#9ca3af' }}>
-                              {university.location}
-                            </span>
-                          </div>
+                      <div className="mb-4">
+                        <h3 className="font-bold text-lg mb-2" style={{ color: '#ffffff' }}>
+                          {university.name}
+                        </h3>
+                        <div className="flex items-center space-x-2 text-sm">
+                          <MapPin size={14} style={{ color: '#9ca3af' }} />
+                          <span className="truncate" style={{ color: '#9ca3af' }}>
+                            {university.location}
+                          </span>
                         </div>
                       </div>
 
