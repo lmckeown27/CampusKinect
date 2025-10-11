@@ -349,7 +349,7 @@ router.get('/app', async (req, res) => {
       ],
 
       // Remote Config Refresh Interval (in seconds)
-      configRefreshInterval: 3600 // Check for config updates every hour
+      configRefreshInterval: 300 // Check for config updates every 5 minutes (was 3600/1 hour)
     };
 
     res.json({
