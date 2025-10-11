@@ -56,7 +56,11 @@ export const useAuthStore = create<AuthStore>()(
             user, 
             isAuthenticated: true, 
             isLoading: false,
-            error: null 
+            error: null,
+            // Clear guest mode when user logs in
+            isGuest: false,
+            guestUniversityId: null,
+            guestUniversityName: null
           });
         } catch (error: any) {
           console.error('Login error:', error);
@@ -187,7 +191,11 @@ export const useAuthStore = create<AuthStore>()(
             user, 
             isAuthenticated: true, 
             isLoading: false,
-            error: null
+            error: null,
+            // Clear guest mode when authenticated user is detected
+            isGuest: false,
+            guestUniversityId: null,
+            guestUniversityName: null
           });
         } catch (error: any) {
           console.error('Auth check error:', error);
@@ -258,7 +266,11 @@ export const useAuthStore = create<AuthStore>()(
             user, 
             isAuthenticated: true, 
             isLoading: false,
-            error: null
+            error: null,
+            // Clear guest mode when user verifies email and logs in
+            isGuest: false,
+            guestUniversityId: null,
+            guestUniversityName: null
           });
         } catch (error: any) {
           console.error('Email verification error:', error);
@@ -297,7 +309,11 @@ export const useAuthStore = create<AuthStore>()(
           set({ 
             user, 
             isAuthenticated: true, 
-            error: null
+            error: null,
+            // Clear guest mode when token is successfully refreshed
+            isGuest: false,
+            guestUniversityId: null,
+            guestUniversityName: null
           });
           return true;
         } catch (error) {
