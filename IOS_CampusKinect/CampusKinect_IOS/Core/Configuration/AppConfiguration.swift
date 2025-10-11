@@ -16,6 +16,7 @@ struct AppConfiguration: Codable {
     let theme: ThemeConfiguration
     let features: FeatureConfiguration
     let ui: UIConfiguration
+    let categories: CategoriesConfiguration
     let text: TextConfiguration
     let api: APIConfiguration
     let links: LinksConfiguration
@@ -191,6 +192,28 @@ struct NavigationConfig: Codable {
     let showMessages: Bool
     let showProfile: Bool
     let bottomNavEnabled: Bool
+}
+
+// MARK: - Categories Configuration
+struct CategoriesConfiguration: Codable {
+    let goodsServices: CategoryGroup
+    let events: CategoryGroup
+}
+
+struct CategoryGroup: Codable {
+    let id: String
+    let name: String
+    let description: String
+    let icon: String
+    let subCategories: [String: SubCategory]
+}
+
+struct SubCategory: Codable, Identifiable {
+    let id: String
+    let name: String
+    let description: String
+    let icon: String
+    let tags: [String]
 }
 
 // MARK: - Text Configuration

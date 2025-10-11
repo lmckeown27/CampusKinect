@@ -135,6 +135,118 @@ router.get('/app', async (req, res) => {
         }
       },
 
+      // Post Categories and Tags
+      // This allows you to add/remove/modify categories and tags without App Store review
+      categories: {
+        goodsServices: {
+          id: 'goods-services',
+          name: 'Goods/Services',
+          description: 'Posts for goods, services, and general campus needs',
+          icon: '🛍️',
+          subCategories: {
+            leasing: {
+              id: 'leasing',
+              name: 'Leasing',
+              description: 'Housing and apartment related posts',
+              icon: '🏠',
+              tags: ['housing', 'apartment', 'lease', 'roommate', 'sublet', 'furniture']
+            },
+            tutoring: {
+              id: 'tutoring',
+              name: 'Tutoring',
+              description: 'Academic help and tutoring services',
+              icon: '📚',
+              tags: ['tutoring', 'homework', 'study', 'academic', 'math', 'science', 'english', 'writing', 'language', 'computer science']
+            },
+            books: {
+              id: 'books',
+              name: 'Books',
+              description: 'Textbooks and reading materials',
+              icon: '📖',
+              tags: ['textbook', 'book', 'reading', 'course', 'education']
+            },
+            rides: {
+              id: 'rides',
+              name: 'Rides',
+              description: 'Transportation and carpooling',
+              icon: '🚗',
+              tags: ['ride', 'carpool', 'transport', 'drive', 'travel', 'uber', 'lyft']
+            },
+            food: {
+              id: 'food',
+              name: 'Food',
+              description: 'Food sharing and dining',
+              icon: '🍕',
+              tags: ['food', 'dining', 'meal', 'cooking', 'restaurant', 'delivery']
+            },
+            services: {
+              id: 'services',
+              name: 'Services',
+              description: 'Personal and professional services',
+              icon: '✂️',
+              tags: ['haircut', 'barber', 'salon', 'grooming', 'cleaning', 'laundry', 'repair', 'maintenance', 'moving', 'tech support']
+            },
+            other: {
+              id: 'other',
+              name: 'Other',
+              description: 'Miscellaneous goods and services',
+              icon: '🔧',
+              tags: ['other', 'misc', 'help', 'request']
+            }
+          }
+        },
+        events: {
+          id: 'events',
+          name: 'Events',
+          description: 'Campus events and activities',
+          icon: '📅',
+          subCategories: {
+            sport: {
+              id: 'sport',
+              name: 'Sports',
+              description: 'Athletic events and activities',
+              icon: '⚽',
+              tags: ['sport', 'athletic', 'game', 'tournament', 'fitness', 'basketball', 'football', 'soccer', 'tennis']
+            },
+            rush: {
+              id: 'rush',
+              name: 'Rush',
+              description: 'Greek life and recruitment',
+              icon: '🎓',
+              tags: ['rush', 'greek', 'fraternity', 'sorority', 'recruitment']
+            },
+            philanthropy: {
+              id: 'philanthropy',
+              name: 'Philanthropy',
+              description: 'Charity and community service',
+              icon: '❤️',
+              tags: ['philanthropy', 'charity', 'community', 'service', 'volunteer']
+            },
+            academic: {
+              id: 'academic',
+              name: 'Academic',
+              description: 'Academic events and workshops',
+              icon: '🎓',
+              tags: ['academic', 'lecture', 'workshop', 'seminar', 'conference']
+            },
+            social: {
+              id: 'social',
+              name: 'Social',
+              description: 'Social events and parties',
+              icon: '🎉',
+              tags: ['social', 'party', 'club', 'entertainment', 'music']
+            },
+            cultural: {
+              id: 'cultural',
+              name: 'Cultural',
+              description: 'Cultural and diversity events',
+              icon: '🌍',
+              tags: ['cultural', 'diversity', 'heritage', 'international', 'celebration']
+            }
+          }
+        }
+      },
+
       // Text/Copy Configuration
       text: {
         appName: 'CampusKinect',

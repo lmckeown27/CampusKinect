@@ -226,8 +226,29 @@ extension ConfigurationService {
         configuration?.ui
     }
     
+    var categories: CategoriesConfiguration? {
+        configuration?.categories
+    }
+    
     var text: TextConfiguration? {
         configuration?.text
+    }
+    
+    /// Get all tags for a specific subcategory
+    func getTags(forSubCategory subCategoryId: String, inCategory categoryId: String) -> [String] {
+        guard let categories = configuration?.categories else { return [] }
+        
+        let categoryGroup: CategoryGroup?
+        switch categoryId {
+        case "goods-services":
+            categoryGroup = categories.goodsServices
+        case "events":
+            categoryGroup = categories.events
+        default:
+            return []
+        }
+        
+        return categoryGroup?.subCategories[subCategoryId]?.tags ?? []
     }
 }
 
