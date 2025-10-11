@@ -2,49 +2,32 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Lock, User, LogIn } from 'lucide-react';
+import { User, LogIn, X, Lock } from 'lucide-react';
 
 interface GuestRestrictionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  action: string; // e.g., "like", "comment", "post", "message"
+  feature: string;
 }
 
-export default function GuestRestrictionModal({ isOpen, onClose, action }: GuestRestrictionModalProps) {
+export default function GuestRestrictionModal({ isOpen, onClose, feature }: GuestRestrictionModalProps) {
   const router = useRouter();
 
   if (!isOpen) return null;
 
-  const handleLogin = () => {
+  const handleSignIn = () => {
     onClose();
     router.push('/auth/login');
   };
 
-  const handleSignUp = () => {
+  const handleCreateAccount = () => {
     onClose();
     router.push('/auth/register');
   };
 
-  const getActionText = () => {
-    switch (action.toLowerCase()) {
-      case 'like':
-        return 'like posts';
-      case 'comment':
-        return 'comment on posts';
-      case 'post':
-        return 'create posts';
-      case 'message':
-        return 'send messages';
-      case 'bookmark':
-        return 'bookmark posts';
-      default:
-        return 'use this feature';
-    }
-  };
-
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
       onClick={onClose}
     >
       <div 
@@ -53,9 +36,11 @@ export default function GuestRestrictionModal({ isOpen, onClose, action }: Guest
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-600">
-          <div className="flex items-center">
-            <Lock className="text-[#708d81] mr-3" size={24} />
-            <h2 className="text-xl font-bold text-white">Account Required</h2>
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 rounded-full bg-[#708d81] bg-opacity-20 flex items-center justify-center">
+              <Lock size={24} className="text-[#708d81]" />
+            </div>
+            <h2 className="text-xl font-bold text-white">Sign In Required</h2>
           </div>
           <button
             onClick={onClose}
@@ -68,41 +53,53 @@ export default function GuestRestrictionModal({ isOpen, onClose, action }: Guest
         {/* Content */}
         <div className="p-6">
           <p className="text-gray-300 text-center mb-6">
-            You need to create an account or sign in to {getActionText()}.
+            To access <span className="font-semibold text-[#708d81]">{feature}</span>, you need to have an account.
           </p>
 
-          {/* Buttons */}
           <div className="space-y-3">
+            {/* Sign In Button */}
             <button
-              onClick={handleSignUp}
-              className="w-full bg-[#708d81] hover:bg-[#5a7166] text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+              onClick={handleSignIn}
+              className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-grey-medium hover:bg-gray-600 text-white font-medium rounded-lg transition-colors border border-[#708d81]"
             >
-              <User size={20} className="mr-2" />
-              Create Account
+              <LogIn size={20} />
+              <span>Sign In to Existing Account</span>
             </button>
 
+            {/* Create Account Button */}
             <button
-              onClick={handleLogin}
-              className="w-full bg-grey-medium hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors border-2 border-[#708d81] flex items-center justify-center"
+              onClick={handleCreateAccount}
+              className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-[#708d81] hover:bg-[#5a7166] text-white font-medium rounded-lg transition-colors"
             >
-              <LogIn size={20} className="mr-2" />
-              Sign In
-            </button>
-
-            <button
-              onClick={onClose}
-              className="w-full bg-transparent text-gray-400 hover:text-white font-medium py-2 px-6 rounded-lg transition-colors"
-            >
-              Continue Browsing
+              <User size={20} />
+              <span>Create New Account</span>
             </button>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="p-6 pt-0">
-          <p className="text-gray-500 text-xs text-center">
-            Join your campus community to connect, share, and discover.
-          </p>
+          {/* Additional Info */}
+          <div className="mt-6 pt-6 border-t border-gray-600">
+            <p className="text-xs text-gray-400 text-center">
+              Creating an account is free and gives you full access to:
+            </p>
+            <ul className="mt-3 space-y-1 text-xs text-gray-400">
+              <li className="flex items-center space-x-2">
+                <span className="text-[#708d81]">✓</span>
+                <span>Create and manage posts</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className="text-[#708d81]">✓</span>
+                <span>Send and receive messages</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className="text-[#708d81]">✓</span>
+                <span>Customize your profile</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className="text-[#708d81]">✓</span>
+                <span>Access all platform features</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

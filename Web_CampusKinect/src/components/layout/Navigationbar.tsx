@@ -10,9 +10,9 @@ import GuestRestrictionModal from '../guest/GuestRestrictionModal';
 const Navigationbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { isGuest } = useAuthStore();
+  const { isGuest, isAuthenticated } = useAuthStore();
   const [showGuestModal, setShowGuestModal] = useState(false);
-  const [guestAction, setGuestAction] = useState('');
+  const [guestFeature, setGuestFeature] = useState('');
 
   // Debug logging removed to prevent console spam
 
@@ -50,12 +50,12 @@ const Navigationbar: React.FC = () => {
       <div className="flex-1 px-4">
         {navigationItems.map((item) => {
           const Icon = item.icon;
-          const isRestricted = isGuest && (item.name === 'Create Post' || item.name === 'Messages');
+          const isRestricted = isGuest && !isAuthenticated && (item.name === 'Create Post' || item.name === 'Messages');
           
           const handleClick = (e: React.MouseEvent) => {
             if (isRestricted) {
               e.preventDefault();
-              setGuestAction(item.name === 'Create Post' ? 'post' : 'message');
+              setGuestFeature(item.name);
               setShowGuestModal(true);
             }
           };
@@ -131,7 +131,7 @@ const Navigationbar: React.FC = () => {
       <GuestRestrictionModal
         isOpen={showGuestModal}
         onClose={() => setShowGuestModal(false)}
-        action={guestAction}
+        feature={guestFeature}
       />
     </nav>
   );

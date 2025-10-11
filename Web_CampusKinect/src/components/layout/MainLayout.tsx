@@ -15,7 +15,7 @@ interface MainLayoutProps {
 }
 
 const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
-  const { isAuthenticated, checkAuth, isLoading, user, logout } = useAuthStore();
+  const { isAuthenticated, checkAuth, isLoading, user, logout, isGuest } = useAuthStore();
   const { showNavigation, setShowNavigation, showProfileDropdown, setShowProfileDropdown } = useNavigation();
   const { 
     shouldShowTerms, 
@@ -77,6 +77,43 @@ const MainLayoutContent: React.FC<MainLayoutProps> = ({ children }) => {
     );
   }
 
+  // Guest mode - show full UI but with restricted functionality
+  if (!isAuthenticated && isGuest) {
+    return (
+      <div style={{ backgroundColor: '#525252', minHeight: '100vh' }}>
+        <Header />
+
+        <div className="flex pt-16">
+          {/* Left Sidebar - Navigation */}
+          {showNavigation && (
+            <div className="w-80 flex-shrink-0 bg-grey-medium border-r-4 border-primary min-h-[calc(100vh-4rem)] overflow-y-auto" style={{ borderRight: '4px solid #708d81' }}>
+              <Navigationbar />
+            </div>
+          )}
+
+          {/* Center Column - Main Content */}
+          <main className={`flex-1 transition-all duration-300 ${
+            showNavigation ? 'ml-0' : 'ml-0'
+          } ${showProfileDropdown ? 'mr-0' : 'mr-0'}`}>
+            {children}
+          </main>
+
+          {/* Right Sidebar - Profile Dropdown (when open) - Guest users get null user */}
+          {showProfileDropdown && (
+            <div className="w-80 flex-shrink-0 bg-grey-medium border-l-4 border-primary min-h-[calc(100vh-4rem)] overflow-y-auto" style={{ borderLeft: '4px solid #708d81' }}>
+              <Profilebar 
+                showProfileDropdown={showProfileDropdown} 
+                setShowProfileDropdown={setShowProfileDropdown} 
+                user={null}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Not authenticated and not in guest mode
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#525252' }}>
