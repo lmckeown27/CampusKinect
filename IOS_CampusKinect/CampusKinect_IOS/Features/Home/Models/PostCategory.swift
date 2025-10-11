@@ -86,6 +86,7 @@ extension PostCategory {
         icon: "wrench.and.screwdriver.fill",
         color: "#F59E0B",
         subcategories: [
+            PostSubcategory(id: "haircut", name: "Haircut & Grooming", categoryId: "services", isActive: true),
             PostSubcategory(id: "transportation", name: "Transportation", categoryId: "services", isActive: true),
             PostSubcategory(id: "tutoring", name: "Tutoring", categoryId: "services", isActive: true),
             PostSubcategory(id: "fitness_training", name: "Fitness Training", categoryId: "services", isActive: true),
