@@ -1041,14 +1041,14 @@ router.get('/users/:userId/profile', auth, adminAuth, async (req, res) => {
 
     const user = userResult.rows[0];
 
-    // Get all user's posts with images
+    // Get all user's posts with images and tags
     const postsResult = await query(`
       SELECT 
         p.id,
         p.title,
         p.description,
-        p.category,
-        p.price,
+        p.post_type,
+        p.duration_type,
         p.location,
         p.is_active,
         p.is_flagged,
@@ -1066,6 +1066,13 @@ router.get('/users/:userId/profile', auth, adminAuth, async (req, res) => {
           END
           ORDER BY pi.image_order
         ) FILTER (WHERE pi.image_url IS NOT NULL) as images,
+        (
+          SELECT COALESCE(array_agg(DISTINCT t.name), ARRAY[]::text[])
+          FROM post_tags pt_inner
+          JOIN tags t ON pt_inner.tag_id = t.id
+          WHERE pt_inner.post_id = p.id
+            AND t.name IS NOT NULL
+        ) as tags,
         (
           SELECT COUNT(*) 
           FROM conversations c 
@@ -1126,8 +1133,9 @@ router.get('/users/:userId/profile', auth, adminAuth, async (req, res) => {
           id: post.id,
           title: post.title,
           description: post.description,
-          category: post.category,
-          price: post.price,
+          postType: post.post_type,
+          durationType: post.duration_type,
+          tags: post.tags || [],
           location: post.location,
           isActive: post.is_active,
           isFlagged: post.is_flagged,

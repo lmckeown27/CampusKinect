@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Users, Mail, MapPin, GraduationCap, Calendar, 
   FileText, MessageSquare, AlertTriangle, CheckCircle, Ban,
-  DollarSign, MapPinned, Tag, Image as ImageIcon, Flag,
+  MapPinned, Tag, Image as ImageIcon, Flag,
   ExternalLink, Trash2, UserX
 } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
@@ -46,8 +46,9 @@ interface UserProfile {
     id: string;
     title: string;
     description: string;
-    category: string;
-    price: number;
+    postType: string;
+    durationType: string;
+    tags: string[];
     location: string;
     isActive: boolean;
     isFlagged: boolean;
@@ -397,15 +398,21 @@ export default function AdminUserProfilePage() {
                         </div>
 
                         <div className="flex flex-wrap gap-2 mb-3 text-sm">
-                          <div className="flex items-center space-x-1" style={{ color: '#9ca3af' }}>
-                            <Tag size={14} />
-                            <span>{post.category}</span>
+                          <div className="flex items-center space-x-1 px-2 py-1 rounded" style={{ backgroundColor: '#3b82f620', color: '#3b82f6' }}>
+                            <span className="font-medium">{post.postType}</span>
                           </div>
-                          {post.price && (
-                            <div className="flex items-center space-x-1" style={{ color: '#10b981' }}>
-                              <DollarSign size={14} />
-                              <span>${post.price}</span>
-                            </div>
+                          {post.tags && post.tags.length > 0 && (
+                            <>
+                              {post.tags.slice(0, 3).map((tag, idx) => (
+                                <div key={idx} className="flex items-center space-x-1 px-2 py-1 rounded" style={{ backgroundColor: '#708d8120', color: '#708d81' }}>
+                                  <Tag size={12} />
+                                  <span>{tag}</span>
+                                </div>
+                              ))}
+                              {post.tags.length > 3 && (
+                                <span style={{ color: '#9ca3af' }}>+{post.tags.length - 3} more</span>
+                              )}
+                            </>
                           )}
                           {post.location && (
                             <div className="flex items-center space-x-1" style={{ color: '#9ca3af' }}>
