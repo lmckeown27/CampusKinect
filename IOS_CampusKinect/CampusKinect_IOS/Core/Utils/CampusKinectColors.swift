@@ -4,23 +4,34 @@
 //
 //  Created by Liam McKeown on 9/29/25.
 //
+//  🚀 SERVER-DRIVEN COLORS: All colors now read from backend config!
+//  Change colors by editing backend/src/routes/config.js, no app rebuild needed!
+//
 
 import SwiftUI
 
 extension Color {
-    // MARK: - CampusKinect Brand Colors (matching Web version)
+    // MARK: - CampusKinect Brand Colors (SERVER-DRIVEN)
     
-    /// Primary olive green - #708d81
-    static let campusPrimary = Color("BrandPrimary")
+    /// Primary olive green - reads from server config (default: #708d81)
+    static var campusPrimary: Color {
+        ThemeManager.shared.primaryColor
+    }
     
-    /// Secondary olive green - #5a7268
-    static let campusSecondary = Color("BrandSecondary")
+    /// Secondary olive green - reads from server config (default: #5a7268)
+    static var campusSecondary: Color {
+        ThemeManager.shared.primaryDarkColor
+    }
     
-    /// Primary background grey - #525252
-    static let campusBackground = Color("BackgroundPrimary")
+    /// Primary background grey - reads from server config (default: #525252)
+    static var campusBackground: Color {
+        ThemeManager.shared.backgroundColor
+    }
     
-    /// Secondary background light grey - #e5e5e5 (light mode) / #b6b6b6 (dark mode)
-    static let campusBackgroundSecondary = Color("BackgroundSecondary")
+    /// Secondary background light grey - reads from server config
+    static var campusBackgroundSecondary: Color {
+        ThemeManager.shared.backgroundLightColor
+    }
     
     // MARK: - Neutral Greys (matching Web neutral colors)
     
@@ -86,19 +97,27 @@ extension Color {
     /// Almost black olive - #0b1110
     static let campusOlive900 = Color(red: 0.043, green: 0.067, blue: 0.063)
     
-    // MARK: - Semantic Colors
+    // MARK: - Semantic Colors (SERVER-DRIVEN)
     
-    /// Success green - #22c55e
-    static let campusSuccess = Color(red: 0.133, green: 0.773, blue: 0.369)
+    /// Success green - reads from server config (default: #22c55e)
+    static var campusSuccess: Color {
+        ThemeManager.shared.successColor
+    }
     
-    /// Warning amber - #f59e0b
-    static let campusWarning = Color(red: 0.961, green: 0.620, blue: 0.043)
+    /// Warning amber - reads from server config (default: #f59e0b)
+    static var campusWarning: Color {
+        ThemeManager.shared.currentTheme?.colors.warningColor ?? Color(red: 0.961, green: 0.620, blue: 0.043)
+    }
     
-    /// Error red - #ef4444
-    static let campusError = Color(red: 0.937, green: 0.267, blue: 0.267)
+    /// Error red - reads from server config (default: #ef4444)
+    static var campusError: Color {
+        ThemeManager.shared.errorColor
+    }
     
-    /// Info blue - #3b82f6
-    static let campusInfo = Color(red: 0.231, green: 0.510, blue: 0.965)
+    /// Info blue - reads from server config (default: #3b82f6)
+    static var campusInfo: Color {
+        ThemeManager.shared.currentTheme?.colors.infoColor ?? Color(red: 0.231, green: 0.510, blue: 0.965)
+    }
     
     // MARK: - Text Colors (adaptive)
     
