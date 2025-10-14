@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class AppText: ObservableObject {
     static let shared = AppText()
