@@ -154,12 +154,12 @@ extension PostCategory {
     /// Load categories from server configuration
     /// Falls back to hardcoded defaults if server config unavailable
     static func loadFromServer() -> [PostCategory] {
-        guard let config = ConfigurationService.shared.configuration,
-              let categories = config.categories else {
+        guard let config = ConfigurationService.shared.configuration else {
             print("⚠️ Server config unavailable, using hardcoded categories")
             return allCategories
         }
         
+        let categories = config.categories
         var serverCategories: [PostCategory] = []
         
         // Convert Goods/Services category
