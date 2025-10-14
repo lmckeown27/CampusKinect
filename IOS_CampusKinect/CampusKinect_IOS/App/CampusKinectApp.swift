@@ -12,21 +12,31 @@ struct CampusKinectApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var authManager = AuthenticationManager.shared
     @StateObject private var networkMonitor = NetworkMonitor()
+    @StateObject private var configService = ConfigurationService.shared
+    @StateObject private var themeManager = ThemeManager.shared
+    @StateObject private var announcementManager = AnnouncementManager.shared
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(authManager)
                 .environmentObject(networkMonitor)
-                .tint(.campusOlive400) // Global tint for ProgressViews and other interactive elements
+                .environmentObject(configService)
+                .environmentObject(themeManager)
+                .environmentObject(announcementManager)
+                .tint(.campusPrimary) // Server-driven tint
                 .onAppear {
                     setupApp()
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                     // Check notification settings when app becomes active
-                    // This catches changes made in iOS Settings
                     Task {
                         await PushNotificationManager.shared.checkNotificationSettings()
+                    }
+                    // Refresh config when app becomes active
+                    Task {
+                        await configService.fetchConfiguration()
+                        announcementManager.refreshAnnouncements()
                     }
                 }
         }

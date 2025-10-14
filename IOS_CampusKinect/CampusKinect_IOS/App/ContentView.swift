@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @EnvironmentObject var announcementManager: AnnouncementManager
     @StateObject private var termsManager = TermsOfServiceManager.shared
     
     // CRITICAL: Prevent presentation conflicts
@@ -19,9 +20,20 @@ struct ContentView: View {
     // UserDefaults key for tracking notification permission request
     private let hasRequestedNotificationKey = "hasRequestedNotificationPermission"
     
+    // Server-driven maintenance mode
+    private var isMaintenanceModeEnabled: Bool {
+        ConfigurationService.shared.configuration?.maintenance.enabled ?? false
+    }
+    
     var body: some View {
         ZStack {
-            if authManager.isLoading {
+            // Check maintenance mode FIRST
+            if isMaintenanceModeEnabled {
+                MaintenanceModeView(
+                    message: ConfigurationService.shared.configuration?.maintenance.message ?? "Under maintenance",
+                    estimatedEndTime: ConfigurationService.shared.configuration?.maintenance.estimatedEndTime
+                )
+            } else if authManager.isLoading {
                 LoadingView()
             } else if authManager.isAuthenticated {
                 // CRITICAL: Only show MainTabView AFTER terms check is complete
