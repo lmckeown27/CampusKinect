@@ -271,13 +271,25 @@ struct CreatePostView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color(hex: selectedCategory.color)?.opacity(0.1) ?? Color(.systemGray6))
-                .foregroundColor(Color(hex: selectedCategory.color) ?? .primary)
+                .background(categoryBackgroundColor(for: selectedCategory))
+                .foregroundColor(categoryForegroundColor(for: selectedCategory))
                 .cornerRadius(16)
                 
                 Spacer()
             }
         }
+    }
+    
+    // Helper methods to simplify color expressions
+    private func categoryBackgroundColor(for category: PostCategory) -> Color {
+        if let hexColor = Color(hex: category.color) {
+            return hexColor.opacity(0.1)
+        }
+        return Color(.systemGray6)
+    }
+    
+    private func categoryForegroundColor(for category: PostCategory) -> Color {
+        return Color(hex: category.color) ?? .primary
     }
     
     @ViewBuilder
