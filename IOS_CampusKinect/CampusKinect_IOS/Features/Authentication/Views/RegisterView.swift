@@ -76,8 +76,13 @@ struct RegisterView: View {
                 dismiss()
             }
         }
-        .onTapGesture {
-            focusedField = nil
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    focusedField = nil
+                }
+            }
         }
         .alert("Registration Failed", isPresented: $showingAlert) {
             Button("OK") {
