@@ -399,6 +399,28 @@ struct RegisterView: View {
     
     private var termsAgreementSection: some View {
         VStack(alignment: .leading, spacing: 16) {
+            // Important notice about scrolling requirement
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: "info.circle.fill")
+                    .foregroundColor(Color("BrandPrimary"))
+                    .font(.caption)
+                
+                Text("You must scroll through and read the entire Terms of Service and Privacy Policy before you can accept them.")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(Color("BrandPrimary"))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color("BrandPrimary").opacity(0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color("BrandPrimary").opacity(0.3), lineWidth: 1)
+                    )
+            )
+            
             HStack(alignment: .top, spacing: 12) {
                 Button(action: {
                     agreeToTerms.toggle()
