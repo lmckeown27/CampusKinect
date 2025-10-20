@@ -219,9 +219,11 @@ struct RegisterView: View {
                     HStack {
                         if isPasswordVisible {
                             TextField("Password", text: $password)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .focused($focusedField, equals: .password)
                         } else {
                             SecureField("Password", text: $password)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .focused($focusedField, equals: .password)
                         }
                         
@@ -232,7 +234,7 @@ struct RegisterView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.trailing, 8)
                     
                     if !password.isEmpty && password.count < 6 {
                         HStack {
@@ -254,9 +256,11 @@ struct RegisterView: View {
                     HStack {
                         if isConfirmPasswordVisible {
                             TextField("Confirm Password", text: $confirmPassword)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .focused($focusedField, equals: .confirmPassword)
                         } else {
                             SecureField("Confirm Password", text: $confirmPassword)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .focused($focusedField, equals: .confirmPassword)
                         }
                         
@@ -267,7 +271,7 @@ struct RegisterView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.trailing, 8)
                     
                     if !confirmPassword.isEmpty && password != confirmPassword {
                         HStack {

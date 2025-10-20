@@ -197,9 +197,11 @@ struct LoginView: View {
                 HStack {
                     if isPasswordVisible {
                         TextField("Enter your password", text: $password)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
                             .focused($focusedField, equals: .password)
                     } else {
                         SecureField("Enter your password", text: $password)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
                             .focused($focusedField, equals: .password)
                     }
                     
@@ -210,7 +212,7 @@ struct LoginView: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.trailing, 8)
             }
         }
     }
